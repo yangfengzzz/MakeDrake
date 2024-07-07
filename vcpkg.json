@@ -1,0 +1,9 @@
+{
+  "name" : "makedrake",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "b0d9d516272c599145009c4c28b779a678fc97f8",
+  "dependencies" : [ {
+    "name" : "gtest",
+    "version>=" : "1.14.0#1"
+  } ]
+}
