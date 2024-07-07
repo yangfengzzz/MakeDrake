@@ -5,5 +5,11 @@
   "dependencies" : [ {
     "name" : "gtest",
     "version>=" : "1.14.0#1"
+  }, {
+    "name" : "eigen3",
+    "version>=" : "3.4.0#4"
+  }, {
+    "name" : "fmt",
+    "version>=" : "10.2.1#2"
   } ]
 }

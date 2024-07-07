@@ -229,9 +229,9 @@ GTEST_TEST(AdditionalAutodiffTest, InitializeNoGradientMatrix) {
     // ExtractGradient.
     Eigen::Matrix<double, 2, 3, Eigen::RowMajor> value_rowmajor;
     // clang-format off
-value_rowmajor <<
-1.0, 2.0, 3.0,
-4.0, 5.0, 6.0;
+    value_rowmajor <<
+    1.0, 2.0, 3.0,
+    4.0, 5.0, 6.0;
     // clang-format on
     const auto adXT_return = InitializeAutoDiff(value_rowmajor);
 
