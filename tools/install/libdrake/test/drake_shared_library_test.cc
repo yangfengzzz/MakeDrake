@@ -2,7 +2,7 @@
 // such as ODR violations using ASan.
 
 // Trivial include.
-#include "drake/common/find_resource.h"
+#include "common/find_resource.h"
 
 // Trivial symbol test.
 using drake::FindResourceOrThrow;

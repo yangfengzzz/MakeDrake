@@ -1,4 +1,4 @@
-#include "drake/tools/performance/fixture_common.h"
+#include "tools/performance/fixture_common.h"
 
 #include <algorithm>
 #include <vector>

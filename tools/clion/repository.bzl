@@ -12,7 +12,7 @@ def _impl(repository_ctx):
     dotfile_path = repository_ctx.path(Label("@drake//:.bazelproject"))
     drake_workspace = dotfile_path.realpath.dirname
 
-    # Compute an include path that makes '#include "drake/foo.h" work.
+    # Compute an include path that makes '#include "foo.h" work.
     if drake_workspace.basename == "drake":
         drake_workspace_parent = str(drake_workspace.dirname)
     else:

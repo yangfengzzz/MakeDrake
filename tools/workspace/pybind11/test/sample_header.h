@@ -17,9 +17,9 @@
 #include <string>
 #include <vector>
 
-#include "drake/common/drake_copyable.h"
-#include "drake/common/drake_deprecated.h"
-#include "drake/common/unused.h"
+#include "common/drake_copyable.h"
+#include "common/drake_deprecated.h"
+#include "common/unused.h"
 
 /// @def PREPROCESSOR_DEFINITION
 /// Preprocessor definitions are ignored. In nibh mauris cursus mattis

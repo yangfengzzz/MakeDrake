@@ -7,7 +7,7 @@ Provides a C++ version libsdformat's `gz sdf` ruby command-line interface.
 
 #include <gflags/gflags.h>
 
-#include "drake/common/drake_assert.h"
+#include "common/drake_assert.h"
 
 DEFINE_string(check, "", "Checks an SDFormat file");
 DEFINE_string(describe, "", "Describes a given SDFormat version");

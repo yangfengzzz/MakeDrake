@@ -19,9 +19,9 @@ mkdir -p drake/dummy
 
 # Set up a test input that is mis-formatted and the correct formatting.
 cat > drake/dummy/foo.cc <<EOF
-#include "drake/common/drake_assert.h"
-#include "drake/dummy/bar.h"
-#include "drake/dummy/foo.h"
+#include "common/drake_assert.h"
+#include "dummy/bar.h"
+#include "dummy/foo.h"
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 #include <algorithm>
@@ -31,7 +31,7 @@ cat > drake/dummy/foo.cc <<EOF
 EOF
 cp -a drake/dummy/foo.cc{,.orig}
 cat > drake/dummy/foo.cc-expected <<EOF
-#include "drake/dummy/foo.h"
+#include "dummy/foo.h"
 
 #include <poll.h>
 #include <sys/wait.h>
@@ -42,8 +42,8 @@ cat > drake/dummy/foo.cc-expected <<EOF
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 
-#include "drake/common/drake_assert.h"
-#include "drake/dummy/bar.h"
+#include "common/drake_assert.h"
+#include "dummy/bar.h"
 EOF
 
 # The foo.cc needs reformatting, but check-only leaves it unchanged.

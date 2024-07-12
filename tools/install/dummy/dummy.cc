@@ -1,4 +1,4 @@
-#include "drake/tools/install/dummy/dummy.h"
+#include "tools/install/dummy/dummy.h"
 
 namespace dummy {
 

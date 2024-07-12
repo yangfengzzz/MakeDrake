@@ -1,4 +1,4 @@
-#include "drake/tools/performance/fixture_memory.h"
+#include "tools/performance/fixture_memory.h"
 
 namespace drake {
 namespace tools {

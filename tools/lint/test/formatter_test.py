@@ -103,9 +103,9 @@ class TestIncludeFormatter(unittest.TestCase):
         # - Other libraries' .h files
         # - Your project's .h files
         original = """
-#include "drake/common/drake_assert.h"
-#include "drake/dummy/bar.h"
-#include "drake/dummy/dut.h"
+#include "common/drake_assert.h"
+#include "dummy/bar.h"
+#include "dummy/dut.h"
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 #include <algorithm>
@@ -114,7 +114,7 @@ class TestIncludeFormatter(unittest.TestCase):
 #include <vector>
 """
         expected = """
-#include "drake/dummy/dut.h"
+#include "dummy/dut.h"
 
 #include <poll.h>
 #include <sys/wait.h>
@@ -125,8 +125,8 @@ class TestIncludeFormatter(unittest.TestCase):
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 
-#include "drake/common/drake_assert.h"
-#include "drake/dummy/bar.h"
+#include "common/drake_assert.h"
+#include "dummy/bar.h"
 """
         self._check("dut.cc", original, expected, 0)
 
@@ -140,18 +140,18 @@ namespace { }
     def test_regroup(self):
         # Wrongly grouped whitespace.
         original = """
-#include "drake/dummy/dut.h"
+#include "dummy/dut.h"
 
 #include <Eigen/Dense>
 #include <algorithm>
 #include <vector>
 
-#include "drake/common/drake_assert.h"
-#include "drake/dummy/bar.h"
+#include "common/drake_assert.h"
+#include "dummy/bar.h"
 #include <gtest/gtest.h>
 """
         expected = """
-#include "drake/dummy/dut.h"
+#include "dummy/dut.h"
 
 #include <algorithm>
 #include <vector>
@@ -159,15 +159,15 @@ namespace { }
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 
-#include "drake/common/drake_assert.h"
-#include "drake/dummy/bar.h"
+#include "common/drake_assert.h"
+#include "dummy/bar.h"
 """
         self._check("dut.cc", original, expected, 2)
 
     def test_format_off(self):
         # "clang-format off".
         original = """
-#include "drake/dummy/dut.h"
+#include "dummy/dut.h"
 
 // clang-format off
 #ifdef FOO
@@ -179,14 +179,14 @@ namespace { }
 #endif
 // clang-format on
 
-#include "drake/common/drake_assert.h"
+#include "common/drake_assert.h"
 """
         self._check("dut.cc", original, original, None)
 
     def test_target_is_header(self):
         # A header file.
         original = """
-#include "drake/common/drake_assert.h"
+#include "common/drake_assert.h"
 #include <algorithm>
 
 namespace { }
@@ -194,7 +194,7 @@ namespace { }
         expected = """
 #include <algorithm>
 
-#include "drake/common/drake_assert.h"
+#include "common/drake_assert.h"
 
 namespace { }
 """
@@ -203,7 +203,7 @@ namespace { }
     def test_associated_comment(self):
         # A comment prior to a line.
         original = """
-#include "drake/dummy/dut.h"
+#include "dummy/dut.h"
 
 // Some comment describing the next line.
 #include <vector>
@@ -227,45 +227,45 @@ namespace { }
         # Two related headers, guarded by "clang-format off".
         original = """
 /* clang-format off (with explanatory comment) */
-#include "drake/dummy/dut.h"
-#include "drake/dummy/dut_internal.h"
+#include "dummy/dut.h"
+#include "dummy/dut_internal.h"
 /* clang-format on  (with explanatory comment) */
 
 #include <vector>
 #include <string>
 
-#include "drake/dummy/drake_assert.h"
-#include "drake/dummy/drake_deprecated.h"
+#include "dummy/drake_assert.h"
+#include "dummy/drake_deprecated.h"
 """
         expected = """
 /* clang-format off (with explanatory comment) */
-#include "drake/dummy/dut.h"
-#include "drake/dummy/dut_internal.h"
+#include "dummy/dut.h"
+#include "dummy/dut_internal.h"
 /* clang-format on  (with explanatory comment) */
 
 #include <string>
 #include <vector>
 
-#include "drake/dummy/drake_assert.h"
-#include "drake/dummy/drake_deprecated.h"
+#include "dummy/drake_assert.h"
+#include "dummy/drake_deprecated.h"
 """
         self._check("dut.cc", original, expected, 5)
 
     def test_resort_solo_groups(self):
         # Groups of one, but sorted incorrectly.
         original = """
-#include "drake/dummy/dut.h"
+#include "dummy/dut.h"
 
-#include "drake/common/drake_assert.h"
+#include "common/drake_assert.h"
 
 #include <vector>
 """
         expected = """
-#include "drake/dummy/dut.h"
+#include "dummy/dut.h"
 
 #include <vector>
 
-#include "drake/common/drake_assert.h"
+#include "common/drake_assert.h"
 """
         self._check("dut.cc", original, expected, 2)
 

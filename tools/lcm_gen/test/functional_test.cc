@@ -16,7 +16,7 @@
 #include "romeo/november.hpp"
 // clang-format on
 
-#include "drake/lcm/lcm_messages.h"
+#include "lcm/lcm_messages.h"
 
 namespace {
 

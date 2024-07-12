@@ -14,8 +14,8 @@ prefer fmt over ostream anytime fmt is offered.
  #include "gtest/internal/gtest-internal.h"
  #include "gtest/internal/gtest-port.h"
  
-+#include "drake/common/test_utilities/eigen_printer.h"
-+#include "drake/common/test_utilities/fmt_format_printer.h"
++#include "common/test_utilities/eigen_printer.h"
++#include "common/test_utilities/fmt_format_printer.h"
 +
  namespace testing {
  

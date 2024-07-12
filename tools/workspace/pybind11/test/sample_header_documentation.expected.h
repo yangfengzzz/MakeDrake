@@ -12,7 +12,7 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
 
-// #include "drake/tools/workspace/pybind11/test/sample_header.h"
+// #include "tools/workspace/pybind11/test/sample_header.h"
 
 // Symbol: sample_header_doc
 constexpr struct /* sample_header_doc */ {

@@ -10,7 +10,7 @@ from python import runfiles
 _PROLOGUE = """\
 #pragma once
 
-#include "drake/common/name_value.h"
+#include "common/name_value.h"
 
 // This file helps Drake's solvers/clarabel_solver.cc set the Clarabel options.
 //

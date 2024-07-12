@@ -4,7 +4,7 @@
 #include <benchmark/benchmark.h>
 #include <gflags/gflags.h>
 
-#include "drake/tools/performance/fixture_memory.h"
+#include "tools/performance/fixture_memory.h"
 
 DEFINE_bool(memory_manager, true, "Enable memory reporting");
 
