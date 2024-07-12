@@ -56,5 +56,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         common
         systems
         solvers
-        absl::any absl::log absl::base absl::bits
+        absl::any absl::log absl::base absl::raw_hash_set
 )
