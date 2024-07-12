@@ -18,10 +18,12 @@ find_package(tinyobjloader CONFIG REQUIRED)
 find_package(msgpack-cxx CONFIG REQUIRED)
 find_package(stduuid CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(lcm CONFIG REQUIRED)
 
 add_executable(MakeDrake main.cpp)
 
 add_subdirectory(third_party)
+add_subdirectory(drake)
 
 add_subdirectory(common)
 add_subdirectory(math)

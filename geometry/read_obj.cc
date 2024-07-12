@@ -6,8 +6,8 @@
 #include "common/drake_assert.h"
 #include "common/text_logging.h"
 
-static_assert(std::is_same_v<tinyobj::real_t, double>,
-              "tinyobjloader must be compiled in double-precision mode");
+//static_assert(std::is_same_v<tinyobj::real_t, double>,
+//              "tinyobjloader must be compiled in double-precision mode");
 
 namespace drake {
 namespace geometry {

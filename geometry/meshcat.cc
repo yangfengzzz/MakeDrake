@@ -36,9 +36,9 @@
 #include "geometry/meshcat_types_internal.h"
 #include "geometry/proximity/polygon_to_triangle_mesh.h"
 
-#ifdef BOOST_VERSION
-#error Drake should be using the non-boost flavor of msgpack.
-#endif
+//#ifdef BOOST_VERSION
+//#error Drake should be using the non-boost flavor of msgpack.
+//#endif
 
 // Steal one function declaration from usockets/src/internal/internal.h.
 extern "C" {

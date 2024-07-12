@@ -189,4 +189,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         tinyobjloader::tinyobjloader
         common_robotics_utilities
         nlohmann_json::nlohmann_json
+        lcm_types
+        stduuid
 )
