@@ -15,63 +15,66 @@ set(PROJECT_FILES
 
         #
         no_clarabel.cc
-        clarabel_solver.cc
-        clarabel_solver_common.cc
+#        clarabel_solver.cc
+#        clarabel_solver_common.cc
 
         #
         no_clp.cc
-        clp_solver.cc
-        clp_solver_common.cc
+#        clp_solver.cc
+#        clp_solver_common.cc
 
         #
         no_gurobi.cc
-        gurobi_solver.cc
-        gurobi_solver_common.cc
-        gurobi_solver_internal.cc
+#        gurobi_solver.cc
+#        gurobi_solver_common.cc
+#        gurobi_solver_internal.cc
 
         #
         no_ipopt.cc
-        ipopt_solver.cc
-        ipopt_solver_common.cc
-        ipopt_solver_internal.cc
+#        ipopt_solver.cc
+#        ipopt_solver_common.cc
+#        ipopt_solver_internal.cc
 
         #
         no_mosek.cc
-        mosek_solver.cc
-        mosek_solver_common.cc
-        mosek_solver_internal.cc
+#        mosek_solver.cc
+#        mosek_solver_common.cc
+#        mosek_solver_internal.cc
 
         #
         no_nlopt.cc
-        nlopt_solver.cc
-        nlopt_solver_common.cc
+#        nlopt_solver.cc
+#        nlopt_solver_common.cc
 
         #
         no_osqp.cc
-        osqp_solver.cc
-        osqp_solver_common.cc
+#        osqp_solver.cc
+#        osqp_solver_common.cc
 
         #
         no_scs.cc
-        scs_clarabel_common.cc
-        scs_solver.cc
-        scs_solver_common.cc
+#        scs_clarabel_common.cc
+#        scs_solver.cc
+#        scs_solver_common.cc
 
         #
         no_snopt.cc
-        snopt_solver.cc
-        snopt_solver_common.cc
+#        snopt_solver.cc
+#        snopt_solver_common.cc
+
+        #
+        no_csdp.cc
+#        csdp_cpp_wrapper.cc
+#        csdp_solver.cc
+#        csdp_solver_common.cc
+#        csdp_solver_error_handling.cc
+#        csdp_solver_internal.cc
 
         common_solver_option.cc
         constraint.cc
         cost.cc
         create_constraint.cc
         create_cost.cc
-        csdp_cpp_wrapper.cc
-        csdp_solver.cc
-        csdp_solver_common.cc
-        csdp_solver_error_handling.cc
-        csdp_solver_internal.cc
         decision_variable.cc
         equality_constrained_qp_solver.cc
         evaluator_base.cc
