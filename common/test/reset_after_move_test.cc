@@ -10,7 +10,9 @@ namespace {
 // A function that helps force an implicit conversion operator to int; without
 // it, EXPECT_EQ is underspecified whether we are unwrapping the first argument
 // or converting the second.
-int ForceInt(int value) { return value; }
+int ForceInt(int value) {
+    return value;
+}
 
 GTEST_TEST(DefaultValueTest, Constructor) {
     EXPECT_EQ(reset_after_move<int>(), 0);
@@ -114,7 +116,9 @@ GTEST_TEST(DefaultValueTest, Copy) {
 
 // We need to indirect self-move-assign through this function; doing it
 // directly in the test code generates a compiler warning.
-void MoveAssign(reset_after_move<int>* target, reset_after_move<int>* donor) { *target = std::move(*donor); }
+void MoveAssign(reset_after_move<int>* target, reset_after_move<int>* donor) {
+    *target = std::move(*donor);
+}
 
 GTEST_TEST(DefaultValueTest, Move) {
     reset_after_move<int> x{1};

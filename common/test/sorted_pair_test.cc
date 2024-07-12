@@ -134,7 +134,9 @@ GTEST_TEST(SortedPair, VectorExp) {
 }
 
 // Tests the MakeSortedPair operator.
-GTEST_TEST(SortedPair, MakeSortedPair) { EXPECT_EQ(SortedPair<int>(1, 2), MakeSortedPair(1, 2)); }
+GTEST_TEST(SortedPair, MakeSortedPair) {
+    EXPECT_EQ(SortedPair<int>(1, 2), MakeSortedPair(1, 2));
+}
 
 // Tests that formatting support is reasonable.
 GTEST_TEST(SortedPair, Format) {

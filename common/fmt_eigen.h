@@ -69,8 +69,10 @@ struct formatter<drake::internal::fmt_eigen_ref<Derived>> : formatter<std::strin
             return formatter<std::string_view>{}.format(drake::internal::FormatEigenMatrix<Scalar>(matrix), ctx);
         } else {
             return formatter<std::string_view>{}.format(
-                    drake::internal::FormatEigenMatrix<std::string>(matrix.unaryExpr(
-                            [](const auto& element) -> std::string { return fmt::to_string(element); })),
+                    drake::internal::FormatEigenMatrix<std::string>(
+                            matrix.unaryExpr([](const auto& element) -> std::string {
+                                return fmt::to_string(element);
+                            })),
                     ctx);
         }
     }

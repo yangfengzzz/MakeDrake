@@ -3,10 +3,9 @@
 #include <limits>
 #include <type_traits>
 
-#include <gtest/gtest.h>
-
 #include "common/autodiff.h"
 #include "common/test_utilities/limit_malloc.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace {

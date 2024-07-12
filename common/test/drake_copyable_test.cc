@@ -2,9 +2,8 @@
 
 #include <utility>
 
-#include <gtest/gtest.h>
-
 #include "common/unused.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace {
@@ -69,9 +68,13 @@ public:
 };
 
 ExampleDeclare::ExampleDeclare(const ExampleDeclare&) {}
-ExampleDeclare& ExampleDeclare::operator=(const ExampleDeclare&) { return *this; }
+ExampleDeclare& ExampleDeclare::operator=(const ExampleDeclare&) {
+    return *this;
+}
 ExampleDeclare::ExampleDeclare(ExampleDeclare&&) {}
-ExampleDeclare& ExampleDeclare::operator=(ExampleDeclare&&) { return *this; }
+ExampleDeclare& ExampleDeclare::operator=(ExampleDeclare&&) {
+    return *this;
+}
 
 GTEST_TEST(DrakeCopyableTest, DeclareCopyConstruct) {
     ExampleDeclare foo;

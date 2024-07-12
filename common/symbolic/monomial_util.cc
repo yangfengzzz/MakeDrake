@@ -34,9 +34,10 @@ VectorX<Monomial> MonomialBasis(const std::unordered_map<Variables, int>& vars_d
     // and multiply these elements together. We insert the multiplied new
     // monomial into `basis`.
     std::vector<Monomial> basis;
-    basis.reserve(std::accumulate(
-            monomial_basis_each_vars.begin(), monomial_basis_each_vars.end(), 1,
-            [](int prod, const VectorX<Monomial>& monomial_vec) { return prod * (monomial_vec.rows()); }));
+    basis.reserve(std::accumulate(monomial_basis_each_vars.begin(), monomial_basis_each_vars.end(), 1,
+                                  [](int prod, const VectorX<Monomial>& monomial_vec) {
+                                      return prod * (monomial_vec.rows());
+                                  }));
     // Insert the 1 monomial.
     basis.emplace_back();
     for (const auto& monomial_vec : monomial_basis_each_vars) {

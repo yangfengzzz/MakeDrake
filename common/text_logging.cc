@@ -112,7 +112,9 @@ const char* const logging::kSetLogLevelHelpMessage =
         "'critical', "
         "'off'";
 
-void logging::set_log_pattern(const std::string& pattern) { drake::log()->set_pattern(pattern); }
+void logging::set_log_pattern(const std::string& pattern) {
+    drake::log()->set_pattern(pattern);
+}
 
 const char* const logging::kSetLogPatternHelpMessage =
         "sets the spdlog pattern for formatting; for more information, see "
@@ -136,7 +138,9 @@ logging::sink* logging::get_dist_sink() {
     return &g_sink;
 }
 
-std::string logging::set_log_level(const std::string&) { return ""; }
+std::string logging::set_log_level(const std::string&) {
+    return "";
+}
 
 const char* const logging::kSetLogLevelHelpMessage = "(Text logging is unavailable.)";
 

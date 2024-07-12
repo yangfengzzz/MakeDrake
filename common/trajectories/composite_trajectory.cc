@@ -71,8 +71,9 @@ MatrixX<T> CompositeTrajectory<T>::value(const T& time) const {
 
 template <typename T>
 bool CompositeTrajectory<T>::do_has_derivative() const {
-    return std::all_of(segments_.begin(), segments_.end(),
-                       [](const auto& segment) { return segment->has_derivative(); });
+    return std::all_of(segments_.begin(), segments_.end(), [](const auto& segment) {
+        return segment->has_derivative();
+    });
 }
 
 template <typename T>

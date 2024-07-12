@@ -1,10 +1,9 @@
 #include <limits>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include "common/ad/auto_diff.h"
 #include "common/eigen_types.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 // This file contains only the very most basic unit tests for AutoDiffXd, e.g.,
 // construction and assignment. Tests for the derivative math are elsewhere.

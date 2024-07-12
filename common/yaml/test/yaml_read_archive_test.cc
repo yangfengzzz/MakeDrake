@@ -548,7 +548,9 @@ TEST_P(YamlReadArchiveTest, VariantNestedDefaults) {
     const LoadYamlOptions param = GetParam();
     VariantStruct result{Variant4{DoubleStruct{.value = 22.0}}};
     const std::string doc = "doc: { value: !DoubleStruct {} }";
-    auto parse = [&]() { YamlReadArchive(Load(doc), param).Accept(&result); };
+    auto parse = [&]() {
+        YamlReadArchive(Load(doc), param).Accept(&result);
+    };
     if (param.allow_cpp_with_no_yaml) {
         EXPECT_NO_THROW(parse());
     } else {

@@ -98,15 +98,17 @@ private:
     Formula VisitConjunction(const Formula& f, const bool polarity) const {
         // NNF(f₁ ∧ ... ∨ fₙ)    = NNF(f₁) ∧ ... ∧ NNF(fₙ)
         // NNF(¬(f₁ ∧ ... ∨ fₙ)) = NNF(¬f₁) ∨ ... ∨ NNF(¬fₙ)
-        const set<Formula> new_operands{map(
-                get_operands(f), [this, &polarity](const Formula& formula) { return this->Visit(formula, polarity); })};
+        const set<Formula> new_operands{map(get_operands(f), [this, &polarity](const Formula& formula) {
+            return this->Visit(formula, polarity);
+        })};
         return polarity ? make_conjunction(new_operands) : make_disjunction(new_operands);
     }
     Formula VisitDisjunction(const Formula& f, const bool polarity) const {
         // NNF(f₁ ∨ ... ∨ fₙ)    = NNF(f₁) ∨ ... ∨ NNF(fₙ)
         // NNF(¬(f₁ ∨ ... ∨ fₙ)) = NNF(¬f₁) ∧ ... ∧ NNF(¬fₙ)
-        const set<Formula> new_operands{map(
-                get_operands(f), [this, &polarity](const Formula& formula) { return this->Visit(formula, polarity); })};
+        const set<Formula> new_operands{map(get_operands(f), [this, &polarity](const Formula& formula) {
+            return this->Visit(formula, polarity);
+        })};
         return polarity ? make_disjunction(new_operands) : make_conjunction(new_operands);
     }
     Formula VisitNegation(const Formula& f, const bool polarity) const {

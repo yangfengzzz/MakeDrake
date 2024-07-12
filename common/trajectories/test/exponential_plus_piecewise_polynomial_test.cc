@@ -52,7 +52,9 @@ void testSimpleCase() {
     EXPECT_EQ(expPlusPp.end_time(), breaks[1] + kShift);
 }
 
-GTEST_TEST(testExponentialPlusPiecewisePolynomial, BasicTest) { testSimpleCase<double>(); }
+GTEST_TEST(testExponentialPlusPiecewisePolynomial, BasicTest) {
+    testSimpleCase<double>();
+}
 
 }  // namespace
 }  // namespace trajectories

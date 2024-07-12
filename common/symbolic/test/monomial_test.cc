@@ -660,13 +660,19 @@ TEST_F(MonomialTest, ToMonomial7) {
 }
 
 // `2 * x` is not a monomial because of its coefficient `2`.
-TEST_F(MonomialTest, ToMonomialException1) { EXPECT_THROW(Monomial{2 * x_}, runtime_error); }
+TEST_F(MonomialTest, ToMonomialException1) {
+    EXPECT_THROW(Monomial{2 * x_}, runtime_error);
+}
 
 // `x + y` is not a monomial.
-TEST_F(MonomialTest, ToMonomialException2) { EXPECT_THROW(Monomial{x_ + y_}, runtime_error); }
+TEST_F(MonomialTest, ToMonomialException2) {
+    EXPECT_THROW(Monomial{x_ + y_}, runtime_error);
+}
 
 // `x / 2.0` is not a monomial.
-TEST_F(MonomialTest, ToMonomialException3) { EXPECT_THROW(Monomial{x_ / 2.0}, runtime_error); }
+TEST_F(MonomialTest, ToMonomialException3) {
+    EXPECT_THROW(Monomial{x_ / 2.0}, runtime_error);
+}
 
 // `x ^ -1` is not a monomial.
 TEST_F(MonomialTest, ToMonomialException4) {

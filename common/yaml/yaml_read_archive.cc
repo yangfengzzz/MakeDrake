@@ -220,11 +220,17 @@ void YamlReadArchive::ParseScalarImpl(const std::string& value, T* result) {
     }
 }
 
-void YamlReadArchive::ParseScalar(const std::string& value, bool* result) { ParseScalarImpl<bool>(value, result); }
+void YamlReadArchive::ParseScalar(const std::string& value, bool* result) {
+    ParseScalarImpl<bool>(value, result);
+}
 
-void YamlReadArchive::ParseScalar(const std::string& value, float* result) { ParseScalarImpl<float>(value, result); }
+void YamlReadArchive::ParseScalar(const std::string& value, float* result) {
+    ParseScalarImpl<float>(value, result);
+}
 
-void YamlReadArchive::ParseScalar(const std::string& value, double* result) { ParseScalarImpl<double>(value, result); }
+void YamlReadArchive::ParseScalar(const std::string& value, double* result) {
+    ParseScalarImpl<double>(value, result);
+}
 
 void YamlReadArchive::ParseScalar(const std::string& value, int32_t* result) {
     ParseScalarImpl<int32_t>(value, result);

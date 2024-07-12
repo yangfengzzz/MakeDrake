@@ -42,7 +42,9 @@ struct DoubleStruct {
 };
 
 // This is used only for EXPECT_EQ, not by any YAML operations.
-bool operator==(const DoubleStruct& a, const DoubleStruct& b) { return a.value == b.value; }
+bool operator==(const DoubleStruct& a, const DoubleStruct& b) {
+    return a.value == b.value;
+}
 
 struct StringStruct {
     template <typename Archive>
@@ -54,7 +56,9 @@ struct StringStruct {
 };
 
 // This is used only for EXPECT_EQ, not by any YAML operations.
-bool operator==(const StringStruct& a, const StringStruct& b) { return a.value == b.value; }
+bool operator==(const StringStruct& a, const StringStruct& b) {
+    return a.value == b.value;
+}
 
 struct AllScalarsStruct {
     template <typename Archive>

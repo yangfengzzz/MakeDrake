@@ -1,8 +1,7 @@
-#include <gtest/gtest.h>
-
 #include "common/autodiff.h"
 #include "common/eigen_types.h"
 #include "common/test_utilities/limit_malloc.h"
+#include <gtest/gtest.h>
 
 using Eigen::VectorXd;
 

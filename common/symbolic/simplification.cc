@@ -743,7 +743,9 @@ private:
 };
 
 // Unifies the expression `e` with the pattern `p`.
-std::optional<Substitution> Unify(const Pattern& p, const Expression& e) { return UnificationVisitor{}.Unify(p, e); }
+std::optional<Substitution> Unify(const Pattern& p, const Expression& e) {
+    return UnificationVisitor{}.Unify(p, e);
+}
 }  // namespace
 
 Rewriter MakeRuleRewriter(const RewritingRule& rule) {

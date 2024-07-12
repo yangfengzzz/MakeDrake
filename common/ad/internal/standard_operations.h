@@ -168,7 +168,9 @@ inline AutoDiff operator+(double a, AutoDiff b) {
 }
 
 /** Standard unary plus operator. */
-inline AutoDiff operator+(AutoDiff x) { return x; }
+inline AutoDiff operator+(AutoDiff x) {
+    return x;
+}
 
 /** Standard subtraction operator. */
 inline AutoDiff operator-(AutoDiff a, const AutoDiff& b) {
@@ -240,58 +242,94 @@ inline AutoDiff operator/(double a, const AutoDiff& b) {
 //@{
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator<(const AutoDiff& a, const AutoDiff& b) { return a.value() < b.value(); }
+inline bool operator<(const AutoDiff& a, const AutoDiff& b) {
+    return a.value() < b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator<=(const AutoDiff& a, const AutoDiff& b) { return a.value() <= b.value(); }
+inline bool operator<=(const AutoDiff& a, const AutoDiff& b) {
+    return a.value() <= b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator>(const AutoDiff& a, const AutoDiff& b) { return a.value() > b.value(); }
+inline bool operator>(const AutoDiff& a, const AutoDiff& b) {
+    return a.value() > b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator>=(const AutoDiff& a, const AutoDiff& b) { return a.value() >= b.value(); }
+inline bool operator>=(const AutoDiff& a, const AutoDiff& b) {
+    return a.value() >= b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator==(const AutoDiff& a, const AutoDiff& b) { return a.value() == b.value(); }
+inline bool operator==(const AutoDiff& a, const AutoDiff& b) {
+    return a.value() == b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator!=(const AutoDiff& a, const AutoDiff& b) { return a.value() != b.value(); }
+inline bool operator!=(const AutoDiff& a, const AutoDiff& b) {
+    return a.value() != b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator<(const AutoDiff& a, double b) { return a.value() < b; }
+inline bool operator<(const AutoDiff& a, double b) {
+    return a.value() < b;
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator<=(const AutoDiff& a, double b) { return a.value() <= b; }
+inline bool operator<=(const AutoDiff& a, double b) {
+    return a.value() <= b;
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator>(const AutoDiff& a, double b) { return a.value() > b; }
+inline bool operator>(const AutoDiff& a, double b) {
+    return a.value() > b;
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator>=(const AutoDiff& a, double b) { return a.value() >= b; }
+inline bool operator>=(const AutoDiff& a, double b) {
+    return a.value() >= b;
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator==(const AutoDiff& a, double b) { return a.value() == b; }
+inline bool operator==(const AutoDiff& a, double b) {
+    return a.value() == b;
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator!=(const AutoDiff& a, double b) { return a.value() != b; }
+inline bool operator!=(const AutoDiff& a, double b) {
+    return a.value() != b;
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator<(double a, const AutoDiff& b) { return a < b.value(); }
+inline bool operator<(double a, const AutoDiff& b) {
+    return a < b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator<=(double a, const AutoDiff& b) { return a <= b.value(); }
+inline bool operator<=(double a, const AutoDiff& b) {
+    return a <= b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator>(double a, const AutoDiff& b) { return a > b.value(); }
+inline bool operator>(double a, const AutoDiff& b) {
+    return a > b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator>=(double a, const AutoDiff& b) { return a >= b.value(); }
+inline bool operator>=(double a, const AutoDiff& b) {
+    return a >= b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator==(double a, const AutoDiff& b) { return a == b.value(); }
+inline bool operator==(double a, const AutoDiff& b) {
+    return a == b.value();
+}
 
 /** Standard comparison operator. Discards the derivatives. */
-inline bool operator!=(double a, const AutoDiff& b) { return a != b.value(); }
+inline bool operator!=(double a, const AutoDiff& b) {
+    return a != b.value();
+}
 
 //@}
 
@@ -507,15 +545,21 @@ AutoDiff nexttoward(AutoDiff from, long double to);
 
 /** ADL overload to mimic std::isfinite from <cmath>.
 Because the return type is `bool`, the derivatives are not preserved. */
-inline bool isfinite(const AutoDiff& x) { return std::isfinite(x.value()); }
+inline bool isfinite(const AutoDiff& x) {
+    return std::isfinite(x.value());
+}
 
 /** ADL overload to mimic std::isinf from <cmath>.
 Because the return type is `bool`, the derivatives are not preserved. */
-inline bool isinf(const AutoDiff& x) { return std::isinf(x.value()); }
+inline bool isinf(const AutoDiff& x) {
+    return std::isinf(x.value());
+}
 
 /** ADL overload to mimic std::isnan from <cmath>.
 Because the return type is `bool`, the derivatives are not preserved. */
-inline bool isnan(const AutoDiff& x) { return std::isnan(x.value()); }
+inline bool isnan(const AutoDiff& x) {
+    return std::isnan(x.value());
+}
 
 //@}
 

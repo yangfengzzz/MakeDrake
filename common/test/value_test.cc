@@ -7,12 +7,11 @@
 #include <type_traits>
 #include <vector>
 
-#include <gtest/gtest.h>
-
 #include "common/drake_copyable.h"
 #include "common/test_utilities/expect_no_throw.h"
 #include "common/test_utilities/expect_throws_message.h"
 #include "systems/framework/test_utilities/my_vector.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace test {

@@ -52,12 +52,16 @@ Expression NegateMultiplication(const Expression& e) {
 Expression::Expression(const Variable& var) : Expression{make_unique<ExpressionVar>(var)} {}
 
 // Constructs this taking ownership of the given call.
-Expression::Expression(std::unique_ptr<ExpressionCell> cell) { boxed_.SetSharedCell(cell.release()); }
+Expression::Expression(std::unique_ptr<ExpressionCell> cell) {
+    boxed_.SetSharedCell(cell.release());
+}
 
 // Implements the Expression(double) constructor when the constant is NaN.
 // Note that this uses the ExpressionNaN cell type to denote NaN, not a
 // constant NaN value in an ExpressionKind::Constant.
-void Expression::ConstructExpressionCellNaN() { *this = NaN(); }
+void Expression::ConstructExpressionCellNaN() {
+    *this = NaN();
+}
 
 ExpressionCell& Expression::mutable_cell() {
     ExpressionCell& result = const_cast<ExpressionCell&>(cell());
@@ -166,7 +170,9 @@ double Expression::Evaluate(RandomGenerator* const random_generator) const {
 
 Eigen::SparseMatrix<double> Evaluate(const Eigen::Ref<const Eigen::SparseMatrix<Expression>>& m,
                                      const Environment& env) {
-    return m.unaryExpr([&env](const Expression& e) { return e.Evaluate(env); });
+    return m.unaryExpr([&env](const Expression& e) {
+        return e.Evaluate(env);
+    });
 }
 
 Expression Expression::EvaluatePartial(const Environment& env) const {
@@ -282,7 +288,9 @@ Expression Expression::operator++(int) {
     return copy;
 }
 
-Expression operator+(const Expression& e) { return e; }
+Expression operator+(const Expression& e) {
+    return e;
+}
 
 void Expression::SubImpl(const Expression& rhs) {
     Expression& lhs = *this;
@@ -754,33 +762,57 @@ Expression uninterpreted_function(string name, vector<Expression> arguments) {
     return Expression{make_unique<ExpressionUninterpretedFunction>(std::move(name), std::move(arguments))};
 }
 
-const Variable& get_variable(const Expression& e) { return to_variable(e).get_variable(); }
-const Expression& get_argument(const Expression& e) { return to_unary(e).get_argument(); }
-const Expression& get_first_argument(const Expression& e) { return to_binary(e).get_first_argument(); }
-const Expression& get_second_argument(const Expression& e) { return to_binary(e).get_second_argument(); }
-double get_constant_in_addition(const Expression& e) { return to_addition(e).get_constant(); }
+const Variable& get_variable(const Expression& e) {
+    return to_variable(e).get_variable();
+}
+const Expression& get_argument(const Expression& e) {
+    return to_unary(e).get_argument();
+}
+const Expression& get_first_argument(const Expression& e) {
+    return to_binary(e).get_first_argument();
+}
+const Expression& get_second_argument(const Expression& e) {
+    return to_binary(e).get_second_argument();
+}
+double get_constant_in_addition(const Expression& e) {
+    return to_addition(e).get_constant();
+}
 const map<Expression, double>& get_expr_to_coeff_map_in_addition(const Expression& e) {
     return to_addition(e).get_expr_to_coeff_map();
 }
-double get_constant_in_multiplication(const Expression& e) { return to_multiplication(e).get_constant(); }
+double get_constant_in_multiplication(const Expression& e) {
+    return to_multiplication(e).get_constant();
+}
 const map<Expression, Expression>& get_base_to_exponent_map_in_multiplication(const Expression& e) {
     return to_multiplication(e).get_base_to_exponent_map();
 }
 
-const string& get_uninterpreted_function_name(const Expression& e) { return to_uninterpreted_function(e).get_name(); }
+const string& get_uninterpreted_function_name(const Expression& e) {
+    return to_uninterpreted_function(e).get_name();
+}
 
 const vector<Expression>& get_uninterpreted_function_arguments(const Expression& e) {
     return to_uninterpreted_function(e).get_arguments();
 }
 
-const Formula& get_conditional_formula(const Expression& e) { return to_if_then_else(e).get_conditional_formula(); }
+const Formula& get_conditional_formula(const Expression& e) {
+    return to_if_then_else(e).get_conditional_formula();
+}
 
-const Expression& get_then_expression(const Expression& e) { return to_if_then_else(e).get_then_expression(); }
+const Expression& get_then_expression(const Expression& e) {
+    return to_if_then_else(e).get_then_expression();
+}
 
-const Expression& get_else_expression(const Expression& e) { return to_if_then_else(e).get_else_expression(); }
+const Expression& get_else_expression(const Expression& e) {
+    return to_if_then_else(e).get_else_expression();
+}
 
-Expression operator+(const Variable& var) { return Expression{var}; }
-Expression operator-(const Variable& var) { return -Expression{var}; }
+Expression operator+(const Variable& var) {
+    return Expression{var};
+}
+Expression operator-(const Variable& var) {
+    return -Expression{var};
+}
 
 VectorX<Variable> GetVariableVector(const Eigen::Ref<const VectorX<Expression>>& evec) {
     VectorX<Variable> vec(evec.size());

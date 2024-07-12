@@ -1,7 +1,6 @@
-#include <gtest/gtest.h>
-
 #include "common/ad/auto_diff.h"
 #include "common/test_utilities/eigen_matrix_compare.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace ad {

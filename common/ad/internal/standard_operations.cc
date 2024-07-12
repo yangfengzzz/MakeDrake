@@ -257,9 +257,13 @@ AutoDiff pow(AutoDiff base_ad, const AutoDiff& exp_ad) {
     return result;
 }
 
-AutoDiff pow(double base, const AutoDiff& exp) { return pow(AutoDiff{base}, exp); }
+AutoDiff pow(double base, const AutoDiff& exp) {
+    return pow(AutoDiff{base}, exp);
+}
 
-AutoDiff pow(AutoDiff base, double exp) { return pow(std::move(base), AutoDiff{exp}); }
+AutoDiff pow(AutoDiff base, double exp) {
+    return pow(std::move(base), AutoDiff{exp});
+}
 
 AutoDiff sqrt(AutoDiff x) {
     // ∂/∂x x¹ᐟ² = ½x⁻¹ᐟ² = 1/(2x¹ᐟ²)
@@ -293,7 +297,9 @@ AutoDiff nexttoward(AutoDiff from, long double to) {
     return from;
 }
 
-std::ostream& operator<<(std::ostream& s, const AutoDiff& x) { return s << fmt::format("{}", x.value()); }
+std::ostream& operator<<(std::ostream& s, const AutoDiff& x) {
+    return s << fmt::format("{}", x.value());
+}
 
 }  // namespace ad
 }  // namespace drake

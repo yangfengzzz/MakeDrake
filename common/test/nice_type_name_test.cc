@@ -5,12 +5,11 @@
 #include <utility>
 #include <vector>
 
-#include <Eigen/Dense>
-#include <gtest/gtest.h>
-
 #include "common/autodiff.h"
 #include "common/identifier.h"
 #include "common/nice_type_name_override.h"
+#include <Eigen/Dense>
+#include <gtest/gtest.h>
 
 using std::string;
 
@@ -143,7 +142,9 @@ GTEST_TEST(NiceTypeNameTest, Enum) {
               "drake::(anonymous)::ForTesting::MyEnumClass");
 }
 
-GTEST_TEST(NiceTypeNameTest, IdentifierTemplate) { EXPECT_EQ(NiceTypeName::Get<AId>(), "drake::(anonymous)::AId"); }
+GTEST_TEST(NiceTypeNameTest, IdentifierTemplate) {
+    EXPECT_EQ(NiceTypeName::Get<AId>(), "drake::(anonymous)::AId");
+}
 
 // Test the type_info form of NiceTypeName::Get().
 GTEST_TEST(NiceTypeNameTest, FromTypeInfo) {

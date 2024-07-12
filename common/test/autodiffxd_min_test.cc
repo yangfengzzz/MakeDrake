@@ -1,6 +1,6 @@
 /* clang-format off to disable clang-format-includes */
-#include "common/autodiff.h"
 #include "common/ad/test/standard_operations_test.h"
+#include "common/autodiff.h"
 /* clang-format on */
 
 #include "common/test_utilities/eigen_matrix_compare.h"

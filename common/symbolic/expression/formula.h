@@ -206,8 +206,9 @@ public:
     /** Implements the @ref hash_append concept. */
     template <class HashAlgorithm>
     friend void hash_append(HashAlgorithm& hasher, const Formula& item) noexcept {
-        DelegatingHasher delegating_hasher(
-                [&hasher](const void* data, const size_t length) { return hasher(data, length); });
+        DelegatingHasher delegating_hasher([&hasher](const void* data, const size_t length) {
+            return hasher(data, length);
+        });
         item.HashAppend(&delegating_hasher);
     }
 
@@ -523,12 +524,16 @@ struct RelationalOpTraits {
 /// Returns @p f1 ∧ @p f2.
 /// Note that this function returns a `Formula` while
 /// `std::logical_and<Formula>{}` returns a bool.
-inline Formula logic_and(const Formula& f1, const Formula& f2) { return f1 && f2; }
+inline Formula logic_and(const Formula& f1, const Formula& f2) {
+    return f1 && f2;
+}
 
 /// Returns @p f1 ∨ @p f2.
 /// Note that this function returns a `Formula` while
 /// `std::logical_or<Formula>{}` returns a bool.
-inline Formula logic_or(const Formula& f1, const Formula& f2) { return f1 || f2; }
+inline Formula logic_or(const Formula& f1, const Formula& f2) {
+    return f1 || f2;
+}
 }  // namespace internal
 
 /// Returns an Eigen array of symbolic formulas where each element includes
@@ -580,7 +585,9 @@ typename std::enable_if_t<std::is_same_v<typename Eigen::internal::traits<Derive
                                   std::is_same_v<decltype(typename Derived::Scalar() == ScalarType()), Formula>,
                           Eigen::Array<Formula, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>>
 operator==(const Derived& a, const ScalarType& v) {
-    return a.unaryExpr([&v](const typename Derived::Scalar& x) { return x == v; });
+    return a.unaryExpr([&v](const typename Derived::Scalar& x) {
+        return x == v;
+    });
 }
 
 /// Returns an Eigen array of symbolic formulas where each element includes
@@ -602,7 +609,9 @@ typename std::enable_if_t<std::is_same_v<typename Eigen::internal::traits<Derive
                                   std::is_same_v<decltype(ScalarType() == typename Derived::Scalar()), Formula>,
                           Eigen::Array<Formula, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>>
 operator==(const ScalarType& v, const Derived& a) {
-    return a.unaryExpr([&v](const typename Derived::Scalar& x) { return v == x; });
+    return a.unaryExpr([&v](const typename Derived::Scalar& x) {
+        return v == x;
+    });
 }
 
 /// Returns an Eigen array of symbolic formulas where each element includes
@@ -629,7 +638,9 @@ typename std::enable_if_t<std::is_same_v<typename Eigen::internal::traits<Derive
                                   std::is_same_v<decltype(typename Derived::Scalar() <= ScalarType()), Formula>,
                           Eigen::Array<Formula, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>>
 operator<=(const Derived& a, const ScalarType& v) {
-    return a.unaryExpr([&v](const typename Derived::Scalar& x) { return x <= v; });
+    return a.unaryExpr([&v](const typename Derived::Scalar& x) {
+        return x <= v;
+    });
 }
 
 /// Returns an Eigen array of symbolic formulas where each element includes
@@ -641,7 +652,9 @@ typename std::enable_if_t<std::is_same_v<typename Eigen::internal::traits<Derive
                                   std::is_same_v<decltype(ScalarType() <= typename Derived::Scalar()), Formula>,
                           Eigen::Array<Formula, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>>
 operator<=(const ScalarType& v, const Derived& a) {
-    return a.unaryExpr([&v](const typename Derived::Scalar& x) { return v <= x; });
+    return a.unaryExpr([&v](const typename Derived::Scalar& x) {
+        return v <= x;
+    });
 }
 
 /// Returns an Eigen array of symbolic formulas where each element includes
@@ -668,7 +681,9 @@ typename std::enable_if_t<std::is_same_v<typename Eigen::internal::traits<Derive
                                   std::is_same_v<decltype(typename Derived::Scalar() < ScalarType()), Formula>,
                           Eigen::Array<Formula, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>>
 operator<(const Derived& a, const ScalarType& v) {
-    return a.unaryExpr([&v](const typename Derived::Scalar& x) { return x < v; });
+    return a.unaryExpr([&v](const typename Derived::Scalar& x) {
+        return x < v;
+    });
 }
 
 /// Returns an Eigen array of symbolic formulas where each element includes
@@ -680,7 +695,9 @@ typename std::enable_if_t<std::is_same_v<typename Eigen::internal::traits<Derive
                                   std::is_same_v<decltype(ScalarType() < typename Derived::Scalar()), Formula>,
                           Eigen::Array<Formula, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>>
 operator<(const ScalarType& v, const Derived& a) {
-    return a.unaryExpr([&v](const typename Derived::Scalar& x) { return v < x; });
+    return a.unaryExpr([&v](const typename Derived::Scalar& x) {
+        return v < x;
+    });
 }
 
 /// Returns an Eigen array of symbolic formulas where each element includes
@@ -707,7 +724,9 @@ typename std::enable_if_t<std::is_same_v<typename Eigen::internal::traits<Derive
                                   std::is_same_v<decltype(typename Derived::Scalar() >= ScalarType()), Formula>,
                           Eigen::Array<Formula, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>>
 operator>=(const Derived& a, const ScalarType& v) {
-    return a.unaryExpr([&v](const typename Derived::Scalar& x) { return x >= v; });
+    return a.unaryExpr([&v](const typename Derived::Scalar& x) {
+        return x >= v;
+    });
 }
 
 /// Returns an Eigen array of symbolic formulas where each element includes
@@ -753,7 +772,9 @@ typename std::enable_if_t<std::is_same_v<typename Eigen::internal::traits<Derive
                                   std::is_same_v<decltype(typename Derived::Scalar() > ScalarType()), Formula>,
                           Eigen::Array<Formula, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>>
 operator>(const Derived& a, const ScalarType& v) {
-    return a.unaryExpr([&v](const typename Derived::Scalar& x) { return x > v; });
+    return a.unaryExpr([&v](const typename Derived::Scalar& x) {
+        return x > v;
+    });
 }
 
 /// Returns an Eigen array of symbolic formulas where each element includes
@@ -799,7 +820,9 @@ typename std::enable_if_t<std::is_same_v<typename Eigen::internal::traits<Derive
                                   std::is_same_v<decltype(typename Derived::Scalar() != ScalarType()), Formula>,
                           Eigen::Array<Formula, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>>
 operator!=(const Derived& a, const ScalarType& v) {
-    return a.unaryExpr([&v](const typename Derived::Scalar& x) { return x != v; });
+    return a.unaryExpr([&v](const typename Derived::Scalar& x) {
+        return x != v;
+    });
 }
 
 /// Returns an Eigen array of symbolic formulas where each element includes
@@ -811,7 +834,9 @@ typename std::enable_if_t<std::is_same_v<typename Eigen::internal::traits<Derive
                                   std::is_same_v<decltype(ScalarType() != typename Derived::Scalar()), Formula>,
                           Eigen::Array<Formula, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>>
 operator!=(const ScalarType& v, const Derived& a) {
-    return a.unaryExpr([&v](const typename Derived::Scalar& x) { return v != x; });
+    return a.unaryExpr([&v](const typename Derived::Scalar& x) {
+        return v != x;
+    });
 }
 
 /// Returns a symbolic formula checking if two matrices @p m1 and @p m2 are

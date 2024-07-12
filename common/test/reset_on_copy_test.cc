@@ -2,9 +2,8 @@
 
 #include <utility>
 
-#include <gtest/gtest.h>
-
 #include "common/drake_copyable.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace {
@@ -12,7 +11,9 @@ namespace {
 // A function that helps force an implicit conversion operator to int; without
 // it, EXPECT_EQ is underspecified whether we are unwrapping the first argument
 // or converting the second.
-int ForceInt(int value) { return value; }
+int ForceInt(int value) {
+    return value;
+}
 
 // The example from the documentation, fleshed out a little.
 class Foo {
@@ -174,7 +175,9 @@ GTEST_TEST(ResetOnCopyTest, Copy) {
 
 // We need to indirect self-move-assign through this function; doing it
 // directly in the test code generates a compiler warning.
-void MoveAssign(reset_on_copy<int>* target, reset_on_copy<int>* donor) { *target = std::move(*donor); }
+void MoveAssign(reset_on_copy<int>* target, reset_on_copy<int>* donor) {
+    *target = std::move(*donor);
+}
 
 // Move construction and assignment should preserve the current value in the
 // destination, and reset the source to be value-initialized. However,

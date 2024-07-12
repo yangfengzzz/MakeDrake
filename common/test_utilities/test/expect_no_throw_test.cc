@@ -8,9 +8,13 @@ namespace {
 
 void DoesNotThrow() {}
 
-void DoesThrow() { throw std::runtime_error("Big time fail"); }
+void DoesThrow() {
+    throw std::runtime_error("Big time fail");
+}
 
-void DoesThrowCrazy() { throw 42; }
+void DoesThrowCrazy() {
+    throw 42;
+}
 
 constexpr char failure_message[] =
         R"(Expected: Does not throw:

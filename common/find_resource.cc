@@ -25,7 +25,9 @@ namespace fs = std::filesystem;
 
 using Result = FindResourceResult;
 
-std::optional<string> Result::get_absolute_path() const { return absolute_path_; }
+std::optional<string> Result::get_absolute_path() const {
+    return absolute_path_;
+}
 
 string Result::get_absolute_path_or_throw() const {
     // If we have a path, return it.
@@ -57,7 +59,9 @@ std::optional<string> Result::get_error_message() const {
     return string("No resource was requested (empty result)");
 }
 
-string Result::get_resource_path() const { return resource_path_; }
+string Result::get_resource_path() const {
+    return resource_path_;
+}
 
 Result Result::make_success(string resource_path, string absolute_path) {
     DRAKE_THROW_UNLESS(!resource_path.empty());
@@ -107,7 +111,9 @@ namespace {
 const char* const kSentinelRelpath = "drake/.drake-find_resource-sentinel";
 
 // Returns true iff the path is relative (not absolute nor empty).
-bool IsRelativePath(const string& path) { return !path.empty() && (path[0] != '/'); }
+bool IsRelativePath(const string& path) {
+    return !path.empty() && (path[0] != '/');
+}
 
 // Taking `root` to be Drake's resource root, confirm that the sentinel file
 // exists and return the found resource_path (or an error if either the

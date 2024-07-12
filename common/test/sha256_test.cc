@@ -2,16 +2,17 @@
 
 #include <fstream>
 
-#include <gtest/gtest.h>
-
 #include "common/drake_throw.h"
 #include "common/temp_directory.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace {
 
 // Our default constructor produces a dummy hash.
-GTEST_TEST(Sha256Test, Default) { EXPECT_EQ(Sha256{}.to_string(), std::string(64, '0')); }
+GTEST_TEST(Sha256Test, Default) {
+    EXPECT_EQ(Sha256{}.to_string(), std::string(64, '0'));
+}
 
 // Since we're just a tiny wrapper around picosha, we don't need much testing of
 // the actual checksum math. We'll just spot-test a well-known value: one of the

@@ -318,7 +318,7 @@ constexpr bool hash_template_argument_from_pretty_func(
     const char* p = pretty;
     for (int n = 0; n <= which_argument; ++n) {
         for (; (*p != '='); ++p) {
-        }     // Advance to the '=' that we want.
+        }  // Advance to the '=' that we want.
         ++p;  // Advance to ' '.
         ++p;  // Advance to the typename we want.
     }

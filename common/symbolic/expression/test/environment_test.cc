@@ -35,7 +35,9 @@ TEST_F(EnvironmentTest, EmptySize) {
     EXPECT_EQ(env2.size(), 3u);
 }
 
-TEST_F(EnvironmentTest, InitWithNan) { EXPECT_THROW((Environment{{var_x_, 10}, {var_y_, NAN}}), runtime_error); }
+TEST_F(EnvironmentTest, InitWithNan) {
+    EXPECT_THROW((Environment{{var_x_, 10}, {var_y_, NAN}}), runtime_error);
+}
 
 TEST_F(EnvironmentTest, InitializerListWithoutValues) {
     const Environment env{var_x_, var_y_, var_z_};

@@ -28,7 +28,9 @@ namespace {
 [[maybe_unused]] void VoidFunction() {}
 }  // namespace
 
-GTEST_TEST(DrakeAssertTest, AssertVoidCompilesOkay) { DRAKE_ASSERT_VOID(VoidFunction()); }
+GTEST_TEST(DrakeAssertTest, AssertVoidCompilesOkay) {
+    DRAKE_ASSERT_VOID(VoidFunction());
+}
 
 // Note that Drake's styleguide forbids death tests, but our only choice here
 // is to use death tests because our implementation is documented to abort().

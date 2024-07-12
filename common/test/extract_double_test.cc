@@ -2,10 +2,9 @@
 
 #include <stdexcept>
 
+#include "common/test_utilities/eigen_matrix_compare.h"
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
-
-#include "common/test_utilities/eigen_matrix_compare.h"
 
 namespace drake {
 namespace {

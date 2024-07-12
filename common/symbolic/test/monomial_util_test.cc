@@ -88,8 +88,9 @@ GTEST_TEST(MonomialBasis, TestMultipleVariables) {
     EXPECT_EQ(monomials.rows(), 120);
     // Compute the total degree of a monomial `m` in the variables `var`.
     auto degree_in_vars = [](const Monomial& m, const Variables& vars) {
-        return std::accumulate(vars.begin(), vars.end(), 0,
-                               [&m](int degree, const Variable& v) { return degree + m.degree(v); });
+        return std::accumulate(vars.begin(), vars.end(), 0, [&m](int degree, const Variable& v) {
+            return degree + m.degree(v);
+        });
     };
     for (int i = 0; i < monomials.rows(); ++i) {
         if (i != 0) {

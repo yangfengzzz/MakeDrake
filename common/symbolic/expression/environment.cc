@@ -90,7 +90,9 @@ string Environment::to_string() const {
     return oss.str();
 }
 
-Environment::mapped_type& Environment::operator[](const key_type& key) { return map_[key]; }
+Environment::mapped_type& Environment::operator[](const key_type& key) {
+    return map_[key];
+}
 
 const Environment::mapped_type& Environment::operator[](const key_type& key) const {
     if (!map_.contains(key)) {

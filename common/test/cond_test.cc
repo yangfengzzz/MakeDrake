@@ -1,8 +1,7 @@
 #include "common/cond.h"
 
-#include <gtest/gtest.h>
-
 #include "common/double_overloads.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace {

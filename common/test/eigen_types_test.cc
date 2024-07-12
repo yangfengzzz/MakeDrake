@@ -1,9 +1,8 @@
 #include "common/eigen_types.h"
 
-#include <gtest/gtest.h>
-
 #include "common/nice_type_name.h"
 #include "common/test_utilities/expect_no_throw.h"
+#include <gtest/gtest.h>
 
 using Eigen::Array33d;
 using Eigen::Array3d;
@@ -41,14 +40,18 @@ GTEST_TEST(EigenTypesTest, TraitsPositive) {
 }
 
 // SFINAE check.
-bool IsEigen(...) { return false; }
+bool IsEigen(...) {
+    return false;
+}
 template <typename T, typename Cond = typename std::enable_if_t<is_eigen_type<T>::value>>
 bool IsEigen(const T&) {
     return true;
 }
 
 // SFINAE check with edge case described below.
-bool IsEigenOfDouble(...) { return false; }
+bool IsEigenOfDouble(...) {
+    return false;
+}
 template <typename T, typename Cond = typename std::enable_if_t<is_eigen_scalar_same<T, double>::value>>
 bool IsEigenOfDouble(const T&) {
     return true;
@@ -134,7 +137,9 @@ GTEST_TEST(EigenTypesTest, EigenPtr_Null) {
     DRAKE_EXPECT_NO_THROW(*ptr);
 }
 
-bool ptr_optional_arg(EigenPtr<MatrixXd> arg = nullptr) { return arg; }
+bool ptr_optional_arg(EigenPtr<MatrixXd> arg = nullptr) {
+    return arg;
+}
 
 GTEST_TEST(EigenTypesTest, EigenPtr_OptionalArg) {
     EXPECT_FALSE(ptr_optional_arg());
@@ -143,10 +148,14 @@ GTEST_TEST(EigenTypesTest, EigenPtr_OptionalArg) {
 }
 
 // Sets M(i, j) = c.
-void set(EigenPtr<MatrixXd> M, const int i, const int j, const double c) { (*M)(i, j) = c; }
+void set(EigenPtr<MatrixXd> M, const int i, const int j, const double c) {
+    (*M)(i, j) = c;
+}
 
 // Returns M(i, j).
-double get(const EigenPtr<const MatrixXd> M, const int i, const int j) { return M->coeff(i, j); }
+double get(const EigenPtr<const MatrixXd> M, const int i, const int j) {
+    return M->coeff(i, j);
+}
 
 GTEST_TEST(EigenTypesTest, EigenPtr) {
     Eigen::MatrixXd M1 = Eigen::MatrixXd::Zero(3, 3);

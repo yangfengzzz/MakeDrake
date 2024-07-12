@@ -4,10 +4,9 @@
 #include <filesystem>
 #include <string>
 
+#include "common/drake_assert.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
-#include "common/drake_assert.h"
 
 namespace drake {
 namespace {

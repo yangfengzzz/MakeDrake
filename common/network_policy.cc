@@ -11,8 +11,9 @@ namespace internal {
 namespace {
 
 bool IsAsciiLowercaseAlphaNumeric(std::string_view word) {
-    return std::all_of(word.begin(), word.end(),
-                       [](char ch) { return ('a' <= ch && ch <= 'z') || ('0' <= ch && ch <= '9') || (ch == '_'); });
+    return std::all_of(word.begin(), word.end(), [](char ch) {
+        return ('a' <= ch && ch <= 'z') || ('0' <= ch && ch <= '9') || (ch == '_');
+    });
 }
 
 }  // namespace

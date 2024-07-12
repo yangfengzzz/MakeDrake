@@ -324,8 +324,9 @@ public:
     /** Implements the @ref hash_append concept. */
     template <class HashAlgorithm>
     friend void hash_append(HashAlgorithm& hasher, const Expression& item) noexcept {
-        DelegatingHasher delegating_hasher(
-                [&hasher](const void* data, const size_t length) { return hasher(data, length); });
+        DelegatingHasher delegating_hasher([&hasher](const void* data, const size_t length) {
+            return hasher(data, length);
+        });
         item.HashAppend(&delegating_hasher);
     }
 
@@ -660,7 +661,9 @@ void swap(Expression& a, Expression& b);
 std::ostream& operator<<(std::ostream& os, const Expression& e);
 
 /** Checks if @p e is a constant expression. */
-inline bool is_constant(const Expression& e) { return e.boxed_.is_constant(); }
+inline bool is_constant(const Expression& e) {
+    return e.boxed_.is_constant();
+}
 /** Checks if @p e is a constant expression representing @p v. */
 inline bool is_constant(const Expression& e, double v) {
     // N.B. This correctly returns `false` even when comparing e's cell against
@@ -668,63 +671,121 @@ inline bool is_constant(const Expression& e, double v) {
     return e.boxed_.constant_or_nan() == v;
 }
 /** Checks if @p e is 0.0. */
-inline bool is_zero(const Expression& e) { return is_constant(e, 0.0); }
+inline bool is_zero(const Expression& e) {
+    return is_constant(e, 0.0);
+}
 /** Checks if @p e is 1.0. */
-inline bool is_one(const Expression& e) { return is_constant(e, 1.0); }
+inline bool is_one(const Expression& e) {
+    return is_constant(e, 1.0);
+}
 /** Checks if @p e is -1.0. */
-inline bool is_neg_one(const Expression& e) { return is_constant(e, -1.0); }
+inline bool is_neg_one(const Expression& e) {
+    return is_constant(e, -1.0);
+}
 /** Checks if @p e is 2.0. */
-inline bool is_two(const Expression& e) { return is_constant(e, 2.0); }
+inline bool is_two(const Expression& e) {
+    return is_constant(e, 2.0);
+}
 /** Checks if @p e is NaN. */
-inline bool is_nan(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::NaN>(); }
+inline bool is_nan(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::NaN>();
+}
 /** Checks if @p e is a variable expression. */
-inline bool is_variable(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Var>(); }
+inline bool is_variable(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Var>();
+}
 /** Checks if @p e is an addition expression. */
-inline bool is_addition(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Add>(); }
+inline bool is_addition(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Add>();
+}
 /** Checks if @p e is a multiplication expression. */
-inline bool is_multiplication(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Mul>(); }
+inline bool is_multiplication(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Mul>();
+}
 /** Checks if @p e is a division expression. */
-inline bool is_division(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Div>(); }
+inline bool is_division(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Div>();
+}
 /** Checks if @p e is a log expression. */
-inline bool is_log(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Log>(); }
+inline bool is_log(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Log>();
+}
 /** Checks if @p e is an abs expression. */
-inline bool is_abs(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Abs>(); }
+inline bool is_abs(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Abs>();
+}
 /** Checks if @p e is an exp expression. */
-inline bool is_exp(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Exp>(); }
+inline bool is_exp(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Exp>();
+}
 /** Checks if @p e is a square-root expression. */
-inline bool is_sqrt(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Sqrt>(); }
+inline bool is_sqrt(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Sqrt>();
+}
 /** Checks if @p e is a power-function expression. */
-inline bool is_pow(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Pow>(); }
+inline bool is_pow(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Pow>();
+}
 /** Checks if @p e is a sine expression. */
-inline bool is_sin(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Sin>(); }
+inline bool is_sin(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Sin>();
+}
 /** Checks if @p e is a cosine expression. */
-inline bool is_cos(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Cos>(); }
+inline bool is_cos(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Cos>();
+}
 /** Checks if @p e is a tangent expression. */
-inline bool is_tan(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Tan>(); }
+inline bool is_tan(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Tan>();
+}
 /** Checks if @p e is an arcsine expression. */
-inline bool is_asin(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Asin>(); }
+inline bool is_asin(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Asin>();
+}
 /** Checks if @p e is an arccosine expression. */
-inline bool is_acos(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Acos>(); }
+inline bool is_acos(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Acos>();
+}
 /** Checks if @p e is an arctangent expression. */
-inline bool is_atan(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Atan>(); }
+inline bool is_atan(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Atan>();
+}
 /** Checks if @p e is an arctangent2 expression. */
-inline bool is_atan2(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Atan2>(); }
+inline bool is_atan2(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Atan2>();
+}
 /** Checks if @p e is a hyperbolic-sine expression. */
-inline bool is_sinh(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Sinh>(); }
+inline bool is_sinh(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Sinh>();
+}
 /** Checks if @p e is a hyperbolic-cosine expression. */
-inline bool is_cosh(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Cosh>(); }
+inline bool is_cosh(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Cosh>();
+}
 /** Checks if @p e is a hyperbolic-tangent expression. */
-inline bool is_tanh(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Tanh>(); }
+inline bool is_tanh(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Tanh>();
+}
 /** Checks if @p e is a min expression. */
-inline bool is_min(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Min>(); }
+inline bool is_min(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Min>();
+}
 /** Checks if @p e is a max expression. */
-inline bool is_max(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Max>(); }
+inline bool is_max(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Max>();
+}
 /** Checks if @p e is a ceil expression. */
-inline bool is_ceil(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Ceil>(); }
+inline bool is_ceil(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Ceil>();
+}
 /** Checks if @p e is a floor expression. */
-inline bool is_floor(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::Floor>(); }
+inline bool is_floor(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::Floor>();
+}
 /** Checks if @p e is an if-then-else expression. */
-inline bool is_if_then_else(const Expression& e) { return e.boxed_.is_kind<ExpressionKind::IfThenElse>(); }
+inline bool is_if_then_else(const Expression& e) {
+    return e.boxed_.is_kind<ExpressionKind::IfThenElse>();
+}
 /** Checks if @p e is an uninterpreted-function expression. */
 inline bool is_uninterpreted_function(const Expression& e) {
     return e.boxed_.is_kind<ExpressionKind::UninterpretedFunction>();
@@ -733,7 +794,9 @@ inline bool is_uninterpreted_function(const Expression& e) {
 /** Returns the constant value of the constant expression @p e.
  *  \pre{@p e is a constant expression.}
  */
-inline double get_constant_value(const Expression& e) { return e.boxed_.constant(); }
+inline double get_constant_value(const Expression& e) {
+    return e.boxed_.constant();
+}
 /** Returns the embedded variable in the variable expression @p e.
  *  \pre{@p e is a variable expression.}
  */
@@ -1453,14 +1516,17 @@ std::enable_if_t<std::is_same_v<typename Derived::Scalar, Expression>, MatrixLik
     // ubuntu).  Previously the implementation used `auto`, and placed  an `
     // .eval()` at the end to prevent lazy evaluation.
     if (random_generator == nullptr) {
-        return m.unaryExpr([&env](const Expression& e) { return e.Evaluate(env); });
+        return m.unaryExpr([&env](const Expression& e) {
+            return e.Evaluate(env);
+        });
     } else {
         // Construct an environment by extending `env` by sampling values for the
         // random variables in `m` which are unassigned in `env`.
         const Environment env_with_random_variables{
                 PopulateRandomVariables(env, GetDistinctVariables(m), random_generator)};
-        return m.unaryExpr(
-                [&env_with_random_variables](const Expression& e) { return e.Evaluate(env_with_random_variables); });
+        return m.unaryExpr([&env_with_random_variables](const Expression& e) {
+            return e.Evaluate(env_with_random_variables);
+        });
     }
 }
 
@@ -1482,7 +1548,9 @@ MatrixLikewise<Expression, Derived> Substitute(const Eigen::MatrixBase<Derived>&
     static_assert(std::is_same_v<typename Derived::Scalar, Expression>, "Substitute only accepts a symbolic matrix.");
     // Note that the return type is written out explicitly to help gcc 5 (on
     // ubuntu).
-    return m.unaryExpr([&subst](const Expression& e) { return e.Substitute(subst); });
+    return m.unaryExpr([&subst](const Expression& e) {
+        return e.Substitute(subst);
+    });
 }
 
 /// Substitutes @p var with @p e in a symbolic matrix @p m.
@@ -1577,7 +1645,11 @@ template <typename Derived>
 typename std::enable_if_t<std::is_same_v<typename Derived::Scalar, symbolic::Expression>,
                           MatrixLikewise<double, Derived>>
 ExtractDoubleOrThrow(const Eigen::MatrixBase<Derived>& matrix) {
-    return matrix.unaryExpr([](const typename Derived::Scalar& value) { return ExtractDoubleOrThrow(value); }).eval();
+    return matrix
+            .unaryExpr([](const typename Derived::Scalar& value) {
+                return ExtractDoubleOrThrow(value);
+            })
+            .eval();
 }
 
 /*

@@ -25,9 +25,13 @@ std::string DiagnosticDetail::Format(const std::string& severity) const {
     return ss.str();
 }
 
-std::string DiagnosticDetail::FormatWarning() const { return Format("warning"); }
+std::string DiagnosticDetail::FormatWarning() const {
+    return Format("warning");
+}
 
-std::string DiagnosticDetail::FormatError() const { return Format("error"); }
+std::string DiagnosticDetail::FormatError() const {
+    return Format("error");
+}
 
 void DiagnosticPolicy::SetActionForWarnings(std::function<void(const DiagnosticDetail&)> functor) {
     on_warning_ = std::move(functor);
@@ -49,7 +53,9 @@ void DiagnosticPolicy::Error(std::string message) const {
     this->Error(d);
 }
 
-void DiagnosticPolicy::WarningDefaultAction(const DiagnosticDetail& detail) { log()->warn(detail.FormatWarning()); }
+void DiagnosticPolicy::WarningDefaultAction(const DiagnosticDetail& detail) {
+    log()->warn(detail.FormatWarning());
+}
 
 void DiagnosticPolicy::ErrorDefaultAction(const DiagnosticDetail& detail) {
     throw std::runtime_error(detail.FormatError());

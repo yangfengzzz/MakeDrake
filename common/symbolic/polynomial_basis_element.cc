@@ -30,9 +30,10 @@ std::map<Variable, int> ToVarToDegreeMap(const Eigen::Ref<const VectorX<Variable
 }  // namespace
 
 PolynomialBasisElement::PolynomialBasisElement(const std::map<Variable, int>& var_to_degree_map) {
-    total_degree_ = std::accumulate(
-            var_to_degree_map.begin(), var_to_degree_map.end(), 0,
-            [](const int degree, const std::pair<const Variable, int>& p) { return degree + p.second; });
+    total_degree_ = std::accumulate(var_to_degree_map.begin(), var_to_degree_map.end(), 0,
+                                    [](const int degree, const std::pair<const Variable, int>& p) {
+                                        return degree + p.second;
+                                    });
     for (const auto& p : var_to_degree_map) {
         if (p.second > 0) {
             var_to_degree_map_.insert(p);
@@ -98,7 +99,9 @@ bool PolynomialBasisElement::EqualTo(const PolynomialBasisElement& other) const 
     return true;
 }
 
-bool PolynomialBasisElement::operator!=(const PolynomialBasisElement& other) const { return !(*this == other); }
+bool PolynomialBasisElement::operator!=(const PolynomialBasisElement& other) const {
+    return !(*this == other);
+}
 
 bool PolynomialBasisElement::lexicographical_compare(const PolynomialBasisElement& other) const {
     DRAKE_ASSERT(typeid(*this) == typeid(other));
@@ -126,7 +129,9 @@ bool PolynomialBasisElement::lexicographical_compare(const PolynomialBasisElemen
             });
 }
 
-symbolic::Expression PolynomialBasisElement::ToExpression() const { return DoToExpression(); }
+symbolic::Expression PolynomialBasisElement::ToExpression() const {
+    return DoToExpression();
+}
 
 void PolynomialBasisElement::DoEvaluatePartial(const Environment& env,
                                                double* coeff,

@@ -30,9 +30,13 @@ double Deterministic::Sample(drake::RandomGenerator* generator) const {
     return value;
 }
 
-double Deterministic::Mean() const { return value; }
+double Deterministic::Mean() const {
+    return value;
+}
 
-Expression Deterministic::ToSymbolic() const { return value; }
+Expression Deterministic::ToSymbolic() const {
+    return value;
+}
 
 Gaussian::Gaussian() {}
 
@@ -45,7 +49,9 @@ double Gaussian::Sample(drake::RandomGenerator* generator) const {
     return distribution(*generator);
 }
 
-double Gaussian::Mean() const { return mean; }
+double Gaussian::Mean() const {
+    return mean;
+}
 
 Expression Gaussian::ToSymbolic() const {
     std::normal_distribution<Expression> distribution(mean, stddev);
@@ -63,7 +69,9 @@ double Uniform::Sample(drake::RandomGenerator* generator) const {
     return distribution(*generator);
 }
 
-double Uniform::Mean() const { return (min + max) / 2.0; }
+double Uniform::Mean() const {
+    return (min + max) / 2.0;
+}
 
 Expression Uniform::ToSymbolic() const {
     std::uniform_real_distribution<Expression> distribution(min, max);
@@ -133,9 +141,13 @@ double Sample(const DistributionVariant& var, drake::RandomGenerator* generator)
     return ToDistribution(var)->Sample(generator);
 }
 
-double Mean(const DistributionVariant& var) { return ToDistribution(var)->Mean(); }
+double Mean(const DistributionVariant& var) {
+    return ToDistribution(var)->Mean();
+}
 
-Expression ToSymbolic(const DistributionVariant& var) { return ToDistribution(var)->ToSymbolic(); }
+Expression ToSymbolic(const DistributionVariant& var) {
+    return ToDistribution(var)->ToSymbolic();
+}
 
 Eigen::VectorXd Sample(const std::vector<DistributionVariant>& vec, drake::RandomGenerator* generator) {
     Eigen::VectorXd result(vec.size());
@@ -163,11 +175,21 @@ drake::VectorX<Expression> ToSymbolic(const std::vector<DistributionVariant>& ve
 
 bool IsDeterministic(const DistributionVariant& var) {
     return std::visit<bool>(overloaded{
-                                    [](const double&) { return true; },
-                                    [](const Deterministic&) { return true; },
-                                    [](const Gaussian& arg) { return arg.stddev == 0.0; },
-                                    [](const Uniform& arg) { return arg.min == arg.max; },
-                                    [](const UniformDiscrete& arg) { return arg.values.size() == 1; },
+                                    [](const double&) {
+                                        return true;
+                                    },
+                                    [](const Deterministic&) {
+                                        return true;
+                                    },
+                                    [](const Gaussian& arg) {
+                                        return arg.stddev == 0.0;
+                                    },
+                                    [](const Uniform& arg) {
+                                        return arg.min == arg.max;
+                                    },
+                                    [](const UniformDiscrete& arg) {
+                                        return arg.values.size() == 1;
+                                    },
                             },
                             var);
 }
@@ -326,8 +348,12 @@ unique_ptr<DistributionVector> ToDistributionVector(const DistributionVectorVari
                     [](const DeterministicVector<Size>& arg) {
                         return std::make_unique<DeterministicVector<Size>>(arg);
                     },
-                    [](const GaussianVector<Size>& arg) { return std::make_unique<GaussianVector<Size>>(arg); },
-                    [](const UniformVector<Size>& arg) { return std::make_unique<UniformVector<Size>>(arg); },
+                    [](const GaussianVector<Size>& arg) {
+                        return std::make_unique<GaussianVector<Size>>(arg);
+                    },
+                    [](const UniformVector<Size>& arg) {
+                        return std::make_unique<UniformVector<Size>>(arg);
+                    },
                     [](const Deterministic& arg) {
                         return std::make_unique<DeterministicVector<Size>>(Eigen::VectorXd::Constant(1, arg.value));
                     },
@@ -349,13 +375,27 @@ unique_ptr<DistributionVector> ToDistributionVector(const DistributionVectorVari
 template <int Size>
 bool IsDeterministic(const DistributionVectorVariant<Size>& vec) {
     return std::visit<bool>(overloaded{
-                                    [](const drake::Vector<double, Size>&) { return true; },
-                                    [](const DeterministicVector<Size>&) { return true; },
-                                    [](const GaussianVector<Size>& arg) { return arg.stddev.isZero(0.0); },
-                                    [](const UniformVector<Size>& arg) { return arg.min == arg.max; },
-                                    [](const Deterministic&) { return true; },
-                                    [](const Gaussian& arg) { return arg.stddev == 0.0; },
-                                    [](const Uniform& arg) { return arg.min == arg.max; },
+                                    [](const drake::Vector<double, Size>&) {
+                                        return true;
+                                    },
+                                    [](const DeterministicVector<Size>&) {
+                                        return true;
+                                    },
+                                    [](const GaussianVector<Size>& arg) {
+                                        return arg.stddev.isZero(0.0);
+                                    },
+                                    [](const UniformVector<Size>& arg) {
+                                        return arg.min == arg.max;
+                                    },
+                                    [](const Deterministic&) {
+                                        return true;
+                                    },
+                                    [](const Gaussian& arg) {
+                                        return arg.stddev == 0.0;
+                                    },
+                                    [](const Uniform& arg) {
+                                        return arg.min == arg.max;
+                                    },
                                     []<typename T>(const internal::InvalidVariantSelection<T>&) -> std::false_type {
                                         DRAKE_UNREACHABLE();
                                     },

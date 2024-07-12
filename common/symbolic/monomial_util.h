@@ -189,7 +189,9 @@ Eigen::Matrix<Monomial, Eigen::Dynamic, 1> MonomialBasis(const Variables& vars, 
 // Computes "n choose k", the number of ways, disregarding order, that k objects
 // can be chosen from among n objects. It is used in the following MonomialBasis
 // function.
-constexpr int NChooseK(int n, int k) { return (k == 0) ? 1 : (n * NChooseK(n - 1, k - 1)) / k; }
+constexpr int NChooseK(int n, int k) {
+    return (k == 0) ? 1 : (n * NChooseK(n - 1, k - 1)) / k;
+}
 
 /** Returns all monomials up to a given degree under the graded reverse
  * lexicographic order.

@@ -62,9 +62,10 @@ void StackedTrajectory<T>::CheckInvariants() const {
     // Sanity-check that our extent on the stacking axis matches the sum over all
     // of our children.
     const Index expected_stacked_size = rowwise_ ? rows_ : cols_;
-    const Index actual_stacked_size = std::transform_reduce(
-            children_.begin(), children_.end(), 0, std::plus<Index>{},
-            [this](const auto& child) -> Index { return rowwise_ ? child->rows() : child->cols(); });
+    const Index actual_stacked_size = std::transform_reduce(children_.begin(), children_.end(), 0, std::plus<Index>{},
+                                                            [this](const auto& child) -> Index {
+                                                                return rowwise_ ? child->rows() : child->cols();
+                                                            });
     DRAKE_DEMAND(actual_stacked_size == expected_stacked_size);
 
     // Sanity-check that our extent in the non-stacking axis is the same over all
@@ -132,7 +133,9 @@ T StackedTrajectory<T>::end_time() const {
 
 template <typename T>
 bool StackedTrajectory<T>::do_has_derivative() const {
-    return std::all_of(children_.begin(), children_.end(), [](const auto& child) { return child->has_derivative(); });
+    return std::all_of(children_.begin(), children_.end(), [](const auto& child) {
+        return child->has_derivative();
+    });
 }
 
 template <typename T>

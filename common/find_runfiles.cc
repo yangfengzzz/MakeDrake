@@ -25,7 +25,9 @@ namespace {
 namespace fs = std::filesystem;
 
 // Replace `nullptr` with `"nullptr",` or else just return `arg` unchanged.
-const char* nullable_to_string(const char* arg) { return arg ? arg : "nullptr"; }
+const char* nullable_to_string(const char* arg) {
+    return arg ? arg : "nullptr";
+}
 
 // Either a bazel_tools Runfiles object xor an error string.
 struct RunfilesSingleton {
@@ -131,7 +133,9 @@ const RunfilesSingleton& GetRunfilesSingleton() {
 
 }  // namespace
 
-bool HasRunfiles() { return GetRunfilesSingleton().runfiles.get() != nullptr; }
+bool HasRunfiles() {
+    return GetRunfilesSingleton().runfiles.get() != nullptr;
+}
 
 RlocationOrError FindRunfile(const std::string& resource_path) {
     const auto& singleton = GetRunfilesSingleton();

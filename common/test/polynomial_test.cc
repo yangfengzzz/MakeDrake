@@ -7,13 +7,12 @@
 #include <stdexcept>
 #include <vector>
 
-#include <Eigen/Dense>
-#include <gtest/gtest.h>
-
 #include "common/symbolic/expression.h"
 #include "common/test_utilities/eigen_matrix_compare.h"
 #include "common/test_utilities/expect_no_throw.h"
 #include "common/test_utilities/random_polynomial_matrix.h"
+#include <Eigen/Dense>
+#include <gtest/gtest.h>
 
 using Eigen::VectorXd;
 using std::default_random_engine;
@@ -202,7 +201,9 @@ GTEST_TEST(PolynomialTest, CoefficientsConstructorNoMatrix) {
     EXPECT_THROW(Polynomial<double>{coefficients}, std::exception);
 }
 
-GTEST_TEST(PolynomialTest, IntegralAndDerivative) { testIntegralAndDerivative<double>(); }
+GTEST_TEST(PolynomialTest, IntegralAndDerivative) {
+    testIntegralAndDerivative<double>();
+}
 
 GTEST_TEST(PolynomialTest, TestMakeMonomialsUnique) {
     Eigen::Vector2d coefficients(1, 2);
@@ -211,11 +212,17 @@ GTEST_TEST(PolynomialTest, TestMakeMonomialsUnique) {
     EXPECT_EQ(poly_squared.GetNumberOfCoefficients(), 3);
 }
 
-GTEST_TEST(PolynomialTest, Operators) { testOperators<double>(); }
+GTEST_TEST(PolynomialTest, Operators) {
+    testOperators<double>();
+}
 
-GTEST_TEST(PolynomialTest, Roots) { testRoots<double>(); }
+GTEST_TEST(PolynomialTest, Roots) {
+    testRoots<double>();
+}
 
-GTEST_TEST(PolynomialTest, EvalType) { testEvalType(); }
+GTEST_TEST(PolynomialTest, EvalType) {
+    testEvalType();
+}
 
 GTEST_TEST(PolynomialTest, IsAffine) {
     Polynomiald x("x");

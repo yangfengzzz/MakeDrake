@@ -22,17 +22,25 @@ TEST_F(StandardOperationsTest, CmpLt) {
     DRAKE_CHECK_CMP(<);  // NOLINT
 }
 
-TEST_F(StandardOperationsTest, CmpLe) { DRAKE_CHECK_CMP(<=); }
+TEST_F(StandardOperationsTest, CmpLe) {
+    DRAKE_CHECK_CMP(<=);
+}
 
 TEST_F(StandardOperationsTest, CmpGt) {
     DRAKE_CHECK_CMP(>);  // NOLINT
 }
 
-TEST_F(StandardOperationsTest, CmpGe) { DRAKE_CHECK_CMP(>=); }
+TEST_F(StandardOperationsTest, CmpGe) {
+    DRAKE_CHECK_CMP(>=);
+}
 
-TEST_F(StandardOperationsTest, CmpEq) { DRAKE_CHECK_CMP(==); }
+TEST_F(StandardOperationsTest, CmpEq) {
+    DRAKE_CHECK_CMP(==);
+}
 
-TEST_F(StandardOperationsTest, CmpNe) { DRAKE_CHECK_CMP(!=); }
+TEST_F(StandardOperationsTest, CmpNe) {
+    DRAKE_CHECK_CMP(!=);
+}
 
 #undef DRAKE_CHECK_CMP
 

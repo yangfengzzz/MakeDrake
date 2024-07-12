@@ -25,10 +25,12 @@ using drake::internal::DiagnosticPolicy;
 class DiagnosticPolicyTestBase : public ::testing::Test {
 public:
     DiagnosticPolicyTestBase() {
-        diagnostic_policy_.SetActionForErrors(
-                [this](const DiagnosticDetail& detail) { error_records_.push_back(detail); });
-        diagnostic_policy_.SetActionForWarnings(
-                [this](const DiagnosticDetail& detail) { warning_records_.push_back(detail); });
+        diagnostic_policy_.SetActionForErrors([this](const DiagnosticDetail& detail) {
+            error_records_.push_back(detail);
+        });
+        diagnostic_policy_.SetActionForWarnings([this](const DiagnosticDetail& detail) {
+            warning_records_.push_back(detail);
+        });
     }
 
     ~DiagnosticPolicyTestBase() { FlushDiagnostics(); }
@@ -90,8 +92,9 @@ protected:
     void ThrowErrors() { diagnostic_policy_.SetActionForErrors(&DiagnosticPolicy::ErrorDefaultAction); }
 
     void RecordErrors() {
-        diagnostic_policy_.SetActionForErrors(
-                [this](const DiagnosticDetail& detail) { error_records_.push_back(detail); });
+        diagnostic_policy_.SetActionForErrors([this](const DiagnosticDetail& detail) {
+            error_records_.push_back(detail);
+        });
     }
 
     // Returns the first error as a string (or else fails the test case,

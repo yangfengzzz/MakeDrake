@@ -1,10 +1,9 @@
 #include <algorithm>
 #include <initializer_list>
 
-#include <gmock/gmock.h>
-
 #include "common/ad/auto_diff.h"
 #include "common/ad/test/standard_operations_test.h"
+#include <gmock/gmock.h>
 
 namespace drake {
 namespace test {

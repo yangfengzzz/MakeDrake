@@ -116,7 +116,9 @@ double EvaluateChebyshevPolynomial(double var_val, int degree) {
     }
 }
 
-double ChebyshevPolynomial::Evaluate(double var_val) const { return EvaluateChebyshevPolynomial(var_val, degree_); }
+double ChebyshevPolynomial::Evaluate(double var_val) const {
+    return EvaluateChebyshevPolynomial(var_val, degree_);
+}
 
 bool ChebyshevPolynomial::operator==(const ChebyshevPolynomial& other) const {
     if (degree() == 0 && other.degree() == 0) {
@@ -125,7 +127,9 @@ bool ChebyshevPolynomial::operator==(const ChebyshevPolynomial& other) const {
     return var().equal_to(other.var()) && degree() == other.degree();
 }
 
-bool ChebyshevPolynomial::operator!=(const ChebyshevPolynomial& other) const { return !(*this == other); }
+bool ChebyshevPolynomial::operator!=(const ChebyshevPolynomial& other) const {
+    return !(*this == other);
+}
 
 std::vector<std::pair<ChebyshevPolynomial, double>> ChebyshevPolynomial::Differentiate() const {
     if (degree_ == 0) {

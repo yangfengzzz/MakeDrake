@@ -44,7 +44,9 @@ Variable::Variable(string name, const Type type)
     DRAKE_ASSERT(id_ > 0);
 }
 
-string Variable::get_name() const { return name_ != nullptr ? *name_ : string{"𝑥"}; }
+string Variable::get_name() const {
+    return name_ != nullptr ? *name_ : string{"𝑥"};
+}
 
 string Variable::to_string() const {
     ostringstream oss;

@@ -10,14 +10,18 @@ namespace {
 // checkers to complain.
 GTEST_TEST(ScopeExitTest, Example) {
     void* foo = ::malloc(10);
-    ScopeExit guard([foo]() { ::free(foo); });
+    ScopeExit guard([foo]() {
+        ::free(foo);
+    });
 }
 
 // Test that the func() is invoked.
 GTEST_TEST(ScopeExitTest, CountTest) {
     int count = 0;
     {
-        ScopeExit guard([&count]() { ++count; });
+        ScopeExit guard([&count]() {
+            ++count;
+        });
     }
     EXPECT_EQ(count, 1);
 }
@@ -26,7 +30,9 @@ GTEST_TEST(ScopeExitTest, CountTest) {
 GTEST_TEST(ScopeExitTest, DisarmTest) {
     int count = 0;
     {
-        ScopeExit guard([&count]() { ++count; });
+        ScopeExit guard([&count]() {
+            ++count;
+        });
         guard.Disarm();
     }
     EXPECT_EQ(count, 0);

@@ -10,11 +10,10 @@
 #include <utility>
 #include <vector>
 
-#include <gtest/gtest.h>
-
 #include "common/sorted_pair.h"
 #include "common/test_utilities/expect_no_throw.h"
 #include "common/test_utilities/expect_throws_message.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace common {

@@ -141,7 +141,9 @@ void PublishCall(std::ofstream* stream_arg, const lcmt_call_python& message) {
 
 }  // namespace
 
-void CallPythonInit(const std::string& filename) { InitOutput(filename); }
+void CallPythonInit(const std::string& filename) {
+    InitOutput(filename);
+}
 
 void internal::PublishCallPython(const lcmt_call_python& message) {
     static const never_destroyed<std::ofstream*> output{InitOutput(std::nullopt)};

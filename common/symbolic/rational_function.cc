@@ -31,7 +31,9 @@ Formula RationalFunction::operator==(const RationalFunction& f) const {
     return denominator_ * f.numerator() == numerator_ * f.denominator();
 }
 
-Formula RationalFunction::operator!=(const RationalFunction& f) const { return !(*this == f); }
+Formula RationalFunction::operator!=(const RationalFunction& f) const {
+    return !(*this == f);
+}
 
 std::ostream& operator<<(std::ostream& os, const RationalFunction& f) {
     os << "(" << f.numerator() << ") / (" << f.denominator() << ")";
@@ -60,7 +62,9 @@ void RationalFunction::CheckIndeterminates() const {
     }
 }
 
-Expression RationalFunction::ToExpression() const { return numerator_.ToExpression() / denominator_.ToExpression(); }
+Expression RationalFunction::ToExpression() const {
+    return numerator_.ToExpression() / denominator_.ToExpression();
+}
 
 RationalFunction& RationalFunction::operator+=(const RationalFunction& f) {
     if (f.denominator().EqualTo(denominator_)) {
@@ -102,7 +106,9 @@ RationalFunction& RationalFunction::operator-=(const Monomial& m) {
     return *this;
 }
 
-RationalFunction& RationalFunction::operator-=(double c) { return *this += -c; }
+RationalFunction& RationalFunction::operator-=(double c) {
+    return *this += -c;
+}
 
 RationalFunction& RationalFunction::operator*=(const RationalFunction& f) {
     numerator_ *= f.numerator();
@@ -169,51 +175,97 @@ RationalFunction operator-(RationalFunction f) {
     return f;
 }
 
-RationalFunction operator+(RationalFunction f1, const RationalFunction& f2) { return f1 += f2; }
+RationalFunction operator+(RationalFunction f1, const RationalFunction& f2) {
+    return f1 += f2;
+}
 
-RationalFunction operator+(RationalFunction f, const Polynomial& p) { return f += p; }
+RationalFunction operator+(RationalFunction f, const Polynomial& p) {
+    return f += p;
+}
 
-RationalFunction operator+(const Polynomial& p, RationalFunction f) { return f += p; }
+RationalFunction operator+(const Polynomial& p, RationalFunction f) {
+    return f += p;
+}
 
-RationalFunction operator+(RationalFunction f, const Monomial& m) { return f += m; }
+RationalFunction operator+(RationalFunction f, const Monomial& m) {
+    return f += m;
+}
 
-RationalFunction operator+(const Monomial& m, RationalFunction f) { return f += m; }
+RationalFunction operator+(const Monomial& m, RationalFunction f) {
+    return f += m;
+}
 
-RationalFunction operator+(RationalFunction f, double c) { return f += c; }
+RationalFunction operator+(RationalFunction f, double c) {
+    return f += c;
+}
 
-RationalFunction operator+(double c, RationalFunction f) { return f += c; }
+RationalFunction operator+(double c, RationalFunction f) {
+    return f += c;
+}
 
-RationalFunction operator-(RationalFunction f1, const RationalFunction& f2) { return f1 -= f2; }
+RationalFunction operator-(RationalFunction f1, const RationalFunction& f2) {
+    return f1 -= f2;
+}
 
-RationalFunction operator-(RationalFunction f, const Polynomial& p) { return f -= p; }
+RationalFunction operator-(RationalFunction f, const Polynomial& p) {
+    return f -= p;
+}
 
-RationalFunction operator-(const Polynomial& p, const RationalFunction& f) { return -f + p; }
+RationalFunction operator-(const Polynomial& p, const RationalFunction& f) {
+    return -f + p;
+}
 
-RationalFunction operator-(RationalFunction f, const Monomial& m) { return f -= m; }
+RationalFunction operator-(RationalFunction f, const Monomial& m) {
+    return f -= m;
+}
 
-RationalFunction operator-(const Monomial& m, RationalFunction f) { return -f + m; }
+RationalFunction operator-(const Monomial& m, RationalFunction f) {
+    return -f + m;
+}
 
-RationalFunction operator-(RationalFunction f, double c) { return f -= c; }
+RationalFunction operator-(RationalFunction f, double c) {
+    return f -= c;
+}
 
-RationalFunction operator-(double c, RationalFunction f) { return f = -f + c; }
+RationalFunction operator-(double c, RationalFunction f) {
+    return f = -f + c;
+}
 
-RationalFunction operator*(RationalFunction f1, const RationalFunction& f2) { return f1 *= f2; }
+RationalFunction operator*(RationalFunction f1, const RationalFunction& f2) {
+    return f1 *= f2;
+}
 
-RationalFunction operator*(RationalFunction f, const Polynomial& p) { return f *= p; }
+RationalFunction operator*(RationalFunction f, const Polynomial& p) {
+    return f *= p;
+}
 
-RationalFunction operator*(const Polynomial& p, RationalFunction f) { return f *= p; }
+RationalFunction operator*(const Polynomial& p, RationalFunction f) {
+    return f *= p;
+}
 
-RationalFunction operator*(RationalFunction f, const Monomial& m) { return f *= m; }
+RationalFunction operator*(RationalFunction f, const Monomial& m) {
+    return f *= m;
+}
 
-RationalFunction operator*(const Monomial& m, RationalFunction f) { return f *= m; }
+RationalFunction operator*(const Monomial& m, RationalFunction f) {
+    return f *= m;
+}
 
-RationalFunction operator*(RationalFunction f, double c) { return f *= c; }
+RationalFunction operator*(RationalFunction f, double c) {
+    return f *= c;
+}
 
-RationalFunction operator*(double c, RationalFunction f) { return f *= c; }
+RationalFunction operator*(double c, RationalFunction f) {
+    return f *= c;
+}
 
-RationalFunction operator/(RationalFunction f1, const RationalFunction& f2) { return f1 /= f2; }
+RationalFunction operator/(RationalFunction f1, const RationalFunction& f2) {
+    return f1 /= f2;
+}
 
-RationalFunction operator/(RationalFunction f, const Polynomial& p) { return f /= p; }
+RationalFunction operator/(RationalFunction f, const Polynomial& p) {
+    return f /= p;
+}
 
 RationalFunction operator/(const Polynomial& p, const RationalFunction& f) {
     if (f.numerator().monomial_to_coefficient_map().empty()) {
@@ -222,7 +274,9 @@ RationalFunction operator/(const Polynomial& p, const RationalFunction& f) {
     return {p * f.denominator(), f.numerator()};
 }
 
-RationalFunction operator/(RationalFunction f, const Monomial& m) { return f /= m; }
+RationalFunction operator/(RationalFunction f, const Monomial& m) {
+    return f /= m;
+}
 
 RationalFunction operator/(const Monomial& m, RationalFunction f) {
     if (f.numerator().monomial_to_coefficient_map().empty()) {
@@ -231,7 +285,9 @@ RationalFunction operator/(const Monomial& m, RationalFunction f) {
     return {m * f.denominator(), f.numerator()};
 }
 
-RationalFunction operator/(RationalFunction f, double c) { return f /= c; }
+RationalFunction operator/(RationalFunction f, double c) {
+    return f /= c;
+}
 
 RationalFunction operator/(double c, const RationalFunction& f) {
     if (f.numerator().monomial_to_coefficient_map().empty()) {

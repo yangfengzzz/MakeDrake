@@ -117,8 +117,12 @@ protected:
 // Compares m1 and m2 after expanding both of them.
 ::testing::AssertionResult CompareMatricesWithExpansion(const Eigen::Ref<const MatrixX<Expression>>& m1,
                                                         const Eigen::Ref<const MatrixX<Expression>>& m2) {
-    const MatrixX<Expression> m1_expanded{m1.unaryExpr([](const Expression& e) { return e.Expand(); })};
-    const MatrixX<Expression> m2_expanded{m2.unaryExpr([](const Expression& e) { return e.Expand(); })};
+    const MatrixX<Expression> m1_expanded{m1.unaryExpr([](const Expression& e) {
+        return e.Expand();
+    })};
+    const MatrixX<Expression> m2_expanded{m2.unaryExpr([](const Expression& e) {
+        return e.Expand();
+    })};
     if (m1_expanded == m2_expanded) {
         return ::testing::AssertionSuccess() << fmt::format(
                        "m1 and m2 are equal after expansion where m1 = \n{}\n"

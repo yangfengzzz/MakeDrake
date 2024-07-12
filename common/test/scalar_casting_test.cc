@@ -2,11 +2,10 @@
 Shows implicit / explicit casting behaviors for scalar types.
 */
 
-#include <gtest/gtest.h>
-
 #include "common/autodiff.h"
 #include "common/extract_double.h"
 #include "common/symbolic/expression.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace {

@@ -69,7 +69,9 @@ GTEST_TEST(SymbolicLatex, BasicTest) {
         DRAKE_EXPECT_THROWS_MESSAGE(Substitute(cos(pred(x, y)), subs), ".*'status == kNotSinCos' failed.*");
     };
 
-    const auto mypow = [](const Expression& e1, const Expression e2) { return pow(e1, e2); };
+    const auto mypow = [](const Expression& e1, const Expression e2) {
+        return pow(e1, e2);
+    };
     TestBinary(mypow);  // TestBinary(pow) doesn't compile for some reason.
     EXPECT_PRED2(ExprEqual, Substitute(x / y, subs), x / y);
     EXPECT_PRED2(ExprEqual, Substitute(sin(x) / sin(y), subs), sx / sy);

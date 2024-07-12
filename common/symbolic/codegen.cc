@@ -21,7 +21,9 @@ CodeGenVisitor::CodeGenVisitor(const vector<Variable>& parameters) {
     }
 }
 
-string CodeGenVisitor::CodeGen(const Expression& e) const { return VisitExpression<string>(this, e); }
+string CodeGenVisitor::CodeGen(const Expression& e) const {
+    return VisitExpression<string>(this, e);
+}
 
 string CodeGenVisitor::VisitVariable(const Expression& e) const {
     const Variable& v{get_variable(e)};
@@ -32,7 +34,9 @@ string CodeGenVisitor::VisitVariable(const Expression& e) const {
     return "p[" + to_string(it->second) + "]";
 }
 
-string CodeGenVisitor::VisitConstant(const Expression& e) const { return to_string(get_constant_value(e)); }
+string CodeGenVisitor::VisitConstant(const Expression& e) const {
+    return to_string(get_constant_value(e));
+}
 
 string CodeGenVisitor::VisitAddition(const Expression& e) const {
     const double c{get_constant_in_addition(e)};
@@ -82,47 +86,85 @@ string CodeGenVisitor::VisitBinary(const string& f, const Expression& e) const {
     return f + "(" + CodeGen(get_first_argument(e)) + ", " + CodeGen(get_second_argument(e)) + ")";
 }
 
-string CodeGenVisitor::VisitPow(const Expression& e) const { return VisitBinary("pow", e); }
+string CodeGenVisitor::VisitPow(const Expression& e) const {
+    return VisitBinary("pow", e);
+}
 
 string CodeGenVisitor::VisitDivision(const Expression& e) const {
     return "(" + CodeGen(get_first_argument(e)) + " / " + CodeGen(get_second_argument(e)) + ")";
 }
 
-string CodeGenVisitor::VisitAbs(const Expression& e) const { return VisitUnary("fabs", e); }
+string CodeGenVisitor::VisitAbs(const Expression& e) const {
+    return VisitUnary("fabs", e);
+}
 
-string CodeGenVisitor::VisitLog(const Expression& e) const { return VisitUnary("log", e); }
+string CodeGenVisitor::VisitLog(const Expression& e) const {
+    return VisitUnary("log", e);
+}
 
-string CodeGenVisitor::VisitExp(const Expression& e) const { return VisitUnary("exp", e); }
+string CodeGenVisitor::VisitExp(const Expression& e) const {
+    return VisitUnary("exp", e);
+}
 
-string CodeGenVisitor::VisitSqrt(const Expression& e) const { return VisitUnary("sqrt", e); }
+string CodeGenVisitor::VisitSqrt(const Expression& e) const {
+    return VisitUnary("sqrt", e);
+}
 
-string CodeGenVisitor::VisitSin(const Expression& e) const { return VisitUnary("sin", e); }
+string CodeGenVisitor::VisitSin(const Expression& e) const {
+    return VisitUnary("sin", e);
+}
 
-string CodeGenVisitor::VisitCos(const Expression& e) const { return VisitUnary("cos", e); }
+string CodeGenVisitor::VisitCos(const Expression& e) const {
+    return VisitUnary("cos", e);
+}
 
-string CodeGenVisitor::VisitTan(const Expression& e) const { return VisitUnary("tan", e); }
+string CodeGenVisitor::VisitTan(const Expression& e) const {
+    return VisitUnary("tan", e);
+}
 
-string CodeGenVisitor::VisitAsin(const Expression& e) const { return VisitUnary("asin", e); }
+string CodeGenVisitor::VisitAsin(const Expression& e) const {
+    return VisitUnary("asin", e);
+}
 
-string CodeGenVisitor::VisitAcos(const Expression& e) const { return VisitUnary("acos", e); }
+string CodeGenVisitor::VisitAcos(const Expression& e) const {
+    return VisitUnary("acos", e);
+}
 
-string CodeGenVisitor::VisitAtan(const Expression& e) const { return VisitUnary("atan", e); }
+string CodeGenVisitor::VisitAtan(const Expression& e) const {
+    return VisitUnary("atan", e);
+}
 
-string CodeGenVisitor::VisitAtan2(const Expression& e) const { return VisitBinary("atan2", e); }
+string CodeGenVisitor::VisitAtan2(const Expression& e) const {
+    return VisitBinary("atan2", e);
+}
 
-string CodeGenVisitor::VisitSinh(const Expression& e) const { return VisitUnary("sinh", e); }
+string CodeGenVisitor::VisitSinh(const Expression& e) const {
+    return VisitUnary("sinh", e);
+}
 
-string CodeGenVisitor::VisitCosh(const Expression& e) const { return VisitUnary("cosh", e); }
+string CodeGenVisitor::VisitCosh(const Expression& e) const {
+    return VisitUnary("cosh", e);
+}
 
-string CodeGenVisitor::VisitTanh(const Expression& e) const { return VisitUnary("tanh", e); }
+string CodeGenVisitor::VisitTanh(const Expression& e) const {
+    return VisitUnary("tanh", e);
+}
 
-string CodeGenVisitor::VisitMin(const Expression& e) const { return VisitBinary("fmin", e); }
+string CodeGenVisitor::VisitMin(const Expression& e) const {
+    return VisitBinary("fmin", e);
+}
 
-string CodeGenVisitor::VisitMax(const Expression& e) const { return VisitBinary("fmax", e); }
+string CodeGenVisitor::VisitMax(const Expression& e) const {
+    return VisitBinary("fmax", e);
+}
 
-string CodeGenVisitor::VisitCeil(const Expression& e) const { return VisitUnary("ceil", e); }
+string CodeGenVisitor::VisitCeil(const Expression& e) const {
+    return VisitUnary("ceil", e);
+}
 
-string CodeGenVisitor::VisitFloor(const Expression& e) const { return VisitUnary("floor", e); }
+string CodeGenVisitor::VisitFloor(const Expression& e) const {
+    return VisitUnary("floor", e);
+}
 
 string CodeGenVisitor::VisitIfThenElse(const Expression&) const {
     throw runtime_error("Codegen does not support if-then-else expressions.");

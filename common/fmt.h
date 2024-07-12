@@ -14,14 +14,18 @@ namespace drake {
 /** When using fmt >= 8, this is an alias for
 <a href="https://fmt.dev/latest/api.html#compile-time-format-string-checks">fmt::runtime</a>.
 When using fmt < 8, this is a no-op. */
-inline auto fmt_runtime(std::string_view s) { return fmt::runtime(s); }
+inline auto fmt_runtime(std::string_view s) {
+    return fmt::runtime(s);
+}
 /** When using fmt >= 8, this is defined to be `const` to indicate that the
 `fmt::formatter<T>::format(...)` function should be object-const.
 When using fmt < 8, the function signature was incorrect (lacking the const),
 so this macro will be empty. */
 #define DRAKE_FMT8_CONST const
 #else  // FMT_VERSION
-inline auto fmt_runtime(std::string_view s) { return s; }
+inline auto fmt_runtime(std::string_view s) {
+    return s;
+}
 #define DRAKE_FMT8_CONST
 #endif  // FMT_VERSION
 
@@ -140,7 +144,9 @@ Drake drops support for earlier version of fmt. */
     template <TEMPLATE_ARGS>                                                                           \
     struct Converter<NAMESPACE::TYPE> {                                                                \
         using InputType = NAMESPACE::TYPE;                                                             \
-        static auto call(const InputType& ARG) { return EXPR; }                                        \
+        static auto call(const InputType& ARG) {                                                       \
+            return EXPR;                                                                               \
+        }                                                                                              \
     };                                                                                                 \
                                                                                                        \
     /* Provides the fmt::formatter<TYPE> implementation. */                                            \

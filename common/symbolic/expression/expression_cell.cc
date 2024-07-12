@@ -47,9 +47,13 @@ bool is_integer(const double v) {
     return modf(v, &intpart) == 0.0;
 }
 
-bool is_positive_integer(const double v) { return (v > 0) && is_integer(v); }
+bool is_positive_integer(const double v) {
+    return (v > 0) && is_integer(v);
+}
 
-bool is_non_negative_integer(const double v) { return (v >= 0) && is_integer(v); }
+bool is_non_negative_integer(const double v) {
+    return (v >= 0) && is_integer(v);
+}
 
 namespace {
 
@@ -59,14 +63,17 @@ namespace {
 // Pedantially, ExpressionNaN should return `true` here since it isn't wrapping
 // anything, but given the practical uses of this function it's easier to just
 // return `false` for NaNs.
-bool IsLeafExpression(const Expression& e) { return is_constant(e) || is_variable(e); }
+bool IsLeafExpression(const Expression& e) {
+    return is_constant(e) || is_variable(e);
+}
 
 // Determines if the summation represented by term_to_coeff_map is
 // polynomial-convertible or not. This function is used in the
 // constructor of ExpressionAdd.
 bool determine_polynomial(const std::map<Expression, double>& term_to_coeff_map) {
-    return all_of(term_to_coeff_map.begin(), term_to_coeff_map.end(),
-                  [](const pair<const Expression, double>& p) { return p.first.is_polynomial(); });
+    return all_of(term_to_coeff_map.begin(), term_to_coeff_map.end(), [](const pair<const Expression, double>& p) {
+        return p.first.is_polynomial();
+    });
 }
 
 // Determines if the product represented by term_to_coeff_map is
@@ -236,7 +243,9 @@ void UnaryExpressionCell::HashAppendDetail(DelegatingHasher* hasher) const {
     hash_append(*hasher, e_);
 }
 
-Variables UnaryExpressionCell::GetVariables() const { return e_.GetVariables(); }
+Variables UnaryExpressionCell::GetVariables() const {
+    return e_.GetVariables();
+}
 
 bool UnaryExpressionCell::EqualTo(const ExpressionCell& e) const {
     // Expression::EqualTo guarantees the following assertion.
@@ -313,7 +322,9 @@ void ExpressionVar::HashAppendDetail(DelegatingHasher* hasher) const {
     hash_append(*hasher, var_);
 }
 
-Variables ExpressionVar::GetVariables() const { return {get_variable()}; }
+Variables ExpressionVar::GetVariables() const {
+    return {get_variable()};
+}
 
 bool ExpressionVar::EqualTo(const ExpressionCell& e) const {
     // Expression::EqualTo guarantees the following assertion.
@@ -343,7 +354,9 @@ double ExpressionVar::Evaluate(const Environment& env) const {
     throw runtime_error{oss.str()};
 }
 
-Expression ExpressionVar::Expand() const { return Expression{var_}; }
+Expression ExpressionVar::Expand() const {
+    return Expression{var_};
+}
 
 Expression ExpressionVar::EvaluatePartial(const Environment& env) const {
     const Environment::const_iterator it{env.find(var_)};
@@ -368,13 +381,17 @@ Expression ExpressionVar::Differentiate(const Variable& x) const {
     return Expression::Zero();
 }
 
-ostream& ExpressionVar::Display(ostream& os) const { return os << var_; }
+ostream& ExpressionVar::Display(ostream& os) const {
+    return os << var_;
+}
 
 ExpressionNaN::ExpressionNaN() : ExpressionCell{ExpressionKind::NaN, false, false} {}
 
 void ExpressionNaN::HashAppendDetail(DelegatingHasher*) const {}
 
-Variables ExpressionNaN::GetVariables() const { return Variables{}; }
+Variables ExpressionNaN::GetVariables() const {
+    return Variables{};
+}
 
 bool ExpressionNaN::EqualTo(const ExpressionCell& e) const {
     // Expression::EqualTo guarantees the following assertion.
@@ -392,7 +409,9 @@ double ExpressionNaN::Evaluate(const Environment&) const {
     throw runtime_error("NaN is detected during Symbolic computation.");
 }
 
-Expression ExpressionNaN::Expand() const { throw runtime_error("NaN is detected during expansion."); }
+Expression ExpressionNaN::Expand() const {
+    throw runtime_error("NaN is detected during expansion.");
+}
 
 Expression ExpressionNaN::EvaluatePartial(const Environment&) const {
     throw runtime_error("NaN is detected during environment substitution.");
@@ -406,7 +425,9 @@ Expression ExpressionNaN::Differentiate(const Variable&) const {
     throw runtime_error("NaN is detected during differentiation.");
 }
 
-ostream& ExpressionNaN::Display(ostream& os) const { return os << "NaN"; }
+ostream& ExpressionNaN::Display(ostream& os) const {
+    return os << "NaN";
+}
 
 ExpressionAdd::ExpressionAdd(const double constant, map<Expression, double> expr_to_coeff_map)
     : ExpressionCell{ExpressionKind::Add, determine_polynomial(expr_to_coeff_map), false},
@@ -628,7 +649,9 @@ Expression ExpressionAddFactory::GetExpression() && {
     return Expression{std::move(result)};
 }
 
-void ExpressionAddFactory::AddConstant(const double constant) { constant_ += constant; }
+void ExpressionAddFactory::AddConstant(const double constant) {
+    constant_ += constant;
+}
 
 void ExpressionAddFactory::AddTerm(const double coeff, const Expression& term) {
     DRAKE_ASSERT(!is_constant(term));
@@ -1152,7 +1175,9 @@ Expression ExpressionLog::EvaluatePartial(const Environment& env) const {
     return log(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionLog::Substitute(const Substitution& s) const { return log(get_argument().Substitute(s)); }
+Expression ExpressionLog::Substitute(const Substitution& s) const {
+    return log(get_argument().Substitute(s));
+}
 
 Expression ExpressionLog::Differentiate(const Variable& x) const {
     // ∂/∂x log(f) = (∂/∂x f) / f
@@ -1160,7 +1185,9 @@ Expression ExpressionLog::Differentiate(const Variable& x) const {
     return f.Differentiate(x) / f;
 }
 
-ostream& ExpressionLog::Display(ostream& os) const { return os << "log(" << get_argument() << ")"; }
+ostream& ExpressionLog::Display(ostream& os) const {
+    return os << "log(" << get_argument() << ")";
+}
 
 double ExpressionLog::DoEvaluate(const double v) const {
     check_domain(v);
@@ -1179,7 +1206,9 @@ Expression ExpressionAbs::EvaluatePartial(const Environment& env) const {
     return abs(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionAbs::Substitute(const Substitution& s) const { return abs(get_argument().Substitute(s)); }
+Expression ExpressionAbs::Substitute(const Substitution& s) const {
+    return abs(get_argument().Substitute(s));
+}
 
 Expression ExpressionAbs::Differentiate(const Variable& x) const {
     if (GetVariables().include(x)) {
@@ -1191,9 +1220,13 @@ Expression ExpressionAbs::Differentiate(const Variable& x) const {
     }
 }
 
-ostream& ExpressionAbs::Display(ostream& os) const { return os << "abs(" << get_argument() << ")"; }
+ostream& ExpressionAbs::Display(ostream& os) const {
+    return os << "abs(" << get_argument() << ")";
+}
 
-double ExpressionAbs::DoEvaluate(const double v) const { return std::fabs(v); }
+double ExpressionAbs::DoEvaluate(const double v) const {
+    return std::fabs(v);
+}
 
 ExpressionExp::ExpressionExp(const Expression& e)
     : UnaryExpressionCell{ExpressionKind::Exp, e, false, e.is_expanded()} {}
@@ -1207,7 +1240,9 @@ Expression ExpressionExp::EvaluatePartial(const Environment& env) const {
     return exp(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionExp::Substitute(const Substitution& s) const { return exp(get_argument().Substitute(s)); }
+Expression ExpressionExp::Substitute(const Substitution& s) const {
+    return exp(get_argument().Substitute(s));
+}
 
 Expression ExpressionExp::Differentiate(const Variable& x) const {
     // ∂/∂x exp(f) = exp(f) * (∂/∂x f)
@@ -1215,9 +1250,13 @@ Expression ExpressionExp::Differentiate(const Variable& x) const {
     return exp(f) * f.Differentiate(x);
 }
 
-ostream& ExpressionExp::Display(ostream& os) const { return os << "exp(" << get_argument() << ")"; }
+ostream& ExpressionExp::Display(ostream& os) const {
+    return os << "exp(" << get_argument() << ")";
+}
 
-double ExpressionExp::DoEvaluate(const double v) const { return std::exp(v); }
+double ExpressionExp::DoEvaluate(const double v) const {
+    return std::exp(v);
+}
 
 ExpressionSqrt::ExpressionSqrt(const Expression& e)
     : UnaryExpressionCell{ExpressionKind::Sqrt, e, false, e.is_expanded()} {}
@@ -1239,7 +1278,9 @@ Expression ExpressionSqrt::EvaluatePartial(const Environment& env) const {
     return sqrt(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionSqrt::Substitute(const Substitution& s) const { return sqrt(get_argument().Substitute(s)); }
+Expression ExpressionSqrt::Substitute(const Substitution& s) const {
+    return sqrt(get_argument().Substitute(s));
+}
 
 Expression ExpressionSqrt::Differentiate(const Variable& x) const {
     // ∂/∂x (sqrt(f)) = 1 / (2 * sqrt(f)) * (∂/∂x f)
@@ -1247,7 +1288,9 @@ Expression ExpressionSqrt::Differentiate(const Variable& x) const {
     return 1 / (2 * sqrt(f)) * f.Differentiate(x);
 }
 
-ostream& ExpressionSqrt::Display(ostream& os) const { return os << "sqrt(" << get_argument() << ")"; }
+ostream& ExpressionSqrt::Display(ostream& os) const {
+    return os << "sqrt(" << get_argument() << ")";
+}
 
 double ExpressionSqrt::DoEvaluate(const double v) const {
     check_domain(v);
@@ -1306,7 +1349,9 @@ Expression ExpressionSin::EvaluatePartial(const Environment& env) const {
     return sin(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionSin::Substitute(const Substitution& s) const { return sin(get_argument().Substitute(s)); }
+Expression ExpressionSin::Substitute(const Substitution& s) const {
+    return sin(get_argument().Substitute(s));
+}
 
 Expression ExpressionSin::Differentiate(const Variable& x) const {
     // ∂/∂x (sin f) = (cos f) * (∂/∂x f)
@@ -1314,9 +1359,13 @@ Expression ExpressionSin::Differentiate(const Variable& x) const {
     return cos(f) * f.Differentiate(x);
 }
 
-ostream& ExpressionSin::Display(ostream& os) const { return os << "sin(" << get_argument() << ")"; }
+ostream& ExpressionSin::Display(ostream& os) const {
+    return os << "sin(" << get_argument() << ")";
+}
 
-double ExpressionSin::DoEvaluate(const double v) const { return std::sin(v); }
+double ExpressionSin::DoEvaluate(const double v) const {
+    return std::sin(v);
+}
 
 ExpressionCos::ExpressionCos(const Expression& e)
     : UnaryExpressionCell{ExpressionKind::Cos, e, false, e.is_expanded()} {}
@@ -1330,7 +1379,9 @@ Expression ExpressionCos::EvaluatePartial(const Environment& env) const {
     return cos(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionCos::Substitute(const Substitution& s) const { return cos(get_argument().Substitute(s)); }
+Expression ExpressionCos::Substitute(const Substitution& s) const {
+    return cos(get_argument().Substitute(s));
+}
 
 Expression ExpressionCos::Differentiate(const Variable& x) const {
     // ∂/∂x (cos f) = - (sin f) * (∂/∂x f)
@@ -1338,9 +1389,13 @@ Expression ExpressionCos::Differentiate(const Variable& x) const {
     return -sin(f) * f.Differentiate(x);
 }
 
-ostream& ExpressionCos::Display(ostream& os) const { return os << "cos(" << get_argument() << ")"; }
+ostream& ExpressionCos::Display(ostream& os) const {
+    return os << "cos(" << get_argument() << ")";
+}
 
-double ExpressionCos::DoEvaluate(const double v) const { return std::cos(v); }
+double ExpressionCos::DoEvaluate(const double v) const {
+    return std::cos(v);
+}
 
 ExpressionTan::ExpressionTan(const Expression& e)
     : UnaryExpressionCell{ExpressionKind::Tan, e, false, e.is_expanded()} {}
@@ -1354,7 +1409,9 @@ Expression ExpressionTan::EvaluatePartial(const Environment& env) const {
     return tan(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionTan::Substitute(const Substitution& s) const { return tan(get_argument().Substitute(s)); }
+Expression ExpressionTan::Substitute(const Substitution& s) const {
+    return tan(get_argument().Substitute(s));
+}
 
 Expression ExpressionTan::Differentiate(const Variable& x) const {
     // ∂/∂x (tan f) = (1 / (cos f)^2) * (∂/∂x f)
@@ -1362,9 +1419,13 @@ Expression ExpressionTan::Differentiate(const Variable& x) const {
     return (1 / pow(cos(f), 2)) * f.Differentiate(x);
 }
 
-ostream& ExpressionTan::Display(ostream& os) const { return os << "tan(" << get_argument() << ")"; }
+ostream& ExpressionTan::Display(ostream& os) const {
+    return os << "tan(" << get_argument() << ")";
+}
 
-double ExpressionTan::DoEvaluate(const double v) const { return std::tan(v); }
+double ExpressionTan::DoEvaluate(const double v) const {
+    return std::tan(v);
+}
 
 ExpressionAsin::ExpressionAsin(const Expression& e)
     : UnaryExpressionCell{ExpressionKind::Asin, e, false, e.is_expanded()} {}
@@ -1386,7 +1447,9 @@ Expression ExpressionAsin::EvaluatePartial(const Environment& env) const {
     return asin(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionAsin::Substitute(const Substitution& s) const { return asin(get_argument().Substitute(s)); }
+Expression ExpressionAsin::Substitute(const Substitution& s) const {
+    return asin(get_argument().Substitute(s));
+}
 
 Expression ExpressionAsin::Differentiate(const Variable& x) const {
     // ∂/∂x (asin f) = (1 / sqrt(1 - f^2)) (∂/∂x f)
@@ -1394,7 +1457,9 @@ Expression ExpressionAsin::Differentiate(const Variable& x) const {
     return (1 / sqrt(1 - pow(f, 2))) * f.Differentiate(x);
 }
 
-ostream& ExpressionAsin::Display(ostream& os) const { return os << "asin(" << get_argument() << ")"; }
+ostream& ExpressionAsin::Display(ostream& os) const {
+    return os << "asin(" << get_argument() << ")";
+}
 
 double ExpressionAsin::DoEvaluate(const double v) const {
     check_domain(v);
@@ -1421,7 +1486,9 @@ Expression ExpressionAcos::EvaluatePartial(const Environment& env) const {
     return acos(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionAcos::Substitute(const Substitution& s) const { return acos(get_argument().Substitute(s)); }
+Expression ExpressionAcos::Substitute(const Substitution& s) const {
+    return acos(get_argument().Substitute(s));
+}
 
 Expression ExpressionAcos::Differentiate(const Variable& x) const {
     // ∂/∂x (acos f) = - 1 / sqrt(1 - f^2) * (∂/∂x f)
@@ -1429,7 +1496,9 @@ Expression ExpressionAcos::Differentiate(const Variable& x) const {
     return -1 / sqrt(1 - pow(f, 2)) * f.Differentiate(x);
 }
 
-ostream& ExpressionAcos::Display(ostream& os) const { return os << "acos(" << get_argument() << ")"; }
+ostream& ExpressionAcos::Display(ostream& os) const {
+    return os << "acos(" << get_argument() << ")";
+}
 
 double ExpressionAcos::DoEvaluate(const double v) const {
     check_domain(v);
@@ -1448,7 +1517,9 @@ Expression ExpressionAtan::EvaluatePartial(const Environment& env) const {
     return atan(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionAtan::Substitute(const Substitution& s) const { return atan(get_argument().Substitute(s)); }
+Expression ExpressionAtan::Substitute(const Substitution& s) const {
+    return atan(get_argument().Substitute(s));
+}
 
 Expression ExpressionAtan::Differentiate(const Variable& x) const {
     // ∂/∂x (atan f) = (1 / (1 + f^2)) * ∂/∂x f
@@ -1456,9 +1527,13 @@ Expression ExpressionAtan::Differentiate(const Variable& x) const {
     return (1 / (1 + pow(f, 2))) * f.Differentiate(x);
 }
 
-ostream& ExpressionAtan::Display(ostream& os) const { return os << "atan(" << get_argument() << ")"; }
+ostream& ExpressionAtan::Display(ostream& os) const {
+    return os << "atan(" << get_argument() << ")";
+}
 
-double ExpressionAtan::DoEvaluate(const double v) const { return std::atan(v); }
+double ExpressionAtan::DoEvaluate(const double v) const {
+    return std::atan(v);
+}
 
 ExpressionAtan2::ExpressionAtan2(const Expression& e1, const Expression& e2)
     : BinaryExpressionCell{ExpressionKind::Atan2, e1, e2, false, e1.is_expanded() && e2.is_expanded()} {}
@@ -1488,7 +1563,9 @@ ostream& ExpressionAtan2::Display(ostream& os) const {
     return os << "atan2(" << get_first_argument() << ", " << get_second_argument() << ")";
 }
 
-double ExpressionAtan2::DoEvaluate(const double v1, const double v2) const { return std::atan2(v1, v2); }
+double ExpressionAtan2::DoEvaluate(const double v1, const double v2) const {
+    return std::atan2(v1, v2);
+}
 
 ExpressionSinh::ExpressionSinh(const Expression& e)
     : UnaryExpressionCell{ExpressionKind::Sinh, e, false, e.is_expanded()} {}
@@ -1502,7 +1579,9 @@ Expression ExpressionSinh::EvaluatePartial(const Environment& env) const {
     return sinh(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionSinh::Substitute(const Substitution& s) const { return sinh(get_argument().Substitute(s)); }
+Expression ExpressionSinh::Substitute(const Substitution& s) const {
+    return sinh(get_argument().Substitute(s));
+}
 
 Expression ExpressionSinh::Differentiate(const Variable& x) const {
     // ∂/∂x (sinh f) = cosh(f) * (∂/∂x f)
@@ -1510,9 +1589,13 @@ Expression ExpressionSinh::Differentiate(const Variable& x) const {
     return cosh(f) * f.Differentiate(x);
 }
 
-ostream& ExpressionSinh::Display(ostream& os) const { return os << "sinh(" << get_argument() << ")"; }
+ostream& ExpressionSinh::Display(ostream& os) const {
+    return os << "sinh(" << get_argument() << ")";
+}
 
-double ExpressionSinh::DoEvaluate(const double v) const { return std::sinh(v); }
+double ExpressionSinh::DoEvaluate(const double v) const {
+    return std::sinh(v);
+}
 
 ExpressionCosh::ExpressionCosh(const Expression& e)
     : UnaryExpressionCell{ExpressionKind::Cosh, e, false, e.is_expanded()} {}
@@ -1526,7 +1609,9 @@ Expression ExpressionCosh::EvaluatePartial(const Environment& env) const {
     return cosh(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionCosh::Substitute(const Substitution& s) const { return cosh(get_argument().Substitute(s)); }
+Expression ExpressionCosh::Substitute(const Substitution& s) const {
+    return cosh(get_argument().Substitute(s));
+}
 
 Expression ExpressionCosh::Differentiate(const Variable& x) const {
     // ∂/∂x (cosh f) = sinh(f) * (∂/∂x f)
@@ -1534,9 +1619,13 @@ Expression ExpressionCosh::Differentiate(const Variable& x) const {
     return sinh(f) * f.Differentiate(x);
 }
 
-ostream& ExpressionCosh::Display(ostream& os) const { return os << "cosh(" << get_argument() << ")"; }
+ostream& ExpressionCosh::Display(ostream& os) const {
+    return os << "cosh(" << get_argument() << ")";
+}
 
-double ExpressionCosh::DoEvaluate(const double v) const { return std::cosh(v); }
+double ExpressionCosh::DoEvaluate(const double v) const {
+    return std::cosh(v);
+}
 
 ExpressionTanh::ExpressionTanh(const Expression& e)
     : UnaryExpressionCell{ExpressionKind::Tanh, e, false, e.is_expanded()} {}
@@ -1550,7 +1639,9 @@ Expression ExpressionTanh::EvaluatePartial(const Environment& env) const {
     return tanh(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionTanh::Substitute(const Substitution& s) const { return tanh(get_argument().Substitute(s)); }
+Expression ExpressionTanh::Substitute(const Substitution& s) const {
+    return tanh(get_argument().Substitute(s));
+}
 
 Expression ExpressionTanh::Differentiate(const Variable& x) const {
     // ∂/∂x (tanh f) = 1 / (cosh^2(f)) * (∂/∂x f)
@@ -1558,9 +1649,13 @@ Expression ExpressionTanh::Differentiate(const Variable& x) const {
     return 1 / pow(cosh(f), 2) * f.Differentiate(x);
 }
 
-ostream& ExpressionTanh::Display(ostream& os) const { return os << "tanh(" << get_argument() << ")"; }
+ostream& ExpressionTanh::Display(ostream& os) const {
+    return os << "tanh(" << get_argument() << ")";
+}
 
-double ExpressionTanh::DoEvaluate(const double v) const { return std::tanh(v); }
+double ExpressionTanh::DoEvaluate(const double v) const {
+    return std::tanh(v);
+}
 
 ExpressionMin::ExpressionMin(const Expression& e1, const Expression& e2)
     : BinaryExpressionCell{ExpressionKind::Min, e1, e2, false, e1.is_expanded() && e2.is_expanded()} {}
@@ -1594,7 +1689,9 @@ ostream& ExpressionMin::Display(ostream& os) const {
     return os << "min(" << get_first_argument() << ", " << get_second_argument() << ")";
 }
 
-double ExpressionMin::DoEvaluate(const double v1, const double v2) const { return std::min(v1, v2); }
+double ExpressionMin::DoEvaluate(const double v1, const double v2) const {
+    return std::min(v1, v2);
+}
 
 ExpressionMax::ExpressionMax(const Expression& e1, const Expression& e2)
     : BinaryExpressionCell{ExpressionKind::Max, e1, e2, false, e1.is_expanded() && e2.is_expanded()} {}
@@ -1628,7 +1725,9 @@ ostream& ExpressionMax::Display(ostream& os) const {
     return os << "max(" << get_first_argument() << ", " << get_second_argument() << ")";
 }
 
-double ExpressionMax::DoEvaluate(const double v1, const double v2) const { return std::max(v1, v2); }
+double ExpressionMax::DoEvaluate(const double v1, const double v2) const {
+    return std::max(v1, v2);
+}
 
 ExpressionCeiling::ExpressionCeiling(const Expression& e)
     : UnaryExpressionCell{ExpressionKind::Ceil, e, false, e.is_expanded()} {}
@@ -1642,7 +1741,9 @@ Expression ExpressionCeiling::EvaluatePartial(const Environment& env) const {
     return ceil(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionCeiling::Substitute(const Substitution& s) const { return ceil(get_argument().Substitute(s)); }
+Expression ExpressionCeiling::Substitute(const Substitution& s) const {
+    return ceil(get_argument().Substitute(s));
+}
 
 Expression ExpressionCeiling::Differentiate(const Variable& x) const {
     if (GetVariables().include(x)) {
@@ -1654,9 +1755,13 @@ Expression ExpressionCeiling::Differentiate(const Variable& x) const {
     }
 }
 
-ostream& ExpressionCeiling::Display(ostream& os) const { return os << "ceil(" << get_argument() << ")"; }
+ostream& ExpressionCeiling::Display(ostream& os) const {
+    return os << "ceil(" << get_argument() << ")";
+}
 
-double ExpressionCeiling::DoEvaluate(const double v) const { return std::ceil(v); }
+double ExpressionCeiling::DoEvaluate(const double v) const {
+    return std::ceil(v);
+}
 
 ExpressionFloor::ExpressionFloor(const Expression& e)
     : UnaryExpressionCell{ExpressionKind::Floor, e, false, e.is_expanded()} {}
@@ -1670,7 +1775,9 @@ Expression ExpressionFloor::EvaluatePartial(const Environment& env) const {
     return floor(get_argument().EvaluatePartial(env));
 }
 
-Expression ExpressionFloor::Substitute(const Substitution& s) const { return floor(get_argument().Substitute(s)); }
+Expression ExpressionFloor::Substitute(const Substitution& s) const {
+    return floor(get_argument().Substitute(s));
+}
 
 Expression ExpressionFloor::Differentiate(const Variable& x) const {
     if (GetVariables().include(x)) {
@@ -1682,9 +1789,13 @@ Expression ExpressionFloor::Differentiate(const Variable& x) const {
     }
 }
 
-ostream& ExpressionFloor::Display(ostream& os) const { return os << "floor(" << get_argument() << ")"; }
+ostream& ExpressionFloor::Display(ostream& os) const {
+    return os << "floor(" << get_argument() << ")";
+}
 
-double ExpressionFloor::DoEvaluate(const double v) const { return std::floor(v); }
+double ExpressionFloor::DoEvaluate(const double v) const {
+    return std::floor(v);
+}
 
 // ExpressionIfThenElse
 // --------------------
@@ -1796,7 +1907,9 @@ ExpressionUninterpretedFunction::ExpressionUninterpretedFunction(string name, ve
     : ExpressionCell{ExpressionKind::UninterpretedFunction, false,
                      all_of(arguments.begin(),
                             arguments.end(),
-                            [](const Expression& arg) { return arg.is_expanded(); })},
+                            [](const Expression& arg) {
+                                return arg.is_expanded();
+                            })},
       name_{std::move(name)},
       arguments_{std::move(arguments)} {}
 
@@ -1818,9 +1931,10 @@ bool ExpressionUninterpretedFunction::EqualTo(const ExpressionCell& e) const {
     // Expression::EqualTo guarantees the following assertion.
     DRAKE_ASSERT(get_kind() == e.get_kind());
     const ExpressionUninterpretedFunction& uf_e{static_cast<const ExpressionUninterpretedFunction&>(e)};
-    return name_ == uf_e.name_ &&
-           equal(arguments_.begin(), arguments_.end(), uf_e.arguments_.begin(), uf_e.arguments_.end(),
-                 [](const Expression& e1, const Expression& e2) { return e1.EqualTo(e2); });
+    return name_ == uf_e.name_ && equal(arguments_.begin(), arguments_.end(), uf_e.arguments_.begin(),
+                                        uf_e.arguments_.end(), [](const Expression& e1, const Expression& e2) {
+                                            return e1.EqualTo(e2);
+                                        });
 }
 
 bool ExpressionUninterpretedFunction::Less(const ExpressionCell& e) const {
@@ -1834,7 +1948,9 @@ bool ExpressionUninterpretedFunction::Less(const ExpressionCell& e) const {
         return false;
     }
     return lexicographical_compare(arguments_.begin(), arguments_.end(), uf_e.arguments_.begin(), uf_e.arguments_.end(),
-                                   [](const Expression& e1, const Expression& e2) { return e1.Less(e2); });
+                                   [](const Expression& e1, const Expression& e2) {
+                                       return e1.Less(e2);
+                                   });
 }
 
 double ExpressionUninterpretedFunction::Evaluate(const Environment&) const {
@@ -1895,30 +2011,78 @@ ostream& ExpressionUninterpretedFunction::Display(ostream& os) const {
     return os << ")";
 }
 
-bool is_variable(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Var; }
-bool is_addition(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Add; }
-bool is_multiplication(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Mul; }
-bool is_division(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Div; }
-bool is_log(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Log; }
-bool is_abs(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Abs; }
-bool is_exp(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Exp; }
-bool is_sqrt(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Sqrt; }
-bool is_pow(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Pow; }
-bool is_sin(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Sin; }
-bool is_cos(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Cos; }
-bool is_tan(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Tan; }
-bool is_asin(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Asin; }
-bool is_acos(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Acos; }
-bool is_atan(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Atan; }
-bool is_atan2(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Atan2; }
-bool is_sinh(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Sinh; }
-bool is_cosh(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Cosh; }
-bool is_tanh(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Tanh; }
-bool is_min(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Min; }
-bool is_max(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Max; }
-bool is_ceil(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Ceil; }
-bool is_floor(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::Floor; }
-bool is_if_then_else(const ExpressionCell& c) { return c.get_kind() == ExpressionKind::IfThenElse; }
+bool is_variable(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Var;
+}
+bool is_addition(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Add;
+}
+bool is_multiplication(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Mul;
+}
+bool is_division(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Div;
+}
+bool is_log(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Log;
+}
+bool is_abs(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Abs;
+}
+bool is_exp(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Exp;
+}
+bool is_sqrt(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Sqrt;
+}
+bool is_pow(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Pow;
+}
+bool is_sin(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Sin;
+}
+bool is_cos(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Cos;
+}
+bool is_tan(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Tan;
+}
+bool is_asin(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Asin;
+}
+bool is_acos(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Acos;
+}
+bool is_atan(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Atan;
+}
+bool is_atan2(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Atan2;
+}
+bool is_sinh(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Sinh;
+}
+bool is_cosh(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Cosh;
+}
+bool is_tanh(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Tanh;
+}
+bool is_min(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Min;
+}
+bool is_max(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Max;
+}
+bool is_ceil(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Ceil;
+}
+bool is_floor(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::Floor;
+}
+bool is_if_then_else(const ExpressionCell& c) {
+    return c.get_kind() == ExpressionKind::IfThenElse;
+}
 bool is_uninterpreted_function(const ExpressionCell& c) {
     return c.get_kind() == ExpressionKind::UninterpretedFunction;
 }

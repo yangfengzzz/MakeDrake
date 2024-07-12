@@ -706,7 +706,9 @@ namespace symbolic {
 template <typename Derived>
 [[nodiscard]] std::enable_if_t<std::is_same_v<typename Derived::Scalar, Polynomial>, MatrixLikewise<double, Derived>>
 Evaluate(const Eigen::MatrixBase<Derived>& m, const Environment& env) {
-    return m.unaryExpr([&env](const Polynomial& p) { return p.Evaluate(env); });
+    return m.unaryExpr([&env](const Polynomial& p) {
+        return p.Evaluate(env);
+    });
 }
 
 /** Computes the Jacobian matrix J of the vector function `f` with respect to

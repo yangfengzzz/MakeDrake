@@ -1,10 +1,9 @@
 #include <limits>
 
-#include <gtest/gtest.h>
-
 #include "common/ad/auto_diff.h"
 #include "common/test_utilities/eigen_matrix_compare.h"
 #include "common/test_utilities/expect_throws_message.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace ad {

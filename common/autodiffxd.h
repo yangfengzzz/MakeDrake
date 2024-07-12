@@ -406,27 +406,42 @@ DRAKE_EIGEN_AUTODIFFXD_DECLARE_GLOBAL_UNARY(log, using std::log; x.derivatives()
                                             x.value() = log(x.value());)
 
 DRAKE_EIGEN_AUTODIFFXD_DECLARE_GLOBAL_UNARY(
-        tan, using std::tan; using std::cos; auto sq = [](Scalar n) { return n * n; };
+        tan, using std::tan; using std::cos; auto sq =
+                                                     [](Scalar n) {
+                                                         return n * n;
+                                                     };
         x.derivatives() *= Scalar(1) / sq(cos(x.value()));
         x.value() = tan(x.value());)
 
 DRAKE_EIGEN_AUTODIFFXD_DECLARE_GLOBAL_UNARY(
-        asin, using std::sqrt; using std::asin; auto sq = [](Scalar n) { return n * n; };
+        asin, using std::sqrt; using std::asin; auto sq =
+                                                        [](Scalar n) {
+                                                            return n * n;
+                                                        };
         x.derivatives() *= Scalar(1) / sqrt(1 - sq(x.value()));
         x.value() = asin(x.value());)
 
 DRAKE_EIGEN_AUTODIFFXD_DECLARE_GLOBAL_UNARY(
-        acos, using std::sqrt; using std::acos; auto sq = [](Scalar n) { return n * n; };
+        acos, using std::sqrt; using std::acos; auto sq =
+                                                        [](Scalar n) {
+                                                            return n * n;
+                                                        };
         x.derivatives() *= Scalar(-1) / sqrt(1 - sq(x.value()));
         x.value() = acos(x.value());)
 
 DRAKE_EIGEN_AUTODIFFXD_DECLARE_GLOBAL_UNARY(
-        atan, using std::atan; auto sq = [](Scalar n) { return n * n; };
+        atan, using std::atan; auto sq =
+                                       [](Scalar n) {
+                                           return n * n;
+                                       };
         x.derivatives() *= Scalar(1) / (1 + sq(x.value()));
         x.value() = atan(x.value());)
 
 DRAKE_EIGEN_AUTODIFFXD_DECLARE_GLOBAL_UNARY(
-        tanh, using std::cosh; using std::tanh; auto sq = [](Scalar n) { return n * n; };
+        tanh, using std::cosh; using std::tanh; auto sq =
+                                                        [](Scalar n) {
+                                                            return n * n;
+                                                        };
         x.derivatives() *= Scalar(1) / sq(cosh(x.value()));
         x.value() = tanh(x.value());)
 

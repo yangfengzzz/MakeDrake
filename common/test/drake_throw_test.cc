@@ -2,9 +2,8 @@
 
 #include <stdexcept>
 
-#include <gtest/gtest.h>
-
 #include "common/test_utilities/expect_no_throw.h"
+#include <gtest/gtest.h>
 
 namespace {
 

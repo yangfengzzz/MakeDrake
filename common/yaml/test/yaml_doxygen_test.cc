@@ -17,7 +17,9 @@ namespace test {
 namespace {
 
 // (This is a test helper, not part of the Doxygen header.)
-std::string GetTempFilename() { return temp_directory() + "/filename.yaml"; }
+std::string GetTempFilename() {
+    return temp_directory() + "/filename.yaml";
+}
 
 // Write data to a scratch file and then return the temp's filename.
 // (This is a test helper, not part of the Doxygen header.)
@@ -89,7 +91,9 @@ struct MoreData {
 };
 
 // This is an example from the Doxygen header.
-MyData LoadMyData(const std::string& filename) { return LoadYamlFile<MyData>(filename); }
+MyData LoadMyData(const std::string& filename) {
+    return LoadYamlFile<MyData>(filename);
+}
 
 GTEST_TEST(YamlDoxygenTest, ReadingYamlFiles) {
     // This data is an example from the Doxygen header.
@@ -114,7 +118,9 @@ bar = 2.0, 3.0
 }
 
 // This is an example from the Doxygen header.
-MyData LoadMyData2(const std::string& filename) { return LoadYamlFile<MyData>(filename, "data_2"); }
+MyData LoadMyData2(const std::string& filename) {
+    return LoadYamlFile<MyData>(filename, "data_2");
+}
 
 GTEST_TEST(YamlDoxygenTest, TopLevelChild) {
     // This data is an example from the Doxygen header.

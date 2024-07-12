@@ -19,13 +19,19 @@ Rotation::Rotation(const math::RollPitchYaw<double>& arg) {
 
 bool Rotation::IsDeterministic() const {
     return std::visit<bool>(overloaded{
-                                    [](const Identity&) { return true; },
-                                    [](const Rpy& rpy) { return schema::IsDeterministic(rpy.deg); },
+                                    [](const Identity&) {
+                                        return true;
+                                    },
+                                    [](const Rpy& rpy) {
+                                        return schema::IsDeterministic(rpy.deg);
+                                    },
                                     [](const AngleAxis& aa) {
                                         return schema::IsDeterministic(aa.angle_deg) &&
                                                schema::IsDeterministic(aa.axis);
                                     },
-                                    [](const Uniform&) { return false; },
+                                    [](const Uniform&) {
+                                        return false;
+                                    },
                             },
                             value);
 }
@@ -33,7 +39,9 @@ bool Rotation::IsDeterministic() const {
 math::RotationMatrixd Rotation::GetDeterministicValue() const {
     DRAKE_THROW_UNLESS(this->IsDeterministic());
     const Matrix3<Expression> symbolic = this->ToSymbolic().matrix();
-    const Eigen::Matrix3d result = symbolic.unaryExpr([](const auto& e) { return ExtractDoubleOrThrow(e); });
+    const Eigen::Matrix3d result = symbolic.unaryExpr([](const auto& e) {
+        return ExtractDoubleOrThrow(e);
+    });
     return math::RotationMatrixd(result);
 }
 
@@ -56,7 +64,9 @@ Vector<Expression, Size> deg2rad(const DistributionVectorVariant<Size>& deg_var)
 math::RotationMatrix<Expression> Rotation::ToSymbolic() const {
     using Result = math::RotationMatrix<Expression>;
     return std::visit<Result>(overloaded{
-                                      [](const Identity&) { return Result{}; },
+                                      [](const Identity&) {
+                                          return Result{};
+                                      },
                                       [](const Rpy& rpy) {
                                           const Vector3<Expression> rpy_rad = deg2rad(rpy.deg);
                                           return Result{math::RollPitchYaw<Expression>(rpy_rad)};

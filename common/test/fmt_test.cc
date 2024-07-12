@@ -2,10 +2,9 @@
 
 #include <ostream>
 
+#include "common/drake_assert.h"
 #include <fmt/ranges.h>
 #include <gtest/gtest.h>
-
-#include "common/drake_assert.h"
 
 // This namespace contains example code (i.e., what a user would write) for
 // formatting a class (or struct) using the "format as" helper.

@@ -8,5 +8,6 @@ find_package(GTest CONFIG REQUIRED)
 
 add_executable(MakeDrake main.cpp)
 
+add_subdirectory(common)
 add_subdirectory(math)
 add_subdirectory(math/test)

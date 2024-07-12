@@ -49,4 +49,6 @@ int main(int argc, char* argv[]) {
 }  // namespace
 }  // namespace drake
 
-int main(int argc, char* argv[]) { return drake::main(argc, argv); }
+int main(int argc, char* argv[]) {
+    return drake::main(argc, argv);
+}

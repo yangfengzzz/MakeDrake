@@ -46,7 +46,9 @@ void RecursiveEmit(const internal::Node& node, YAML::EmitFromEvents* sink) {
         }
     }
     node.Visit(overloaded{
-            [&](const internal::Node::ScalarData& data) { sink->OnScalar(no_mark, tag, no_anchor, data.scalar); },
+            [&](const internal::Node::ScalarData& data) {
+                sink->OnScalar(no_mark, tag, no_anchor, data.scalar);
+            },
             [&](const internal::Node::SequenceData& data) {
                 // If all children are scalars, then format this sequence onto a
                 // single line; otherwise, format as a bulleted list.

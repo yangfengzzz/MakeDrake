@@ -41,7 +41,9 @@ Transform::Transform(const math::RigidTransformd& x) {
     rotation = schema::Rotation{x.rotation()};
 }
 
-bool Transform::IsDeterministic() const { return schema::IsDeterministic(translation) && rotation.IsDeterministic(); }
+bool Transform::IsDeterministic() const {
+    return schema::IsDeterministic(translation) && rotation.IsDeterministic();
+}
 
 math::RigidTransformd Transform::GetDeterministicValue() const {
     DRAKE_THROW_UNLESS(this->IsDeterministic());
@@ -77,7 +79,9 @@ math::RigidTransformd Transform::Mean() const {
     // Extract the underlying matrix of the transform, substitute the env so
     // that the expressions are now all constants, and then re-create the
     // RigidTransform wrapper around the matrix.
-    const auto to_double = [&env](const auto& x) { return x.Evaluate(env); };
+    const auto to_double = [&env](const auto& x) {
+        return x.Evaluate(env);
+    };
     return math::RigidTransformd(symbolic.GetAsMatrix34().unaryExpr(to_double));
 }
 

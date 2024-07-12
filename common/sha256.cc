@@ -72,6 +72,8 @@ std::optional<Sha256> Sha256::Parse(std::string_view sha256) {
     return result;
 }
 
-std::string Sha256::to_string() const { return picosha2::bytes_to_hex_string(bytes_); }
+std::string Sha256::to_string() const {
+    return picosha2::bytes_to_hex_string(bytes_);
+}
 
 }  // namespace drake

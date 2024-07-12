@@ -2,12 +2,11 @@
 
 #include <filesystem>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include "common/temp_directory.h"
 #include "common/test_utilities/expect_throws_message.h"
 #include "common/text_logging.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace {

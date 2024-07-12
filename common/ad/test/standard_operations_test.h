@@ -4,11 +4,10 @@
 #include <cmath>
 #include <limits>
 
+#include "common/test_utilities/eigen_matrix_compare.h"
 #include <Eigen/Core>
 #include <gtest/gtest.h>
 #include <unsupported/Eigen/AutoDiff>
-
-#include "common/test_utilities/eigen_matrix_compare.h"
 
 namespace drake {
 namespace test {

@@ -44,7 +44,9 @@ void Partials::MatchSizeOf(const Partials& other) {
     ThrowIfDifferentSize(other);
 }
 
-void Partials::Add(const Partials& other) { AddScaled(1.0, other); }
+void Partials::Add(const Partials& other) {
+    AddScaled(1.0, other);
+}
 
 void Partials::AddScaled(double scale, const Partials& other) {
     if (other.size() == 0) {

@@ -172,7 +172,9 @@ auto ExtractDoubleOrThrow(const Eigen::MatrixBase<Eigen::Matrix<Eigen::AutoDiffS
                                                                 MaxRowsAtCompileTime,
                                                                 MaxColsAtCompileTime>>& matrix) {
     return matrix
-            .unaryExpr([](const typename Eigen::AutoDiffScalar<DerType>& value) { return ExtractDoubleOrThrow(value); })
+            .unaryExpr([](const typename Eigen::AutoDiffScalar<DerType>& value) {
+                return ExtractDoubleOrThrow(value);
+            })
             .eval();
 }
 

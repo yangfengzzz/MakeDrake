@@ -7,14 +7,13 @@
 #include <stdexcept>
 #include <string>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include "common/drake_assert.h"
 #include "common/drake_path.h"
 #include "common/drake_throw.h"
 #include "common/test_utilities/expect_no_throw.h"
 #include "common/test_utilities/expect_throws_message.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using std::string;
 

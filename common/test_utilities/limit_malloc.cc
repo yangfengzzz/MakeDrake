@@ -232,9 +232,13 @@ LimitMalloc::LimitMalloc(LimitMallocParams args) {
     }
 }
 
-int LimitMalloc::num_allocations() const { return ActiveMonitor::load()->num_allocations(); }
+int LimitMalloc::num_allocations() const {
+    return ActiveMonitor::load()->num_allocations();
+}
 
-const LimitMallocParams& LimitMalloc::params() const { return ActiveMonitor::load()->params(); }
+const LimitMallocParams& LimitMalloc::params() const {
+    return ActiveMonitor::load()->params();
+}
 
 LimitMalloc::~LimitMalloc() {
     // Copy out the monitor's data before we delete it.
@@ -265,7 +269,9 @@ void* malloc(size_t size) {
     drake::test::ActiveMonitor::malloc(size);
     return __libc_malloc(size);
 }
-void free(void* ptr) { __libc_free(ptr); }
+void free(void* ptr) {
+    __libc_free(ptr);
+}
 void* calloc(size_t nmemb, size_t size) {
     drake::test::ActiveMonitor::calloc(nmemb, size);
     return __libc_calloc(nmemb, size);

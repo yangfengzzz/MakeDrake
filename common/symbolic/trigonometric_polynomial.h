@@ -77,7 +77,9 @@ MatrixLikewise<Expression, Derived> Substitute(const Eigen::MatrixBase<Derived>&
                   "Substitute only accepts a matrix of symbolic::Expression.");
     // Note that the return type is written out explicitly to help gcc 5 (on
     // ubuntu).
-    return m.unaryExpr([&subs](const Expression& e) { return Substitute(e, subs); });
+    return m.unaryExpr([&subs](const Expression& e) {
+        return Substitute(e, subs);
+    });
 }
 
 namespace internal {

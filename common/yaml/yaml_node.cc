@@ -57,15 +57,25 @@ Node Node::MakeNull() {
 NodeType Node::GetType() const {
     return std::visit<NodeType>(  // BR
             overloaded{
-                    [](const ScalarData&) { return NodeType::kScalar; },
-                    [](const SequenceData&) { return NodeType::kSequence; },
-                    [](const MappingData&) { return NodeType::kMapping; },
+                    [](const ScalarData&) {
+                        return NodeType::kScalar;
+                    },
+                    [](const SequenceData&) {
+                        return NodeType::kSequence;
+                    },
+                    [](const MappingData&) {
+                        return NodeType::kMapping;
+                    },
             },
             data_);
 }
 
 std::string_view Node::GetTypeString() const {
-    return std::visit([](auto&& data) { return GetNiceVariantName(data); }, data_);
+    return std::visit(
+            [](auto&& data) {
+                return GetNiceVariantName(data);
+            },
+            data_);
 }
 
 std::string_view Node::GetTypeString(NodeType type) {
@@ -83,11 +93,17 @@ std::string_view Node::GetTypeString(NodeType type) {
     DRAKE_UNREACHABLE();
 }
 
-bool Node::IsScalar() const { return std::holds_alternative<ScalarData>(data_); }
+bool Node::IsScalar() const {
+    return std::holds_alternative<ScalarData>(data_);
+}
 
-bool Node::IsSequence() const { return std::holds_alternative<SequenceData>(data_); }
+bool Node::IsSequence() const {
+    return std::holds_alternative<SequenceData>(data_);
+}
 
-bool Node::IsMapping() const { return std::holds_alternative<MappingData>(data_); }
+bool Node::IsMapping() const {
+    return std::holds_alternative<MappingData>(data_);
+}
 
 bool operator==(const Node& a, const Node& b) {
     // We need to compare the canonical form of a tag (i.e., its string).
@@ -100,16 +116,24 @@ bool operator==(const Node::Mark& a, const Node::Mark& b) {
     return std::tie(a.line, a.column) == std::tie(b.line, b.column);
 }
 
-bool operator==(const Node::ScalarData& a, const Node::ScalarData& b) { return a.scalar == b.scalar; }
+bool operator==(const Node::ScalarData& a, const Node::ScalarData& b) {
+    return a.scalar == b.scalar;
+}
 
-bool operator==(const Node::SequenceData& a, const Node::SequenceData& b) { return a.sequence == b.sequence; }
+bool operator==(const Node::SequenceData& a, const Node::SequenceData& b) {
+    return a.sequence == b.sequence;
+}
 
-bool operator==(const Node::MappingData& a, const Node::MappingData& b) { return a.mapping == b.mapping; }
+bool operator==(const Node::MappingData& a, const Node::MappingData& b) {
+    return a.mapping == b.mapping;
+}
 
 std::string_view Node::GetTag() const {
     return std::visit<std::string_view>(  // BR
             overloaded{
-                    [](const std::string& tag) { return std::string_view{tag}; },
+                    [](const std::string& tag) {
+                        return std::string_view{tag};
+                    },
                     [](const JsonSchemaTagInfo& info) {
                         switch (info.value) {
                             case JsonSchemaTag::kNull:
@@ -132,13 +156,19 @@ std::string_view Node::GetTag() const {
 bool Node::IsTagImportant() const {
     return std::visit<bool>(  // BR
             overloaded{
-                    [](const std::string&) { return false; },
-                    [](const JsonSchemaTagInfo& info) { return info.important; },
+                    [](const std::string&) {
+                        return false;
+                    },
+                    [](const JsonSchemaTagInfo& info) {
+                        return info.important;
+                    },
             },
             tag_);
 }
 
-void Node::SetTag(JsonSchemaTag tag, bool important) { tag_ = JsonSchemaTagInfo{.value = tag, .important = important}; }
+void Node::SetTag(JsonSchemaTag tag, bool important) {
+    tag_ = JsonSchemaTagInfo{.value = tag, .important = important};
+}
 
 void Node::SetTag(std::string tag) {
     if (tag.empty()) {
@@ -148,18 +178,28 @@ void Node::SetTag(std::string tag) {
     }
 }
 
-void Node::SetFilename(std::optional<std::string> filename) { filename_ = std::move(filename); }
+void Node::SetFilename(std::optional<std::string> filename) {
+    filename_ = std::move(filename);
+}
 
-const std::optional<std::string>& Node::GetFilename() const { return filename_; }
+const std::optional<std::string>& Node::GetFilename() const {
+    return filename_;
+}
 
-void Node::SetMark(std::optional<Mark> mark) { mark_ = mark; }
+void Node::SetMark(std::optional<Mark> mark) {
+    mark_ = mark;
+}
 
-const std::optional<Node::Mark>& Node::GetMark() const { return mark_; }
+const std::optional<Node::Mark>& Node::GetMark() const {
+    return mark_;
+}
 
 const std::string& Node::GetScalar() const {
     return *std::visit<const std::string*>(
             overloaded{
-                    [](const ScalarData& data) { return &data.scalar; },
+                    [](const ScalarData& data) {
+                        return &data.scalar;
+                    },
                     [](auto&& data) -> std::nullptr_t {
                         throw std::logic_error(fmt::format("Cannot Node::GetScalar on a {}", GetNiceVariantName(data)));
                     },
@@ -170,7 +210,9 @@ const std::string& Node::GetScalar() const {
 const std::vector<Node>& Node::GetSequence() const {
     return *std::visit<const std::vector<Node>*>(
             overloaded{
-                    [](const SequenceData& data) { return &data.sequence; },
+                    [](const SequenceData& data) {
+                        return &data.sequence;
+                    },
                     [](auto&& data) -> std::nullptr_t {
                         throw std::logic_error(
                                 fmt::format("Cannot Node::GetSequence on a {}", GetNiceVariantName(data)));
@@ -181,7 +223,9 @@ const std::vector<Node>& Node::GetSequence() const {
 
 void Node::Add(Node value) {
     return std::visit<void>(overloaded{
-                                    [&value](SequenceData& data) { data.sequence.push_back(std::move(value)); },
+                                    [&value](SequenceData& data) {
+                                        data.sequence.push_back(std::move(value));
+                                    },
                                     [](auto&& data) {
                                         throw std::logic_error(fmt::format("Cannot Node::Add(value) on a {}",
                                                                            GetNiceVariantName(data)));
@@ -193,7 +237,9 @@ void Node::Add(Node value) {
 const string_map<Node>& Node::GetMapping() const {
     return *visit<const string_map<Node>*>(
             overloaded{
-                    [](const MappingData& data) { return &data.mapping; },
+                    [](const MappingData& data) {
+                        return &data.mapping;
+                    },
                     [](auto&& data) -> std::nullptr_t {
                         throw std::logic_error(
                                 fmt::format("Cannot Node::GetMapping on a {}", GetNiceVariantName(data)));
@@ -227,7 +273,9 @@ void Node::Add(std::string key, Node value) {
 Node& Node::At(std::string_view key) {
     return *std::visit<Node*>(
             overloaded{
-                    [key](MappingData& data) { return &data.mapping.at(std::string{key}); },
+                    [key](MappingData& data) {
+                        return &data.mapping.at(std::string{key});
+                    },
                     [](auto&& data) -> std::nullptr_t {
                         throw std::logic_error(fmt::format("Cannot Node::At(key) on a {}", GetNiceVariantName(data)));
                     },
@@ -257,7 +305,9 @@ std::ostream& operator<<(std::ostream& os, const Node& node) {
         os << "!<" << node.GetTag() << "> ";
     }
     node.Visit(overloaded{
-            [&](const Node::ScalarData& data) { os << '"' << data.scalar << '"'; },
+            [&](const Node::ScalarData& data) {
+                os << '"' << data.scalar << '"';
+            },
             [&](const Node::SequenceData& data) {
                 os << "[";
                 bool first = true;

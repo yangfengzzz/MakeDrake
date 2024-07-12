@@ -370,7 +370,9 @@ Polynomial::Polynomial(const Expression& e, Variables indeterminates)
     DRAKE_ASSERT_VOID(CheckInvariant());
 }
 
-const Variables& Polynomial::indeterminates() const { return indeterminates_; }
+const Variables& Polynomial::indeterminates() const {
+    return indeterminates_;
+}
 
 void Polynomial::SetIndeterminates(const Variables& new_indeterminates) {
     if (new_indeterminates.IsSupersetOf(indeterminates_) &&
@@ -382,7 +384,9 @@ void Polynomial::SetIndeterminates(const Variables& new_indeterminates) {
     }
 }
 
-const Variables& Polynomial::decision_variables() const { return decision_variables_; }
+const Variables& Polynomial::decision_variables() const {
+    return decision_variables_;
+}
 
 int Polynomial::Degree(const Variable& v) const {
     int degree{0};
@@ -402,7 +406,9 @@ int Polynomial::TotalDegree() const {
     return degree;
 }
 
-const Polynomial::MapType& Polynomial::monomial_to_coefficient_map() const { return monomial_to_coefficient_map_; }
+const Polynomial::MapType& Polynomial::monomial_to_coefficient_map() const {
+    return monomial_to_coefficient_map_;
+}
 
 Expression Polynomial::ToExpression() const {
     // Returns ∑ᵢ (cᵢ * mᵢ).
@@ -743,7 +749,9 @@ Formula Polynomial::operator==(const Polynomial& p) const {
     return ret;
 }
 
-Formula Polynomial::operator!=(const Polynomial& p) const { return !(*this == p); }
+Formula Polynomial::operator!=(const Polynomial& p) const {
+    return !(*this == p);
+}
 
 Polynomial& Polynomial::AddProduct(const Expression& coeff, const Monomial& m) {
     DoAddProduct(coeff, m, &monomial_to_coefficient_map_);
@@ -939,9 +947,13 @@ bool IsEvenOrOdd(const Polynomial& p, bool check_even) {
 }
 }  // namespace
 
-bool Polynomial::IsEven() const { return IsEvenOrOdd(*this, true /* check_even=true */); }
+bool Polynomial::IsEven() const {
+    return IsEvenOrOdd(*this, true /* check_even=true */);
+}
 
-bool Polynomial::IsOdd() const { return IsEvenOrOdd(*this, false /* check_even=false*/); }
+bool Polynomial::IsOdd() const {
+    return IsEvenOrOdd(*this, false /* check_even=false*/);
+}
 
 Eigen::VectorXcd Polynomial::Roots() const {
     if (indeterminates().size() != 1) {
@@ -1006,46 +1018,116 @@ void Polynomial::CheckInvariant() const {
     }
 }
 
-Polynomial operator-(const Polynomial& p) { return -1 * p; }
-Polynomial operator+(Polynomial p1, const Polynomial& p2) { return p1 += p2; }
-Polynomial operator+(Polynomial p, const Monomial& m) { return p += m; }
-Polynomial operator+(const Monomial& m, Polynomial p) { return p += m; }
-Polynomial operator+(const Monomial& m1, const Monomial& m2) { return Polynomial(m1) + m2; }
-Polynomial operator+(Polynomial p, const double c) { return p += c; }
-Polynomial operator+(const double c, Polynomial p) { return p += c; }
-Polynomial operator+(const Monomial& m, const double c) { return Polynomial(m) + c; }
-Polynomial operator+(const double c, const Monomial& m) { return c + Polynomial(m); }
-Polynomial operator+(Polynomial p, const Variable& v) { return p += v; }
-Polynomial operator+(const Variable& v, Polynomial p) { return p += v; }
-Expression operator+(const Expression& e, const Polynomial& p) { return e + p.ToExpression(); }
-Expression operator+(const Polynomial& p, const Expression& e) { return p.ToExpression() + e; }
+Polynomial operator-(const Polynomial& p) {
+    return -1 * p;
+}
+Polynomial operator+(Polynomial p1, const Polynomial& p2) {
+    return p1 += p2;
+}
+Polynomial operator+(Polynomial p, const Monomial& m) {
+    return p += m;
+}
+Polynomial operator+(const Monomial& m, Polynomial p) {
+    return p += m;
+}
+Polynomial operator+(const Monomial& m1, const Monomial& m2) {
+    return Polynomial(m1) + m2;
+}
+Polynomial operator+(Polynomial p, const double c) {
+    return p += c;
+}
+Polynomial operator+(const double c, Polynomial p) {
+    return p += c;
+}
+Polynomial operator+(const Monomial& m, const double c) {
+    return Polynomial(m) + c;
+}
+Polynomial operator+(const double c, const Monomial& m) {
+    return c + Polynomial(m);
+}
+Polynomial operator+(Polynomial p, const Variable& v) {
+    return p += v;
+}
+Polynomial operator+(const Variable& v, Polynomial p) {
+    return p += v;
+}
+Expression operator+(const Expression& e, const Polynomial& p) {
+    return e + p.ToExpression();
+}
+Expression operator+(const Polynomial& p, const Expression& e) {
+    return p.ToExpression() + e;
+}
 
-Polynomial operator-(Polynomial p1, const Polynomial& p2) { return p1 -= p2; }
-Polynomial operator-(Polynomial p, const Monomial& m) { return p -= m; }
+Polynomial operator-(Polynomial p1, const Polynomial& p2) {
+    return p1 -= p2;
+}
+Polynomial operator-(Polynomial p, const Monomial& m) {
+    return p -= m;
+}
 Polynomial operator-(const Monomial& m, Polynomial p) {
     return p = -1 * p + m;  // p' = m - p = -1 * p + m.
 }
-Polynomial operator-(const Monomial& m1, const Monomial& m2) { return Polynomial(m1) - m2; }
-Polynomial operator-(Polynomial p, const double c) { return p -= c; }
-Polynomial operator-(const double c, Polynomial p) { return p = -p + c; }
-Polynomial operator-(const Monomial& m, const double c) { return Polynomial(m) - c; }
-Polynomial operator-(const double c, const Monomial& m) { return c - Polynomial(m); }
-Polynomial operator-(Polynomial p, const Variable& v) { return p -= v; }
-Polynomial operator-(const Variable& v, const Polynomial& p) { return Polynomial(v, p.indeterminates()) - p; }
-Expression operator-(const Expression& e, const Polynomial& p) { return e - p.ToExpression(); }
-Expression operator-(const Polynomial& p, const Expression& e) { return p.ToExpression() - e; }
+Polynomial operator-(const Monomial& m1, const Monomial& m2) {
+    return Polynomial(m1) - m2;
+}
+Polynomial operator-(Polynomial p, const double c) {
+    return p -= c;
+}
+Polynomial operator-(const double c, Polynomial p) {
+    return p = -p + c;
+}
+Polynomial operator-(const Monomial& m, const double c) {
+    return Polynomial(m) - c;
+}
+Polynomial operator-(const double c, const Monomial& m) {
+    return c - Polynomial(m);
+}
+Polynomial operator-(Polynomial p, const Variable& v) {
+    return p -= v;
+}
+Polynomial operator-(const Variable& v, const Polynomial& p) {
+    return Polynomial(v, p.indeterminates()) - p;
+}
+Expression operator-(const Expression& e, const Polynomial& p) {
+    return e - p.ToExpression();
+}
+Expression operator-(const Polynomial& p, const Expression& e) {
+    return p.ToExpression() - e;
+}
 
-Polynomial operator*(Polynomial p1, const Polynomial& p2) { return p1 *= p2; }
-Polynomial operator*(Polynomial p, const Monomial& m) { return p *= m; }
-Polynomial operator*(const Monomial& m, Polynomial p) { return p *= m; }
-Polynomial operator*(const double c, Polynomial p) { return p *= c; }
-Polynomial operator*(Polynomial p, const double c) { return p *= c; }
-Polynomial operator*(const Monomial& m, double c) { return Polynomial(m) * c; }
-Polynomial operator*(double c, const Monomial& m) { return c * Polynomial(m); }
-Polynomial operator*(Polynomial p, const Variable& v) { return p *= v; }
-Polynomial operator*(const Variable& v, Polynomial p) { return p *= v; }
-Expression operator*(const Expression& e, const Polynomial& p) { return e * p.ToExpression(); }
-Expression operator*(const Polynomial& p, const Expression& e) { return p.ToExpression() * e; }
+Polynomial operator*(Polynomial p1, const Polynomial& p2) {
+    return p1 *= p2;
+}
+Polynomial operator*(Polynomial p, const Monomial& m) {
+    return p *= m;
+}
+Polynomial operator*(const Monomial& m, Polynomial p) {
+    return p *= m;
+}
+Polynomial operator*(const double c, Polynomial p) {
+    return p *= c;
+}
+Polynomial operator*(Polynomial p, const double c) {
+    return p *= c;
+}
+Polynomial operator*(const Monomial& m, double c) {
+    return Polynomial(m) * c;
+}
+Polynomial operator*(double c, const Monomial& m) {
+    return c * Polynomial(m);
+}
+Polynomial operator*(Polynomial p, const Variable& v) {
+    return p *= v;
+}
+Polynomial operator*(const Variable& v, Polynomial p) {
+    return p *= v;
+}
+Expression operator*(const Expression& e, const Polynomial& p) {
+    return e * p.ToExpression();
+}
+Expression operator*(const Polynomial& p, const Expression& e) {
+    return p.ToExpression() * e;
+}
 
 Polynomial operator/(Polynomial p, const double v) {
     for (auto& item : p.monomial_to_coefficient_map_) {
@@ -1053,9 +1135,15 @@ Polynomial operator/(Polynomial p, const double v) {
     }
     return p;
 }
-Expression operator/(const double v, const Polynomial& p) { return v / p.ToExpression(); }
-Expression operator/(const Expression& e, const Polynomial& p) { return e / p.ToExpression(); }
-Expression operator/(const Polynomial& p, const Expression& e) { return p.ToExpression() / e; }
+Expression operator/(const double v, const Polynomial& p) {
+    return v / p.ToExpression();
+}
+Expression operator/(const Expression& e, const Polynomial& p) {
+    return e / p.ToExpression();
+}
+Expression operator/(const Polynomial& p, const Expression& e) {
+    return p.ToExpression() / e;
+}
 
 Polynomial pow(const Polynomial& p, int n) {
     // TODO(soonho-tri): Optimize this by not relying on ToExpression() method.

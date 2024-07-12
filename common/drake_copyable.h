@@ -80,7 +80,9 @@ that in a unit test.
     /* Fails at compile-time if copy-assign doesn't compile. */                                             \
     /* Note that we do not test the copy-ctor here, because  */                                             \
     /* it will not exist when Classname is abstract.         */                                             \
-    static void DrakeDefaultCopyAndMoveAndAssign_DoAssign(Classname* a, const Classname& b) { *a = b; }     \
+    static void DrakeDefaultCopyAndMoveAndAssign_DoAssign(Classname* a, const Classname& b) {               \
+        *a = b;                                                                                             \
+    }                                                                                                       \
     static_assert(&DrakeDefaultCopyAndMoveAndAssign_DoAssign == &DrakeDefaultCopyAndMoveAndAssign_DoAssign, \
                   "This assertion is never false; its only purpose is to "                                  \
                   "generate 'use of deleted function: operator=' errors "                                   \

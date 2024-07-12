@@ -172,7 +172,9 @@ TEST_F(SymbolicFormulaTest, LessKind) {
     // clang-format on
 }
 
-TEST_F(SymbolicFormulaTest, LessTrueFalse) { CheckOrdering({Formula::False(), Formula::True()}); }
+TEST_F(SymbolicFormulaTest, LessTrueFalse) {
+    CheckOrdering({Formula::False(), Formula::True()});
+}
 
 TEST_F(SymbolicFormulaTest, LessEq) {
     const Formula f1{x_ == y_};
@@ -746,7 +748,9 @@ TEST_F(SymbolicFormulaTest, DoubleNegationSimplification) {
     const vector<Formula> collection{b1_,   b2_,    tt_,   ff_,    f1_,    f2_,   f3_,       f4_,       f_eq_,   f_neq_,
                                      f_lt_, f_lte_, f_gt_, f_gte_, f_and_, f_or_, not_f_or_, f_forall_, f_isnan_};
     vector<Formula> negated_collection{collection.size()};
-    transform(collection.cbegin(), collection.cend(), negated_collection.begin(), [](const Formula& f) { return !f; });
+    transform(collection.cbegin(), collection.cend(), negated_collection.begin(), [](const Formula& f) {
+        return !f;
+    });
     for (size_t i = 0; i < collection.size(); ++i) {
         EXPECT_PRED2(FormulaEqual, collection[i], !(negated_collection[i]));
     }
@@ -1038,7 +1042,9 @@ TEST_F(SymbolicFormulaTest, GetOperandsDisjunction) {
     EXPECT_TRUE(formulas.contains(f4_));
 }
 
-TEST_F(SymbolicFormulaTest, GetOperand) { EXPECT_PRED2(FormulaEqual, get_operand(!f1_), f1_); }
+TEST_F(SymbolicFormulaTest, GetOperand) {
+    EXPECT_PRED2(FormulaEqual, get_operand(!f1_), f1_);
+}
 
 TEST_F(SymbolicFormulaTest, GetQuantifiedVariables) {
     const Variables vars{var_x_, var_y_};

@@ -3,11 +3,10 @@
 #include <cstdlib>
 #include <filesystem>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include "common/drake_assert.h"
 #include "common/temp_directory.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace internal {

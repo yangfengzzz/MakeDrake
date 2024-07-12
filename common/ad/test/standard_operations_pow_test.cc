@@ -23,8 +23,12 @@ TEST_F(StandardOperationsTest, PowAdsDouble) {
 //
 // For starters, when the exponent has an empty gradient the results should be
 // equivalent to pow(ADS,double).
-AutoDiffDut pow_no_exp_grad(const AutoDiffDut& base, const AutoDiffDut& exp) { return pow(base, exp); }
-AutoDiffDut pow_no_exp_grad(double base, const AutoDiffDut& exp) { return pow(base, exp); }
+AutoDiffDut pow_no_exp_grad(const AutoDiffDut& base, const AutoDiffDut& exp) {
+    return pow(base, exp);
+}
+AutoDiffDut pow_no_exp_grad(double base, const AutoDiffDut& exp) {
+    return pow(base, exp);
+}
 AutoDiff3 pow_no_exp_grad(const AutoDiff3& base, const AutoDiff3& exp) {
     DRAKE_DEMAND(exp.derivatives().isZero(0.0));
     return pow(base, exp.value());

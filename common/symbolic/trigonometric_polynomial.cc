@@ -345,7 +345,9 @@ private:
 
 }  // namespace
 
-Expression Substitute(const Expression& e, const SinCosSubstitution& subs) { return SinCosVisitor(subs).Substitute(e); }
+Expression Substitute(const Expression& e, const SinCosSubstitution& subs) {
+    return SinCosVisitor(subs).Substitute(e);
+}
 
 namespace internal {
 symbolic::RationalFunction SubstituteStereographicProjectionImpl(

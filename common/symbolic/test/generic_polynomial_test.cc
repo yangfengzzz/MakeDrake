@@ -570,9 +570,13 @@ void CheckUnaryMinus(const std::vector<Expression>& exprs) {
     }
 }
 
-TEST_F(SymbolicGenericPolynomialTest, UnaryMinusMonomialBasis) { CheckUnaryMinus<MonomialBasisElement>(exprs_); }
+TEST_F(SymbolicGenericPolynomialTest, UnaryMinusMonomialBasis) {
+    CheckUnaryMinus<MonomialBasisElement>(exprs_);
+}
 
-TEST_F(SymbolicGenericPolynomialTest, UnaryMinusChebyshevBasis) { CheckUnaryMinus<ChebyshevBasisElement>(exprs_); }
+TEST_F(SymbolicGenericPolynomialTest, UnaryMinusChebyshevBasis) {
+    CheckUnaryMinus<ChebyshevBasisElement>(exprs_);
+}
 
 template <typename BasisElement>
 void CheckMultiplicationPolynomialPolynomial(const std::vector<Expression>& exprs, double tol) {

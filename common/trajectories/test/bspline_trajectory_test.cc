@@ -126,8 +126,10 @@ TYPED_TEST(BsplineTrajectoryTests, MakeDerivativeTest) {
 
     // Verify that MakeDerivative() returns the expected results.
     std::unique_ptr<Trajectory<T>> derivative_trajectory = trajectory.MakeDerivative();
-    std::function<void(const Vector1<T>&, VectorX<T>*)> calc_value =
-            [&trajectory](const Vector1<T>& t, VectorX<T>* value) { *value = trajectory.value(t(0)); };
+    std::function<void(const Vector1<T>&, VectorX<T>*)> calc_value = [&trajectory](const Vector1<T>& t,
+                                                                                   VectorX<T>* value) {
+        *value = trajectory.value(t(0));
+    };
     const int num_times = 100;
     VectorX<T> t = VectorX<T>::LinSpaced(num_times, trajectory.start_time(), trajectory.end_time());
     for (int k = 0; k < num_times; ++k) {

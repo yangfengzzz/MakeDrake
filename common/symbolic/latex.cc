@@ -311,9 +311,13 @@ private:
 
 }  // namespace
 
-string ToLatex(const Expression& e, int precision) { return LatexVisitor{precision}.Latex(e); }
+string ToLatex(const Expression& e, int precision) {
+    return LatexVisitor{precision}.Latex(e);
+}
 
-string ToLatex(const Formula& f, int precision) { return LatexVisitor{precision}.Latex(f); }
+string ToLatex(const Formula& f, int precision) {
+    return LatexVisitor{precision}.Latex(f);
+}
 
 string ToLatex(double val, int precision) {
     if (std::isnan(val)) {

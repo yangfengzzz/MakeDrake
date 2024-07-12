@@ -5,10 +5,9 @@
 #include <string>
 #include <thread>
 
-#include <gtest/gtest.h>
-
 #include "common/drake_assert.h"
 #include "common/never_destroyed.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 

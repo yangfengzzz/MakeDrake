@@ -547,7 +547,9 @@ template <typename T>
 PiecewisePolynomial<T> PiecewisePolynomial<T>::Transpose() const {
     std::vector<PolynomialMatrix> transposed;
     std::transform(polynomials_.begin(), polynomials_.end(), std::back_inserter(transposed),
-                   [](const PolynomialMatrix& matrix) { return matrix.transpose(); });
+                   [](const PolynomialMatrix& matrix) {
+                       return matrix.transpose();
+                   });
     return PiecewisePolynomial<T>(transposed, this->breaks());
 }
 

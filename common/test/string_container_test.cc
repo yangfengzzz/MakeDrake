@@ -1,10 +1,9 @@
-#include <gtest/gtest.h>
-
 #include "common/string_map.h"
 #include "common/string_set.h"
 #include "common/string_unordered_map.h"
 #include "common/string_unordered_set.h"
 #include "common/test_utilities/limit_malloc.h"
+#include <gtest/gtest.h>
 
 namespace drake {
 namespace {

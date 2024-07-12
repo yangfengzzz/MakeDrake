@@ -31,8 +31,9 @@ namespace {
 // Computes the total degree of a monomial. This method is used in a
 // constructor of Monomial to set its total degree at construction.
 int TotalDegree(const map<Variable, int>& powers) {
-    return accumulate(powers.begin(), powers.end(), 0,
-                      [](const int degree, const pair<const Variable, int>& p) { return degree + p.second; });
+    return accumulate(powers.begin(), powers.end(), 0, [](const int degree, const pair<const Variable, int>& p) {
+        return degree + p.second;
+    });
 }
 
 // Converts a symbolic expression @p e into an internal representation of
@@ -167,7 +168,9 @@ bool Monomial::operator==(const Monomial& m) const {
     return true;
 }
 
-bool Monomial::operator!=(const Monomial& m) const { return !(*this == m); }
+bool Monomial::operator!=(const Monomial& m) const {
+    return !(*this == m);
+}
 
 double Monomial::Evaluate(const Environment& env) const {
     return accumulate(powers_.begin(), powers_.end(), 1.0,
@@ -229,7 +232,9 @@ pair<double, Monomial> Monomial::EvaluatePartial(const Environment& env) const {
     return make_pair(coeff, Monomial(new_powers));
 }
 
-Expression Monomial::ToExpression() const { return ExpressionMulFactory(powers_).GetExpression(); }
+Expression Monomial::ToExpression() const {
+    return ExpressionMulFactory(powers_).GetExpression();
+}
 
 Monomial& Monomial::operator*=(const Monomial& m) {
     for (const auto& p : m.get_powers()) {
@@ -289,7 +294,9 @@ Monomial operator*(Monomial m1, const Monomial& m2) {
     return m1;
 }
 
-Monomial pow(Monomial m, const int p) { return m.pow_in_place(p); }
+Monomial pow(Monomial m, const int p) {
+    return m.pow_in_place(p);
+}
 
 }  // namespace symbolic
 }  // namespace drake
