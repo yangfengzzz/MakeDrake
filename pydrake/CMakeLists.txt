@@ -7,9 +7,6 @@
 # create sample app project
 project(pydrake LANGUAGES C CXX)
 
-find_package(Python COMPONENTS Interpreter Development)
-find_package(pybind11 CONFIG)
-
 set(AUTODIFF_FILES
         autodiffutils/autodiffutils_py_everything.cc
 )
@@ -35,10 +32,10 @@ set(GEOMETRY_FILES
 )
 
 set(MANIPULATION_FILES
-        manipulation/manipulation_py.cc
-        manipulation/manipulation_py_kuka_iiwa.cc
-        manipulation/manipulation_py_schunk_wsg.cc
-        manipulation/manipulation_py_util.cc
+#        manipulation/manipulation_py.cc
+#        manipulation/manipulation_py_kuka_iiwa.cc
+#        manipulation/manipulation_py_schunk_wsg.cc
+#        manipulation/manipulation_py_util.cc
 )
 
 set(MATH_FILES
@@ -158,5 +155,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Eigen3::Eigen
         fmt::fmt-header-only
-        pybind11::headers
+        pybind11_headers
+        Python3::Python
+        lcm_types
 )

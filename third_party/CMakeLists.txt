@@ -33,3 +33,5 @@ target_link_libraries(conex PRIVATE
 )
 
 set_target_properties(conex PROPERTIES FOLDER "ThirdParty" POSITION_INDEPENDENT_CODE ON)
+
+add_subdirectory(pybind11)

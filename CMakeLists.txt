@@ -25,6 +25,7 @@ find_package(nanoflann CONFIG REQUIRED)
 find_package(tinyxml2 CONFIG REQUIRED)
 find_package(sdformat13 CONFIG REQUIRED)
 find_package(GLIB2 REQUIRED)
+find_package(Python3 COMPONENTS Development REQUIRED)
 
 add_subdirectory(third_party)
 add_subdirectory(drake)

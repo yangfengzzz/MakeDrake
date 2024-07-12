@@ -63,7 +63,7 @@
     "name" : "sdformat13",
     "version>=" : "13.6.0"
   }, {
-    "name" : "pybind11",
-    "version>=" : "2.13.1"
+    "name" : "python3",
+    "version>=" : "3.11.8#4"
   } ]
 }
