@@ -15,7 +15,7 @@ namespace solvers {
  * @return The minimal integer no smaller than log₂(n).
  */
 constexpr int CeilLog2(int n) {
-  return n == 1 ? 0 : 1 + CeilLog2((n + 1) / 2);
+    return n == 1 ? 0 : 1 + CeilLog2((n + 1) / 2);
 }
 
 /**
@@ -30,14 +30,14 @@ constexpr int CeilLog2(int n) {
  */
 template <int NumLambda>
 struct LogarithmicSos2NewBinaryVariables {
-  static constexpr int Rows = CeilLog2(NumLambda - 1);
-  typedef VectorDecisionVariable<Rows> type;
+    static constexpr int Rows = CeilLog2(NumLambda - 1);
+    typedef VectorDecisionVariable<Rows> type;
 };
 
 template <>
 struct LogarithmicSos2NewBinaryVariables<Eigen::Dynamic> {
-  typedef VectorXDecisionVariable type;
-  static const int Rows = Eigen::Dynamic;
+    typedef VectorXDecisionVariable type;
+    static const int Rows = Eigen::Dynamic;
 };
 
 /**
@@ -67,29 +67,24 @@ struct LogarithmicSos2NewBinaryVariables<Eigen::Dynamic> {
  * (1, 1) represents integer 2, so only λ(2) and λ(3) can be strictly positive.
  */
 template <typename Derived>
-typename std::enable_if_t<
-    drake::is_eigen_vector_of<Derived, symbolic::Expression>::value,
-    typename LogarithmicSos2NewBinaryVariables<
-        Derived::RowsAtCompileTime>::type>
+typename std::enable_if_t<drake::is_eigen_vector_of<Derived, symbolic::Expression>::value,
+                          typename LogarithmicSos2NewBinaryVariables<Derived::RowsAtCompileTime>::type>
 AddLogarithmicSos2Constraint(MathematicalProgram* prog,
                              const Eigen::MatrixBase<Derived>& lambda,
                              const std::string& binary_variable_name = "y") {
-  const int binary_variable_size = CeilLog2(lambda.rows() - 1);
-  const auto y = prog->NewBinaryVariables<
-      LogarithmicSos2NewBinaryVariables<Derived::RowsAtCompileTime>::Rows, 1>(
-      binary_variable_size, 1, binary_variable_name);
-  AddLogarithmicSos2Constraint(prog, lambda,
-                               y.template cast<symbolic::Expression>());
-  return y;
+    const int binary_variable_size = CeilLog2(lambda.rows() - 1);
+    const auto y = prog->NewBinaryVariables<LogarithmicSos2NewBinaryVariables<Derived::RowsAtCompileTime>::Rows, 1>(
+            binary_variable_size, 1, binary_variable_name);
+    AddLogarithmicSos2Constraint(prog, lambda, y.template cast<symbolic::Expression>());
+    return y;
 }
 
 /** Adds the special ordered set 2 (SOS2) constraint,
  * @see AddLogarithmicSos2Constraint.
  */
-void AddLogarithmicSos2Constraint(
-    MathematicalProgram* prog,
-    const Eigen::Ref<const VectorX<symbolic::Expression>>& lambda,
-    const Eigen::Ref<const VectorX<symbolic::Expression>>& y);
+void AddLogarithmicSos2Constraint(MathematicalProgram* prog,
+                                  const Eigen::Ref<const VectorX<symbolic::Expression>>& lambda,
+                                  const Eigen::Ref<const VectorX<symbolic::Expression>>& y);
 
 /**
  * Adds the special ordered set 2 (SOS2) constraint. y(i) takes binary values
@@ -106,10 +101,9 @@ void AddLogarithmicSos2Constraint(
  * @param y y(i) takes binary value, and determines which two entries in λ can
  * be strictly positive. Throw a runtime error if y.rows() != lambda.rows() - 1.
  */
-void AddSos2Constraint(
-    MathematicalProgram* prog,
-    const Eigen::Ref<const VectorX<symbolic::Expression>>& lambda,
-    const Eigen::Ref<const VectorX<symbolic::Expression>>& y);
+void AddSos2Constraint(MathematicalProgram* prog,
+                       const Eigen::Ref<const VectorX<symbolic::Expression>>& lambda,
+                       const Eigen::Ref<const VectorX<symbolic::Expression>>& y);
 
 /**
  * Adds the special ordered set of type 1 (SOS1) constraint. Namely
@@ -135,11 +129,10 @@ void AddSos2Constraint(
  * @throws std::exception if @p binary_encoding has a non-binary entry (0,
  * 1).
  */
-void AddLogarithmicSos1Constraint(
-    MathematicalProgram* prog,
-    const Eigen::Ref<const VectorX<symbolic::Expression>>& lambda,
-    const Eigen::Ref<const VectorXDecisionVariable>& y,
-    const Eigen::Ref<const Eigen::MatrixXi>& binary_encoding);
+void AddLogarithmicSos1Constraint(MathematicalProgram* prog,
+                                  const Eigen::Ref<const VectorX<symbolic::Expression>>& lambda,
+                                  const Eigen::Ref<const VectorXDecisionVariable>& y,
+                                  const Eigen::Ref<const Eigen::MatrixXi>& binary_encoding);
 
 /**
  * Adds the special ordered set of type 1 (SOS1) constraint. Namely
@@ -164,8 +157,8 @@ void AddLogarithmicSos1Constraint(
  * suppose n = 8, i = 5, then y is a vector of size ⌈log₂(n)⌉ = 3, and the value
  * of y is (1, 1, 0) which equals to 5 according to reflected Gray code.
  */
-std::pair<VectorX<symbolic::Variable>, VectorX<symbolic::Variable>>
-AddLogarithmicSos1Constraint(MathematicalProgram* prog, int num_lambda);
+std::pair<VectorX<symbolic::Variable>, VectorX<symbolic::Variable>> AddLogarithmicSos1Constraint(
+        MathematicalProgram* prog, int num_lambda);
 
 /**
  * For a continuous variable whose range is cut into small intervals, we will
@@ -239,77 +232,64 @@ std::ostream& operator<<(std::ostream& os, const IntervalBinning& binning);
  * in this function. It is the user's responsibility to ensure that these
  * constraints are enforced.
  */
-template <typename DerivedPhiX, typename DerivedPhiY, typename DerivedBx,
-          typename DerivedBy>
-typename std::enable_if_t<
-    is_eigen_vector_of<DerivedPhiX, double>::value &&
-        is_eigen_vector_of<DerivedPhiY, double>::value &&
-        is_eigen_vector_of<DerivedBx, symbolic::Expression>::value &&
-        is_eigen_vector_of<DerivedBy, symbolic::Expression>::value,
-    MatrixDecisionVariable<DerivedPhiX::RowsAtCompileTime,
-                           DerivedPhiY::RowsAtCompileTime>>
-AddBilinearProductMcCormickEnvelopeSos2(
-    MathematicalProgram* prog, const symbolic::Variable& x,
-    const symbolic::Variable& y, const symbolic::Expression& w,
-    const DerivedPhiX& phi_x, const DerivedPhiY& phi_y, const DerivedBx& Bx,
-    const DerivedBy& By, IntervalBinning binning) {
-  switch (binning) {
-    case IntervalBinning::kLogarithmic:
-      DRAKE_ASSERT(Bx.rows() == CeilLog2(phi_x.rows() - 1));
-      DRAKE_ASSERT(By.rows() == CeilLog2(phi_y.rows() - 1));
-      break;
-    case IntervalBinning::kLinear:
-      DRAKE_ASSERT(Bx.rows() == phi_x.rows() - 1);
-      DRAKE_ASSERT(By.rows() == phi_y.rows() - 1);
-      break;
-  }
-  const int num_phi_x = phi_x.rows();
-  const int num_phi_y = phi_y.rows();
-  auto lambda = prog->NewContinuousVariables<DerivedPhiX::RowsAtCompileTime,
-                                             DerivedPhiY::RowsAtCompileTime>(
-      num_phi_x, num_phi_y, "lambda");
-
-  prog->AddBoundingBoxConstraint(0, 1, lambda);
-
-  symbolic::Expression x_convex_combination{0};
-  symbolic::Expression y_convex_combination{0};
-  symbolic::Expression w_convex_combination{0};
-  for (int i = 0; i < num_phi_x; ++i) {
-    for (int j = 0; j < num_phi_y; ++j) {
-      x_convex_combination += lambda(i, j) * phi_x(i);
-      y_convex_combination += lambda(i, j) * phi_y(j);
-      w_convex_combination += lambda(i, j) * phi_x(i) * phi_y(j);
+template <typename DerivedPhiX, typename DerivedPhiY, typename DerivedBx, typename DerivedBy>
+typename std::enable_if_t<is_eigen_vector_of<DerivedPhiX, double>::value &&
+                                  is_eigen_vector_of<DerivedPhiY, double>::value &&
+                                  is_eigen_vector_of<DerivedBx, symbolic::Expression>::value &&
+                                  is_eigen_vector_of<DerivedBy, symbolic::Expression>::value,
+                          MatrixDecisionVariable<DerivedPhiX::RowsAtCompileTime, DerivedPhiY::RowsAtCompileTime>>
+AddBilinearProductMcCormickEnvelopeSos2(MathematicalProgram* prog,
+                                        const symbolic::Variable& x,
+                                        const symbolic::Variable& y,
+                                        const symbolic::Expression& w,
+                                        const DerivedPhiX& phi_x,
+                                        const DerivedPhiY& phi_y,
+                                        const DerivedBx& Bx,
+                                        const DerivedBy& By,
+                                        IntervalBinning binning) {
+    switch (binning) {
+        case IntervalBinning::kLogarithmic:
+            DRAKE_ASSERT(Bx.rows() == CeilLog2(phi_x.rows() - 1));
+            DRAKE_ASSERT(By.rows() == CeilLog2(phi_y.rows() - 1));
+            break;
+        case IntervalBinning::kLinear:
+            DRAKE_ASSERT(Bx.rows() == phi_x.rows() - 1);
+            DRAKE_ASSERT(By.rows() == phi_y.rows() - 1);
+            break;
     }
-  }
-  prog->AddLinearConstraint(x == x_convex_combination);
-  prog->AddLinearConstraint(y == y_convex_combination);
-  prog->AddLinearConstraint(w == w_convex_combination);
+    const int num_phi_x = phi_x.rows();
+    const int num_phi_y = phi_y.rows();
+    auto lambda = prog->NewContinuousVariables<DerivedPhiX::RowsAtCompileTime, DerivedPhiY::RowsAtCompileTime>(
+            num_phi_x, num_phi_y, "lambda");
 
-  switch (binning) {
-    case IntervalBinning::kLogarithmic:
-      AddLogarithmicSos2Constraint(
-          prog, lambda.template cast<symbolic::Expression>().rowwise().sum(),
-          Bx);
-      AddLogarithmicSos2Constraint(prog,
-                                   lambda.template cast<symbolic::Expression>()
-                                       .colwise()
-                                       .sum()
-                                       .transpose(),
-                                   By);
-      break;
-    case IntervalBinning::kLinear:
-      AddSos2Constraint(
-          prog, lambda.template cast<symbolic::Expression>().rowwise().sum(),
-          Bx);
-      AddSos2Constraint(prog,
-                        lambda.template cast<symbolic::Expression>()
-                            .colwise()
-                            .sum()
-                            .transpose(),
-                        By);
-      break;
-  }
-  return lambda;
+    prog->AddBoundingBoxConstraint(0, 1, lambda);
+
+    symbolic::Expression x_convex_combination{0};
+    symbolic::Expression y_convex_combination{0};
+    symbolic::Expression w_convex_combination{0};
+    for (int i = 0; i < num_phi_x; ++i) {
+        for (int j = 0; j < num_phi_y; ++j) {
+            x_convex_combination += lambda(i, j) * phi_x(i);
+            y_convex_combination += lambda(i, j) * phi_y(j);
+            w_convex_combination += lambda(i, j) * phi_x(i) * phi_y(j);
+        }
+    }
+    prog->AddLinearConstraint(x == x_convex_combination);
+    prog->AddLinearConstraint(y == y_convex_combination);
+    prog->AddLinearConstraint(w == w_convex_combination);
+
+    switch (binning) {
+        case IntervalBinning::kLogarithmic:
+            AddLogarithmicSos2Constraint(prog, lambda.template cast<symbolic::Expression>().rowwise().sum(), Bx);
+            AddLogarithmicSos2Constraint(prog, lambda.template cast<symbolic::Expression>().colwise().sum().transpose(),
+                                         By);
+            break;
+        case IntervalBinning::kLinear:
+            AddSos2Constraint(prog, lambda.template cast<symbolic::Expression>().rowwise().sum(), Bx);
+            AddSos2Constraint(prog, lambda.template cast<symbolic::Expression>().colwise().sum().transpose(), By);
+            break;
+    }
+    return lambda;
 }
 
 /**
@@ -403,16 +383,16 @@ AddBilinearProductMcCormickEnvelopeSos2(
  * McCormick envelope of z = x * y, but these two cutting planes "might" improve
  * the computation speed in the mixed-integer solver.
  */
-void AddBilinearProductMcCormickEnvelopeMultipleChoice(
-    MathematicalProgram* prog, const symbolic::Variable& x,
-    const symbolic::Variable& y, const symbolic::Expression& w,
-    const Eigen::Ref<const Eigen::VectorXd>& phi_x,
-    const Eigen::Ref<const Eigen::VectorXd>& phi_y,
-    const Eigen::Ref<const VectorX<symbolic::Expression>>& Bx,
-    const Eigen::Ref<const VectorX<symbolic::Expression>>& By);
+void AddBilinearProductMcCormickEnvelopeMultipleChoice(MathematicalProgram* prog,
+                                                       const symbolic::Variable& x,
+                                                       const symbolic::Variable& y,
+                                                       const symbolic::Expression& w,
+                                                       const Eigen::Ref<const Eigen::VectorXd>& phi_x,
+                                                       const Eigen::Ref<const Eigen::VectorXd>& phi_y,
+                                                       const Eigen::Ref<const VectorX<symbolic::Expression>>& Bx,
+                                                       const Eigen::Ref<const VectorX<symbolic::Expression>>& By);
 
 }  // namespace solvers
 }  // namespace drake
 
-DRAKE_FORMATTER_AS(, drake::solvers, IntervalBinning, x,
-                   drake::solvers::to_string(x))
+DRAKE_FORMATTER_AS(, drake::solvers, IntervalBinning, x, drake::solvers::to_string(x))

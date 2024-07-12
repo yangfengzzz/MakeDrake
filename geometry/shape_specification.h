@@ -58,138 +58,138 @@ class Sphere;
  Shape classes must be defined within Drake directly (and in this h/cc file
  pair in particular). */
 class Shape {
- public:
-  virtual ~Shape();
+public:
+    virtual ~Shape();
 
-  /** Causes this description to be reified in the given `reifier`. Each
-   concrete subclass must invoke the single, matching method on the reifier.
-   Provides optional user-data (cast as a void*) for the reifier to consume. */
-  void Reify(ShapeReifier* reifier, void* user_data = nullptr) const;
+    /** Causes this description to be reified in the given `reifier`. Each
+     concrete subclass must invoke the single, matching method on the reifier.
+     Provides optional user-data (cast as a void*) for the reifier to consume. */
+    void Reify(ShapeReifier* reifier, void* user_data = nullptr) const;
 
-  /** Creates a unique copy of this shape. */
-  std::unique_ptr<Shape> Clone() const;
+    /** Creates a unique copy of this shape. */
+    std::unique_ptr<Shape> Clone() const;
 
-  /** Returns the (unqualified) type name of this Shape, e.g., "Box". */
-  std::string_view type_name() const { return do_type_name(); }
+    /** Returns the (unqualified) type name of this Shape, e.g., "Box". */
+    std::string_view type_name() const { return do_type_name(); }
 
-  /** Returns a string representation of this shape. */
-  std::string to_string() const { return do_to_string(); }
+    /** Returns a string representation of this shape. */
+    std::string to_string() const { return do_to_string(); }
 
-  /** Calls the given `visitor` function with `*this` as the sole argument, but
-  with `*this` downcast to be the shape's concrete subclass. For example, if
-  this shape is a %Box then calls `visitor(static_cast<const Box&>(*this))`.
-  @tparam ReturnType The return type to coerce return values into. When not
-  `void`, anything returned by the visitor must be implicitly convertible to
-  this type. When `void`, the return type will be whatever the Vistor's call
-  operator returns by default.
+    /** Calls the given `visitor` function with `*this` as the sole argument, but
+    with `*this` downcast to be the shape's concrete subclass. For example, if
+    this shape is a %Box then calls `visitor(static_cast<const Box&>(*this))`.
+    @tparam ReturnType The return type to coerce return values into. When not
+    `void`, anything returned by the visitor must be implicitly convertible to
+    this type. When `void`, the return type will be whatever the Vistor's call
+    operator returns by default.
 
-  To see examples of how this is used, you can check the Drake source code,
-  e.g., check the implementation of CalcVolume() for one example. */
-  template <typename ReturnType = void, typename Visitor>
-  decltype(auto) Visit(Visitor&& visitor) const {
-    if constexpr (std::is_same_v<ReturnType, void>) {
-      return std::visit(
-          [&visitor](auto* shape) {
-            return visitor(*shape);
-          },
-          get_variant_this());
-    } else {
-      return std::visit(
-          [&visitor](auto* shape) -> ReturnType {
-            return visitor(*shape);
-          },
-          get_variant_this());
+    To see examples of how this is used, you can check the Drake source code,
+    e.g., check the implementation of CalcVolume() for one example. */
+    template <typename ReturnType = void, typename Visitor>
+    decltype(auto) Visit(Visitor&& visitor) const {
+        if constexpr (std::is_same_v<ReturnType, void>) {
+            return std::visit(
+                    [&visitor](auto* shape) {
+                        return visitor(*shape);
+                    },
+                    get_variant_this());
+        } else {
+            return std::visit(
+                    [&visitor](auto* shape) -> ReturnType {
+                        return visitor(*shape);
+                    },
+                    get_variant_this());
+        }
     }
-  }
 
- protected:
-  /** (Internal use only) Constructor for use by derived classes.
-  All subclasses of Shape must be marked `final`. */
-  Shape();
+protected:
+    /** (Internal use only) Constructor for use by derived classes.
+    All subclasses of Shape must be marked `final`. */
+    Shape();
 
-  // This is DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN, marked "internal use only".
-  /** (Internal use only) For derived classes. */
-  Shape(const Shape&) = default;
-  /** (Internal use only) For derived classes. */
-  Shape& operator=(const Shape&) = default;
-  /** (Internal use only) For derived classes. */
-  Shape(Shape&&) = default;
-  /** (Internal use only) For derived classes. */
-  Shape& operator=(Shape&&) = default;
+    // This is DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN, marked "internal use only".
+    /** (Internal use only) For derived classes. */
+    Shape(const Shape&) = default;
+    /** (Internal use only) For derived classes. */
+    Shape& operator=(const Shape&) = default;
+    /** (Internal use only) For derived classes. */
+    Shape(Shape&&) = default;
+    /** (Internal use only) For derived classes. */
+    Shape& operator=(Shape&&) = default;
 
-  /** (Internal use only) NVI for Reify(). */
-  virtual void DoReify(ShapeReifier*, void*) const = 0;
+    /** (Internal use only) NVI for Reify(). */
+    virtual void DoReify(ShapeReifier*, void*) const = 0;
 
-  /** (Internal use only) NVI for Clone(). */
-  virtual std::unique_ptr<Shape> DoClone() const = 0;
+    /** (Internal use only) NVI for Clone(). */
+    virtual std::unique_ptr<Shape> DoClone() const = 0;
 
-  /** (Internal use only) NVI for type_name(). */
-  virtual std::string_view do_type_name() const = 0;
+    /** (Internal use only) NVI for type_name(). */
+    virtual std::string_view do_type_name() const = 0;
 
-  /** (Internal use only) NVI for to_string(). */
-  virtual std::string do_to_string() const = 0;
+    /** (Internal use only) NVI for to_string(). */
+    virtual std::string do_to_string() const = 0;
 
-  /** (Internal use only) All concrete subclasses, as const pointers. */
-  using VariantShapeConstPtr = std::variant<  //
-      const Box*,                             //
-      const Capsule*,                         //
-      const Convex*,                          //
-      const Cylinder*,                        //
-      const Ellipsoid*,                       //
-      const HalfSpace*,                       //
-      const Mesh*,                            //
-      const MeshcatCone*,                     //
-      const Sphere*>;
+    /** (Internal use only) All concrete subclasses, as const pointers. */
+    using VariantShapeConstPtr = std::variant<  //
+            const Box*,                         //
+            const Capsule*,                     //
+            const Convex*,                      //
+            const Cylinder*,                    //
+            const Ellipsoid*,                   //
+            const HalfSpace*,                   //
+            const Mesh*,                        //
+            const MeshcatCone*,                 //
+            const Sphere*>;
 
-  /** (Internal use only) NVI-like helper function for Visit(). */
-  virtual VariantShapeConstPtr get_variant_this() const = 0;
+    /** (Internal use only) NVI-like helper function for Visit(). */
+    virtual VariantShapeConstPtr get_variant_this() const = 0;
 };
 
 /** Definition of a box. The box is centered on the origin of its canonical
  frame with its dimensions aligned with the frame's axes. The size of the box
  is given by three sizes. */
 class Box final : public Shape {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Box);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Box);
 
-  /** Constructs a box with the given `width`, `depth`, and `height`, which
-   specify the box's dimension along the canonical x-, y-, and z-axes,
-   respectively.
-   @throws std::exception if `width`, `depth` or `height` are not strictly
-   positive. */
-  Box(double width, double depth, double height);
+    /** Constructs a box with the given `width`, `depth`, and `height`, which
+     specify the box's dimension along the canonical x-, y-, and z-axes,
+     respectively.
+     @throws std::exception if `width`, `depth` or `height` are not strictly
+     positive. */
+    Box(double width, double depth, double height);
 
-  /** Constructs a box with a vector of measures: width, depth, and height --
-   the box's dimensions along the canonical x-, y-, and z-axes, respectively.
-   @throws std::exception if the measures are not strictly positive. */
-  explicit Box(const Vector3<double>& measures);
+    /** Constructs a box with a vector of measures: width, depth, and height --
+     the box's dimensions along the canonical x-, y-, and z-axes, respectively.
+     @throws std::exception if the measures are not strictly positive. */
+    explicit Box(const Vector3<double>& measures);
 
-  ~Box() final;
+    ~Box() final;
 
-  /** Constructs a cube with the given `edge_size` for its width, depth, and
-   height. */
-  static Box MakeCube(double edge_size);
+    /** Constructs a cube with the given `edge_size` for its width, depth, and
+     height. */
+    static Box MakeCube(double edge_size);
 
-  /** Returns the box's dimension along the x axis. */
-  double width() const { return size_(0); }
+    /** Returns the box's dimension along the x axis. */
+    double width() const { return size_(0); }
 
-  /** Returns the box's dimension along the y axis. */
-  double depth() const { return size_(1); }
+    /** Returns the box's dimension along the y axis. */
+    double depth() const { return size_(1); }
 
-  /** Returns the box's dimension along the z axis. */
-  double height() const { return size_(2); }
+    /** Returns the box's dimension along the z axis. */
+    double height() const { return size_(2); }
 
-  /** Returns the box's dimensions. */
-  const Vector3<double>& size() const { return size_; }
+    /** Returns the box's dimensions. */
+    const Vector3<double>& size() const { return size_; }
 
- private:
-  void DoReify(ShapeReifier*, void*) const final;
-  std::unique_ptr<Shape> DoClone() const final;
-  std::string_view do_type_name() const final;
-  std::string do_to_string() const final;
-  VariantShapeConstPtr get_variant_this() const final;
+private:
+    void DoReify(ShapeReifier*, void*) const final;
+    std::unique_ptr<Shape> DoClone() const final;
+    std::string_view do_type_name() const final;
+    std::string do_to_string() const final;
+    VariantShapeConstPtr get_variant_this() const final;
 
-  Vector3<double> size_;
+    Vector3<double> size_;
 };
 
 /** Definition of a capsule. The capsule can be thought of as a cylinder with
@@ -200,32 +200,32 @@ class Box final : public Shape {
  defined in its canonical frame C, centered on the frame origin and with the
  length of the capsule parallel with the frame's z-axis. */
 class Capsule final : public Shape {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Capsule);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Capsule);
 
-  /** Constructs a capsule with the given `radius` and `length`.
-   @throws std::exception if `radius` or `length` are not strictly positive.
-   */
-  Capsule(double radius, double length);
+    /** Constructs a capsule with the given `radius` and `length`.
+     @throws std::exception if `radius` or `length` are not strictly positive.
+     */
+    Capsule(double radius, double length);
 
-  /** Constructs a capsule with a vector of measures: radius and length.
-   @throws std::exception if the measures are not strictly positive. */
-  explicit Capsule(const Vector2<double>& measures);
+    /** Constructs a capsule with a vector of measures: radius and length.
+     @throws std::exception if the measures are not strictly positive. */
+    explicit Capsule(const Vector2<double>& measures);
 
-  ~Capsule() final;
+    ~Capsule() final;
 
-  double radius() const { return radius_; }
-  double length() const { return length_; }
+    double radius() const { return radius_; }
+    double length() const { return length_; }
 
- private:
-  void DoReify(ShapeReifier*, void*) const final;
-  std::unique_ptr<Shape> DoClone() const final;
-  std::string_view do_type_name() const final;
-  std::string do_to_string() const final;
-  VariantShapeConstPtr get_variant_this() const final;
+private:
+    void DoReify(ShapeReifier*, void*) const final;
+    std::unique_ptr<Shape> DoClone() const final;
+    std::string_view do_type_name() const final;
+    std::string do_to_string() const final;
+    VariantShapeConstPtr get_variant_this() const final;
 
-  double radius_{};
-  double length_{};
+    double radius_{};
+    double length_{};
 };
 
 /** Definition of a *convex* surface mesh.
@@ -243,90 +243,90 @@ class Capsule final : public Shape {
  loading it in SceneGraph it can be scaled around the origin of C by a given
  `scale` amount. */
 class Convex final : public Shape {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Convex);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Convex);
 
-  /** Constructs a convex shape specification from the file located at the
-   given file path. Optionally uniformly scaled by the given scale factor.
+    /** Constructs a convex shape specification from the file located at the
+     given file path. Optionally uniformly scaled by the given scale factor.
 
-   The mesh file referenced can be an .obj, .gltf, or a tetrahedral .vtk.
+     The mesh file referenced can be an .obj, .gltf, or a tetrahedral .vtk.
 
-   @param filename     The file name; if it is not absolute, it will be
-                       interpreted relative to the current working directory.
-   @param scale        An optional scale to coordinates.
+     @param filename     The file name; if it is not absolute, it will be
+                         interpreted relative to the current working directory.
+     @param scale        An optional scale to coordinates.
 
-   @throws std::exception       if |scale| < 1e-8. Note that a negative scale is
-                                considered valid. We want to preclude scales
-                                near zero but recognise that scale is a
-                                convenience tool for "tweaking" models. 8 orders
-                                of magnitude should be plenty without
-                                considering revisiting the model itself. */
-  explicit Convex(const std::string& filename, double scale = 1.0);
+     @throws std::exception       if |scale| < 1e-8. Note that a negative scale is
+                                  considered valid. We want to preclude scales
+                                  near zero but recognise that scale is a
+                                  convenience tool for "tweaking" models. 8 orders
+                                  of magnitude should be plenty without
+                                  considering revisiting the model itself. */
+    explicit Convex(const std::string& filename, double scale = 1.0);
 
-  ~Convex() final;
+    ~Convex() final;
 
-  const std::string& filename() const { return filename_; }
-  /** Returns the extension of the mesh filename -- all lower case and including
-   the dot. In other words /foo/bar/mesh.obj and /foo/bar/mesh.OBJ would both
-   report the ".obj" extension. The "extension" portion of the filename is
-   defined as in std::filesystem::path::extension(). */
-  const std::string& extension() const { return extension_; }
-  double scale() const { return scale_; }
+    const std::string& filename() const { return filename_; }
+    /** Returns the extension of the mesh filename -- all lower case and including
+     the dot. In other words /foo/bar/mesh.obj and /foo/bar/mesh.OBJ would both
+     report the ".obj" extension. The "extension" portion of the filename is
+     defined as in std::filesystem::path::extension(). */
+    const std::string& extension() const { return extension_; }
+    double scale() const { return scale_; }
 
-  /** Reports the convex hull of the named mesh.
+    /** Reports the convex hull of the named mesh.
 
-   Note: the convex hull is computed on demand on the first invocation. All
-   subsequent invocations should have an O(1) cost.
+     Note: the convex hull is computed on demand on the first invocation. All
+     subsequent invocations should have an O(1) cost.
 
-   @throws if the referenced mesh data cannot be read or is degenerate
-           (insufficient number of vertices, co-linear or coincident vertices,
-           etc.) All of the vertices lying on a plane is *not* considered
-           degenerate. */
-  const PolygonSurfaceMesh<double>& GetConvexHull() const;
+     @throws if the referenced mesh data cannot be read or is degenerate
+             (insufficient number of vertices, co-linear or coincident vertices,
+             etc.) All of the vertices lying on a plane is *not* considered
+             degenerate. */
+    const PolygonSurfaceMesh<double>& GetConvexHull() const;
 
- private:
-  void DoReify(ShapeReifier*, void*) const final;
-  std::unique_ptr<Shape> DoClone() const final;
-  std::string_view do_type_name() const final;
-  std::string do_to_string() const final;
-  VariantShapeConstPtr get_variant_this() const final;
+private:
+    void DoReify(ShapeReifier*, void*) const final;
+    std::unique_ptr<Shape> DoClone() const final;
+    std::string_view do_type_name() const final;
+    std::string do_to_string() const final;
+    VariantShapeConstPtr get_variant_this() const final;
 
-  std::string filename_;
-  std::string extension_;
-  double scale_{};
-  // Allows the deferred computation of the hull on an otherwise const Convex.
-  mutable std::shared_ptr<PolygonSurfaceMesh<double>> hull_{nullptr};
+    std::string filename_;
+    std::string extension_;
+    double scale_{};
+    // Allows the deferred computation of the hull on an otherwise const Convex.
+    mutable std::shared_ptr<PolygonSurfaceMesh<double>> hull_{nullptr};
 };
 
 /** Definition of a cylinder. It is centered in its canonical frame with the
  length of the cylinder parallel with the frame's z-axis. */
 class Cylinder final : public Shape {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Cylinder);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Cylinder);
 
-  /** Constructs a cylinder with the given `radius` and `length`.
-   @throws std::exception if `radius` or `length` are not strictly positive.
-   */
-  Cylinder(double radius, double length);
+    /** Constructs a cylinder with the given `radius` and `length`.
+     @throws std::exception if `radius` or `length` are not strictly positive.
+     */
+    Cylinder(double radius, double length);
 
-  /** Constructs a cylinder with a vector of measures: radius and length.
-   @throws std::exception if the measures are not strictly positive. */
-  explicit Cylinder(const Vector2<double>& measures);
+    /** Constructs a cylinder with a vector of measures: radius and length.
+     @throws std::exception if the measures are not strictly positive. */
+    explicit Cylinder(const Vector2<double>& measures);
 
-  ~Cylinder() final;
+    ~Cylinder() final;
 
-  double radius() const { return radius_; }
-  double length() const { return length_; }
+    double radius() const { return radius_; }
+    double length() const { return length_; }
 
- private:
-  void DoReify(ShapeReifier*, void*) const final;
-  std::unique_ptr<Shape> DoClone() const final;
-  std::string_view do_type_name() const final;
-  std::string do_to_string() const final;
-  VariantShapeConstPtr get_variant_this() const final;
+private:
+    void DoReify(ShapeReifier*, void*) const final;
+    std::unique_ptr<Shape> DoClone() const final;
+    std::string_view do_type_name() const final;
+    std::string do_to_string() const final;
+    VariantShapeConstPtr get_variant_this() const final;
 
-  double radius_{};
-  double length_{};
+    double radius_{};
+    double length_{};
 };
 
 /** Definition of an ellipsoid. It is centered on the origin of its canonical
@@ -339,36 +339,36 @@ class Cylinder final : public Shape {
  The bounding box of the ellipsoid is [-a,a]x[-b,b]x[-c,c].
 */
 class Ellipsoid final : public Shape {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Ellipsoid);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Ellipsoid);
 
-  /** Constructs an ellipsoid with the given lengths of its principal
-   semi-axes, with a, b, and c measured along the x-, y-, and z- axes of the
-   canonical frame, respectively.
-   @throws std::exception if `a`, `b`, or `c` are not strictly positive.
-   */
-  Ellipsoid(double a, double b, double c);
+    /** Constructs an ellipsoid with the given lengths of its principal
+     semi-axes, with a, b, and c measured along the x-, y-, and z- axes of the
+     canonical frame, respectively.
+     @throws std::exception if `a`, `b`, or `c` are not strictly positive.
+     */
+    Ellipsoid(double a, double b, double c);
 
-  /** Constructs an ellipsoid with a vector of measures: the lengths of its
-   principal semi-axes, with a, b, and c measured along the x-, y-, and z- axes
-   of the canonical frame, respectively.
-   @throws std::exception if the measures are not strictly positive. */
-  explicit Ellipsoid(const Vector3<double>& measures);
+    /** Constructs an ellipsoid with a vector of measures: the lengths of its
+     principal semi-axes, with a, b, and c measured along the x-, y-, and z- axes
+     of the canonical frame, respectively.
+     @throws std::exception if the measures are not strictly positive. */
+    explicit Ellipsoid(const Vector3<double>& measures);
 
-  ~Ellipsoid() final;
+    ~Ellipsoid() final;
 
-  double a() const { return radii_(0); }
-  double b() const { return radii_(1); }
-  double c() const { return radii_(2); }
+    double a() const { return radii_(0); }
+    double b() const { return radii_(1); }
+    double c() const { return radii_(2); }
 
- private:
-  void DoReify(ShapeReifier*, void*) const final;
-  std::unique_ptr<Shape> DoClone() const final;
-  std::string_view do_type_name() const final;
-  std::string do_to_string() const final;
-  VariantShapeConstPtr get_variant_this() const final;
+private:
+    void DoReify(ShapeReifier*, void*) const final;
+    std::unique_ptr<Shape> DoClone() const final;
+    std::string_view do_type_name() const final;
+    std::string do_to_string() const final;
+    VariantShapeConstPtr get_variant_this() const final;
 
-  Vector3<double> radii_;
+    Vector3<double> radii_;
 };
 
 /** Definition of a half space. In its canonical frame, the plane defining the
@@ -378,36 +378,35 @@ class Ellipsoid final : public Shape {
  a point on the test shape that lies on the side of the plane opposite the
  normal. */
 class HalfSpace final : public Shape {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(HalfSpace);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(HalfSpace);
 
-  HalfSpace();
+    HalfSpace();
 
-  ~HalfSpace() final;
+    ~HalfSpace() final;
 
-  /** Creates the pose of a canonical half space in frame F.
-   The half space's normal is aligned to the positive z-axis of its canonical
-   frame H. Given a vector that points in the same direction, measured in the
-   F frame (Hz_dir_F) and a position vector to a point on the half space's
-   *boundary* expressed in the same frame, `p_FB`, creates
-   the pose of the half space in frame F: `X_FH`.
-   @param Hz_dir_F  A vector in the direction of the positive z-axis of the
-                    canonical frame expressed in frame F. It must be a non-zero
-                    vector but need not be unit length.
-   @param p_FB      A point B lying on the half space's boundary measured
-                    and expressed in frame F.
-   @retval X_FH     The pose of the canonical half-space in frame F.
-   @throws std::exception if the normal is _close_ to a zero-vector (e.g.,
-                          ‖normal_F‖₂ < ε). */
-  static math::RigidTransform<double> MakePose(const Vector3<double>& Hz_dir_F,
-                                               const Vector3<double>& p_FB);
+    /** Creates the pose of a canonical half space in frame F.
+     The half space's normal is aligned to the positive z-axis of its canonical
+     frame H. Given a vector that points in the same direction, measured in the
+     F frame (Hz_dir_F) and a position vector to a point on the half space's
+     *boundary* expressed in the same frame, `p_FB`, creates
+     the pose of the half space in frame F: `X_FH`.
+     @param Hz_dir_F  A vector in the direction of the positive z-axis of the
+                      canonical frame expressed in frame F. It must be a non-zero
+                      vector but need not be unit length.
+     @param p_FB      A point B lying on the half space's boundary measured
+                      and expressed in frame F.
+     @retval X_FH     The pose of the canonical half-space in frame F.
+     @throws std::exception if the normal is _close_ to a zero-vector (e.g.,
+                            ‖normal_F‖₂ < ε). */
+    static math::RigidTransform<double> MakePose(const Vector3<double>& Hz_dir_F, const Vector3<double>& p_FB);
 
- private:
-  void DoReify(ShapeReifier*, void*) const final;
-  std::unique_ptr<Shape> DoClone() const final;
-  std::string_view do_type_name() const final;
-  std::string do_to_string() const final;
-  VariantShapeConstPtr get_variant_this() const final;
+private:
+    void DoReify(ShapeReifier*, void*) const final;
+    std::unique_ptr<Shape> DoClone() const final;
+    std::string_view do_type_name() const final;
+    std::string do_to_string() const final;
+    VariantShapeConstPtr get_variant_this() const final;
 };
 
 // TODO(DamrongGuoy): Update documentation when mesh is fully supported (i.e.,
@@ -439,62 +438,62 @@ class HalfSpace final : public Shape {
  loading it in SceneGraph it can be scaled around the origin of C by a given
  `scale` amount. */
 class Mesh final : public Shape {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Mesh);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Mesh);
 
-  /** Constructs a mesh shape specification from the mesh file located at the
-   given file path. Optionally uniformly scaled by the given scale factor.
+    /** Constructs a mesh shape specification from the mesh file located at the
+     given file path. Optionally uniformly scaled by the given scale factor.
 
-   The mesh file referenced can be an .obj, a volume mesh in a .vtk, or a .gltf
-   file. However, not all file formats are appropriate for all roles. (E.g.,
-   a tetrahedral .vtk file should not be assigned a perception role.)
+     The mesh file referenced can be an .obj, a volume mesh in a .vtk, or a .gltf
+     file. However, not all file formats are appropriate for all roles. (E.g.,
+     a tetrahedral .vtk file should not be assigned a perception role.)
 
-   @param filename     The file name; if it is not absolute, it will be
-                       interpreted relative to the current working directory.
-   @param scale        An optional scale to coordinates.
+     @param filename     The file name; if it is not absolute, it will be
+                         interpreted relative to the current working directory.
+     @param scale        An optional scale to coordinates.
 
-   @throws std::exception       if |scale| < 1e-8. Note that a negative scale is
-                                considered valid. We want to preclude scales
-                                near zero but recognise that scale is a
-                                convenience tool for "tweaking" models. 8 orders
-                                of magnitude should be plenty without
-                                considering revisiting the model itself. */
-  explicit Mesh(const std::string& filename, double scale = 1.0);
+     @throws std::exception       if |scale| < 1e-8. Note that a negative scale is
+                                  considered valid. We want to preclude scales
+                                  near zero but recognise that scale is a
+                                  convenience tool for "tweaking" models. 8 orders
+                                  of magnitude should be plenty without
+                                  considering revisiting the model itself. */
+    explicit Mesh(const std::string& filename, double scale = 1.0);
 
-  ~Mesh() final;
+    ~Mesh() final;
 
-  const std::string& filename() const { return filename_; }
-  /** Returns the extension of the mesh filename -- all lower case and including
-   the dot. In other words /foo/bar/mesh.obj and /foo/bar/mesh.OBJ would both
-   report the ".obj" extension. The "extension" portion of the filename is
-   defined as in std::filesystem::path::extension(). */
-  const std::string& extension() const { return extension_; }
-  double scale() const { return scale_; }
+    const std::string& filename() const { return filename_; }
+    /** Returns the extension of the mesh filename -- all lower case and including
+     the dot. In other words /foo/bar/mesh.obj and /foo/bar/mesh.OBJ would both
+     report the ".obj" extension. The "extension" portion of the filename is
+     defined as in std::filesystem::path::extension(). */
+    const std::string& extension() const { return extension_; }
+    double scale() const { return scale_; }
 
-  /** Reports the convex hull of the named mesh.
+    /** Reports the convex hull of the named mesh.
 
-   Note: the convex hull is computed on demand on the first invocation. All
-   subsequent invocations should have an O(1) cost.
+     Note: the convex hull is computed on demand on the first invocation. All
+     subsequent invocations should have an O(1) cost.
 
-   @throws if the referenced mesh data cannot be read or is degenerate
-           (insufficient number of vertices, co-linear or coincident vertices,
-           etc.) All of the vertices lying on a plane is *not* considered
-           degenerate. */
-  const PolygonSurfaceMesh<double>& GetConvexHull() const;
+     @throws if the referenced mesh data cannot be read or is degenerate
+             (insufficient number of vertices, co-linear or coincident vertices,
+             etc.) All of the vertices lying on a plane is *not* considered
+             degenerate. */
+    const PolygonSurfaceMesh<double>& GetConvexHull() const;
 
- private:
-  void DoReify(ShapeReifier*, void*) const final;
-  std::unique_ptr<Shape> DoClone() const final;
-  std::string_view do_type_name() const final;
-  std::string do_to_string() const final;
-  VariantShapeConstPtr get_variant_this() const final;
+private:
+    void DoReify(ShapeReifier*, void*) const final;
+    std::unique_ptr<Shape> DoClone() const final;
+    std::string_view do_type_name() const final;
+    std::string do_to_string() const final;
+    VariantShapeConstPtr get_variant_this() const final;
 
-  // NOTE: Cannot be const to support default copy/move semantics.
-  std::string filename_;
-  std::string extension_;
-  double scale_{};
-  // Allows the deferred computation of the hull on an otherwise const Mesh.
-  mutable std::shared_ptr<PolygonSurfaceMesh<double>> hull_{nullptr};
+    // NOTE: Cannot be const to support default copy/move semantics.
+    std::string filename_;
+    std::string extension_;
+    double scale_{};
+    // Allows the deferred computation of the hull on an otherwise const Mesh.
+    mutable std::shared_ptr<PolygonSurfaceMesh<double>> hull_{nullptr};
 };
 
 // TODO(russt): Rename this to `Cone` if/when it is supported by more of the
@@ -512,60 +511,60 @@ class Mesh final : public Shape {
  renderings, proximity queries, or other visualizers.
 */
 class MeshcatCone final : public Shape {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MeshcatCone);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MeshcatCone);
 
-  /** Constructs the parameterized cone.
-   @throws std::exception if `height`, `a`, or `b` are not strictly positive.
-   */
-  explicit MeshcatCone(double height, double a = 1.0, double b = 1.0);
+    /** Constructs the parameterized cone.
+     @throws std::exception if `height`, `a`, or `b` are not strictly positive.
+     */
+    explicit MeshcatCone(double height, double a = 1.0, double b = 1.0);
 
-  /** Constructs a cone with a vector of measures: height and principal
-   semi-axes.
-   @throws std::exception if the measures are not strictly positive. */
-  explicit MeshcatCone(const Vector3<double>& measures);
+    /** Constructs a cone with a vector of measures: height and principal
+     semi-axes.
+     @throws std::exception if the measures are not strictly positive. */
+    explicit MeshcatCone(const Vector3<double>& measures);
 
-  ~MeshcatCone() final;
+    ~MeshcatCone() final;
 
-  double height() const { return height_; }
-  double a() const { return a_; }
-  double b() const { return b_; }
+    double height() const { return height_; }
+    double a() const { return a_; }
+    double b() const { return b_; }
 
- private:
-  void DoReify(ShapeReifier*, void*) const final;
-  std::unique_ptr<Shape> DoClone() const final;
-  std::string_view do_type_name() const final;
-  std::string do_to_string() const final;
-  VariantShapeConstPtr get_variant_this() const final;
+private:
+    void DoReify(ShapeReifier*, void*) const final;
+    std::unique_ptr<Shape> DoClone() const final;
+    std::string_view do_type_name() const final;
+    std::string do_to_string() const final;
+    VariantShapeConstPtr get_variant_this() const final;
 
-  double height_{};
-  double a_{};
-  double b_{};
+    double height_{};
+    double a_{};
+    double b_{};
 };
 
 /** Definition of sphere. It is centered in its canonical frame with the
  given radius. */
 class Sphere final : public Shape {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Sphere);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Sphere);
 
-  /** Constructs a sphere with the given `radius`.
-   @throws std::exception if `radius` is negative. Note that a zero radius is
-   considered valid. */
-  explicit Sphere(double radius);
+    /** Constructs a sphere with the given `radius`.
+     @throws std::exception if `radius` is negative. Note that a zero radius is
+     considered valid. */
+    explicit Sphere(double radius);
 
-  ~Sphere() final;
+    ~Sphere() final;
 
-  double radius() const { return radius_; }
+    double radius() const { return radius_; }
 
- private:
-  void DoReify(ShapeReifier*, void*) const final;
-  std::unique_ptr<Shape> DoClone() const final;
-  std::string_view do_type_name() const final;
-  std::string do_to_string() const final;
-  VariantShapeConstPtr get_variant_this() const final;
+private:
+    void DoReify(ShapeReifier*, void*) const final;
+    std::unique_ptr<Shape> DoClone() const final;
+    std::string_view do_type_name() const final;
+    std::string do_to_string() const final;
+    VariantShapeConstPtr get_variant_this() const final;
 
-  double radius_{};
+    double radius_{};
 };
 
 /** The interface for converting shape descriptions to real shapes. Any entity
@@ -618,33 +617,33 @@ class Sphere final : public Shape {
  Shape::Reify() it is in a position to provide exactly the data the shape
  implementations require.  */
 class ShapeReifier {
- public:
-  virtual ~ShapeReifier();
+public:
+    virtual ~ShapeReifier();
 
-  virtual void ImplementGeometry(const Box& box, void* user_data);
-  virtual void ImplementGeometry(const Capsule& capsule, void* user_data);
-  virtual void ImplementGeometry(const Convex& convex, void* user_data);
-  virtual void ImplementGeometry(const Cylinder& cylinder, void* user_data);
-  virtual void ImplementGeometry(const Ellipsoid& ellipsoid, void* user_data);
-  virtual void ImplementGeometry(const HalfSpace& half_space, void* user_data);
-  virtual void ImplementGeometry(const Mesh& mesh, void* user_data);
-  virtual void ImplementGeometry(const MeshcatCone& cone, void* user_data);
-  virtual void ImplementGeometry(const Sphere& sphere, void* user_data);
+    virtual void ImplementGeometry(const Box& box, void* user_data);
+    virtual void ImplementGeometry(const Capsule& capsule, void* user_data);
+    virtual void ImplementGeometry(const Convex& convex, void* user_data);
+    virtual void ImplementGeometry(const Cylinder& cylinder, void* user_data);
+    virtual void ImplementGeometry(const Ellipsoid& ellipsoid, void* user_data);
+    virtual void ImplementGeometry(const HalfSpace& half_space, void* user_data);
+    virtual void ImplementGeometry(const Mesh& mesh, void* user_data);
+    virtual void ImplementGeometry(const MeshcatCone& cone, void* user_data);
+    virtual void ImplementGeometry(const Sphere& sphere, void* user_data);
 
- protected:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ShapeReifier);
-  ShapeReifier() = default;
+protected:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ShapeReifier);
+    ShapeReifier() = default;
 
-  /** The default implementation of ImplementGeometry(): it throws an exception
-   using ThrowUnsupportedGeometry(). The purpose of this function is to
-   facilitate reifiers that would call the same API on all shapes (e.g., call an
-   API with a Shape& parameter). This reduces the implementation boilerplate. */
-  virtual void DefaultImplementGeometry(const Shape& shape);
+    /** The default implementation of ImplementGeometry(): it throws an exception
+     using ThrowUnsupportedGeometry(). The purpose of this function is to
+     facilitate reifiers that would call the same API on all shapes (e.g., call an
+     API with a Shape& parameter). This reduces the implementation boilerplate. */
+    virtual void DefaultImplementGeometry(const Shape& shape);
 
-  /** Derived ShapeReifiers can replace the default message for unsupported
-   geometries by overriding this method. The name of the unsupported shape type
-   is given as the single parameter.  */
-  virtual void ThrowUnsupportedGeometry(const std::string& shape_name);
+    /** Derived ShapeReifiers can replace the default message for unsupported
+     geometries by overriding this method. The name of the unsupported shape type
+     is given as the single parameter.  */
+    virtual void ThrowUnsupportedGeometry(const std::string& shape_name);
 };
 
 /** Calculates the volume (in meters^3) for the Shape. For convex and mesh

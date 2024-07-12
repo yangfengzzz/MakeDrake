@@ -75,51 +75,49 @@ namespace systems {
  */
 template <typename EventType>
 class EventCollection {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(EventCollection);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(EventCollection);
 
-  virtual ~EventCollection() {}
+    virtual ~EventCollection() {}
 
-  /**
-   * Clears all the events maintained by `this` then adds all of the events in
-   * `other` to this.
-   */
-  void SetFrom(const EventCollection<EventType>& other) {
-    Clear();
-    AddToEnd(other);
-  }
+    /**
+     * Clears all the events maintained by `this` then adds all of the events in
+     * `other` to this.
+     */
+    void SetFrom(const EventCollection<EventType>& other) {
+        Clear();
+        AddToEnd(other);
+    }
 
-  /**
-   * Adds all of `other`'s events to the end of `this`.
-   */
-  void AddToEnd(const EventCollection<EventType>& other) {
-    DoAddToEnd(other);
-  }
+    /**
+     * Adds all of `other`'s events to the end of `this`.
+     */
+    void AddToEnd(const EventCollection<EventType>& other) { DoAddToEnd(other); }
 
-  /**
-   * Removes all events from this collection.
-   */
-  virtual void Clear() = 0;
+    /**
+     * Removes all events from this collection.
+     */
+    virtual void Clear() = 0;
 
-  /**
-   * Returns `false` if and only if this collection contains no events.
-   */
-  virtual bool HasEvents() const = 0;
+    /**
+     * Returns `false` if and only if this collection contains no events.
+     */
+    virtual bool HasEvents() const = 0;
 
-  /**
-   * Adds an event to this collection, or throws if the concrete collection
-   * does not permit adding new events. Derived classes must implement this
-   * method to add the specified event to the homogeneous event collection.
-   */
-  virtual void AddEvent(EventType event) = 0;
+    /**
+     * Adds an event to this collection, or throws if the concrete collection
+     * does not permit adding new events. Derived classes must implement this
+     * method to add the specified event to the homogeneous event collection.
+     */
+    virtual void AddEvent(EventType event) = 0;
 
- protected:
-  /**
-   * Constructor only accessible by derived class.
-   */
-  EventCollection() = default;
+protected:
+    /**
+     * Constructor only accessible by derived class.
+     */
+    EventCollection() = default;
 
-  virtual void DoAddToEnd(const EventCollection<EventType>& other) = 0;
+    virtual void DoAddToEnd(const EventCollection<EventType>& other) = 0;
 };
 
 /**
@@ -142,130 +140,120 @@ class EventCollection {
  */
 template <typename EventType>
 class DiagramEventCollection final : public EventCollection<EventType> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiagramEventCollection);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiagramEventCollection);
 
-  /**
-   * Note that this constructor only resizes the containers; it
-   * does not allocate any derived EventCollection instances.
-   *
-   * @param num_subsystems Number of subsystems in the corresponding Diagram.
-   */
-  explicit DiagramEventCollection(int num_subsystems)
-      : EventCollection<EventType>(),
-        subevent_collection_(num_subsystems),
-        owned_subevent_collection_(num_subsystems) {}
+    /**
+     * Note that this constructor only resizes the containers; it
+     * does not allocate any derived EventCollection instances.
+     *
+     * @param num_subsystems Number of subsystems in the corresponding Diagram.
+     */
+    explicit DiagramEventCollection(int num_subsystems)
+        : EventCollection<EventType>(),
+          subevent_collection_(num_subsystems),
+          owned_subevent_collection_(num_subsystems) {}
 
-  /**
-   * Throws if called, because no events should be added at the Diagram level.
-   */
-  void AddEvent(EventType) final {
-    throw std::logic_error("DiagramEventCollection::AddEvent is not allowed");
-  }
+    /**
+     * Throws if called, because no events should be added at the Diagram level.
+     */
+    void AddEvent(EventType) final { throw std::logic_error("DiagramEventCollection::AddEvent is not allowed"); }
 
-  /**
-   * Returns the number of constituent EventCollection objects that correspond
-   * to each subsystem in the Diagram.
-   */
-  int num_subsystems() const {
-    return static_cast<int>(subevent_collection_.size());
-  }
+    /**
+     * Returns the number of constituent EventCollection objects that correspond
+     * to each subsystem in the Diagram.
+     */
+    int num_subsystems() const { return static_cast<int>(subevent_collection_.size()); }
 
-  /**
-   * Transfers `subevent_collection` ownership to `this` and associates it
-   * with the subsystem identified by `index`. Aborts if `index` is not in
-   * the range [0, num_subsystems() - 1] or if `subevent_collection` is null.
-   */
-  void set_and_own_subevent_collection(
-      int index,
-      std::unique_ptr<EventCollection<EventType>> subevent_collection) {
-    DRAKE_DEMAND(subevent_collection != nullptr);
-    DRAKE_DEMAND(index >= 0 && index < num_subsystems());
-    owned_subevent_collection_[index] = std::move(subevent_collection);
-    subevent_collection_[index] = owned_subevent_collection_[index].get();
-  }
-
-  /**
-   * Associate `subevent_collection` with subsystem identified by `index`.
-   * Ownership of the object that `subevent_collection` is maintained
-   * elsewhere, and its life span must be longer than this. Aborts if
-   * `index` is not in the range [0, num_subsystems() - 1] or if
-   * `subevent_collection` is null.
-   */
-  void set_subevent_collection(
-      int index, EventCollection<EventType>* subevent_collection) {
-    DRAKE_DEMAND(subevent_collection != nullptr);
-    DRAKE_DEMAND(index >= 0 && index < num_subsystems());
-    subevent_collection_[index] = subevent_collection;
-  }
-
-  /**
-   * Returns a const pointer to subsystem's EventCollection at `index`.
-   * Aborts if the 0-indexed `index` is greater than or equal to the number of
-   * subsystems specified in this object's construction (see
-   * DiagramEventCollection(int)) or if `index` is not in the range
-   * [0, num_subsystems() - 1].
-   */
-  const EventCollection<EventType>& get_subevent_collection(int index) const {
-    DRAKE_DEMAND(index >= 0 && index < num_subsystems());
-    return *subevent_collection_[index];
-  }
-
-  /**
-   * Returns a mutable pointer to subsystem's EventCollection at `index`.
-   */
-  EventCollection<EventType>& get_mutable_subevent_collection(int index) {
-    DRAKE_DEMAND(index >= 0 && index < num_subsystems());
-    return *subevent_collection_[index];
-  }
-
-  /**
-   * Clears all subevent collections.
-   */
-  void Clear() final {
-    for (EventCollection<EventType>* subevent : subevent_collection_) {
-      subevent->Clear();
+    /**
+     * Transfers `subevent_collection` ownership to `this` and associates it
+     * with the subsystem identified by `index`. Aborts if `index` is not in
+     * the range [0, num_subsystems() - 1] or if `subevent_collection` is null.
+     */
+    void set_and_own_subevent_collection(int index, std::unique_ptr<EventCollection<EventType>> subevent_collection) {
+        DRAKE_DEMAND(subevent_collection != nullptr);
+        DRAKE_DEMAND(index >= 0 && index < num_subsystems());
+        owned_subevent_collection_[index] = std::move(subevent_collection);
+        subevent_collection_[index] = owned_subevent_collection_[index].get();
     }
-  }
 
-  /**
-   * Returns `true` if and only if any of the subevent collections have any
-   * events.
-   */
-  bool HasEvents() const final {
-    for (const EventCollection<EventType>* subevent : subevent_collection_) {
-      if (subevent->HasEvents()) return true;
+    /**
+     * Associate `subevent_collection` with subsystem identified by `index`.
+     * Ownership of the object that `subevent_collection` is maintained
+     * elsewhere, and its life span must be longer than this. Aborts if
+     * `index` is not in the range [0, num_subsystems() - 1] or if
+     * `subevent_collection` is null.
+     */
+    void set_subevent_collection(int index, EventCollection<EventType>* subevent_collection) {
+        DRAKE_DEMAND(subevent_collection != nullptr);
+        DRAKE_DEMAND(index >= 0 && index < num_subsystems());
+        subevent_collection_[index] = subevent_collection;
     }
-    return false;
-  }
 
- protected:
-  /**
-   * Goes through each subevent collection of `this` and adds the corresponding
-   * one in `other_collection` to the subevent collection in `this`. Aborts if
-   * `this` does not have the same number of subevent collections as
-   * `other_collection`. In addition, this method assumes that `this` and
-   * `other_collection` have the exact same topology (i.e. both are created for
-   * the same Diagram.)
-   * @throws std::exception if `other_collection` is not an instance of
-   * DiagramEventCollection.
-   */
-  void DoAddToEnd(
-      const EventCollection<EventType>& other_collection) final {
-    const DiagramEventCollection<EventType>& other =
-        dynamic_cast<const DiagramEventCollection<EventType>&>(
-            other_collection);
-    DRAKE_DEMAND(num_subsystems() == other.num_subsystems());
-
-    for (int i = 0; i < num_subsystems(); i++) {
-      subevent_collection_[i]->AddToEnd(other.get_subevent_collection(i));
+    /**
+     * Returns a const pointer to subsystem's EventCollection at `index`.
+     * Aborts if the 0-indexed `index` is greater than or equal to the number of
+     * subsystems specified in this object's construction (see
+     * DiagramEventCollection(int)) or if `index` is not in the range
+     * [0, num_subsystems() - 1].
+     */
+    const EventCollection<EventType>& get_subevent_collection(int index) const {
+        DRAKE_DEMAND(index >= 0 && index < num_subsystems());
+        return *subevent_collection_[index];
     }
-  }
 
- private:
-  std::vector<EventCollection<EventType>*> subevent_collection_;
-  std::vector<std::unique_ptr<EventCollection<EventType>>>
-      owned_subevent_collection_;
+    /**
+     * Returns a mutable pointer to subsystem's EventCollection at `index`.
+     */
+    EventCollection<EventType>& get_mutable_subevent_collection(int index) {
+        DRAKE_DEMAND(index >= 0 && index < num_subsystems());
+        return *subevent_collection_[index];
+    }
+
+    /**
+     * Clears all subevent collections.
+     */
+    void Clear() final {
+        for (EventCollection<EventType>* subevent : subevent_collection_) {
+            subevent->Clear();
+        }
+    }
+
+    /**
+     * Returns `true` if and only if any of the subevent collections have any
+     * events.
+     */
+    bool HasEvents() const final {
+        for (const EventCollection<EventType>* subevent : subevent_collection_) {
+            if (subevent->HasEvents()) return true;
+        }
+        return false;
+    }
+
+protected:
+    /**
+     * Goes through each subevent collection of `this` and adds the corresponding
+     * one in `other_collection` to the subevent collection in `this`. Aborts if
+     * `this` does not have the same number of subevent collections as
+     * `other_collection`. In addition, this method assumes that `this` and
+     * `other_collection` have the exact same topology (i.e. both are created for
+     * the same Diagram.)
+     * @throws std::exception if `other_collection` is not an instance of
+     * DiagramEventCollection.
+     */
+    void DoAddToEnd(const EventCollection<EventType>& other_collection) final {
+        const DiagramEventCollection<EventType>& other =
+                dynamic_cast<const DiagramEventCollection<EventType>&>(other_collection);
+        DRAKE_DEMAND(num_subsystems() == other.num_subsystems());
+
+        for (int i = 0; i < num_subsystems(); i++) {
+            subevent_collection_[i]->AddToEnd(other.get_subevent_collection(i));
+        }
+    }
+
+private:
+    std::vector<EventCollection<EventType>*> subevent_collection_;
+    std::vector<std::unique_ptr<EventCollection<EventType>>> owned_subevent_collection_;
 };
 
 /**
@@ -277,128 +265,123 @@ class DiagramEventCollection final : public EventCollection<EventType> {
  */
 template <typename EventType>
 class LeafEventCollection final : public EventCollection<EventType> {
- public:
-  /**
-   * The default capacity of event storage allocation, expressed as a number of
-   * events. Chosen to be large enough that most systems won't need to allocate
-   * during simulation advance steps.
-   */
-  static constexpr int kDefaultCapacity = 32;
+public:
+    /**
+     * The default capacity of event storage allocation, expressed as a number of
+     * events. Chosen to be large enough that most systems won't need to allocate
+     * during simulation advance steps.
+     */
+    static constexpr int kDefaultCapacity = 32;
 
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LeafEventCollection);
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LeafEventCollection);
 
-  /**
-   * Constructor.
-   */
-  LeafEventCollection() {
-    Reserve(kDefaultCapacity);
-  }
+    /**
+     * Constructor.
+     */
+    LeafEventCollection() { Reserve(kDefaultCapacity); }
 
-  /**
-   * Static method that generates a LeafEventCollection with exactly
-   * one event with no optional attribute, data or callback, and trigger type
-   * kForced.
-   */
-  static std::unique_ptr<LeafEventCollection<EventType>>
-  MakeForcedEventCollection() {
-    auto ret = std::make_unique<LeafEventCollection<EventType>>();
-    EventType event(EventType::TriggerType::kForced);
-    ret->AddEvent(std::move(event));
-    return ret;
-  }
-
-  /**
-   * Reserve storage for at least `capacity` events. At construction, there
-   * will be at least `kDefaultCapacity`; use this method to reserve more.
-   */
-  void Reserve(int capacity) {
-    events_storage_.reserve(capacity);
-    events_.reserve(capacity);
-  }
-
-  /**
-   * Returns a const reference to the vector of const pointers to all of the
-   * events.
-   */
-  // TODO(siyuan): provide an iterator instead.
-  const std::vector<const EventType*>& get_events() const {
-    return events_;
-  }
-
-  /**
-   * Add `event` to the existing collection.
-   */
-  void AddEvent(EventType event) final {
-    events_storage_.push_back(std::move(event));
-    // Did adding an event force reallocation of storage?
-    if (events_.empty() || &events_storage_[0] == events_[0]) {
-      // No reallocation; just add the one new pointer.
-      events_.push_back(&events_storage_.back());
-    } else {
-      // Storage was reallocated; recalculate pointers.
-      events_.clear();
-      for (const auto& entry : events_storage_) {
-        events_.push_back(&entry);
-      }
+    /**
+     * Static method that generates a LeafEventCollection with exactly
+     * one event with no optional attribute, data or callback, and trigger type
+     * kForced.
+     */
+    static std::unique_ptr<LeafEventCollection<EventType>> MakeForcedEventCollection() {
+        auto ret = std::make_unique<LeafEventCollection<EventType>>();
+        EventType event(EventType::TriggerType::kForced);
+        ret->AddEvent(std::move(event));
+        return ret;
     }
-  }
 
-  /**
-   * Returns `true` if and only if this collection is nonempty.
-   */
-  bool HasEvents() const final { return !events_storage_.empty(); }
-
-  /**
-   * Removes all events from this collection.
-   */
-  void Clear() final {
-    events_storage_.clear();
-    events_.clear();
-  }
-
- protected:
-  /**
-   * All events in `other_collection` are concatenated to this.
-   *
-   * Here is an example. Suppose this collection stores the following events:
-   * <pre>
-   *   EventType: {event1, event2, event3}
-   * </pre>
-   * `other_collection` has:
-   * <pre>
-   *   EventType: {event4}
-   * </pre>
-   * After calling DoAddToEnd(other_collection), `this` stores:
-   * <pre>
-   *   EventType: {event1, event2, event3, event4}
-   * </pre>
-   *
-   * @throws std::exception if `other_collection` is not an instance of
-   * LeafEventCollection.
-   */
-  void DoAddToEnd(const EventCollection<EventType>& other_collection) final {
-    const LeafEventCollection<EventType>& other =
-        dynamic_cast<const LeafEventCollection<EventType>&>(other_collection);
-
-    const std::vector<const EventType*>& other_events = other.get_events();
-    for (const EventType* other_event : other_events) {
-      this->AddEvent(*other_event);
+    /**
+     * Reserve storage for at least `capacity` events. At construction, there
+     * will be at least `kDefaultCapacity`; use this method to reserve more.
+     */
+    void Reserve(int capacity) {
+        events_storage_.reserve(capacity);
+        events_.reserve(capacity);
     }
-  }
 
- private:
-  // Note: the implementation is careful to pre-allocate capacity for these
-  // vectors, and never to reduce their size, in order avoid allocations at
-  // simulation run time. If the collection grows beyond kDefaultCapacity,
-  // there will be allocations. These can be shifted to initialization time by
-  // calling Reserve() with sufficient capacity.
+    /**
+     * Returns a const reference to the vector of const pointers to all of the
+     * events.
+     */
+    // TODO(siyuan): provide an iterator instead.
+    const std::vector<const EventType*>& get_events() const { return events_; }
 
-  // The actual events.
-  std::vector<EventType> events_storage_;
+    /**
+     * Add `event` to the existing collection.
+     */
+    void AddEvent(EventType event) final {
+        events_storage_.push_back(std::move(event));
+        // Did adding an event force reallocation of storage?
+        if (events_.empty() || &events_storage_[0] == events_[0]) {
+            // No reallocation; just add the one new pointer.
+            events_.push_back(&events_storage_.back());
+        } else {
+            // Storage was reallocated; recalculate pointers.
+            events_.clear();
+            for (const auto& entry : events_storage_) {
+                events_.push_back(&entry);
+            }
+        }
+    }
 
-  // Pointers to the corresponding storage entries. Used for iteration via
-  // get_events().
-  std::vector<const EventType*> events_;
+    /**
+     * Returns `true` if and only if this collection is nonempty.
+     */
+    bool HasEvents() const final { return !events_storage_.empty(); }
+
+    /**
+     * Removes all events from this collection.
+     */
+    void Clear() final {
+        events_storage_.clear();
+        events_.clear();
+    }
+
+protected:
+    /**
+     * All events in `other_collection` are concatenated to this.
+     *
+     * Here is an example. Suppose this collection stores the following events:
+     * <pre>
+     *   EventType: {event1, event2, event3}
+     * </pre>
+     * `other_collection` has:
+     * <pre>
+     *   EventType: {event4}
+     * </pre>
+     * After calling DoAddToEnd(other_collection), `this` stores:
+     * <pre>
+     *   EventType: {event1, event2, event3, event4}
+     * </pre>
+     *
+     * @throws std::exception if `other_collection` is not an instance of
+     * LeafEventCollection.
+     */
+    void DoAddToEnd(const EventCollection<EventType>& other_collection) final {
+        const LeafEventCollection<EventType>& other =
+                dynamic_cast<const LeafEventCollection<EventType>&>(other_collection);
+
+        const std::vector<const EventType*>& other_events = other.get_events();
+        for (const EventType* other_event : other_events) {
+            this->AddEvent(*other_event);
+        }
+    }
+
+private:
+    // Note: the implementation is careful to pre-allocate capacity for these
+    // vectors, and never to reduce their size, in order avoid allocations at
+    // simulation run time. If the collection grows beyond kDefaultCapacity,
+    // there will be allocations. These can be shifted to initialization time by
+    // calling Reserve() with sufficient capacity.
+
+    // The actual events.
+    std::vector<EventType> events_storage_;
+
+    // Pointers to the corresponding storage entries. Used for iteration via
+    // get_events().
+    std::vector<const EventType*> events_;
 };
 
 /**
@@ -422,199 +405,179 @@ class LeafEventCollection final : public EventCollection<EventType> {
  */
 template <typename T>
 class CompositeEventCollection {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(CompositeEventCollection);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(CompositeEventCollection);
 
-  virtual ~CompositeEventCollection() {}
+    virtual ~CompositeEventCollection() {}
 
-  /**
-   * Clears all the events.
-   */
-  void Clear() {
-    publish_events_->Clear();
-    discrete_update_events_->Clear();
-    unrestricted_update_events_->Clear();
-  }
+    /**
+     * Clears all the events.
+     */
+    void Clear() {
+        publish_events_->Clear();
+        discrete_update_events_->Clear();
+        unrestricted_update_events_->Clear();
+    }
 
-  /**
-   * Returns `true` if and only if this collection contains any events.
-   */
-  bool HasEvents() const {
-    return (publish_events_->HasEvents() ||
-            discrete_update_events_->HasEvents() ||
-            unrestricted_update_events_->HasEvents());
-  }
+    /**
+     * Returns `true` if and only if this collection contains any events.
+     */
+    bool HasEvents() const {
+        return (publish_events_->HasEvents() || discrete_update_events_->HasEvents() ||
+                unrestricted_update_events_->HasEvents());
+    }
 
-  /**
-   * Returns `true` if and only if this collection contains one or more
-   * publish events.
-   */
-  bool HasPublishEvents() const { return publish_events_->HasEvents(); }
+    /**
+     * Returns `true` if and only if this collection contains one or more
+     * publish events.
+     */
+    bool HasPublishEvents() const { return publish_events_->HasEvents(); }
 
-  /**
-   * Returns `true` if and only if this collection contains one or more
-   * discrete update events.
-   */
-  bool HasDiscreteUpdateEvents() const {
-    return discrete_update_events_->HasEvents();
-  }
+    /**
+     * Returns `true` if and only if this collection contains one or more
+     * discrete update events.
+     */
+    bool HasDiscreteUpdateEvents() const { return discrete_update_events_->HasEvents(); }
 
-  /**
-   * Returns `true` if and only if this collection contains one or more
-   * unrestricted update events.
-   */
-  bool HasUnrestrictedUpdateEvents() const {
-    return unrestricted_update_events_->HasEvents();
-  }
+    /**
+     * Returns `true` if and only if this collection contains one or more
+     * unrestricted update events.
+     */
+    bool HasUnrestrictedUpdateEvents() const { return unrestricted_update_events_->HasEvents(); }
 
-  /**
-   * Assuming the internal publish event collection is an instance of
-   * LeafEventCollection, adds the publish event `event` (ownership is also
-   * transferred) to it.
-   * @throws std::exception if the assumption is incorrect.
-   */
-  void AddPublishEvent(PublishEvent<T> event) {
-    auto& events = dynamic_cast<LeafEventCollection<PublishEvent<T>>&>(
-        this->get_mutable_publish_events());
-    events.AddEvent(std::move(event));
-  }
+    /**
+     * Assuming the internal publish event collection is an instance of
+     * LeafEventCollection, adds the publish event `event` (ownership is also
+     * transferred) to it.
+     * @throws std::exception if the assumption is incorrect.
+     */
+    void AddPublishEvent(PublishEvent<T> event) {
+        auto& events = dynamic_cast<LeafEventCollection<PublishEvent<T>>&>(this->get_mutable_publish_events());
+        events.AddEvent(std::move(event));
+    }
 
-  /**
-   * Assuming the internal discrete update event collection is an instance of
-   * LeafEventCollection, adds the discrete update event `event` (ownership is
-   * also transferred) to it.
-   * @throws std::exception if the assumption is incorrect.
-   */
-  void AddDiscreteUpdateEvent(DiscreteUpdateEvent<T> event) {
-    auto& events = dynamic_cast<LeafEventCollection<DiscreteUpdateEvent<T>>&>(
-        this->get_mutable_discrete_update_events());
-    events.AddEvent(std::move(event));
-  }
+    /**
+     * Assuming the internal discrete update event collection is an instance of
+     * LeafEventCollection, adds the discrete update event `event` (ownership is
+     * also transferred) to it.
+     * @throws std::exception if the assumption is incorrect.
+     */
+    void AddDiscreteUpdateEvent(DiscreteUpdateEvent<T> event) {
+        auto& events =
+                dynamic_cast<LeafEventCollection<DiscreteUpdateEvent<T>>&>(this->get_mutable_discrete_update_events());
+        events.AddEvent(std::move(event));
+    }
 
-  /**
-   * Assuming the internal unrestricted update event collection is an instance
-   * of LeafEventCollection, adds the unrestricted update event `event`
-   * (ownership is also transferred) to it.
-   * @throws std::exception if the assumption is incorrect.
-   */
-  void AddUnrestrictedUpdateEvent(UnrestrictedUpdateEvent<T> event) {
-    auto& events =
-        dynamic_cast<LeafEventCollection<UnrestrictedUpdateEvent<T>>&>(
-            this->get_mutable_unrestricted_update_events());
-    events.AddEvent(std::move(event));
-  }
+    /**
+     * Assuming the internal unrestricted update event collection is an instance
+     * of LeafEventCollection, adds the unrestricted update event `event`
+     * (ownership is also transferred) to it.
+     * @throws std::exception if the assumption is incorrect.
+     */
+    void AddUnrestrictedUpdateEvent(UnrestrictedUpdateEvent<T> event) {
+        auto& events = dynamic_cast<LeafEventCollection<UnrestrictedUpdateEvent<T>>&>(
+                this->get_mutable_unrestricted_update_events());
+        events.AddEvent(std::move(event));
+    }
 
-  /**
-   * Adds the contained homogeneous event collections (e.g.,
-   * EventCollection<PublishEvent<T>>, EventCollection<DiscreteUpdateEvent<T>>,
-   * etc.) from `other` to the end of `this`.
-   */
-  void AddToEnd(const CompositeEventCollection<T>& other) {
-    publish_events_->AddToEnd(other.get_publish_events());
-    discrete_update_events_->AddToEnd(other.get_discrete_update_events());
-    unrestricted_update_events_->AddToEnd(
-        other.get_unrestricted_update_events());
-  }
+    /**
+     * Adds the contained homogeneous event collections (e.g.,
+     * EventCollection<PublishEvent<T>>, EventCollection<DiscreteUpdateEvent<T>>,
+     * etc.) from `other` to the end of `this`.
+     */
+    void AddToEnd(const CompositeEventCollection<T>& other) {
+        publish_events_->AddToEnd(other.get_publish_events());
+        discrete_update_events_->AddToEnd(other.get_discrete_update_events());
+        unrestricted_update_events_->AddToEnd(other.get_unrestricted_update_events());
+    }
 
-  /**
-   * Copies the collections of homogeneous events from `other` to `this`.
-   */
-  void SetFrom(const CompositeEventCollection<T>& other) {
-    publish_events_->SetFrom(other.get_publish_events());
-    discrete_update_events_->SetFrom(other.get_discrete_update_events());
-    unrestricted_update_events_->SetFrom(
-        other.get_unrestricted_update_events());
-  }
+    /**
+     * Copies the collections of homogeneous events from `other` to `this`.
+     */
+    void SetFrom(const CompositeEventCollection<T>& other) {
+        publish_events_->SetFrom(other.get_publish_events());
+        discrete_update_events_->SetFrom(other.get_discrete_update_events());
+        unrestricted_update_events_->SetFrom(other.get_unrestricted_update_events());
+    }
 
-  /**
-   * Returns a const reference to the collection of publish events.
-   */
-  const EventCollection<PublishEvent<T>>& get_publish_events() const {
-    return *publish_events_;
-  }
+    /**
+     * Returns a const reference to the collection of publish events.
+     */
+    const EventCollection<PublishEvent<T>>& get_publish_events() const { return *publish_events_; }
 
-  /**
-   * Returns a const reference to the collection of discrete update events.
-   */
-  const EventCollection<DiscreteUpdateEvent<T>>& get_discrete_update_events()
-      const {
-    return *discrete_update_events_;
-  }
+    /**
+     * Returns a const reference to the collection of discrete update events.
+     */
+    const EventCollection<DiscreteUpdateEvent<T>>& get_discrete_update_events() const {
+        return *discrete_update_events_;
+    }
 
-  /**
-   * Returns a const reference to the collection of unrestricted update events.
-   */
-  const EventCollection<UnrestrictedUpdateEvent<T>>&
-  get_unrestricted_update_events() const {
-    return *unrestricted_update_events_;
-  }
+    /**
+     * Returns a const reference to the collection of unrestricted update events.
+     */
+    const EventCollection<UnrestrictedUpdateEvent<T>>& get_unrestricted_update_events() const {
+        return *unrestricted_update_events_;
+    }
 
-  /**
-   * Returns a mutable reference to the collection of publish events
-   */
-  EventCollection<PublishEvent<T>>& get_mutable_publish_events() const {
-    return *publish_events_;
-  }
+    /**
+     * Returns a mutable reference to the collection of publish events
+     */
+    EventCollection<PublishEvent<T>>& get_mutable_publish_events() const { return *publish_events_; }
 
-  /**
-   * Returns a mutable reference to the collection of discrete update events.
-   */
-  EventCollection<DiscreteUpdateEvent<T>>& get_mutable_discrete_update_events()
-      const {
-    return *discrete_update_events_;
-  }
+    /**
+     * Returns a mutable reference to the collection of discrete update events.
+     */
+    EventCollection<DiscreteUpdateEvent<T>>& get_mutable_discrete_update_events() const {
+        return *discrete_update_events_;
+    }
 
-  /**
-   * Returns a mutable reference to the collection of unrestricted update
-   * events.
-   */
-  EventCollection<UnrestrictedUpdateEvent<T>>&
-  get_mutable_unrestricted_update_events() const {
-    return *unrestricted_update_events_;
-  }
+    /**
+     * Returns a mutable reference to the collection of unrestricted update
+     * events.
+     */
+    EventCollection<UnrestrictedUpdateEvent<T>>& get_mutable_unrestricted_update_events() const {
+        return *unrestricted_update_events_;
+    }
 
-  /** @name System compatibility
-  See @ref system_compatibility. */
-  //@{
-  /**
-   * (Internal use only) Gets the id of the subsystem that created this
-   * collection.
-   */
-  internal::SystemId get_system_id() const { return system_id_; }
+    /** @name System compatibility
+    See @ref system_compatibility. */
+    //@{
+    /**
+     * (Internal use only) Gets the id of the subsystem that created this
+     * collection.
+     */
+    internal::SystemId get_system_id() const { return system_id_; }
 
-  /**
-   * (Internal use only) Records the id of the subsystem that created this
-   * collection.
-   */
-  void set_system_id(internal::SystemId id) { system_id_ = id; }
-  //@}
+    /**
+     * (Internal use only) Records the id of the subsystem that created this
+     * collection.
+     */
+    void set_system_id(internal::SystemId id) { system_id_ = id; }
+    //@}
 
- protected:
-  /**
-   * Takes ownership of `pub`, `discrete` and `unrestricted`. Aborts if any
-   * of these are null.
-   */
-  CompositeEventCollection(
-      std::unique_ptr<EventCollection<PublishEvent<T>>> pub,
-      std::unique_ptr<EventCollection<DiscreteUpdateEvent<T>>> discrete,
-      std::unique_ptr<EventCollection<UnrestrictedUpdateEvent<T>>> unrestricted)
-      : publish_events_(std::move(pub)),
-        discrete_update_events_(std::move(discrete)),
-        unrestricted_update_events_(std::move(unrestricted)) {
-    DRAKE_DEMAND(publish_events_ != nullptr);
-    DRAKE_DEMAND(discrete_update_events_ != nullptr);
-    DRAKE_DEMAND(unrestricted_update_events_ != nullptr);
-  }
+protected:
+    /**
+     * Takes ownership of `pub`, `discrete` and `unrestricted`. Aborts if any
+     * of these are null.
+     */
+    CompositeEventCollection(std::unique_ptr<EventCollection<PublishEvent<T>>> pub,
+                             std::unique_ptr<EventCollection<DiscreteUpdateEvent<T>>> discrete,
+                             std::unique_ptr<EventCollection<UnrestrictedUpdateEvent<T>>> unrestricted)
+        : publish_events_(std::move(pub)),
+          discrete_update_events_(std::move(discrete)),
+          unrestricted_update_events_(std::move(unrestricted)) {
+        DRAKE_DEMAND(publish_events_ != nullptr);
+        DRAKE_DEMAND(discrete_update_events_ != nullptr);
+        DRAKE_DEMAND(unrestricted_update_events_ != nullptr);
+    }
 
- private:
-  std::unique_ptr<EventCollection<PublishEvent<T>>> publish_events_{nullptr};
-  std::unique_ptr<EventCollection<DiscreteUpdateEvent<T>>>
-      discrete_update_events_{nullptr};
-  std::unique_ptr<EventCollection<UnrestrictedUpdateEvent<T>>>
-      unrestricted_update_events_{nullptr};
+private:
+    std::unique_ptr<EventCollection<PublishEvent<T>>> publish_events_{nullptr};
+    std::unique_ptr<EventCollection<DiscreteUpdateEvent<T>>> discrete_update_events_{nullptr};
+    std::unique_ptr<EventCollection<UnrestrictedUpdateEvent<T>>> unrestricted_update_events_{nullptr};
 
-  // Unique id of the subsystem that created this collection.
-  internal::SystemId system_id_;
+    // Unique id of the subsystem that created this collection.
+    internal::SystemId system_id_;
 };
 
 /**
@@ -627,41 +590,37 @@ class CompositeEventCollection {
  */
 template <typename T>
 class LeafCompositeEventCollection final : public CompositeEventCollection<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LeafCompositeEventCollection);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LeafCompositeEventCollection);
 
-  LeafCompositeEventCollection()
-      : CompositeEventCollection<T>(
-            std::make_unique<LeafEventCollection<PublishEvent<T>>>(),
-            std::make_unique<LeafEventCollection<DiscreteUpdateEvent<T>>>(),
-            std::make_unique<
-                LeafEventCollection<UnrestrictedUpdateEvent<T>>>()) {}
+    LeafCompositeEventCollection()
+        : CompositeEventCollection<T>(std::make_unique<LeafEventCollection<PublishEvent<T>>>(),
+                                      std::make_unique<LeafEventCollection<DiscreteUpdateEvent<T>>>(),
+                                      std::make_unique<LeafEventCollection<UnrestrictedUpdateEvent<T>>>()) {}
 
-  /**
-   * Returns a const reference to the collection of publish events.
-   */
-  const LeafEventCollection<PublishEvent<T>>& get_publish_events() const {
-    return dynamic_cast<const LeafEventCollection<PublishEvent<T>>&>(
-        CompositeEventCollection<T>::get_publish_events());
-  }
+    /**
+     * Returns a const reference to the collection of publish events.
+     */
+    const LeafEventCollection<PublishEvent<T>>& get_publish_events() const {
+        return dynamic_cast<const LeafEventCollection<PublishEvent<T>>&>(
+                CompositeEventCollection<T>::get_publish_events());
+    }
 
-  /**
-   * Returns a const reference to the collection of discrete update events.
-   */
-  const LeafEventCollection<DiscreteUpdateEvent<T>>&
-  get_discrete_update_events() const {
-    return dynamic_cast<const LeafEventCollection<DiscreteUpdateEvent<T>>&>(
-        CompositeEventCollection<T>::get_discrete_update_events());
-  }
+    /**
+     * Returns a const reference to the collection of discrete update events.
+     */
+    const LeafEventCollection<DiscreteUpdateEvent<T>>& get_discrete_update_events() const {
+        return dynamic_cast<const LeafEventCollection<DiscreteUpdateEvent<T>>&>(
+                CompositeEventCollection<T>::get_discrete_update_events());
+    }
 
-  /**
-   * Returns a const reference to the collection of unrestricted update events.
-   */
-  const LeafEventCollection<UnrestrictedUpdateEvent<T>>&
-  get_unrestricted_update_events() const {
-    return dynamic_cast<const LeafEventCollection<UnrestrictedUpdateEvent<T>>&>(
-        CompositeEventCollection<T>::get_unrestricted_update_events());
-  }
+    /**
+     * Returns a const reference to the collection of unrestricted update events.
+     */
+    const LeafEventCollection<UnrestrictedUpdateEvent<T>>& get_unrestricted_update_events() const {
+        return dynamic_cast<const LeafEventCollection<UnrestrictedUpdateEvent<T>>&>(
+                CompositeEventCollection<T>::get_unrestricted_update_events());
+    }
 };
 
 /**
@@ -671,96 +630,79 @@ class LeafCompositeEventCollection final : public CompositeEventCollection<T> {
  * internal use only.
  */
 template <typename T>
-class DiagramCompositeEventCollection final
-    : public CompositeEventCollection<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiagramCompositeEventCollection);
+class DiagramCompositeEventCollection final : public CompositeEventCollection<T> {
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiagramCompositeEventCollection);
 
-  /**
-   * Allocated CompositeEventCollection for all constituent subsystems are
-   * passed in `subevents` (a vector of size of the number of subsystems of
-   * the corresponding diagram), for which ownership is also transferred to
-   * `this`.
-   */
-  explicit DiagramCompositeEventCollection(
-      std::vector<std::unique_ptr<CompositeEventCollection<T>>> subevents)
-      : CompositeEventCollection<T>(
-            std::make_unique<DiagramEventCollection<PublishEvent<T>>>(
-                subevents.size()),
-            std::make_unique<DiagramEventCollection<DiscreteUpdateEvent<T>>>(
-                subevents.size()),
-            std::make_unique<
-                DiagramEventCollection<UnrestrictedUpdateEvent<T>>>(
-                subevents.size())),
-        owned_subevent_collection_(std::move(subevents)) {
-    size_t num_subsystems = owned_subevent_collection_.size();
+    /**
+     * Allocated CompositeEventCollection for all constituent subsystems are
+     * passed in `subevents` (a vector of size of the number of subsystems of
+     * the corresponding diagram), for which ownership is also transferred to
+     * `this`.
+     */
+    explicit DiagramCompositeEventCollection(std::vector<std::unique_ptr<CompositeEventCollection<T>>> subevents)
+        : CompositeEventCollection<T>(
+                  std::make_unique<DiagramEventCollection<PublishEvent<T>>>(subevents.size()),
+                  std::make_unique<DiagramEventCollection<DiscreteUpdateEvent<T>>>(subevents.size()),
+                  std::make_unique<DiagramEventCollection<UnrestrictedUpdateEvent<T>>>(subevents.size())),
+          owned_subevent_collection_(std::move(subevents)) {
+        size_t num_subsystems = owned_subevent_collection_.size();
 
-    for (size_t i = 0; i < num_subsystems; ++i) {
-      DiagramEventCollection<PublishEvent<T>>& sub_publish =
-          dynamic_cast<DiagramEventCollection<PublishEvent<T>>&>(
-              this->get_mutable_publish_events());
+        for (size_t i = 0; i < num_subsystems; ++i) {
+            DiagramEventCollection<PublishEvent<T>>& sub_publish =
+                    dynamic_cast<DiagramEventCollection<PublishEvent<T>>&>(this->get_mutable_publish_events());
 
-      // Sets sub_publish's i'th subsystem's EventCollection<PublishEvent>
-      // pointer to owned_subevent_collection_[i].get_mutable_publish_events().
-      // So that sub_publish has the same pointer structure, but does not
-      // duplicate actual data.
-      sub_publish.set_subevent_collection(
-          i, &(owned_subevent_collection_[i]->get_mutable_publish_events()));
+            // Sets sub_publish's i'th subsystem's EventCollection<PublishEvent>
+            // pointer to owned_subevent_collection_[i].get_mutable_publish_events().
+            // So that sub_publish has the same pointer structure, but does not
+            // duplicate actual data.
+            sub_publish.set_subevent_collection(i, &(owned_subevent_collection_[i]->get_mutable_publish_events()));
 
-      DiagramEventCollection<DiscreteUpdateEvent<T>>& sub_discrete_update =
-          dynamic_cast<DiagramEventCollection<DiscreteUpdateEvent<T>>&>(
-              this->get_mutable_discrete_update_events());
-      sub_discrete_update.set_subevent_collection(
-          i, &(owned_subevent_collection_[i]
-                   ->get_mutable_discrete_update_events()));
+            DiagramEventCollection<DiscreteUpdateEvent<T>>& sub_discrete_update =
+                    dynamic_cast<DiagramEventCollection<DiscreteUpdateEvent<T>>&>(
+                            this->get_mutable_discrete_update_events());
+            sub_discrete_update.set_subevent_collection(
+                    i, &(owned_subevent_collection_[i]->get_mutable_discrete_update_events()));
 
-      DiagramEventCollection<UnrestrictedUpdateEvent<T>>&
-          sub_unrestricted_update =
-              dynamic_cast<DiagramEventCollection<UnrestrictedUpdateEvent<T>>&>(
-                  this->get_mutable_unrestricted_update_events());
-      sub_unrestricted_update.set_subevent_collection(
-          i, &(owned_subevent_collection_[i]
-                   ->get_mutable_unrestricted_update_events()));
+            DiagramEventCollection<UnrestrictedUpdateEvent<T>>& sub_unrestricted_update =
+                    dynamic_cast<DiagramEventCollection<UnrestrictedUpdateEvent<T>>&>(
+                            this->get_mutable_unrestricted_update_events());
+            sub_unrestricted_update.set_subevent_collection(
+                    i, &(owned_subevent_collection_[i]->get_mutable_unrestricted_update_events()));
+        }
     }
-  }
 
-  /**
-   * Returns the number of subsystems for which this object contains event
-   * collections.
-   */
-  int num_subsystems() const {
-    return static_cast<int>(owned_subevent_collection_.size());
-  }
+    /**
+     * Returns the number of subsystems for which this object contains event
+     * collections.
+     */
+    int num_subsystems() const { return static_cast<int>(owned_subevent_collection_.size()); }
 
-  // Gets a mutable pointer to the CompositeEventCollection specified for the
-  // given subsystem. Aborts if the 0-index `index` is greater than or equal
-  // to the number of subsystems or if `index` is negative.
-  CompositeEventCollection<T>& get_mutable_subevent_collection(int index) {
-    DRAKE_DEMAND(index >= 0 && index < num_subsystems());
-    return *owned_subevent_collection_[index].get();
-  }
+    // Gets a mutable pointer to the CompositeEventCollection specified for the
+    // given subsystem. Aborts if the 0-index `index` is greater than or equal
+    // to the number of subsystems or if `index` is negative.
+    CompositeEventCollection<T>& get_mutable_subevent_collection(int index) {
+        DRAKE_DEMAND(index >= 0 && index < num_subsystems());
+        return *owned_subevent_collection_[index].get();
+    }
 
-  // Gets a const reference to the CompositeEventCollection specified for
-  // the given subsystem. Aborts if the 0-index `index` is greater than or
-  // equal to the number of subsystems or if `index` is negative.
-  const CompositeEventCollection<T>& get_subevent_collection(int index) const {
-    DRAKE_DEMAND(index >= 0 && index < num_subsystems());
-    return *owned_subevent_collection_[index].get();
-  }
+    // Gets a const reference to the CompositeEventCollection specified for
+    // the given subsystem. Aborts if the 0-index `index` is greater than or
+    // equal to the number of subsystems or if `index` is negative.
+    const CompositeEventCollection<T>& get_subevent_collection(int index) const {
+        DRAKE_DEMAND(index >= 0 && index < num_subsystems());
+        return *owned_subevent_collection_[index].get();
+    }
 
- private:
-  std::vector<std::unique_ptr<CompositeEventCollection<T>>>
-      owned_subevent_collection_;
+private:
+    std::vector<std::unique_ptr<CompositeEventCollection<T>>> owned_subevent_collection_;
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::CompositeEventCollection);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::systems::CompositeEventCollection);
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::LeafCompositeEventCollection);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::systems::LeafCompositeEventCollection);
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::DiagramCompositeEventCollection);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::systems::DiagramCompositeEventCollection);

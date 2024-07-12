@@ -8,7 +8,6 @@ import sys
 import umsgpack
 import websockets
 
-
 # BEGIN ugly hack
 #
 # https://bugs.launchpad.net/ubuntu/+source/python-websockets/+bug/1969902
@@ -51,6 +50,7 @@ asyncio.sleep = _patch_asyncio(_asyncio_sleep)
 # updated to 2.5.2 or later.
 if not hasattr(umsgpack, 'Hashable'):
     import collections
+
     setattr(umsgpack.collections, 'Hashable', collections.abc.Hashable)
 
 
@@ -64,7 +64,7 @@ def print_recursive_comparison(d1, d2, level='root'):
         if d1.keys() != d2.keys():
             s1 = set(d1.keys())
             s2 = set(d2.keys())
-            print('{:<20} + {} - {}'.format(level, s1-s2, s2-s1))
+            print('{:<20} + {} - {}'.format(level, s1 - s2, s2 - s1))
             common_keys = s1 & s2
         else:
             common_keys = set(d1.keys())
@@ -97,7 +97,7 @@ async def socket_operations_async(args):
             logger.info("... sent")
         message = None
         for n in range(args.expect_num_messages):
-            logger.info(f"Receiving {n+1}...")
+            logger.info(f"Receiving {n + 1}...")
             message = await asyncio.wait_for(websocket.recv(), timeout=10)
             logger.info("... received")
         if args.expect_message:
@@ -128,7 +128,7 @@ def main():
     parser.add_argument(
         "--expect_message", type=json.loads, default=None, metavar="JSON",
         help="the expected contents of the the final message "
-        + "(given as a json string)")
+             + "(given as a json string)")
     parser.add_argument(
         "--expect_success", type=int, default=True, metavar="0|1",
         help="must be 0 or 1; when zero, exceptions and errors are ignored")

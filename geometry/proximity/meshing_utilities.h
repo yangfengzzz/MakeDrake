@@ -10,8 +10,7 @@ namespace geometry {
 namespace internal {
 
 /* Appends all of the VolumeElements in `new_elements` into `mesh_elements` */
-void Append(const std::vector<VolumeElement>& new_elements,
-            std::vector<VolumeElement>* mesh_elements);
+void Append(const std::vector<VolumeElement>& new_elements, std::vector<VolumeElement>* mesh_elements);
 
 /* Subdivides a triangular prism into three tetrahedra such that they share the
  diagonal v0,v5 (see ordering below) of the rectangular face v0,v2,v5,v3. The
@@ -36,9 +35,7 @@ void Append(const std::vector<VolumeElement>& new_elements,
                 |/          \|
                 v1-----------v2
  */
-std::vector<VolumeElement> SplitTriangularPrismToTetrahedra(int v0, int v1,
-                                                            int v2, int v3,
-                                                            int v4, int v5);
+std::vector<VolumeElement> SplitTriangularPrismToTetrahedra(int v0, int v1, int v2, int v3, int v4, int v5);
 
 /* Subdivide a pyramid into two tetrahedra sharing the diagonal v0,v2.
 
@@ -51,8 +48,7 @@ std::vector<VolumeElement> SplitTriangularPrismToTetrahedra(int v0, int v1,
                 |/          \|
                 v3-----------v2
  */
-std::vector<VolumeElement> SplitPyramidToTetrahedra(int v0, int v1, int v2,
-                                                    int v3, int v4);
+std::vector<VolumeElement> SplitPyramidToTetrahedra(int v0, int v1, int v2, int v3, int v4);
 
 /* Returns the volume enclosed by the surface mesh. The result is only
 meaningful if the mesh is watertight. */

@@ -63,80 +63,77 @@ namespace internal {
  * The bound variable vector for this constraint is [q; v; λ; f_static;
  * f_sliding; c].
  */
-class SlidingFrictionComplementarityNonlinearConstraint
-    : public solvers::Constraint {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(
-      SlidingFrictionComplementarityNonlinearConstraint);
+class SlidingFrictionComplementarityNonlinearConstraint : public solvers::Constraint {
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(SlidingFrictionComplementarityNonlinearConstraint);
 
-  /*
-   * @param contact_wrench_evaluator An evaluator that computes the contact
-   * wrench between a pair of geometries. We will only impose the constraint on
-   * the contact force, the contact torque is unconstrained.
-   * @param complementarity_tolerance The small constant ε for relaxing the
-   * complementarity constraint (2).
-   */
-  SlidingFrictionComplementarityNonlinearConstraint(
-      const ContactWrenchEvaluator* contact_wrench_evaluator,
-      double complementarity_tolerance);
+    /*
+     * @param contact_wrench_evaluator An evaluator that computes the contact
+     * wrench between a pair of geometries. We will only impose the constraint on
+     * the contact force, the contact torque is unconstrained.
+     * @param complementarity_tolerance The small constant ε for relaxing the
+     * complementarity constraint (2).
+     */
+    SlidingFrictionComplementarityNonlinearConstraint(const ContactWrenchEvaluator* contact_wrench_evaluator,
+                                                      double complementarity_tolerance);
 
-  ~SlidingFrictionComplementarityNonlinearConstraint() override {}
+    ~SlidingFrictionComplementarityNonlinearConstraint() override {}
 
-  void UpdateComplementarityTolerance(double complementarity_tolerance);
+    void UpdateComplementarityTolerance(double complementarity_tolerance);
 
-  /*
-   * Getter for the slack variable c, used in the constraint
-   *
-   *     f_sliding_tangential = -c * v_sliding
-   */
-  const symbolic::Variable& c_var() const { return c_var_; }
+    /*
+     * Getter for the slack variable c, used in the constraint
+     *
+     *     f_sliding_tangential = -c * v_sliding
+     */
+    const symbolic::Variable& c_var() const { return c_var_; }
 
-  template <typename T>
-  void DecomposeX(const Eigen::Ref<const VectorX<T>>& x, VectorX<T>* q,
-                  VectorX<T>* v, VectorX<T>* lambda, Vector3<T>* f_static,
-                  Vector3<T>* f_sliding, T* c) const {
-    *q = x.head(contact_wrench_evaluator_->plant().num_positions());
-    *v = x.segment(q->rows(),
-                   contact_wrench_evaluator_->plant().num_velocities());
-    *lambda = x.segment(q->rows() + v->rows(),
-                        contact_wrench_evaluator_->num_lambda());
-    *f_static = x.template segment<3>(q->rows() + v->rows() + lambda->rows());
-    *f_sliding =
-        x.template segment<3>(q->rows() + v->rows() + lambda->rows() + 3);
-    *c = x(x.rows() - 1);
-  }
+    template <typename T>
+    void DecomposeX(const Eigen::Ref<const VectorX<T>>& x,
+                    VectorX<T>* q,
+                    VectorX<T>* v,
+                    VectorX<T>* lambda,
+                    Vector3<T>* f_static,
+                    Vector3<T>* f_sliding,
+                    T* c) const {
+        *q = x.head(contact_wrench_evaluator_->plant().num_positions());
+        *v = x.segment(q->rows(), contact_wrench_evaluator_->plant().num_velocities());
+        *lambda = x.segment(q->rows() + v->rows(), contact_wrench_evaluator_->num_lambda());
+        *f_static = x.template segment<3>(q->rows() + v->rows() + lambda->rows());
+        *f_sliding = x.template segment<3>(q->rows() + v->rows() + lambda->rows() + 3);
+        *c = x(x.rows() - 1);
+    }
 
-  template <typename T>
-  void ComposeX(const Eigen::Ref<const VectorX<T>>& q,
-                const Eigen::Ref<const VectorX<T>>& v,
-                const Eigen::Ref<const VectorX<T>>& lambda,
-                const Vector3<T>& f_static, const Vector3<T>& f_sliding,
-                const T& c, VectorX<T>* x) const {
-    x->resize(num_vars());
-    *x << q, v, lambda, f_static, f_sliding, c;
-  }
+    template <typename T>
+    void ComposeX(const Eigen::Ref<const VectorX<T>>& q,
+                  const Eigen::Ref<const VectorX<T>>& v,
+                  const Eigen::Ref<const VectorX<T>>& lambda,
+                  const Vector3<T>& f_static,
+                  const Vector3<T>& f_sliding,
+                  const T& c,
+                  VectorX<T>* x) const {
+        x->resize(num_vars());
+        *x << q, v, lambda, f_static, f_sliding, c;
+    }
 
-  /*
-   * Return the sparsity pattern of the constraint, when we compute the gradient
-   * of the constraint w.r.t the variable itself (namely when
-   * ExtractGradient(x) = Identity in DoEval(x, y)).
-   * @return gradient_sparsity_pattern. The pairs
-   * (gradient_sparsity_pattern[i].first, gradient_sparsity_pattern[i].second)
-   * contain all the (row, column) index pairs of the non-zero entries in the
-   * gradient.
-   */
-  std::vector<std::pair<int, int>> GetConstraintSparsityPattern() const;
+    /*
+     * Return the sparsity pattern of the constraint, when we compute the gradient
+     * of the constraint w.r.t the variable itself (namely when
+     * ExtractGradient(x) = Identity in DoEval(x, y)).
+     * @return gradient_sparsity_pattern. The pairs
+     * (gradient_sparsity_pattern[i].first, gradient_sparsity_pattern[i].second)
+     * contain all the (row, column) index pairs of the non-zero entries in the
+     * gradient.
+     */
+    std::vector<std::pair<int, int>> GetConstraintSparsityPattern() const;
 
- private:
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const final;
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const final;
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const final;
+private:
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const final;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const final;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x, VectorX<symbolic::Expression>* y) const final;
 
-  const ContactWrenchEvaluator* const contact_wrench_evaluator_;
-  symbolic::Variable c_var_;
+    const ContactWrenchEvaluator* const contact_wrench_evaluator_;
+    symbolic::Variable c_var_;
 };
 }  // namespace internal
 
@@ -162,16 +159,15 @@ class SlidingFrictionComplementarityNonlinearConstraint
  *
  * @ingroup solver_evaluators
  */
-std::pair<solvers::Binding<
-              internal::SlidingFrictionComplementarityNonlinearConstraint>,
+std::pair<solvers::Binding<internal::SlidingFrictionComplementarityNonlinearConstraint>,
           solvers::Binding<StaticFrictionConeConstraint>>
 AddSlidingFrictionComplementarityExplicitContactConstraint(
-    const ContactWrenchEvaluator* contact_wrench_evaluator,
-    double complementarity_tolerance,
-    const Eigen::Ref<const VectorX<symbolic::Variable>>& q_vars,
-    const Eigen::Ref<const VectorX<symbolic::Variable>>& v_vars,
-    const Eigen::Ref<const VectorX<symbolic::Variable>>& lambda_vars,
-    solvers::MathematicalProgram* prog);
+        const ContactWrenchEvaluator* contact_wrench_evaluator,
+        double complementarity_tolerance,
+        const Eigen::Ref<const VectorX<symbolic::Variable>>& q_vars,
+        const Eigen::Ref<const VectorX<symbolic::Variable>>& v_vars,
+        const Eigen::Ref<const VectorX<symbolic::Variable>>& lambda_vars,
+        solvers::MathematicalProgram* prog);
 
 /**
  * For a pair of geometries in implicit contact (they may or may not be in
@@ -184,16 +180,14 @@ AddSlidingFrictionComplementarityExplicitContactConstraint(
  *
  * @ingroup solver_evaluators
  */
-std::pair<solvers::Binding<
-              internal::SlidingFrictionComplementarityNonlinearConstraint>,
-          solvers::Binding<
-              internal::StaticFrictionConeComplementarityNonlinearConstraint>>
+std::pair<solvers::Binding<internal::SlidingFrictionComplementarityNonlinearConstraint>,
+          solvers::Binding<internal::StaticFrictionConeComplementarityNonlinearConstraint>>
 AddSlidingFrictionComplementarityImplicitContactConstraint(
-    const ContactWrenchEvaluator* contact_wrench_evaluator,
-    double complementarity_tolerance,
-    const Eigen::Ref<const VectorX<symbolic::Variable>>& q_vars,
-    const Eigen::Ref<const VectorX<symbolic::Variable>>& v_vars,
-    const Eigen::Ref<const VectorX<symbolic::Variable>>& lambda_vars,
-    solvers::MathematicalProgram* prog);
+        const ContactWrenchEvaluator* contact_wrench_evaluator,
+        double complementarity_tolerance,
+        const Eigen::Ref<const VectorX<symbolic::Variable>>& q_vars,
+        const Eigen::Ref<const VectorX<symbolic::Variable>>& v_vars,
+        const Eigen::Ref<const VectorX<symbolic::Variable>>& lambda_vars,
+        solvers::MathematicalProgram* prog);
 }  // namespace multibody
 }  // namespace drake

@@ -7,10 +7,9 @@ namespace geometry {
 
 using internal::CollisionFilter;
 
-CollisionFilterManager::CollisionFilterManager(
-    CollisionFilter* filter, CollisionFilter::ExtractIds extract_ids)
+CollisionFilterManager::CollisionFilterManager(CollisionFilter* filter, CollisionFilter::ExtractIds extract_ids)
     : filter_(filter), extract_ids_(std::move(extract_ids)) {
-  DRAKE_DEMAND(filter != nullptr);
+    DRAKE_DEMAND(filter != nullptr);
 }
 
 }  // namespace geometry

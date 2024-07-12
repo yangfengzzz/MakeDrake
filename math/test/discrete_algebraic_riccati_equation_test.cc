@@ -11,10 +11,10 @@ namespace drake {
 namespace math {
 namespace {
 
-void SolveDAREandVerify(const Eigen::Ref<const Eigen::MatrixXd> &A,
-                        const Eigen::Ref<const Eigen::MatrixXd> &B,
-                        const Eigen::Ref<const Eigen::MatrixXd> &Q,
-                        const Eigen::Ref<const Eigen::MatrixXd> &R) {
+void SolveDAREandVerify(const Eigen::Ref<const Eigen::MatrixXd>& A,
+                        const Eigen::Ref<const Eigen::MatrixXd>& B,
+                        const Eigen::Ref<const Eigen::MatrixXd>& Q,
+                        const Eigen::Ref<const Eigen::MatrixXd>& R) {
     int states = A.rows();
 
     Eigen::MatrixXd X = DiscreteAlgebraicRiccatiEquation(A, B, Q, R);
@@ -40,11 +40,11 @@ void SolveDAREandVerify(const Eigen::Ref<const Eigen::MatrixXd> &A,
     EXPECT_TRUE(CompareMatrices(Y, Eigen::MatrixXd::Zero(states, states), 1e-10, MatrixCompareType::absolute));
 }
 
-void SolveDAREandVerify(const Eigen::Ref<const Eigen::MatrixXd> &A,
-                        const Eigen::Ref<const Eigen::MatrixXd> &B,
-                        const Eigen::Ref<const Eigen::MatrixXd> &Q,
-                        const Eigen::Ref<const Eigen::MatrixXd> &R,
-                        const Eigen::Ref<const Eigen::MatrixXd> &N) {
+void SolveDAREandVerify(const Eigen::Ref<const Eigen::MatrixXd>& A,
+                        const Eigen::Ref<const Eigen::MatrixXd>& B,
+                        const Eigen::Ref<const Eigen::MatrixXd>& Q,
+                        const Eigen::Ref<const Eigen::MatrixXd>& R,
+                        const Eigen::Ref<const Eigen::MatrixXd>& N) {
     int states = A.rows();
 
     Eigen::MatrixXd X = DiscreteAlgebraicRiccatiEquation(A, B, Q, R, N);

@@ -7,15 +7,16 @@
 namespace drake {
 namespace solvers {
 bool ClarabelSolver::is_available() {
-  return false;
+    return false;
 }
 
-void ClarabelSolver::DoSolve(const MathematicalProgram&, const Eigen::VectorXd&,
+void ClarabelSolver::DoSolve(const MathematicalProgram&,
+                             const Eigen::VectorXd&,
                              const SolverOptions&,
                              MathematicalProgramResult*) const {
-  throw std::runtime_error(
-      "The Clarabel bindings were not compiled. You'll need to use a "
-      "different solver.");
+    throw std::runtime_error(
+            "The Clarabel bindings were not compiled. You'll need to use a "
+            "different solver.");
 }
 }  // namespace solvers
 }  // namespace drake

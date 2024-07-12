@@ -29,17 +29,15 @@ namespace solvers {
  * 4. solver-specific option passed as an argument to Solve
  * @return result The result of solving the program through the solver.
  */
-MathematicalProgramResult Solve(
-    const MathematicalProgram& prog,
-    const std::optional<Eigen::VectorXd>& initial_guess,
-    const std::optional<SolverOptions>& solver_options);
+MathematicalProgramResult Solve(const MathematicalProgram& prog,
+                                const std::optional<Eigen::VectorXd>& initial_guess,
+                                const std::optional<SolverOptions>& solver_options);
 
 /**
  * Solves an optimization program with a given initial guess.
  */
-MathematicalProgramResult Solve(
-    const MathematicalProgram& prog,
-    const Eigen::Ref<const Eigen::VectorXd>& initial_guess);
+MathematicalProgramResult Solve(const MathematicalProgram& prog,
+                                const Eigen::Ref<const Eigen::VectorXd>& initial_guess);
 
 MathematicalProgramResult Solve(const MathematicalProgram& prog);
 }  // namespace solvers

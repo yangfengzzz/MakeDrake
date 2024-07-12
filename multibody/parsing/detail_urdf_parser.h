@@ -44,31 +44,29 @@ namespace internal {
 // policy. Also, many incomplete or erroneous parses may return a valid (though
 // unfinished) model instance. It will be up to the supplier of the policy to
 // indicate the overall parse result via public interfaces.
-std::optional<ModelInstanceIndex> AddModelFromUrdf(
-    const DataSource& data_source,
-    const std::string& model_name,
-    const std::optional<std::string>& parent_model_name,
-    const ParsingWorkspace& workspace);
+std::optional<ModelInstanceIndex> AddModelFromUrdf(const DataSource& data_source,
+                                                   const std::string& model_name,
+                                                   const std::optional<std::string>& parent_model_name,
+                                                   const ParsingWorkspace& workspace);
 
 class UrdfParserWrapper final : public ParserInterface {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UrdfParserWrapper);
-  UrdfParserWrapper();
-  ~UrdfParserWrapper() final;
-  std::optional<ModelInstanceIndex> AddModel(
-      const DataSource& data_source, const std::string& model_name,
-      const std::optional<std::string>& parent_model_name,
-      const ParsingWorkspace& workspace) final;
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UrdfParserWrapper);
+    UrdfParserWrapper();
+    ~UrdfParserWrapper() final;
+    std::optional<ModelInstanceIndex> AddModel(const DataSource& data_source,
+                                               const std::string& model_name,
+                                               const std::optional<std::string>& parent_model_name,
+                                               const ParsingWorkspace& workspace) final;
 
-  std::string MergeModel(const DataSource& data_source,
-                         const std::string& model_name,
-                         ModelInstanceIndex merge_into_model_instance,
-                         const ParsingWorkspace& workspace) final;
+    std::string MergeModel(const DataSource& data_source,
+                           const std::string& model_name,
+                           ModelInstanceIndex merge_into_model_instance,
+                           const ParsingWorkspace& workspace) final;
 
-  std::vector<ModelInstanceIndex> AddAllModels(
-      const DataSource& data_source,
-      const std::optional<std::string>& parent_model_name,
-      const ParsingWorkspace& workspace) final;
+    std::vector<ModelInstanceIndex> AddAllModels(const DataSource& data_source,
+                                                 const std::optional<std::string>& parent_model_name,
+                                                 const ParsingWorkspace& workspace) final;
 };
 
 }  // namespace internal

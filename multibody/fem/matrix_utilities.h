@@ -42,16 +42,14 @@ Namely the ik-th entry in the jl-th block corresponds to the value Aᵢⱼₖₗ
  @pre A is invertible.
  @tparam_nonsymbolic_scalar */
 template <typename T>
-double CalcConditionNumberOfInvertibleMatrix(
-    const Eigen::Ref<const MatrixX<T>>& A);
+double CalcConditionNumberOfInvertibleMatrix(const Eigen::Ref<const MatrixX<T>>& A);
 
 /* Calculates the polar decomposition of a 3-by-3 matrix F = RS where R is a
  rotation matrix and S is a symmetric matrix. The decomposition is unique when F
  is non-singular.
  @tparam_nonsymbolic_scalar */
 template <typename T>
-void PolarDecompose(const Matrix3<T>& F, EigenPtr<Matrix3<T>> R,
-                    EigenPtr<Matrix3<T>> S);
+void PolarDecompose(const Matrix3<T>& F, EigenPtr<Matrix3<T>> R, EigenPtr<Matrix3<T>> S);
 
 /* Computes the derivative of the rotation matrix from the polar decomposition
  (see PolarDecompose()) with respect to the original matrix.
@@ -65,9 +63,10 @@ void PolarDecompose(const Matrix3<T>& F, EigenPtr<Matrix3<T>> R,
  @pre scaled_dRdF != nullptr.
  @tparam_nonsymbolic_scalar */
 template <typename T>
-void AddScaledRotationalDerivative(
-    const Matrix3<T>& R, const Matrix3<T>& S, const T& scale,
-    EigenPtr<Eigen::Matrix<T, 9, 9>> scaled_dRdF);
+void AddScaledRotationalDerivative(const Matrix3<T>& R,
+                                   const Matrix3<T>& S,
+                                   const T& scale,
+                                   EigenPtr<Eigen::Matrix<T, 9, 9>> scaled_dRdF);
 
 /* Calculates the cofactor matrix of the given input 3-by-3 matrix M.
  @pre cofactor != nullptr.
@@ -83,9 +82,9 @@ void CalcCofactorMatrix(const Matrix3<T>& M, EigenPtr<Matrix3<T>> cofactor);
  @pre scaled_dCdM != nullptr.
  @tparam_nonsymbolic_scalar */
 template <typename T>
-void AddScaledCofactorMatrixDerivative(
-    const Matrix3<T>& M, const T& scale,
-    EigenPtr<Eigen::Matrix<T, 9, 9>> scaled_dCdM);
+void AddScaledCofactorMatrixDerivative(const Matrix3<T>& M,
+                                       const T& scale,
+                                       EigenPtr<Eigen::Matrix<T, 9, 9>> scaled_dCdM);
 
 /* Given a size 3N vector with block structure with size 3 block entries Bᵢ
  where i ∈ V = {0, ..., N-1} and a permutation P on V, this function builds the
@@ -102,8 +101,7 @@ permutation will be:
 @pre block_permutation is a permutation of {0, 1, ..., v.size()/3 - 1}.
 @tparam_nonsymbolic_scalar */
 template <typename T>
-VectorX<T> PermuteBlockVector(const Eigen::Ref<const VectorX<T>>& v,
-                              const std::vector<int>& block_permutation);
+VectorX<T> PermuteBlockVector(const Eigen::Ref<const VectorX<T>>& v, const std::vector<int>& block_permutation);
 
 }  // namespace internal
 }  // namespace fem

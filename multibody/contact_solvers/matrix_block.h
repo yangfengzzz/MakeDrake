@@ -45,70 +45,64 @@ MatrixBlock<T> StackMatrixBlocks(const std::vector<MatrixBlock<T>>& blocks);
  @tparam_default_scalar */
 template <class T>
 class MatrixBlock {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MatrixBlock);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MatrixBlock);
 
-  /* Constructs an empty MatrixBlock of size 0-by-0. */
-  MatrixBlock() : MatrixBlock(MatrixX<T>::Zero(0, 0)) {}
+    /* Constructs an empty MatrixBlock of size 0-by-0. */
+    MatrixBlock() : MatrixBlock(MatrixX<T>::Zero(0, 0)) {}
 
-  /* Constructs a MatrixBlock with the given Block3x3SparseMatrix. */
-  explicit MatrixBlock(Block3x3SparseMatrix<T> data);
+    /* Constructs a MatrixBlock with the given Block3x3SparseMatrix. */
+    explicit MatrixBlock(Block3x3SparseMatrix<T> data);
 
-  /* Constructs a MatrixBlock with the given Eigen dense matrix. */
-  explicit MatrixBlock(MatrixX<T> data);
+    /* Constructs a MatrixBlock with the given Eigen dense matrix. */
+    explicit MatrixBlock(MatrixX<T> data);
 
-  int rows() const;
-  int cols() const;
-  int size() const { return rows() * cols(); }
+    int rows() const;
+    int cols() const;
+    int size() const { return rows() * cols(); }
 
-  bool is_dense() const { return is_dense_; }
+    bool is_dense() const { return is_dense_; }
 
-  /* Performs *y += M * A.
-   @pre y != nullptr and the sizes of A and y are compatible with M. */
-  void MultiplyAndAddTo(const Eigen::Ref<const MatrixX<T>>& A,
-                        EigenPtr<MatrixX<T>> y) const;
+    /* Performs *y += M * A.
+     @pre y != nullptr and the sizes of A and y are compatible with M. */
+    void MultiplyAndAddTo(const Eigen::Ref<const MatrixX<T>>& A, EigenPtr<MatrixX<T>> y) const;
 
-  /* Performs y += Mᵀ * A.
-   @pre y != nullptr and the sizes of A and y are compatible with M. */
-  void TransposeAndMultiplyAndAddTo(const Eigen::Ref<const MatrixX<T>>& A,
-                                    EigenPtr<MatrixX<T>> y) const;
+    /* Performs y += Mᵀ * A.
+     @pre y != nullptr and the sizes of A and y are compatible with M. */
+    void TransposeAndMultiplyAndAddTo(const Eigen::Ref<const MatrixX<T>>& A, EigenPtr<MatrixX<T>> y) const;
 
-  // TODO(xuchenhan-tri): Consider writing the output to a MatrixBlock to
-  // preserve the sparsity structure if it exists.
-  /* Performs y += Mᵀ * A.
-   @pre y != nullptr and the sizes of A and y are compatible with M. */
-  void TransposeAndMultiplyAndAddTo(const MatrixBlock<T>& A,
-                                    EigenPtr<MatrixX<T>> y) const;
+    // TODO(xuchenhan-tri): Consider writing the output to a MatrixBlock to
+    // preserve the sparsity structure if it exists.
+    /* Performs y += Mᵀ * A.
+     @pre y != nullptr and the sizes of A and y are compatible with M. */
+    void TransposeAndMultiplyAndAddTo(const MatrixBlock<T>& A, EigenPtr<MatrixX<T>> y) const;
 
-  /* Computes G * M where G is a block diagonal matrix with the diagonal blocks
-   specified as a vector of dense matrices. In particular, the diagonal blocks
-   are [Gs[start], ..., Gs[end]]. The result is returned as a MatrixBlock,
-   sparse if M is sparse, dense otherwise.
-   @pre 0 <= start <= end < Gs.size().
-   @pre All matrices in Gs are square.
-   @pre Gs[start].rows() + ... + Gs[end].rows() == M.rows().
-   @pre If M is sparse, all matrices in Gs are 3n-by-3n for some positive
-   integer n. */
-  MatrixBlock<T> LeftMultiplyByBlockDiagonal(const std::vector<MatrixX<T>>& Gs,
-                                             int start, int end) const;
+    /* Computes G * M where G is a block diagonal matrix with the diagonal blocks
+     specified as a vector of dense matrices. In particular, the diagonal blocks
+     are [Gs[start], ..., Gs[end]]. The result is returned as a MatrixBlock,
+     sparse if M is sparse, dense otherwise.
+     @pre 0 <= start <= end < Gs.size().
+     @pre All matrices in Gs are square.
+     @pre Gs[start].rows() + ... + Gs[end].rows() == M.rows().
+     @pre If M is sparse, all matrices in Gs are 3n-by-3n for some positive
+     integer n. */
+    MatrixBlock<T> LeftMultiplyByBlockDiagonal(const std::vector<MatrixX<T>>& Gs, int start, int end) const;
 
-  /* Performs y += M * scale.asDiagonal() * M.transpose().
-   @pre y != nullptr and the sizes of scale and y are compatible with M. */
-  void MultiplyWithScaledTransposeAndAddTo(const VectorX<T>& scale,
-                                           EigenPtr<MatrixX<T>> y) const;
+    /* Performs y += M * scale.asDiagonal() * M.transpose().
+     @pre y != nullptr and the sizes of scale and y are compatible with M. */
+    void MultiplyWithScaledTransposeAndAddTo(const VectorX<T>& scale, EigenPtr<MatrixX<T>> y) const;
 
-  /* Returns the MatrixBlock as an Eigen dense matrix. Useful for debugging and
-   testing. */
-  MatrixX<T> MakeDenseMatrix() const;
+    /* Returns the MatrixBlock as an Eigen dense matrix. Useful for debugging and
+     testing. */
+    MatrixX<T> MakeDenseMatrix() const;
 
-  bool operator==(const MatrixBlock<T>&) const = default;
+    bool operator==(const MatrixBlock<T>&) const = default;
 
- private:
-  friend MatrixBlock<T> StackMatrixBlocks<T>(
-      const std::vector<MatrixBlock<T>>& blocks);
+private:
+    friend MatrixBlock<T> StackMatrixBlocks<T>(const std::vector<MatrixBlock<T>>& blocks);
 
-  std::variant<MatrixX<T>, Block3x3SparseMatrix<T>> data_;
-  bool is_dense_{};
+    std::variant<MatrixX<T>, Block3x3SparseMatrix<T>> data_;
+    bool is_dense_{};
 };
 
 }  // namespace internal

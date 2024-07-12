@@ -31,10 +31,9 @@ points.col(j). A is always symmetric.
 
 @pre points.rows() == total number of positions in the collision checker plant.
 */
-Eigen::SparseMatrix<bool> VisibilityGraph(
-    const CollisionChecker& checker,
-    const Eigen::Ref<const Eigen::MatrixXd>& points,
-    Parallelism parallelize = Parallelism::Max());
+Eigen::SparseMatrix<bool> VisibilityGraph(const CollisionChecker& checker,
+                                          const Eigen::Ref<const Eigen::MatrixXd>& points,
+                                          Parallelism parallelize = Parallelism::Max());
 
 }  // namespace planning
 }  // namespace drake

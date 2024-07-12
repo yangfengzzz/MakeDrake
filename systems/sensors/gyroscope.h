@@ -48,68 +48,60 @@ namespace sensors {
 /// @ingroup sensor_systems
 template <typename T>
 class Gyroscope final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Gyroscope);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Gyroscope);
 
-  /// Constructor for %Gyroscope using full transform.
-  /// @param body the body B to which the sensor is affixed
-  /// @param X_BS the pose of sensor frame S in body B
-  Gyroscope(const multibody::RigidBody<T>& body,
-            const math::RigidTransform<double>& X_BS);
+    /// Constructor for %Gyroscope using full transform.
+    /// @param body the body B to which the sensor is affixed
+    /// @param X_BS the pose of sensor frame S in body B
+    Gyroscope(const multibody::RigidBody<T>& body, const math::RigidTransform<double>& X_BS);
 
-  /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  template <typename U>
-  explicit Gyroscope(const Gyroscope<U>&);
+    /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    template <typename U>
+    explicit Gyroscope(const Gyroscope<U>&);
 
-  const InputPort<T>& get_body_poses_input_port() const {
-    return *body_poses_input_port_;
-  }
+    const InputPort<T>& get_body_poses_input_port() const { return *body_poses_input_port_; }
 
-  const InputPort<T>& get_body_velocities_input_port() const {
-    return *body_velocities_input_port_;
-  }
+    const InputPort<T>& get_body_velocities_input_port() const { return *body_velocities_input_port_; }
 
-  const OutputPort<T>& get_measurement_output_port() const {
-    return *measurement_output_port_;
-  }
+    const OutputPort<T>& get_measurement_output_port() const { return *measurement_output_port_; }
 
-  /// Returns the index of the RigidBody that was supplied in the constructor.
-  const multibody::BodyIndex& body_index() const { return body_index_; }
+    /// Returns the index of the RigidBody that was supplied in the constructor.
+    const multibody::BodyIndex& body_index() const { return body_index_; }
 
-  /// Gets X_BS, the pose of sensor frame S in body B.
-  const math::RigidTransform<double>& pose() const { return X_BS_; }
+    /// Gets X_BS, the pose of sensor frame S in body B.
+    const math::RigidTransform<double>& pose() const { return X_BS_; }
 
-  /// Static factory method that creates a %Gyroscope object and connects
-  /// it to the given plant. Modifies a Diagram by connecting the input ports
-  /// of the new %Gyroscope to the appropriate output ports of a
-  /// MultibodyPlant. Must be called during Diagram building and given the
-  /// appropriate builder. This is a convenience method to simplify some common
-  /// boilerplate of Diagram wiring. Specifically, this makes three connections:
-  ///
-  /// 1. plant.get_body_poses_output_port() to this.get_body_poses_input_port()
-  /// 2. plant.get_body_spatial_velocities_output_port() to
-  ///        this.get_body_velocities_input_port()
-  /// @param body the body B to which the sensor is affixed
-  /// @param X_BS X_BS the pose of sensor frame S in body B
-  /// @param plant the plant to which the sensor will be connected
-  /// @param builder a pointer to the DiagramBuilder
-  static const Gyroscope& AddToDiagram(
-      const multibody::RigidBody<T>& body,
-      const math::RigidTransform<double>& X_BS,
-      const multibody::MultibodyPlant<T>& plant, DiagramBuilder<T>* builder);
+    /// Static factory method that creates a %Gyroscope object and connects
+    /// it to the given plant. Modifies a Diagram by connecting the input ports
+    /// of the new %Gyroscope to the appropriate output ports of a
+    /// MultibodyPlant. Must be called during Diagram building and given the
+    /// appropriate builder. This is a convenience method to simplify some common
+    /// boilerplate of Diagram wiring. Specifically, this makes three connections:
+    ///
+    /// 1. plant.get_body_poses_output_port() to this.get_body_poses_input_port()
+    /// 2. plant.get_body_spatial_velocities_output_port() to
+    ///        this.get_body_velocities_input_port()
+    /// @param body the body B to which the sensor is affixed
+    /// @param X_BS X_BS the pose of sensor frame S in body B
+    /// @param plant the plant to which the sensor will be connected
+    /// @param builder a pointer to the DiagramBuilder
+    static const Gyroscope& AddToDiagram(const multibody::RigidBody<T>& body,
+                                         const math::RigidTransform<double>& X_BS,
+                                         const multibody::MultibodyPlant<T>& plant,
+                                         DiagramBuilder<T>* builder);
 
- private:
-  Gyroscope(const multibody::BodyIndex& body_index,
-            const math::RigidTransform<double>& X_BS);
+private:
+    Gyroscope(const multibody::BodyIndex& body_index, const math::RigidTransform<double>& X_BS);
 
-  // Computes the transformed signal.
-  void CalcOutput(const Context<T>& context, BasicVector<T>* output) const;
+    // Computes the transformed signal.
+    void CalcOutput(const Context<T>& context, BasicVector<T>* output) const;
 
-  const multibody::BodyIndex body_index_;
-  const math::RigidTransform<double> X_BS_;
-  const InputPort<T>* body_poses_input_port_{nullptr};
-  const InputPort<T>* body_velocities_input_port_{nullptr};
-  const OutputPort<T>* measurement_output_port_{nullptr};
+    const multibody::BodyIndex body_index_;
+    const math::RigidTransform<double> X_BS_;
+    const InputPort<T>* body_poses_input_port_{nullptr};
+    const InputPort<T>* body_velocities_input_port_{nullptr};
+    const OutputPort<T>* measurement_output_port_{nullptr};
 };
 
 }  // namespace sensors

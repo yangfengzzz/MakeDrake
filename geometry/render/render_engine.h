@@ -81,405 +81,391 @@ namespace render {
  the documented @ref reserved_render_label "RenderLabel semantics"; see
  GetRenderLabelOrThrow().  */
 class RenderEngine {
- public:
-  /** Constructs a %RenderEngine with the given default render label. The
-   default render label is applied to geometries that have not otherwise
-   specified a (label, id) property. The value _must_ be either
-   RenderLabel::kUnspecified or RenderLabel::kDontCare. (See
-   @ref render_engine_default_label "this section" for more details.)
+public:
+    /** Constructs a %RenderEngine with the given default render label. The
+     default render label is applied to geometries that have not otherwise
+     specified a (label, id) property. The value _must_ be either
+     RenderLabel::kUnspecified or RenderLabel::kDontCare. (See
+     @ref render_engine_default_label "this section" for more details.)
 
-   @throws std::exception if the default render label is not one of the two
-                          allowed labels.  */
-  explicit RenderEngine(
-      const RenderLabel& default_label = RenderLabel::kUnspecified)
-      : default_render_label_(default_label) {
-    if (default_render_label_ != RenderLabel::kUnspecified &&
-        default_render_label_ != RenderLabel::kDontCare) {
-      throw std::logic_error(
-          "RenderEngine's default render label must be either 'kUnspecified' "
-          "or 'kDontCare'");
+     @throws std::exception if the default render label is not one of the two
+                            allowed labels.  */
+    explicit RenderEngine(const RenderLabel& default_label = RenderLabel::kUnspecified)
+        : default_render_label_(default_label) {
+        if (default_render_label_ != RenderLabel::kUnspecified && default_render_label_ != RenderLabel::kDontCare) {
+            throw std::logic_error(
+                    "RenderEngine's default render label must be either 'kUnspecified' "
+                    "or 'kDontCare'");
+        }
     }
-  }
 
-  virtual ~RenderEngine() = default;
+    virtual ~RenderEngine() = default;
 
-  /** Clones the render engine -- making the %RenderEngine compatible with
-   copyable_unique_ptr.  */
-  std::unique_ptr<RenderEngine> Clone() const;
+    /** Clones the render engine -- making the %RenderEngine compatible with
+     copyable_unique_ptr.  */
+    std::unique_ptr<RenderEngine> Clone() const;
 
-  /** @name Registering geometry with the engine
+    /** @name Registering geometry with the engine
 
-   These methods allow for requests to register new visual geometries to `this`
-   %RenderEngine. The geometry is uniquely identified by the given `id`. The
-   renderer is allowed to examine the given `properties` and choose to _not_
-   register the geometry.
+     These methods allow for requests to register new visual geometries to `this`
+     %RenderEngine. The geometry is uniquely identified by the given `id`. The
+     renderer is allowed to examine the given `properties` and choose to _not_
+     register the geometry.
 
-   Typically, derived classes will attempt to validate the RenderLabel value
-   stored in the `(label, id)` property (or its configured default value if
-   no such property exists). In that case, attempting to assign
-   RenderLabel::kEmpty or RenderLabel::kUnspecified will cause an exception to
-   be thrown (as @ref reserved_render_label "documented"). */
-  //@{
+     Typically, derived classes will attempt to validate the RenderLabel value
+     stored in the `(label, id)` property (or its configured default value if
+     no such property exists). In that case, attempting to assign
+     RenderLabel::kEmpty or RenderLabel::kUnspecified will cause an exception to
+     be thrown (as @ref reserved_render_label "documented"). */
+    //@{
 
-  /** Requests registration of the given shape as a rigid geometry with this
-   render engine.
+    /** Requests registration of the given shape as a rigid geometry with this
+     render engine.
 
-   @param id             The geometry id of the shape to register.
-   @param shape          The shape specification to add to the render engine.
-   @param properties     The perception properties provided for this geometry.
-   @param X_WG           The pose of the geometry relative to the world frame W.
-   @param needs_updates  If true, the geometry's pose will be updated via
-                         UpdatePoses().
-   @returns True if the %RenderEngine implementation accepted the shape for
-            registration.
-   @throws std::exception if the shape is an unsupported type, the
-                          shape's RenderLabel value is
-                          RenderLabel::kUnspecified or RenderLabel::kEmpty,
-                          or a geometry has already been registered with the
-                          given `id`.
-  */
-  bool RegisterVisual(GeometryId id, const Shape& shape,
-                      const PerceptionProperties& properties,
-                      const math::RigidTransformd& X_WG,
-                      bool needs_updates = true);
+     @param id             The geometry id of the shape to register.
+     @param shape          The shape specification to add to the render engine.
+     @param properties     The perception properties provided for this geometry.
+     @param X_WG           The pose of the geometry relative to the world frame W.
+     @param needs_updates  If true, the geometry's pose will be updated via
+                           UpdatePoses().
+     @returns True if the %RenderEngine implementation accepted the shape for
+              registration.
+     @throws std::exception if the shape is an unsupported type, the
+                            shape's RenderLabel value is
+                            RenderLabel::kUnspecified or RenderLabel::kEmpty,
+                            or a geometry has already been registered with the
+                            given `id`.
+    */
+    bool RegisterVisual(GeometryId id,
+                        const Shape& shape,
+                        const PerceptionProperties& properties,
+                        const math::RigidTransformd& X_WG,
+                        bool needs_updates = true);
 
-  // TODO(xuchenhan-tri): Bring RenderMesh out of internal namespace, when doing
-  // that, the invariants for a RenderMesh to be valid should be verified.
-  /** Requests registration of the given deformable geometry with this render
-   engine.
+    // TODO(xuchenhan-tri): Bring RenderMesh out of internal namespace, when doing
+    // that, the invariants for a RenderMesh to be valid should be verified.
+    /** Requests registration of the given deformable geometry with this render
+     engine.
 
-   @experimental
-   @param id             The geometry id of the shape to register.
-   @param render_meshes  The mesh representations of deformable geometry in
-                         its default state. A single geometry may be represented
-                         by more than one render mesh. This facilitates
-                         registering a geometry with more than one material for
-                         rendering.
-   @param properties     The perception properties provided for this geometry.
-   @pre each RenderMesh in `render_meshes` is valid.
-   @throws std::exception if a geometry with `id` has already been registered
-           with `this` %RenderEngine.
-   @throws std::exception if `render_meshes` is empty.
-   @returns True if the %RenderEngine implementation accepted the geometry for
-            registration. */
-  bool RegisterDeformableVisual(
-      GeometryId id, const std::vector<internal::RenderMesh>& render_meshes,
-      const PerceptionProperties& properties);
+     @experimental
+     @param id             The geometry id of the shape to register.
+     @param render_meshes  The mesh representations of deformable geometry in
+                           its default state. A single geometry may be represented
+                           by more than one render mesh. This facilitates
+                           registering a geometry with more than one material for
+                           rendering.
+     @param properties     The perception properties provided for this geometry.
+     @pre each RenderMesh in `render_meshes` is valid.
+     @throws std::exception if a geometry with `id` has already been registered
+             with `this` %RenderEngine.
+     @throws std::exception if `render_meshes` is empty.
+     @returns True if the %RenderEngine implementation accepted the geometry for
+              registration. */
+    bool RegisterDeformableVisual(GeometryId id,
+                                  const std::vector<internal::RenderMesh>& render_meshes,
+                                  const PerceptionProperties& properties);
 
-  //@}
+    //@}
 
-  /** Removes the geometry indicated by the given `id` from the engine.
-   @param id    The id of the geometry to remove.
-   @returns True if the geometry was removed (false implies that this id wasn't
-            registered with this engine).  */
-  bool RemoveGeometry(GeometryId id);
+    /** Removes the geometry indicated by the given `id` from the engine.
+     @param id    The id of the geometry to remove.
+     @returns True if the geometry was removed (false implies that this id wasn't
+              registered with this engine).  */
+    bool RemoveGeometry(GeometryId id);
 
-  /** Reports true if a geometry with the given `id` has been registered with
-   `this` engine.  */
-  bool has_geometry(GeometryId id) const;
+    /** Reports true if a geometry with the given `id` has been registered with
+     `this` engine.  */
+    bool has_geometry(GeometryId id) const;
 
-  /** Updates the poses of all rigid geometries marked as "needing update" (see
-   RegisterVisual()).
+    /** Updates the poses of all rigid geometries marked as "needing update" (see
+     RegisterVisual()).
 
-   @param X_WGs  The poses of *all* geometries in SceneGraph (measured and
-                 expressed in the world frame). The pose for a geometry is
-                 accessed by that geometry's id.  */
-  template <typename T>
-  void UpdatePoses(
-      const std::unordered_map<GeometryId, math::RigidTransform<T>>& X_WGs) {
-    for (const GeometryId& id : update_ids_) {
-      const math::RigidTransformd X_WG =
-          geometry::internal::convert_to_double(X_WGs.at(id));
-      DoUpdateVisualPose(id, X_WG);
+     @param X_WGs  The poses of *all* geometries in SceneGraph (measured and
+                   expressed in the world frame). The pose for a geometry is
+                   accessed by that geometry's id.  */
+    template <typename T>
+    void UpdatePoses(const std::unordered_map<GeometryId, math::RigidTransform<T>>& X_WGs) {
+        for (const GeometryId& id : update_ids_) {
+            const math::RigidTransformd X_WG = geometry::internal::convert_to_double(X_WGs.at(id));
+            DoUpdateVisualPose(id, X_WG);
+        }
     }
-  }
 
-  /** Updates the configurations of all meshes associated with the given
-   deformable geometry (see RegisterDeformableVisual()). The number of elements
-   in the supplied vertex position vector `q_WGs` and the vertex normal vector
-   `nhats_W` must be equal to the number of render meshes registered to the
-   geometry associated with `id`. Within each mesh, the vertex positions and
-   normals must be ordered the same way as the vertices specified in the render
-   mesh at registration when reshaped to be an Nx3 matrix with N being the
-   number of vertices in the mesh.
+    /** Updates the configurations of all meshes associated with the given
+     deformable geometry (see RegisterDeformableVisual()). The number of elements
+     in the supplied vertex position vector `q_WGs` and the vertex normal vector
+     `nhats_W` must be equal to the number of render meshes registered to the
+     geometry associated with `id`. Within each mesh, the vertex positions and
+     normals must be ordered the same way as the vertices specified in the render
+     mesh at registration when reshaped to be an Nx3 matrix with N being the
+     number of vertices in the mesh.
 
-   @experimental
-   @param id       The unique identifier of a deformable geometry registered
-                   with this %RenderEngine.
-   @param q_WGs    The vertex positions of all meshes associated with the given
-                   deformable geometry (measured and expressed in the world
-                   frame).
-   @param nhats_W  The vertex normals of all meshes associated with the given
-                   deformable geometry (measured and expressed in the world
-                   frame).
-   @throws std::exception if no geometry with the given `id` is registered as
-           deformable geometry in this `RenderEngine`.
-   @throws std::exception if the sizes of `q_WGs` or `nhats_W` are incompatible
-           with the number of degrees of freedom of the meshes registered with
-           the deformable geometry. */
-  void UpdateDeformableConfigurations(
-      GeometryId id, const std::vector<VectorX<double>>& q_WGs,
-      const std::vector<VectorX<double>>& nhats_W);
+     @experimental
+     @param id       The unique identifier of a deformable geometry registered
+                     with this %RenderEngine.
+     @param q_WGs    The vertex positions of all meshes associated with the given
+                     deformable geometry (measured and expressed in the world
+                     frame).
+     @param nhats_W  The vertex normals of all meshes associated with the given
+                     deformable geometry (measured and expressed in the world
+                     frame).
+     @throws std::exception if no geometry with the given `id` is registered as
+             deformable geometry in this `RenderEngine`.
+     @throws std::exception if the sizes of `q_WGs` or `nhats_W` are incompatible
+             with the number of degrees of freedom of the meshes registered with
+             the deformable geometry. */
+    void UpdateDeformableConfigurations(GeometryId id,
+                                        const std::vector<VectorX<double>>& q_WGs,
+                                        const std::vector<VectorX<double>>& nhats_W);
 
-  /** Updates the renderer's viewpoint with given pose X_WR.
+    /** Updates the renderer's viewpoint with given pose X_WR.
 
-   @param X_WR  The pose of renderer's viewpoint in the world coordinate
-                system.  */
-  virtual void UpdateViewpoint(const math::RigidTransformd& X_WR) = 0;
+     @param X_WR  The pose of renderer's viewpoint in the world coordinate
+                  system.  */
+    virtual void UpdateViewpoint(const math::RigidTransformd& X_WR) = 0;
 
-  /** @name Rendering using fully-specified camera models
+    /** @name Rendering using fully-specified camera models
 
-   These methods allow for full specification of the camera model -- its
-   intrinsics and render engine parameters. See the documentation of
-   ColorRenderCamera and DepthRenderCamera for the full details.
-   */
-  //@{
+     These methods allow for full specification of the camera model -- its
+     intrinsics and render engine parameters. See the documentation of
+     ColorRenderCamera and DepthRenderCamera for the full details.
+     */
+    //@{
 
-  /** Renders the registered geometry into the given color (rgb) image based on
-   a _fully_ specified camera.
+    /** Renders the registered geometry into the given color (rgb) image based on
+     a _fully_ specified camera.
 
-   @param camera                The _render engine_ camera properties.
-   @param[out] color_image_out  The rendered color image.
-   @throws std::exception if `color_image_out` is `nullptr` or the size of the
-                          given input image doesn't match the size declared in
-                          `camera`.  */
-  void RenderColorImage(const ColorRenderCamera& camera,
-                        systems::sensors::ImageRgba8U* color_image_out) const {
-    ThrowIfInvalid(camera.core().intrinsics(), color_image_out, "color");
-    DoRenderColorImage(camera, color_image_out);
-  }
+     @param camera                The _render engine_ camera properties.
+     @param[out] color_image_out  The rendered color image.
+     @throws std::exception if `color_image_out` is `nullptr` or the size of the
+                            given input image doesn't match the size declared in
+                            `camera`.  */
+    void RenderColorImage(const ColorRenderCamera& camera, systems::sensors::ImageRgba8U* color_image_out) const {
+        ThrowIfInvalid(camera.core().intrinsics(), color_image_out, "color");
+        DoRenderColorImage(camera, color_image_out);
+    }
 
-  /** Renders the registered geometry into the given depth image based on
-   a _fully_ specified camera. In contrast to the other rendering operations,
-   depth images don't have an option to display the window; generally, basic
-   depth images are not readily communicative to humans.
+    /** Renders the registered geometry into the given depth image based on
+     a _fully_ specified camera. In contrast to the other rendering operations,
+     depth images don't have an option to display the window; generally, basic
+     depth images are not readily communicative to humans.
 
-   @param camera                The _render engine_ camera properties.
-   @param[out] depth_image_out  The rendered depth image.
-   @throws std::exception if `depth_image_out` is `nullptr` or the size of the
-                          given input image doesn't match the size declared in
-                          `camera`.  */
-  void RenderDepthImage(
-      const DepthRenderCamera& camera,
-      systems::sensors::ImageDepth32F* depth_image_out) const {
-    ThrowIfInvalid(camera.core().intrinsics(), depth_image_out, "depth");
-    DoRenderDepthImage(camera, depth_image_out);
-  }
+     @param camera                The _render engine_ camera properties.
+     @param[out] depth_image_out  The rendered depth image.
+     @throws std::exception if `depth_image_out` is `nullptr` or the size of the
+                            given input image doesn't match the size declared in
+                            `camera`.  */
+    void RenderDepthImage(const DepthRenderCamera& camera, systems::sensors::ImageDepth32F* depth_image_out) const {
+        ThrowIfInvalid(camera.core().intrinsics(), depth_image_out, "depth");
+        DoRenderDepthImage(camera, depth_image_out);
+    }
 
-  /** Renders the registered geometry into the given label image based on
-   a _fully_ specified camera.
+    /** Renders the registered geometry into the given label image based on
+     a _fully_ specified camera.
 
-   @note This uses the ColorRenderCamera as label images are typically rendered
-   to be exactly registered with a corresponding color image.
+     @note This uses the ColorRenderCamera as label images are typically rendered
+     to be exactly registered with a corresponding color image.
 
-   @param camera                The _render engine_ camera properties.
-   @param[out] label_image_out  The rendered label image.
-   @throws std::exception if `label_image_out` is `nullptr` or the size of the
-                          given input image doesn't match the size declared in
-                          `camera`.  */
-  void RenderLabelImage(
-      const ColorRenderCamera& camera,
-      systems::sensors::ImageLabel16I* label_image_out) const {
-    ThrowIfInvalid(camera.core().intrinsics(), label_image_out, "label");
-    DoRenderLabelImage(camera, label_image_out);
-  }
+     @param camera                The _render engine_ camera properties.
+     @param[out] label_image_out  The rendered label image.
+     @throws std::exception if `label_image_out` is `nullptr` or the size of the
+                            given input image doesn't match the size declared in
+                            `camera`.  */
+    void RenderLabelImage(const ColorRenderCamera& camera, systems::sensors::ImageLabel16I* label_image_out) const {
+        ThrowIfInvalid(camera.core().intrinsics(), label_image_out, "label");
+        DoRenderLabelImage(camera, label_image_out);
+    }
 
-  //@}
+    //@}
 
-  /** Reports the render label value this render engine has been configured to
-   use.  */
-  RenderLabel default_render_label() const { return default_render_label_; }
+    /** Reports the render label value this render engine has been configured to
+     use.  */
+    RenderLabel default_render_label() const { return default_render_label_; }
 
- protected:
-  // Allow derived classes to implement Cloning via copy-construction.
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(RenderEngine);
+protected:
+    // Allow derived classes to implement Cloning via copy-construction.
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(RenderEngine);
 
-  /** The NVI-function for sub-classes to implement actual rigid geometry
-   registration. If the derived class chooses not to register this particular
-   shape, it should return false.
+    /** The NVI-function for sub-classes to implement actual rigid geometry
+     registration. If the derived class chooses not to register this particular
+     shape, it should return false.
 
-   A derived render engine can use arbitrary criteria to decide if the rigid
-   geometry gets registered. In accessing the RenderLabel property in
-   `properties` derived class should _exclusively_ use GetRenderLabelOrThrow().
-  */
-  virtual bool DoRegisterVisual(GeometryId id, const Shape& shape,
-                                const PerceptionProperties& properties,
-                                const math::RigidTransformd& X_WG) = 0;
-
-  /** The NVI-function for RegisterDeformableVisual(). This function defaults to
-   returning false. If the derived class chooses to register this particular
-   geometry, it should return true. This function is invoked with the following
-   guarantees:
-
-      - `id` is unique (i.e. distinct from previously registered geometries).
-      - `render_meshes` is non-empty.
-
-   @experimental */
-  virtual bool DoRegisterDeformableVisual(
-      GeometryId id, const std::vector<internal::RenderMesh>& render_meshes,
-      const PerceptionProperties& properties);
-
-  /** The NVI-function for updating the pose of a rigid render geometry
-   (identified by `id`) to the given pose X_WG.
-
-   @param id       The id of the render geometry whose pose is being set.
-   @param X_WG     The pose of the render geometry in the world frame.  */
-  virtual void DoUpdateVisualPose(GeometryId id,
+     A derived render engine can use arbitrary criteria to decide if the rigid
+     geometry gets registered. In accessing the RenderLabel property in
+     `properties` derived class should _exclusively_ use GetRenderLabelOrThrow().
+    */
+    virtual bool DoRegisterVisual(GeometryId id,
+                                  const Shape& shape,
+                                  const PerceptionProperties& properties,
                                   const math::RigidTransformd& X_WG) = 0;
 
-  /** The NVI-function for UpdateDeformableConfigurations(). It is
-   invoked with the following guarantees:
+    /** The NVI-function for RegisterDeformableVisual(). This function defaults to
+     returning false. If the derived class chooses to register this particular
+     geometry, it should return true. This function is invoked with the following
+     guarantees:
 
-    - `id` references a registered deformable geometry.
-    - `q_WGs` and `nhats_W` are appropriately sized for the
-       registered meshes.
+        - `id` is unique (i.e. distinct from previously registered geometries).
+        - `render_meshes` is non-empty.
 
-   @experimental */
-  virtual void DoUpdateDeformableConfigurations(
-      GeometryId id, const std::vector<VectorX<double>>& q_WGs,
-      const std::vector<VectorX<double>>& nhats_W);
+     @experimental */
+    virtual bool DoRegisterDeformableVisual(GeometryId id,
+                                            const std::vector<internal::RenderMesh>& render_meshes,
+                                            const PerceptionProperties& properties);
 
-  /** The NVI-function for removing the geometry with the given `id`.
-   @param id  The id of the geometry to remove.
-   @return  True if the geometry was registered with this %RenderEngine and
-            removed, false if it wasn't registered in the first place.  */
-  virtual bool DoRemoveGeometry(GeometryId id) = 0;
+    /** The NVI-function for updating the pose of a rigid render geometry
+     (identified by `id`) to the given pose X_WG.
 
-  /** The NVI-function for cloning this render engine.  */
-  virtual std::unique_ptr<RenderEngine> DoClone() const = 0;
+     @param id       The id of the render geometry whose pose is being set.
+     @param X_WG     The pose of the render geometry in the world frame.  */
+    virtual void DoUpdateVisualPose(GeometryId id, const math::RigidTransformd& X_WG) = 0;
 
-  /** The NVI-function for rendering color with a fully-specified camera.
-   When RenderColorImage calls this, it has already confirmed that
-   `color_image_out` is not `nullptr` and its size is consistent with the
-   camera intrinsics.
+    /** The NVI-function for UpdateDeformableConfigurations(). It is
+     invoked with the following guarantees:
 
-   @throws std::exception in its default implementation indicating that it has
-   not been implemented. Derived %RenderEngine classes must implement this to
-   support rendering color images. */
-  virtual void DoRenderColorImage(
-      const ColorRenderCamera& camera,
-      systems::sensors::ImageRgba8U* color_image_out) const;
+      - `id` references a registered deformable geometry.
+      - `q_WGs` and `nhats_W` are appropriately sized for the
+         registered meshes.
 
-  /** The NVI-function for rendering depth with a fully-specified camera.
-   When RenderDepthImage calls this, it has already confirmed that
-   `depth_image_out` is not `nullptr` and its size is consistent with the
-   camera intrinsics.
+     @experimental */
+    virtual void DoUpdateDeformableConfigurations(GeometryId id,
+                                                  const std::vector<VectorX<double>>& q_WGs,
+                                                  const std::vector<VectorX<double>>& nhats_W);
 
-   @throws std::exception in its default implementation indicating that it has
-   not been implemented. Derived %RenderEngine classes must implement this to
-   support rendering depth images. */
-  virtual void DoRenderDepthImage(
-      const DepthRenderCamera& camera,
-      systems::sensors::ImageDepth32F* depth_image_out) const;
+    /** The NVI-function for removing the geometry with the given `id`.
+     @param id  The id of the geometry to remove.
+     @return  True if the geometry was registered with this %RenderEngine and
+              removed, false if it wasn't registered in the first place.  */
+    virtual bool DoRemoveGeometry(GeometryId id) = 0;
 
-  /** The NVI-function for rendering label with a fully-specified camera.
-   When RenderLabelImage calls this, it has already confirmed that
-   `label_image_out` is not `nullptr` and its size is consistent with the
-   camera intrinsics.
+    /** The NVI-function for cloning this render engine.  */
+    virtual std::unique_ptr<RenderEngine> DoClone() const = 0;
 
-   @throws std::exception in its default implementation indicating that it has
-   not been implemented. Derived %RenderEngine classes must implement this to
-   support rendering label images. */
-  virtual void DoRenderLabelImage(
-      const ColorRenderCamera& camera,
-      systems::sensors::ImageLabel16I* label_image_out) const;
+    /** The NVI-function for rendering color with a fully-specified camera.
+     When RenderColorImage calls this, it has already confirmed that
+     `color_image_out` is not `nullptr` and its size is consistent with the
+     camera intrinsics.
 
-  /** Extracts the `(label, id)` RenderLabel property from the given
-   `properties` and validates it (or the configured default if no such
-   property is defined).
-   @throws std::exception If the tested render label value is deemed invalid.
-   */
-  RenderLabel GetRenderLabelOrThrow(
-      const PerceptionProperties& properties) const;
+     @throws std::exception in its default implementation indicating that it has
+     not been implemented. Derived %RenderEngine classes must implement this to
+     support rendering color images. */
+    virtual void DoRenderColorImage(const ColorRenderCamera& camera,
+                                    systems::sensors::ImageRgba8U* color_image_out) const;
 
-  /** @name   RenderLabel-Color Utilities
+    /** The NVI-function for rendering depth with a fully-specified camera.
+     When RenderDepthImage calls this, it has already confirmed that
+     `depth_image_out` is not `nullptr` and its size is consistent with the
+     camera intrinsics.
 
-   Some rasterization pipelines don't support channels of
-   RenderLabel::ValueType; typically, they operate in RGB color space. The
-   following utilities support those pipelines by providing conversions between
-   labels and colors. The mapping does _not_ produce colors that are useful
-   to humans -- two labels with "near by" values will produces colors that
-   most humans cannot distinguish, but the computer can. Do not use these
-   utilities to produce the prototypical "colored label" images.
+     @throws std::exception in its default implementation indicating that it has
+     not been implemented. Derived %RenderEngine classes must implement this to
+     support rendering depth images. */
+    virtual void DoRenderDepthImage(const DepthRenderCamera& camera,
+                                    systems::sensors::ImageDepth32F* depth_image_out) const;
 
-   These utilities are provided as a _convenience_ to derived classes. Derived
-   classes are not required to encode labels as colors in the same way. They are
-   only obliged to return label images with proper label values according to
-   the documented semantics.  */
-  //@{
+    /** The NVI-function for rendering label with a fully-specified camera.
+     When RenderLabelImage calls this, it has already confirmed that
+     `label_image_out` is not `nullptr` and its size is consistent with the
+     camera intrinsics.
 
-  /** Transforms the given RGB color into its corresponding RenderLabel.  */
-  static RenderLabel MakeLabelFromRgb(uint8_t r, uint8_t g, uint8_t /* b */) {
-    // The blue channel is not currently used.
-    return RenderLabel(r | (g << 8), false);
-  }
+     @throws std::exception in its default implementation indicating that it has
+     not been implemented. Derived %RenderEngine classes must implement this to
+     support rendering label images. */
+    virtual void DoRenderLabelImage(const ColorRenderCamera& camera,
+                                    systems::sensors::ImageLabel16I* label_image_out) const;
 
-  /** Transforms the given render label into an RGB color.
-   The alpha channel will always be 1.0. */
-  static Rgba MakeRgbFromLabel(const RenderLabel& label) {
-    const uint8_t r = label.value_ & 0xFF;
-    const uint8_t g = (label.value_ >> 8) & 0xFF;
-    return Rgba{r / 255.0, g / 255.0, /* b = */ 0.0};
-  }
+    /** Extracts the `(label, id)` RenderLabel property from the given
+     `properties` and validates it (or the configured default if no such
+     property is defined).
+     @throws std::exception If the tested render label value is deemed invalid.
+     */
+    RenderLabel GetRenderLabelOrThrow(const PerceptionProperties& properties) const;
 
-  //@}
+    /** @name   RenderLabel-Color Utilities
 
-  // TODO(SeanCurtis-TRI): Deprecate this API in favor of our light parameter
-  // specification. First enable lights in RenderEngineVtk and confirm pass
-  // through in RenderEngineGltfClient.
+     Some rasterization pipelines don't support channels of
+     RenderLabel::ValueType; typically, they operate in RGB color space. The
+     following utilities support those pipelines by providing conversions between
+     labels and colors. The mapping does _not_ produce colors that are useful
+     to humans -- two labels with "near by" values will produces colors that
+     most humans cannot distinguish, but the computer can. Do not use these
+     utilities to produce the prototypical "colored label" images.
 
-  /** Provides access to the light for manual configuration since it's currently
-   bound to the camera position. This is a temporary measure to facilitate
-   benchmarking and create visible shadows, and should not be used publicly.
-   @param X_DL The pose of the light in a frame D that is attached to the camera
-               position. In this frame D, the camera is located at (0, 0, 1),
-               looking towards (0, 0, 0) at a distance of 1, with up being
-               (0, 1, 0).  */
-  virtual void SetDefaultLightPosition(const Vector3<double>& X_DL);
+     These utilities are provided as a _convenience_ to derived classes. Derived
+     classes are not required to encode labels as colors in the same way. They are
+     only obliged to return label images with proper label values according to
+     the documented semantics.  */
+    //@{
 
-  template <typename ImageType>
-  static void ThrowIfInvalid(const systems::sensors::CameraInfo& intrinsics,
-                             const ImageType* image, const char* image_type) {
-    if (image == nullptr) {
-      throw std::logic_error(fmt::format(
-          "Can't render a {} image. The given output image is nullptr",
-          image_type));
+    /** Transforms the given RGB color into its corresponding RenderLabel.  */
+    static RenderLabel MakeLabelFromRgb(uint8_t r, uint8_t g, uint8_t /* b */) {
+        // The blue channel is not currently used.
+        return RenderLabel(r | (g << 8), false);
     }
-    if (image->width() != intrinsics.width() ||
-        image->height() != intrinsics.height()) {
-      throw std::logic_error(fmt::format(
-          "The {} image to write has a size different from that specified in "
-          "the camera intrinsics. Image: ({}, {}), intrinsics: ({}, {})",
-          image_type, image->width(), image->height(), intrinsics.width(),
-          intrinsics.height()));
+
+    /** Transforms the given render label into an RGB color.
+     The alpha channel will always be 1.0. */
+    static Rgba MakeRgbFromLabel(const RenderLabel& label) {
+        const uint8_t r = label.value_ & 0xFF;
+        const uint8_t g = (label.value_ >> 8) & 0xFF;
+        return Rgba{r / 255.0, g / 255.0, /* b = */ 0.0};
     }
-  }
 
- private:
-  friend class RenderEngineTester;
+    //@}
 
-  // The following collections represent a disjoint partition of all registered
-  // geometry ids (i.e., the id for a registered visual must appear in one and
-  // only one of the collections).
+    // TODO(SeanCurtis-TRI): Deprecate this API in favor of our light parameter
+    // specification. First enable lights in RenderEngineVtk and confirm pass
+    // through in RenderEngineGltfClient.
 
-  // The set of rigid geometry ids whose pose needs to be updated.
-  // See UpdateVisualPose().
-  std::unordered_set<GeometryId> update_ids_;
+    /** Provides access to the light for manual configuration since it's currently
+     bound to the camera position. This is a temporary measure to facilitate
+     benchmarking and create visible shadows, and should not be used publicly.
+     @param X_DL The pose of the light in a frame D that is attached to the camera
+                 position. In this frame D, the camera is located at (0, 0, 1),
+                 looking towards (0, 0, 0) at a distance of 1, with up being
+                 (0, 1, 0).  */
+    virtual void SetDefaultLightPosition(const Vector3<double>& X_DL);
 
-  // The set of geometry ids whose pose is fixed at registration time.
-  std::unordered_set<GeometryId> anchored_ids_;
+    template <typename ImageType>
+    static void ThrowIfInvalid(const systems::sensors::CameraInfo& intrinsics,
+                               const ImageType* image,
+                               const char* image_type) {
+        if (image == nullptr) {
+            throw std::logic_error(
+                    fmt::format("Can't render a {} image. The given output image is nullptr", image_type));
+        }
+        if (image->width() != intrinsics.width() || image->height() != intrinsics.height()) {
+            throw std::logic_error(
+                    fmt::format("The {} image to write has a size different from that specified in "
+                                "the camera intrinsics. Image: ({}, {}), intrinsics: ({}, {})",
+                                image_type, image->width(), image->height(), intrinsics.width(), intrinsics.height()));
+        }
+    }
 
-  // Maps ids of deformable geometries registered to this render engine to the
-  // number of degrees of freedom in each of the render meshes associated with
-  // this deformable geometry. Deformable geometries don't have the distinction
-  // of being "dynamic" vs "anchored" as rigid geometries; they always need to
-  // have their configurations updated. See UpdateDeformableConfigurations().
-  std::unordered_map<GeometryId, std::vector<int>> deformable_mesh_dofs_;
+private:
+    friend class RenderEngineTester;
 
-  // The default render label to apply to geometries that don't otherwise
-  // provide one. Default constructor is RenderLabel::kUnspecified via the
-  // RenderLabel default constructor.
-  RenderLabel default_render_label_{};
+    // The following collections represent a disjoint partition of all registered
+    // geometry ids (i.e., the id for a registered visual must appear in one and
+    // only one of the collections).
+
+    // The set of rigid geometry ids whose pose needs to be updated.
+    // See UpdateVisualPose().
+    std::unordered_set<GeometryId> update_ids_;
+
+    // The set of geometry ids whose pose is fixed at registration time.
+    std::unordered_set<GeometryId> anchored_ids_;
+
+    // Maps ids of deformable geometries registered to this render engine to the
+    // number of degrees of freedom in each of the render meshes associated with
+    // this deformable geometry. Deformable geometries don't have the distinction
+    // of being "dynamic" vs "anchored" as rigid geometries; they always need to
+    // have their configurations updated. See UpdateDeformableConfigurations().
+    std::unordered_map<GeometryId, std::vector<int>> deformable_mesh_dofs_;
+
+    // The default render label to apply to geometries that don't otherwise
+    // provide one. Default constructor is RenderLabel::kUnspecified via the
+    // RenderLabel default constructor.
+    RenderLabel default_render_label_{};
 };
 
 }  // namespace render

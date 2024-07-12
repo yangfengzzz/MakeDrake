@@ -18,9 +18,9 @@ Eval<AutoDiffXd>(). The tolerance on the comparison between the autodiff
 gradient and the finite difference approximation is sqrt(tolerance) to account
 for approximation error.
 */
-void CheckConstraintEvalNonsymbolic(
-    const Constraint& constraint,
-    const Eigen::Ref<const AutoDiffVecXd>& x_autodiff, double tol);
+void CheckConstraintEvalNonsymbolic(const Constraint& constraint,
+                                    const Eigen::Ref<const AutoDiffVecXd>& x_autodiff,
+                                    double tol);
 }  // namespace test
 }  // namespace solvers
 }  // namespace drake

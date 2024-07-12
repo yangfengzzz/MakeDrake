@@ -12,40 +12,42 @@ namespace solvers {
 /// call MathematicalProgramResult::get_solver_details<ClarabelSolver>() to
 /// obtain the details.
 struct ClarabelSolverDetails {
-  /// The solve time inside Clarabel in seconds.
-  double solve_time{};
-  /// Number of iterations in Clarabel.
-  int iterations{};
-  /// The status from Clarabel.
-  std::string status{};
+    /// The solve time inside Clarabel in seconds.
+    double solve_time{};
+    /// Number of iterations in Clarabel.
+    int iterations{};
+    /// The status from Clarabel.
+    std::string status{};
 };
 
 /// An interface to wrap Clarabel https://github.com/oxfordcontrol/Clarabel.cpp
 class ClarabelSolver final : public SolverBase {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ClarabelSolver);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ClarabelSolver);
 
-  /// Type of details stored in MathematicalProgramResult.
-  using Details = ClarabelSolverDetails;
+    /// Type of details stored in MathematicalProgramResult.
+    using Details = ClarabelSolverDetails;
 
-  ClarabelSolver();
-  ~ClarabelSolver() final;
+    ClarabelSolver();
+    ~ClarabelSolver() final;
 
-  /// @name Static versions of the instance methods with similar names.
-  //@{
-  static SolverId id();
-  static bool is_available();
-  static bool is_enabled();
-  static bool ProgramAttributesSatisfied(const MathematicalProgram&);
-  static std::string UnsatisfiedProgramAttributes(const MathematicalProgram&);
-  //@}
+    /// @name Static versions of the instance methods with similar names.
+    //@{
+    static SolverId id();
+    static bool is_available();
+    static bool is_enabled();
+    static bool ProgramAttributesSatisfied(const MathematicalProgram&);
+    static std::string UnsatisfiedProgramAttributes(const MathematicalProgram&);
+    //@}
 
-  // A using-declaration adds these methods into our class's Doxygen.
-  using SolverBase::Solve;
+    // A using-declaration adds these methods into our class's Doxygen.
+    using SolverBase::Solve;
 
- private:
-  void DoSolve(const MathematicalProgram&, const Eigen::VectorXd&,
-               const SolverOptions&, MathematicalProgramResult*) const final;
+private:
+    void DoSolve(const MathematicalProgram&,
+                 const Eigen::VectorXd&,
+                 const SolverOptions&,
+                 MathematicalProgramResult*) const final;
 };
 }  // namespace solvers
 }  // namespace drake

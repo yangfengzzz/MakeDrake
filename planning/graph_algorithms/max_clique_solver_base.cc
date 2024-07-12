@@ -6,11 +6,10 @@ namespace drake {
 namespace planning {
 namespace graph_algorithms {
 
-VectorX<bool> MaxCliqueSolverBase::SolveMaxClique(
-    const Eigen::SparseMatrix<bool>& adjacency_matrix) const {
-  DRAKE_THROW_UNLESS(adjacency_matrix.rows() == adjacency_matrix.cols());
-  DRAKE_THROW_UNLESS(adjacency_matrix.isApprox(adjacency_matrix.transpose()));
-  return DoSolveMaxClique(adjacency_matrix);
+VectorX<bool> MaxCliqueSolverBase::SolveMaxClique(const Eigen::SparseMatrix<bool>& adjacency_matrix) const {
+    DRAKE_THROW_UNLESS(adjacency_matrix.rows() == adjacency_matrix.cols());
+    DRAKE_THROW_UNLESS(adjacency_matrix.isApprox(adjacency_matrix.transpose()));
+    return DoSolveMaxClique(adjacency_matrix);
 }
 
 }  // namespace graph_algorithms

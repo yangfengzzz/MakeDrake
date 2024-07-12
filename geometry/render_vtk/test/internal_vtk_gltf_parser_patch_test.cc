@@ -40,34 +40,33 @@ namespace {
 
 // The test for defect 1 (described above).
 GTEST_TEST(VtkGltfParserPatchTest, ColorTextureNotRequired) {
-  // Instantiating RenderEngineVtk implicitly initializes VTK to use OpenGL.
-  geometry::MakeRenderEngineVtk({});
+    // Instantiating RenderEngineVtk implicitly initializes VTK to use OpenGL.
+    geometry::MakeRenderEngineVtk({});
 
-  // This glTF uses all supported glTF textures types *except* base color.
-  const std::string gltf_path = FindResourceOrThrow(
-      "drake/geometry/render_vtk/test/pyramid_no_color_texture.gltf");
-  vtkNew<vtkGLTFImporter> importer;
-  importer->SetFileName(gltf_path.c_str());
-  importer->Update();
+    // This glTF uses all supported glTF textures types *except* base color.
+    const std::string gltf_path = FindResourceOrThrow("drake/geometry/render_vtk/test/pyramid_no_color_texture.gltf");
+    vtkNew<vtkGLTFImporter> importer;
+    importer->SetFileName(gltf_path.c_str());
+    importer->Update();
 
-  vtkRenderer* renderer = importer->GetRenderer();
-  DRAKE_DEMAND(renderer != nullptr);
-  ASSERT_EQ(renderer->VisibleActorCount(), 1);
+    vtkRenderer* renderer = importer->GetRenderer();
+    DRAKE_DEMAND(renderer != nullptr);
+    ASSERT_EQ(renderer->VisibleActorCount(), 1);
 
-  auto* actors = renderer->GetActors();
-  actors->InitTraversal();
-  vtkActor* actor = actors->GetNextActor();
+    auto* actors = renderer->GetActors();
+    actors->InitTraversal();
+    vtkActor* actor = actors->GetNextActor();
 
-  // We expect no color texture (aka "albedo"), but all of the other supported
-  // textures. These names are lifted from VTK's code -- it is the name VTK
-  // gives to the various textures instantiated by the glTF parser.
-  EXPECT_EQ(actor->GetProperty()->GetTexture("albedoTex"), nullptr);
-  EXPECT_NE(actor->GetProperty()->GetTexture("normalTex"), nullptr);
-  EXPECT_NE(actor->GetProperty()->GetTexture("emissiveTex"), nullptr);
-  // Material includes ambient occlusion in R, roughness in G, and metallic in
-  // B. We don't need to check the values; the presence of the texture is
-  // enough.
-  EXPECT_NE(actor->GetProperty()->GetTexture("materialTex"), nullptr);
+    // We expect no color texture (aka "albedo"), but all of the other supported
+    // textures. These names are lifted from VTK's code -- it is the name VTK
+    // gives to the various textures instantiated by the glTF parser.
+    EXPECT_EQ(actor->GetProperty()->GetTexture("albedoTex"), nullptr);
+    EXPECT_NE(actor->GetProperty()->GetTexture("normalTex"), nullptr);
+    EXPECT_NE(actor->GetProperty()->GetTexture("emissiveTex"), nullptr);
+    // Material includes ambient occlusion in R, roughness in G, and metallic in
+    // B. We don't need to check the values; the presence of the texture is
+    // enough.
+    EXPECT_NE(actor->GetProperty()->GetTexture("materialTex"), nullptr);
 }
 
 }  // namespace

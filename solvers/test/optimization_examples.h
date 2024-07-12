@@ -20,88 +20,84 @@ namespace solvers {
 namespace test {
 
 enum class CostForm {
-  kGeneric = 0,
-  kNonSymbolic = 1,
-  kSymbolic = 2,
+    kGeneric = 0,
+    kNonSymbolic = 1,
+    kSymbolic = 2,
 };
 
 std::ostream& operator<<(std::ostream& os, CostForm value);
 
 enum class ConstraintForm {
-  kGeneric = 0,
-  kNonSymbolic = 1,
-  kSymbolic = 2,
-  kFormula = 3,
+    kGeneric = 0,
+    kNonSymbolic = 1,
+    kSymbolic = 2,
+    kFormula = 3,
 };
 
 std::ostream& operator<<(std::ostream& os, ConstraintForm value);
 
-void ExpectSolutionCostAccurate(const MathematicalProgram& prog,
-                                const MathematicalProgramResult& result,
-                                double tol);
+void ExpectSolutionCostAccurate(const MathematicalProgram& prog, const MathematicalProgramResult& result, double tol);
 
 class OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(OptimizationProgram);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(OptimizationProgram);
 
-  OptimizationProgram(CostForm cost_form, ConstraintForm constraint_form);
+    OptimizationProgram(CostForm cost_form, ConstraintForm constraint_form);
 
-  virtual ~OptimizationProgram() {}
+    virtual ~OptimizationProgram() {}
 
-  CostForm cost_form() const { return cost_form_; }
+    CostForm cost_form() const { return cost_form_; }
 
-  ConstraintForm constraint_form() const { return constraint_form_; }
+    ConstraintForm constraint_form() const { return constraint_form_; }
 
-  MathematicalProgram* prog() const { return prog_.get(); }
+    MathematicalProgram* prog() const { return prog_.get(); }
 
-  virtual const std::optional<Eigen::VectorXd>& initial_guess() const {
-    return initial_guess_;
-  }
+    virtual const std::optional<Eigen::VectorXd>& initial_guess() const { return initial_guess_; }
 
-  virtual void CheckSolution(const MathematicalProgramResult& result) const = 0;
+    virtual void CheckSolution(const MathematicalProgramResult& result) const = 0;
 
-  double GetSolverSolutionDefaultCompareTolerance(SolverId solver_id) const;
+    double GetSolverSolutionDefaultCompareTolerance(SolverId solver_id) const;
 
-  void RunProblem(SolverInterface* solver);
+    void RunProblem(SolverInterface* solver);
 
- private:
-  CostForm cost_form_;
-  ConstraintForm constraint_form_;
-  std::unique_ptr<MathematicalProgram> prog_;
-  std::optional<Eigen::VectorXd> initial_guess_;
+private:
+    CostForm cost_form_;
+    ConstraintForm constraint_form_;
+    std::unique_ptr<MathematicalProgram> prog_;
+    std::optional<Eigen::VectorXd> initial_guess_;
 };
 
 /**
  * Simple example x = b
  */
 class LinearSystemExample1 {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearSystemExample1);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearSystemExample1);
 
-  LinearSystemExample1();
-  virtual ~LinearSystemExample1() {}
+    LinearSystemExample1();
+    virtual ~LinearSystemExample1() {}
 
-  MathematicalProgram* prog() const { return prog_.get(); }
+    MathematicalProgram* prog() const { return prog_.get(); }
 
-  const VectorDecisionVariable<4>& x() const { return x_; }
+    const VectorDecisionVariable<4>& x() const { return x_; }
 
-  const Eigen::Vector4d b() const { return b_; }
+    const Eigen::Vector4d b() const { return b_; }
 
-  const Eigen::Vector4d& initial_guess() const { return initial_guess_; }
+    const Eigen::Vector4d& initial_guess() const { return initial_guess_; }
 
-  std::shared_ptr<LinearEqualityConstraint> con() const { return con_; }
+    std::shared_ptr<LinearEqualityConstraint> con() const { return con_; }
 
-  virtual void CheckSolution(const MathematicalProgramResult& result) const;
+    virtual void CheckSolution(const MathematicalProgramResult& result) const;
 
- protected:
-  double tol() const { return 1E-10; }
+protected:
+    double tol() const { return 1E-10; }
 
- private:
-  std::unique_ptr<MathematicalProgram> prog_;
-  VectorDecisionVariable<4> x_;
-  Eigen::Vector4d initial_guess_;
-  Eigen::Vector4d b_;
-  std::shared_ptr<LinearEqualityConstraint> con_;
+private:
+    std::unique_ptr<MathematicalProgram> prog_;
+    VectorDecisionVariable<4> x_;
+    Eigen::Vector4d initial_guess_;
+    Eigen::Vector4d b_;
+    std::shared_ptr<LinearEqualityConstraint> con_;
 };
 
 /**
@@ -111,20 +107,20 @@ class LinearSystemExample1 {
  * 2 * y(1) = b(1)
  */
 class LinearSystemExample2 : public LinearSystemExample1 {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearSystemExample2);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearSystemExample2);
 
-  LinearSystemExample2();
-  ~LinearSystemExample2() override {}
+    LinearSystemExample2();
+    ~LinearSystemExample2() override {}
 
-  Vector6<double> initial_guess() const { return Vector6<double>::Zero(); }
+    Vector6<double> initial_guess() const { return Vector6<double>::Zero(); }
 
-  VectorDecisionVariable<2> y() const { return y_; }
+    VectorDecisionVariable<2> y() const { return y_; }
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<2> y_;
+private:
+    VectorDecisionVariable<2> y_;
 };
 
 /**
@@ -134,13 +130,13 @@ class LinearSystemExample2 : public LinearSystemExample1 {
  * 2 * y(1) = b(1)
  */
 class LinearSystemExample3 : public LinearSystemExample2 {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearSystemExample3);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearSystemExample3);
 
-  LinearSystemExample3();
-  ~LinearSystemExample3() override {}
+    LinearSystemExample3();
+    ~LinearSystemExample3() override {}
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 };
 
 /**
@@ -149,19 +145,19 @@ class LinearSystemExample3 : public LinearSystemExample2 {
  * Aᵀ * X + X * A = -E
  */
 class LinearMatrixEqualityExample {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearMatrixEqualityExample);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearMatrixEqualityExample);
 
-  LinearMatrixEqualityExample();
+    LinearMatrixEqualityExample();
 
-  MathematicalProgram* prog() const { return prog_.get(); }
+    MathematicalProgram* prog() const { return prog_.get(); }
 
-  void CheckSolution(const MathematicalProgramResult& result) const;
+    void CheckSolution(const MathematicalProgramResult& result) const;
 
- private:
-  std::unique_ptr<MathematicalProgram> prog_;
-  MatrixDecisionVariable<3, 3> X_;
-  Eigen::Matrix3d A_;
+private:
+    std::unique_ptr<MathematicalProgram> prog_;
+    MatrixDecisionVariable<3, 3> X_;
+    Eigen::Matrix3d A_;
 };
 
 /// This test comes from Section 2.2 of
@@ -169,63 +165,59 @@ class LinearMatrixEqualityExample {
 /// © 1999
 /// ISBN 978-1-4757-3040-1
 class NonConvexQPproblem1 {
-  /// This is a non-convex quadratic program with inequality constraints.
-  /// We choose to add the cost and constraints through different forms,
-  /// to test different solvers, and whether MathematicalProgram can parse
-  /// constraints in different forms.
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(NonConvexQPproblem1);
+    /// This is a non-convex quadratic program with inequality constraints.
+    /// We choose to add the cost and constraints through different forms,
+    /// to test different solvers, and whether MathematicalProgram can parse
+    /// constraints in different forms.
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(NonConvexQPproblem1);
 
-  static std::vector<CostForm> cost_forms() {
-    std::vector<CostForm> costs{CostForm::kGeneric, CostForm::kNonSymbolic};
-    return costs;
-  }
-
-  static ::std::vector<ConstraintForm> constraint_forms() {
-    std::vector<ConstraintForm> cnstr{ConstraintForm::kSymbolic,
-                                      ConstraintForm::kNonSymbolic};
-    return cnstr;
-  }
-
-  NonConvexQPproblem1(CostForm cost_form, ConstraintForm constraint_form);
-
-  MathematicalProgram* prog() const { return prog_.get(); }
-
-  Eigen::Matrix<double, 5, 1> initial_guess() const;
-
-  void CheckSolution(const MathematicalProgramResult& result) const;
-
- private:
-  class TestProblem1Cost {
-   public:
-    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(TestProblem1Cost);
-
-    TestProblem1Cost() = default;
-
-    static size_t numInputs() { return 5; }
-    static size_t numOutputs() { return 1; }
-
-    template <typename ScalarType>
-    void eval(internal::VecIn<ScalarType> const& x,
-              internal::VecOut<ScalarType>* y) const {
-      DRAKE_ASSERT(static_cast<size_t>(x.rows()) == numInputs());
-      DRAKE_ASSERT(static_cast<size_t>(y->rows()) == numOutputs());
-      (*y)(0) = (-50.0 * x(0) * x(0)) + (42 * x(0)) - (50.0 * x(1) * x(1)) +
-                (44 * x(1)) - (50.0 * x(2) * x(2)) + (45 * x(2)) -
-                (50.0 * x(3) * x(3)) + (47 * x(3)) - (50.0 * x(4) * x(4)) +
-                (47.5 * x(4));
+    static std::vector<CostForm> cost_forms() {
+        std::vector<CostForm> costs{CostForm::kGeneric, CostForm::kNonSymbolic};
+        return costs;
     }
-  };
 
-  void AddConstraint();
+    static ::std::vector<ConstraintForm> constraint_forms() {
+        std::vector<ConstraintForm> cnstr{ConstraintForm::kSymbolic, ConstraintForm::kNonSymbolic};
+        return cnstr;
+    }
 
-  void AddSymbolicConstraint();
+    NonConvexQPproblem1(CostForm cost_form, ConstraintForm constraint_form);
 
-  void AddQuadraticCost();
+    MathematicalProgram* prog() const { return prog_.get(); }
 
-  std::unique_ptr<MathematicalProgram> prog_;
-  VectorDecisionVariable<5> x_;
-  Eigen::Matrix<double, 5, 1> x_expected_;
+    Eigen::Matrix<double, 5, 1> initial_guess() const;
+
+    void CheckSolution(const MathematicalProgramResult& result) const;
+
+private:
+    class TestProblem1Cost {
+    public:
+        DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(TestProblem1Cost);
+
+        TestProblem1Cost() = default;
+
+        static size_t numInputs() { return 5; }
+        static size_t numOutputs() { return 1; }
+
+        template <typename ScalarType>
+        void eval(internal::VecIn<ScalarType> const& x, internal::VecOut<ScalarType>* y) const {
+            DRAKE_ASSERT(static_cast<size_t>(x.rows()) == numInputs());
+            DRAKE_ASSERT(static_cast<size_t>(y->rows()) == numOutputs());
+            (*y)(0) = (-50.0 * x(0) * x(0)) + (42 * x(0)) - (50.0 * x(1) * x(1)) + (44 * x(1)) - (50.0 * x(2) * x(2)) +
+                      (45 * x(2)) - (50.0 * x(3) * x(3)) + (47 * x(3)) - (50.0 * x(4) * x(4)) + (47.5 * x(4));
+        }
+    };
+
+    void AddConstraint();
+
+    void AddSymbolicConstraint();
+
+    void AddQuadraticCost();
+
+    std::unique_ptr<MathematicalProgram> prog_;
+    VectorDecisionVariable<5> x_;
+    Eigen::Matrix<double, 5, 1> x_expected_;
 };
 
 /// This test comes from Section 2.3 of
@@ -233,59 +225,56 @@ class NonConvexQPproblem1 {
 /// © 1999
 /// ISBN 978-1-4757-3040-1
 class NonConvexQPproblem2 {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(NonConvexQPproblem2);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(NonConvexQPproblem2);
 
-  static std::vector<CostForm> cost_forms() {
-    std::vector<CostForm> costs{CostForm::kGeneric, CostForm::kNonSymbolic};
-    return costs;
-  }
-
-  static std::vector<ConstraintForm> constraint_forms() {
-    std::vector<ConstraintForm> cnstr{ConstraintForm::kNonSymbolic,
-                                      ConstraintForm::kSymbolic};
-    return cnstr;
-  }
-
-  NonConvexQPproblem2(CostForm cost_form, ConstraintForm constraint_form);
-
-  Vector6<double> initial_guess() const;
-
-  void CheckSolution(const MathematicalProgramResult& result) const;
-
-  MathematicalProgram* prog() const { return prog_.get(); }
-
- private:
-  class TestProblem2Cost {
-   public:
-    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(TestProblem2Cost);
-
-    TestProblem2Cost() = default;
-
-    static size_t numInputs() { return 6; }
-    static size_t numOutputs() { return 1; }
-
-    template <typename ScalarType>
-    void eval(internal::VecIn<ScalarType> const& x,
-              internal::VecOut<ScalarType>* y) const {
-      DRAKE_ASSERT(static_cast<size_t>(x.rows()) == numInputs());
-      DRAKE_ASSERT(static_cast<size_t>(y->rows()) == numOutputs());
-      (*y)(0) = (-50.0 * x(0) * x(0)) + (-10.5 * x(0)) - (50.0 * x(1) * x(1)) +
-                (-7.5 * x(1)) - (50.0 * x(2) * x(2)) + (-3.5 * x(2)) -
-                (50.0 * x(3) * x(3)) + (-2.5 * x(3)) - (50.0 * x(4) * x(4)) +
-                (-1.5 * x(4)) + (-10.0 * x(5));
+    static std::vector<CostForm> cost_forms() {
+        std::vector<CostForm> costs{CostForm::kGeneric, CostForm::kNonSymbolic};
+        return costs;
     }
-  };
 
-  void AddQuadraticCost();
+    static std::vector<ConstraintForm> constraint_forms() {
+        std::vector<ConstraintForm> cnstr{ConstraintForm::kNonSymbolic, ConstraintForm::kSymbolic};
+        return cnstr;
+    }
 
-  void AddNonSymbolicConstraint();
+    NonConvexQPproblem2(CostForm cost_form, ConstraintForm constraint_form);
 
-  void AddSymbolicConstraint();
+    Vector6<double> initial_guess() const;
 
-  std::unique_ptr<MathematicalProgram> prog_;
-  Eigen::Matrix<symbolic::Variable, 6, 1> x_;
-  Vector6d x_expected_;
+    void CheckSolution(const MathematicalProgramResult& result) const;
+
+    MathematicalProgram* prog() const { return prog_.get(); }
+
+private:
+    class TestProblem2Cost {
+    public:
+        DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(TestProblem2Cost);
+
+        TestProblem2Cost() = default;
+
+        static size_t numInputs() { return 6; }
+        static size_t numOutputs() { return 1; }
+
+        template <typename ScalarType>
+        void eval(internal::VecIn<ScalarType> const& x, internal::VecOut<ScalarType>* y) const {
+            DRAKE_ASSERT(static_cast<size_t>(x.rows()) == numInputs());
+            DRAKE_ASSERT(static_cast<size_t>(y->rows()) == numOutputs());
+            (*y)(0) = (-50.0 * x(0) * x(0)) + (-10.5 * x(0)) - (50.0 * x(1) * x(1)) + (-7.5 * x(1)) -
+                      (50.0 * x(2) * x(2)) + (-3.5 * x(2)) - (50.0 * x(3) * x(3)) + (-2.5 * x(3)) -
+                      (50.0 * x(4) * x(4)) + (-1.5 * x(4)) + (-10.0 * x(5));
+        }
+    };
+
+    void AddQuadraticCost();
+
+    void AddNonSymbolicConstraint();
+
+    void AddSymbolicConstraint();
+
+    std::unique_ptr<MathematicalProgram> prog_;
+    Eigen::Matrix<symbolic::Variable, 6, 1> x_;
+    Vector6d x_expected_;
 };
 
 /// This test comes from Section 3.4 of
@@ -293,96 +282,88 @@ class NonConvexQPproblem2 {
 /// © 1999
 /// ISBN 978-1-4757-3040-1
 class LowerBoundedProblem {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LowerBoundedProblem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LowerBoundedProblem);
 
-  static std::vector<ConstraintForm> constraint_forms() {
-    std::vector<ConstraintForm> cnstr{ConstraintForm::kNonSymbolic,
-                                      ConstraintForm::kSymbolic};
-    return cnstr;
-  }
-
-  explicit LowerBoundedProblem(ConstraintForm constraint_form);
-
-  void CheckSolution(const MathematicalProgramResult& result) const;
-
-  MathematicalProgram* prog() { return prog_.get(); }
-
-  Vector6<double> initial_guess1() const;
-
-  Vector6<double> initial_guess2() const;
-
- private:
-  class LowerBoundTestCost {
-   public:
-    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(LowerBoundTestCost);
-
-    LowerBoundTestCost() = default;
-
-    static size_t numInputs() { return 6; }
-    static size_t numOutputs() { return 1; }
-
-    template <typename ScalarType>
-    void eval(internal::VecIn<ScalarType> const& x,
-              internal::VecOut<ScalarType>* y) const {
-      DRAKE_ASSERT(static_cast<size_t>(x.rows()) == numInputs());
-      DRAKE_ASSERT(static_cast<size_t>(y->rows()) == numOutputs());
-      (*y)(0) = -25 * (x(0) - 2) * (x(0) - 2) + (x(1) - 2) * (x(1) - 2) -
-                (x(2) - 1) * (x(2) - 1) - (x(3) - 4) * (x(3) - 4) -
-                (x(4) - 1) * (x(4) - 1) - (x(5) - 4) * (x(5) - 4);
-    }
-  };
-
-  class LowerBoundTestConstraint : public Constraint {
-   public:
-    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LowerBoundTestConstraint);
-
-    LowerBoundTestConstraint(int i1, int i2)
-        : Constraint(
-              1, Eigen::Dynamic, Vector1d::Constant(4),
-              Vector1d::Constant(std::numeric_limits<double>::infinity())),
-          i1_(i1),
-          i2_(i2) {}
-
-   protected:
-    // For just these two types, implementing this locally is almost cleaner...
-    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-                Eigen::VectorXd* y) const override {
-      EvalImpl(x, y);
-    }
-    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-                AutoDiffVecXd* y) const override {
-      // Check that the autodiff vector was initialized to the proper (minimal)
-      // size.
-      EXPECT_EQ(x.size(), x(0).derivatives().size());
-      EvalImpl(x, y);
-    }
-    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>&,
-                VectorX<symbolic::Expression>*) const override {
-      throw std::logic_error(
-          "LowerBoundTestConstraint does not support symbolic evaluation.");
+    static std::vector<ConstraintForm> constraint_forms() {
+        std::vector<ConstraintForm> cnstr{ConstraintForm::kNonSymbolic, ConstraintForm::kSymbolic};
+        return cnstr;
     }
 
-   private:
-    template <typename ScalarType>
-    void EvalImpl(
-        const Eigen::Ref<const Eigen::Matrix<ScalarType, Eigen::Dynamic, 1>>& x,
-        Eigen::Matrix<ScalarType, Eigen::Dynamic, 1>* y) const {
-      y->resize(1);
-      (*y)(0) = (x(i1_) - 3) * (x(i1_) - 3) + x(i2_);
-    }
+    explicit LowerBoundedProblem(ConstraintForm constraint_form);
 
-    int i1_;
-    int i2_;
-  };
+    void CheckSolution(const MathematicalProgramResult& result) const;
 
-  void AddSymbolicConstraint();
+    MathematicalProgram* prog() { return prog_.get(); }
 
-  void AddNonSymbolicConstraint();
+    Vector6<double> initial_guess1() const;
 
-  std::unique_ptr<MathematicalProgram> prog_;
-  Eigen::Matrix<symbolic::Variable, 6, 1> x_;
-  Vector6d x_expected_;
+    Vector6<double> initial_guess2() const;
+
+private:
+    class LowerBoundTestCost {
+    public:
+        DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(LowerBoundTestCost);
+
+        LowerBoundTestCost() = default;
+
+        static size_t numInputs() { return 6; }
+        static size_t numOutputs() { return 1; }
+
+        template <typename ScalarType>
+        void eval(internal::VecIn<ScalarType> const& x, internal::VecOut<ScalarType>* y) const {
+            DRAKE_ASSERT(static_cast<size_t>(x.rows()) == numInputs());
+            DRAKE_ASSERT(static_cast<size_t>(y->rows()) == numOutputs());
+            (*y)(0) = -25 * (x(0) - 2) * (x(0) - 2) + (x(1) - 2) * (x(1) - 2) - (x(2) - 1) * (x(2) - 1) -
+                      (x(3) - 4) * (x(3) - 4) - (x(4) - 1) * (x(4) - 1) - (x(5) - 4) * (x(5) - 4);
+        }
+    };
+
+    class LowerBoundTestConstraint : public Constraint {
+    public:
+        DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LowerBoundTestConstraint);
+
+        LowerBoundTestConstraint(int i1, int i2)
+            : Constraint(1,
+                         Eigen::Dynamic,
+                         Vector1d::Constant(4),
+                         Vector1d::Constant(std::numeric_limits<double>::infinity())),
+              i1_(i1),
+              i2_(i2) {}
+
+    protected:
+        // For just these two types, implementing this locally is almost cleaner...
+        void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override { EvalImpl(x, y); }
+        void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override {
+            // Check that the autodiff vector was initialized to the proper (minimal)
+            // size.
+            EXPECT_EQ(x.size(), x(0).derivatives().size());
+            EvalImpl(x, y);
+        }
+        void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>&,
+                    VectorX<symbolic::Expression>*) const override {
+            throw std::logic_error("LowerBoundTestConstraint does not support symbolic evaluation.");
+        }
+
+    private:
+        template <typename ScalarType>
+        void EvalImpl(const Eigen::Ref<const Eigen::Matrix<ScalarType, Eigen::Dynamic, 1>>& x,
+                      Eigen::Matrix<ScalarType, Eigen::Dynamic, 1>* y) const {
+            y->resize(1);
+            (*y)(0) = (x(i1_) - 3) * (x(i1_) - 3) + x(i2_);
+        }
+
+        int i1_;
+        int i2_;
+    };
+
+    void AddSymbolicConstraint();
+
+    void AddNonSymbolicConstraint();
+
+    std::unique_ptr<MathematicalProgram> prog_;
+    Eigen::Matrix<symbolic::Variable, 6, 1> x_;
+    Vector6d x_expected_;
 };
 
 /// gloptiPolyConstrainedMinimization
@@ -396,104 +377,89 @@ class LowerBoundedProblem {
 /// costs on decision variables x and y, so as to test out program works
 /// correctly with multiple decision variables.
 class GloptiPolyConstrainedMinimizationProblem {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(GloptiPolyConstrainedMinimizationProblem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(GloptiPolyConstrainedMinimizationProblem);
 
-  static std::vector<CostForm> cost_forms() {
-    std::vector<CostForm> costs{CostForm::kGeneric, CostForm::kNonSymbolic,
-                                CostForm::kSymbolic};
-    return costs;
-  }
-
-  static std::vector<ConstraintForm> constraint_forms() {
-    std::vector<ConstraintForm> cnstr{ConstraintForm::kNonSymbolic,
-                                      ConstraintForm::kSymbolic};
-    return cnstr;
-  }
-
-  GloptiPolyConstrainedMinimizationProblem(CostForm cost_form,
-                                           ConstraintForm constraint_form);
-
-  MathematicalProgram* prog() const { return prog_.get(); }
-
-  void CheckSolution(const MathematicalProgramResult& result) const;
-
-  Vector6<double> initial_guess() const;
-
- private:
-  class GloptipolyConstrainedExampleCost {
-   public:
-    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(GloptipolyConstrainedExampleCost);
-
-    GloptipolyConstrainedExampleCost() = default;
-
-    static size_t numInputs() { return 3; }
-    static size_t numOutputs() { return 1; }
-
-    template <typename ScalarType>
-    void eval(internal::VecIn<ScalarType> const& x,
-              internal::VecOut<ScalarType>* y) const {
-      DRAKE_ASSERT(static_cast<size_t>(x.rows()) == numInputs());
-      DRAKE_ASSERT(static_cast<size_t>(y->rows()) == numOutputs());
-      (*y)(0) = -2 * x(0) + x(1) - x(2);
-    }
-  };
-
-  class GloptipolyConstrainedExampleConstraint
-      : public Constraint {  // Want to also support deriving directly from
-                             // constraint without going through Function.
-   public:
-    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(GloptipolyConstrainedExampleConstraint);
-
-    GloptipolyConstrainedExampleConstraint()
-        : Constraint(
-              1, 3, Vector1d::Constant(0),
-              Vector1d::Constant(std::numeric_limits<double>::infinity())) {}
-
-   protected:
-    // For just these two types, implementing this locally is almost cleaner.
-    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-                Eigen::VectorXd* y) const override {
-      EvalImpl(x, y);
-    }
-    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-                AutoDiffVecXd* y) const override {
-      EvalImpl(x, y);
+    static std::vector<CostForm> cost_forms() {
+        std::vector<CostForm> costs{CostForm::kGeneric, CostForm::kNonSymbolic, CostForm::kSymbolic};
+        return costs;
     }
 
-    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>&,
-                VectorX<symbolic::Expression>*) const override {
-      throw std::logic_error(
-          "GloptipolyConstrainedExampleConstraint does not support symbolic "
-          "evaluation.");
+    static std::vector<ConstraintForm> constraint_forms() {
+        std::vector<ConstraintForm> cnstr{ConstraintForm::kNonSymbolic, ConstraintForm::kSymbolic};
+        return cnstr;
     }
 
-   private:
-    template <typename ScalarType>
-    void EvalImpl(
-        const Eigen::Ref<const Eigen::Matrix<ScalarType, Eigen::Dynamic, 1>>& x,
-        Eigen::Matrix<ScalarType, Eigen::Dynamic, 1>* y) const {
-      y->resize(1);
-      (*y)(0) = 24 - 20 * x(0) + 9 * x(1) - 13 * x(2) + 4 * x(0) * x(0) -
-                4 * x(0) * x(1) + 4 * x(0) * x(2) + 2 * x(1) * x(1) -
-                2 * x(1) * x(2) + 2 * x(2) * x(2);
-    }
-  };
+    GloptiPolyConstrainedMinimizationProblem(CostForm cost_form, ConstraintForm constraint_form);
 
-  void AddGenericCost();
+    MathematicalProgram* prog() const { return prog_.get(); }
 
-  void AddSymbolicCost();
+    void CheckSolution(const MathematicalProgramResult& result) const;
 
-  void AddNonSymbolicCost();
+    Vector6<double> initial_guess() const;
 
-  void AddNonSymbolicConstraint();
+private:
+    class GloptipolyConstrainedExampleCost {
+    public:
+        DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(GloptipolyConstrainedExampleCost);
 
-  void AddSymbolicConstraint();
+        GloptipolyConstrainedExampleCost() = default;
 
-  std::unique_ptr<MathematicalProgram> prog_;
-  VectorDecisionVariable<3> x_;
-  VectorDecisionVariable<3> y_;
-  Eigen::Vector3d expected_;
+        static size_t numInputs() { return 3; }
+        static size_t numOutputs() { return 1; }
+
+        template <typename ScalarType>
+        void eval(internal::VecIn<ScalarType> const& x, internal::VecOut<ScalarType>* y) const {
+            DRAKE_ASSERT(static_cast<size_t>(x.rows()) == numInputs());
+            DRAKE_ASSERT(static_cast<size_t>(y->rows()) == numOutputs());
+            (*y)(0) = -2 * x(0) + x(1) - x(2);
+        }
+    };
+
+    class GloptipolyConstrainedExampleConstraint : public Constraint {  // Want to also support deriving directly from
+                                                                        // constraint without going through Function.
+    public:
+        DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(GloptipolyConstrainedExampleConstraint);
+
+        GloptipolyConstrainedExampleConstraint()
+            : Constraint(1, 3, Vector1d::Constant(0), Vector1d::Constant(std::numeric_limits<double>::infinity())) {}
+
+    protected:
+        // For just these two types, implementing this locally is almost cleaner.
+        void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override { EvalImpl(x, y); }
+        void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override { EvalImpl(x, y); }
+
+        void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>&,
+                    VectorX<symbolic::Expression>*) const override {
+            throw std::logic_error(
+                    "GloptipolyConstrainedExampleConstraint does not support symbolic "
+                    "evaluation.");
+        }
+
+    private:
+        template <typename ScalarType>
+        void EvalImpl(const Eigen::Ref<const Eigen::Matrix<ScalarType, Eigen::Dynamic, 1>>& x,
+                      Eigen::Matrix<ScalarType, Eigen::Dynamic, 1>* y) const {
+            y->resize(1);
+            (*y)(0) = 24 - 20 * x(0) + 9 * x(1) - 13 * x(2) + 4 * x(0) * x(0) - 4 * x(0) * x(1) + 4 * x(0) * x(2) +
+                      2 * x(1) * x(1) - 2 * x(1) * x(2) + 2 * x(2) * x(2);
+        }
+    };
+
+    void AddGenericCost();
+
+    void AddSymbolicCost();
+
+    void AddNonSymbolicCost();
+
+    void AddNonSymbolicConstraint();
+
+    void AddSymbolicConstraint();
+
+    std::unique_ptr<MathematicalProgram> prog_;
+    VectorDecisionVariable<3> x_;
+    VectorDecisionVariable<3> y_;
+    Eigen::Vector3d expected_;
 };
 
 /// An SOCP with Lorentz cone and rotated Lorentz cone constraints.
@@ -515,50 +481,47 @@ class GloptiPolyConstrainedMinimizationProblem {
 /// A_hat * [x*; z*] = [b; 0]
 /// where A_hat = [A 0; 2*I Aᵀ].
 class MinDistanceFromPlaneToOrigin {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MinDistanceFromPlaneToOrigin);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MinDistanceFromPlaneToOrigin);
 
-  static std::vector<CostForm> cost_forms() {
-    std::vector<CostForm> costs{CostForm::kNonSymbolic, CostForm::kSymbolic};
-    return costs;
-  }
+    static std::vector<CostForm> cost_forms() {
+        std::vector<CostForm> costs{CostForm::kNonSymbolic, CostForm::kSymbolic};
+        return costs;
+    }
 
-  static std::vector<ConstraintForm> constraint_forms() {
-    std::vector<ConstraintForm> cnstr{ConstraintForm::kNonSymbolic,
-                                      ConstraintForm::kSymbolic};
-    return cnstr;
-  }
+    static std::vector<ConstraintForm> constraint_forms() {
+        std::vector<ConstraintForm> cnstr{ConstraintForm::kNonSymbolic, ConstraintForm::kSymbolic};
+        return cnstr;
+    }
 
-  MinDistanceFromPlaneToOrigin(const Eigen::MatrixXd& A,
-                               const Eigen::VectorXd& b, CostForm cost_form,
-                               ConstraintForm constraint_form);
+    MinDistanceFromPlaneToOrigin(const Eigen::MatrixXd& A,
+                                 const Eigen::VectorXd& b,
+                                 CostForm cost_form,
+                                 ConstraintForm constraint_form);
 
-  MathematicalProgram* prog_lorentz() const { return prog_lorentz_.get(); }
+    MathematicalProgram* prog_lorentz() const { return prog_lorentz_.get(); }
 
-  MathematicalProgram* prog_rotated_lorentz() const {
-    return prog_rotated_lorentz_.get();
-  }
+    MathematicalProgram* prog_rotated_lorentz() const { return prog_rotated_lorentz_.get(); }
 
-  Eigen::VectorXd prog_lorentz_initial_guess() const;
+    Eigen::VectorXd prog_lorentz_initial_guess() const;
 
-  Eigen::VectorXd prog_rotated_lorentz_initial_guess() const;
+    Eigen::VectorXd prog_rotated_lorentz_initial_guess() const;
 
-  void CheckSolution(const MathematicalProgramResult& result,
-                     bool is_rotated_cone) const;
+    void CheckSolution(const MathematicalProgramResult& result, bool is_rotated_cone) const;
 
- private:
-  void AddNonSymbolicConstraint();
-  void AddSymbolicConstraint();
+private:
+    void AddNonSymbolicConstraint();
+    void AddSymbolicConstraint();
 
-  Eigen::MatrixXd A_;
-  Eigen::VectorXd b_;
-  std::unique_ptr<MathematicalProgram> prog_lorentz_;
-  std::unique_ptr<MathematicalProgram> prog_rotated_lorentz_;
-  VectorDecisionVariable<1> t_lorentz_;
-  VectorXDecisionVariable x_lorentz_;
-  VectorDecisionVariable<1> t_rotated_lorentz_;
-  VectorXDecisionVariable x_rotated_lorentz_;
-  Eigen::VectorXd x_expected_;
+    Eigen::MatrixXd A_;
+    Eigen::VectorXd b_;
+    std::unique_ptr<MathematicalProgram> prog_lorentz_;
+    std::unique_ptr<MathematicalProgram> prog_rotated_lorentz_;
+    VectorDecisionVariable<1> t_lorentz_;
+    VectorXDecisionVariable x_lorentz_;
+    VectorDecisionVariable<1> t_rotated_lorentz_;
+    VectorXDecisionVariable x_rotated_lorentz_;
+    Eigen::VectorXd x_expected_;
 };
 
 /**
@@ -569,17 +532,17 @@ class MinDistanceFromPlaneToOrigin {
  * The optimal solution is x = 2.
  */
 class ConvexCubicProgramExample : public MathematicalProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ConvexCubicProgramExample);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ConvexCubicProgramExample);
 
-  ConvexCubicProgramExample();
+    ConvexCubicProgramExample();
 
-  ~ConvexCubicProgramExample() override = default;
+    ~ConvexCubicProgramExample() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const;
+    void CheckSolution(const MathematicalProgramResult& result) const;
 
- private:
-  VectorDecisionVariable<1> x_;
+private:
+    VectorDecisionVariable<1> x_;
 };
 
 /**
@@ -590,18 +553,17 @@ class ConvexCubicProgramExample : public MathematicalProgram {
  * program, and solve it through nonlinear optimization.
  */
 class UnitLengthProgramExample : public MathematicalProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnitLengthProgramExample);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnitLengthProgramExample);
 
-  UnitLengthProgramExample();
+    UnitLengthProgramExample();
 
-  ~UnitLengthProgramExample() override = default;
+    ~UnitLengthProgramExample() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result,
-                     double tolerance) const;
+    void CheckSolution(const MathematicalProgramResult& result, double tolerance) const;
 
- private:
-  VectorDecisionVariable<4> x_;
+private:
+    VectorDecisionVariable<4> x_;
 };
 
 // Finds a point Q outside a tetrahedron, and with a specified distance to the
@@ -611,112 +573,103 @@ class UnitLengthProgramExample : public MathematicalProgram {
 // https://github.com/snopt/snopt-interface/issues/19#issuecomment-410346280
 // This is just a feasibility problem, without a cost.
 class DistanceToTetrahedronExample : public MathematicalProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DistanceToTetrahedronExample);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DistanceToTetrahedronExample);
 
-  explicit DistanceToTetrahedronExample(double distance_expected);
+    explicit DistanceToTetrahedronExample(double distance_expected);
 
-  ~DistanceToTetrahedronExample() override {}
+    ~DistanceToTetrahedronExample() override {}
 
-  const VectorDecisionVariable<18>& x() const { return x_; }
+    const VectorDecisionVariable<18>& x() const { return x_; }
 
-  const Eigen::Matrix<double, 4, 3> A_tetrahedron() const {
-    return A_tetrahedron_;
-  }
+    const Eigen::Matrix<double, 4, 3> A_tetrahedron() const { return A_tetrahedron_; }
 
-  const Eigen::Vector4d b_tetrahedron() const { return b_tetrahedron_; }
+    const Eigen::Vector4d b_tetrahedron() const { return b_tetrahedron_; }
 
- private:
-  // TODO(hongkai.dai): explain the mathematical formulation of this constraint.
-  class DistanceToTetrahedronNonlinearConstraint : public Constraint {
-   public:
-    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DistanceToTetrahedronNonlinearConstraint);
+private:
+    // TODO(hongkai.dai): explain the mathematical formulation of this constraint.
+    class DistanceToTetrahedronNonlinearConstraint : public Constraint {
+    public:
+        DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DistanceToTetrahedronNonlinearConstraint);
 
-    DistanceToTetrahedronNonlinearConstraint(
-        const Eigen::Matrix<double, 4, 3>& A_tetrahedron,
-        const Eigen::Vector4d& b_tetrahedron);
+        DistanceToTetrahedronNonlinearConstraint(const Eigen::Matrix<double, 4, 3>& A_tetrahedron,
+                                                 const Eigen::Vector4d& b_tetrahedron);
 
-    ~DistanceToTetrahedronNonlinearConstraint() override {}
+        ~DistanceToTetrahedronNonlinearConstraint() override {}
 
-   private:
-    template <typename DerivedX, typename ScalarY>
-    void DoEvalGeneric(const Eigen::MatrixBase<DerivedX>& x,
-                       VectorX<ScalarY>* y) const {
-      DRAKE_DEMAND(x.size() == 18);
-      y->resize(15);
-      using ScalarX = typename DerivedX::Scalar;
-      Vector3<ScalarX> p_WB = x.template head<3>();
-      Vector3<ScalarX> p_WQ = x.template segment<3>(3);
-      Vector3<ScalarX> n_W = x.template segment<3>(6);
-      Vector4<ScalarX> quat_WB = x.template segment<4>(9);
-      Vector3<ScalarX> p_WP = x.template segment<3>(13);
-      ScalarX d = x(16);
-      ScalarX phi = x(17);
+    private:
+        template <typename DerivedX, typename ScalarY>
+        void DoEvalGeneric(const Eigen::MatrixBase<DerivedX>& x, VectorX<ScalarY>* y) const {
+            DRAKE_DEMAND(x.size() == 18);
+            y->resize(15);
+            using ScalarX = typename DerivedX::Scalar;
+            Vector3<ScalarX> p_WB = x.template head<3>();
+            Vector3<ScalarX> p_WQ = x.template segment<3>(3);
+            Vector3<ScalarX> n_W = x.template segment<3>(6);
+            Vector4<ScalarX> quat_WB = x.template segment<4>(9);
+            Vector3<ScalarX> p_WP = x.template segment<3>(13);
+            ScalarX d = x(16);
+            ScalarX phi = x(17);
 
-      // p_BV are the vertices of the tetrahedron in the body frame B.
-      Eigen::Matrix<double, 4, 3> p_BV;
-      // clang-format off
+            // p_BV are the vertices of the tetrahedron in the body frame B.
+            Eigen::Matrix<double, 4, 3> p_BV;
+            // clang-format off
       p_BV << 0, 0, 0,
               1, 0, 0,
               0, 1, 0,
               0, 0, 1;
-      // clang-format on
-      (*y)(0) = quat_WB.dot(quat_WB);
-      (*y)(1) = n_W.dot(n_W);
-      (*y)(2) = n_W.dot(p_WP) - d;
-      (*y)(3) = phi - n_W.dot(p_WQ - p_WP);
-      y->template segment<3>(4) = n_W * phi - p_WQ + p_WP;
+            // clang-format on
+            (*y)(0) = quat_WB.dot(quat_WB);
+            (*y)(1) = n_W.dot(n_W);
+            (*y)(2) = n_W.dot(p_WP) - d;
+            (*y)(3) = phi - n_W.dot(p_WQ - p_WP);
+            y->template segment<3>(4) = n_W * phi - p_WQ + p_WP;
 
-      const ScalarX ww = quat_WB(0) * quat_WB(0);
-      const ScalarX xx = quat_WB(1) * quat_WB(1);
-      const ScalarX yy = quat_WB(2) * quat_WB(2);
-      const ScalarX zz = quat_WB(3) * quat_WB(3);
-      const ScalarX wx = quat_WB(0) * quat_WB(1);
-      const ScalarX wy = quat_WB(0) * quat_WB(2);
-      const ScalarX wz = quat_WB(0) * quat_WB(3);
-      const ScalarX xy = quat_WB(1) * quat_WB(2);
-      const ScalarX xz = quat_WB(1) * quat_WB(3);
-      const ScalarX yz = quat_WB(2) * quat_WB(3);
-      Matrix3<ScalarX> R_WB;
-      // clang-format off
+            const ScalarX ww = quat_WB(0) * quat_WB(0);
+            const ScalarX xx = quat_WB(1) * quat_WB(1);
+            const ScalarX yy = quat_WB(2) * quat_WB(2);
+            const ScalarX zz = quat_WB(3) * quat_WB(3);
+            const ScalarX wx = quat_WB(0) * quat_WB(1);
+            const ScalarX wy = quat_WB(0) * quat_WB(2);
+            const ScalarX wz = quat_WB(0) * quat_WB(3);
+            const ScalarX xy = quat_WB(1) * quat_WB(2);
+            const ScalarX xz = quat_WB(1) * quat_WB(3);
+            const ScalarX yz = quat_WB(2) * quat_WB(3);
+            Matrix3<ScalarX> R_WB;
+            // clang-format off
       R_WB <<  ww + xx - yy - zz, 2 * xy - 2 * wz, 2 * xz + 2 * wy,
                2 * xy + 2 * wz, ww  + yy - xx - zz, 2 * yz - 2 * wx,
                2 * xz - 2 * wy, 2 * yz + 2 * wx, ww + zz - xx - yy;
-      // clang-format on
-      for (int i = 0; i < 4; ++i) {
-        const Vector3<ScalarX> p_WVi = p_WB + R_WB * p_BV.row(i).transpose();
-        (*y)(7 + i) = n_W.dot(p_WVi) - d;
-      }
-      // A * (R_WBᵀ * (p_WQ - p_WB))
-      y->template segment<4>(11) =
-          A_tetrahedron_ * R_WB.transpose() * (p_WQ - p_WB);
-    }
+            // clang-format on
+            for (int i = 0; i < 4; ++i) {
+                const Vector3<ScalarX> p_WVi = p_WB + R_WB * p_BV.row(i).transpose();
+                (*y)(7 + i) = n_W.dot(p_WVi) - d;
+            }
+            // A * (R_WBᵀ * (p_WQ - p_WB))
+            y->template segment<4>(11) = A_tetrahedron_ * R_WB.transpose() * (p_WQ - p_WB);
+        }
 
-    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-                Eigen::VectorXd* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override {
+            DoEvalGeneric(x, y);
+        }
 
-    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-                AutoDiffVecXd* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override { DoEvalGeneric(x, y); }
 
-    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-                VectorX<symbolic::Expression>* y) const override {
-      DoEvalGeneric(x.cast<symbolic::Expression>(), y);
-    }
+        void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                    VectorX<symbolic::Expression>* y) const override {
+            DoEvalGeneric(x.cast<symbolic::Expression>(), y);
+        }
 
-   private:
+    private:
+        Eigen::Matrix<double, 4, 3> A_tetrahedron_;
+    };
+
+    VectorDecisionVariable<18> x_;
+    // The tetrahedron can be described as A_tetrahedron * x<=b_tetrahedron, where
+    // x is the position of a point within the tetrahedron, in the tetrahedron
+    // body frame B.
     Eigen::Matrix<double, 4, 3> A_tetrahedron_;
-  };
-
-  VectorDecisionVariable<18> x_;
-  // The tetrahedron can be described as A_tetrahedron * x<=b_tetrahedron, where
-  // x is the position of a point within the tetrahedron, in the tetrahedron
-  // body frame B.
-  Eigen::Matrix<double, 4, 3> A_tetrahedron_;
-  Eigen::Vector4d b_tetrahedron_;
+    Eigen::Vector4d b_tetrahedron_;
 };
 
 /**
@@ -731,48 +684,43 @@ class DistanceToTetrahedronExample : public MathematicalProgram {
  *     0 <= x2 <= 10
  */
 class EckhardtProblem {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(EckhardtProblem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(EckhardtProblem);
 
-  explicit EckhardtProblem(bool set_sparsity_pattern);
+    explicit EckhardtProblem(bool set_sparsity_pattern);
 
-  void CheckSolution(const MathematicalProgramResult& result, double tol) const;
+    void CheckSolution(const MathematicalProgramResult& result, double tol) const;
 
-  const MathematicalProgram& prog() const { return *prog_; }
+    const MathematicalProgram& prog() const { return *prog_; }
 
- private:
-  class EckhardtConstraint : public Constraint {
-   public:
-    explicit EckhardtConstraint(bool set_sparsity_pattern);
+private:
+    class EckhardtConstraint : public Constraint {
+    public:
+        explicit EckhardtConstraint(bool set_sparsity_pattern);
 
-   private:
-    template <typename T>
-    void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>& x,
-                       VectorX<T>* y) const {
-      using std::exp;
-      y->resize(2);
-      (*y)(0) = x(1) - exp(x(0));
-      (*y)(1) = x(2) - exp(x(1));
-    }
+    private:
+        template <typename T>
+        void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>& x, VectorX<T>* y) const {
+            using std::exp;
+            y->resize(2);
+            (*y)(0) = x(1) - exp(x(0));
+            (*y)(1) = x(2) - exp(x(1));
+        }
 
-    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-                Eigen::VectorXd* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override {
+            DoEvalGeneric(x, y);
+        }
 
-    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-                AutoDiffVecXd* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override { DoEvalGeneric(x, y); }
 
-    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-                VectorX<symbolic::Expression>* y) const override {
-      DoEvalGeneric<symbolic::Expression>(x.cast<symbolic::Expression>(), y);
-    }
-  };
+        void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                    VectorX<symbolic::Expression>* y) const override {
+            DoEvalGeneric<symbolic::Expression>(x.cast<symbolic::Expression>(), y);
+        }
+    };
 
-  std::unique_ptr<MathematicalProgram> prog_;
-  Vector3<symbolic::Variable> x_;
+    std::unique_ptr<MathematicalProgram> prog_;
+    Vector3<symbolic::Variable> x_;
 };
 
 /**
@@ -788,76 +736,66 @@ void TestEckhardtDualSolution(const SolverInterface& solver,
  * problem has sparse gradient.
  */
 class HeatExchangerDesignProblem {
- public:
-  HeatExchangerDesignProblem();
+public:
+    HeatExchangerDesignProblem();
 
-  void CheckSolution(const MathematicalProgramResult& result, double tol) const;
+    void CheckSolution(const MathematicalProgramResult& result, double tol) const;
 
-  const MathematicalProgram& prog() const { return *prog_; }
+    const MathematicalProgram& prog() const { return *prog_; }
 
- private:
-  class HeatExchangerDesignConstraint1 : public solvers::Constraint {
-   public:
-    HeatExchangerDesignConstraint1();
+private:
+    class HeatExchangerDesignConstraint1 : public solvers::Constraint {
+    public:
+        HeatExchangerDesignConstraint1();
 
-    ~HeatExchangerDesignConstraint1() override {}
+        ~HeatExchangerDesignConstraint1() override {}
 
-   private:
-    template <typename T>
-    void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>& x,
-                       VectorX<T>* y) const {
-      y->resize(1);
-      (*y)(0) = x(0) * x(5) - 833.33252 * x(3) - 100 * x(0) + 83333.333;
-    }
+    private:
+        template <typename T>
+        void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>& x, VectorX<T>* y) const {
+            y->resize(1);
+            (*y)(0) = x(0) * x(5) - 833.33252 * x(3) - 100 * x(0) + 83333.333;
+        }
 
-    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-                Eigen::VectorXd* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override {
+            DoEvalGeneric(x, y);
+        }
 
-    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-                AutoDiffVecXd* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override { DoEvalGeneric(x, y); }
 
-    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-                VectorX<symbolic::Expression>* y) const override {
-      DoEvalGeneric<symbolic::Expression>(x.cast<symbolic::Expression>(), y);
-    }
-  };
+        void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                    VectorX<symbolic::Expression>* y) const override {
+            DoEvalGeneric<symbolic::Expression>(x.cast<symbolic::Expression>(), y);
+        }
+    };
 
-  class HeatExchangerDesignConstraint2 : public solvers::Constraint {
-   public:
-    HeatExchangerDesignConstraint2();
+    class HeatExchangerDesignConstraint2 : public solvers::Constraint {
+    public:
+        HeatExchangerDesignConstraint2();
 
-    ~HeatExchangerDesignConstraint2() override {}
+        ~HeatExchangerDesignConstraint2() override {}
 
-   private:
-    template <typename T>
-    void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>& x,
-                       VectorX<T>* y) const {
-      y->resize(2);
-      (*y)(0) = x(0) * x(5) - 1250 * x(3) - x(0) * x(2) + 1250 * x(2);
-      (*y)(1) = x(1) * x(6) - 1250000 - x(1) * x(3) + 2500 * x(3);
-    }
+    private:
+        template <typename T>
+        void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>& x, VectorX<T>* y) const {
+            y->resize(2);
+            (*y)(0) = x(0) * x(5) - 1250 * x(3) - x(0) * x(2) + 1250 * x(2);
+            (*y)(1) = x(1) * x(6) - 1250000 - x(1) * x(3) + 2500 * x(3);
+        }
 
-    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-                Eigen::VectorXd* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override {
+            DoEvalGeneric(x, y);
+        }
 
-    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-                AutoDiffVecXd* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override { DoEvalGeneric(x, y); }
 
-    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-                VectorX<symbolic::Expression>* y) const override {
-      DoEvalGeneric<symbolic::Expression>(x.cast<symbolic::Expression>(), y);
-    }
-  };
-  std::unique_ptr<MathematicalProgram> prog_;
-  Eigen::Matrix<symbolic::Variable, 8, 1> x_;
+        void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                    VectorX<symbolic::Expression>* y) const override {
+            DoEvalGeneric<symbolic::Expression>(x.cast<symbolic::Expression>(), y);
+        }
+    };
+    std::unique_ptr<MathematicalProgram> prog_;
+    Eigen::Matrix<symbolic::Variable, 8, 1> x_;
 };
 
 /// In Eigen's autodiff, when the derivatives() vector has empty size, it is
@@ -879,71 +817,61 @@ class HeatExchangerDesignProblem {
 /// automatically set the gradient to the right size, although Eigen's autodiff
 /// returns an empty size gradient.
 class EmptyGradientProblem {
- public:
-  EmptyGradientProblem();
+public:
+    EmptyGradientProblem();
 
-  const MathematicalProgram& prog() const { return *prog_; }
+    const MathematicalProgram& prog() const { return *prog_; }
 
-  void CheckSolution(const MathematicalProgramResult& result) const;
+    void CheckSolution(const MathematicalProgramResult& result) const;
 
- private:
-  class EmptyGradientCost : public Cost {
-   public:
-    EmptyGradientCost() : Cost(2) {}
+private:
+    class EmptyGradientCost : public Cost {
+    public:
+        EmptyGradientCost() : Cost(2) {}
 
-   private:
-    template <typename T>
-    void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>&,
-                       VectorX<T>* y) const {
-      y->resize(1);
-      (*y)(0) = T(1);
-    }
+    private:
+        template <typename T>
+        void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>&, VectorX<T>* y) const {
+            y->resize(1);
+            (*y)(0) = T(1);
+        }
 
-    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-                VectorX<double>* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, VectorX<double>* y) const override {
+            DoEvalGeneric(x, y);
+        }
 
-    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-                AutoDiffVecXd* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override { DoEvalGeneric(x, y); }
 
-    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-                VectorX<symbolic::Expression>* y) const override {
-      DoEvalGeneric<symbolic::Expression>(x.cast<symbolic::Expression>(), y);
-    }
-  };
+        void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                    VectorX<symbolic::Expression>* y) const override {
+            DoEvalGeneric<symbolic::Expression>(x.cast<symbolic::Expression>(), y);
+        }
+    };
 
-  class EmptyGradientConstraint : public Constraint {
-   public:
-    EmptyGradientConstraint();
+    class EmptyGradientConstraint : public Constraint {
+    public:
+        EmptyGradientConstraint();
 
-   private:
-    template <typename T>
-    void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>&,
-                       VectorX<T>* y) const {
-      y->resize(1);
-      (*y)(0) = T(0);
-    }
+    private:
+        template <typename T>
+        void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>&, VectorX<T>* y) const {
+            y->resize(1);
+            (*y)(0) = T(0);
+        }
 
-    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-                VectorX<double>* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, VectorX<double>* y) const override {
+            DoEvalGeneric(x, y);
+        }
 
-    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-                AutoDiffVecXd* y) const override {
-      DoEvalGeneric(x, y);
-    }
+        void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override { DoEvalGeneric(x, y); }
 
-    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-                VectorX<symbolic::Expression>* y) const override {
-      DoEvalGeneric<symbolic::Expression>(x.cast<symbolic::Expression>(), y);
-    }
-  };
-  std::unique_ptr<MathematicalProgram> prog_;
-  Vector2<symbolic::Variable> x_;
+        void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                    VectorX<symbolic::Expression>* y) const override {
+            DoEvalGeneric<symbolic::Expression>(x.cast<symbolic::Expression>(), y);
+        }
+    };
+    std::unique_ptr<MathematicalProgram> prog_;
+    Vector2<symbolic::Variable> x_;
 };
 
 void TestL2NormCost(const SolverInterface& solver, double tol);
@@ -957,38 +885,39 @@ std::set<ConstraintForm> linear_constraint_form();
 // Test a nonlinear program whose costs and constraints are intentionally
 // imposed using duplicated variables.
 class DuplicatedVariableNonlinearProgram1 : public ::testing::Test {
-  // max x0² + 4x0x1 + 4x1²
-  // s.t x0² + x1² = 1
-  //     x0 >= 0
-  // The optimal solution is x0 = 1/sqrt(5), x1 = 2/sqrt(5).
- public:
-  DuplicatedVariableNonlinearProgram1();
+    // max x0² + 4x0x1 + 4x1²
+    // s.t x0² + x1² = 1
+    //     x0 >= 0
+    // The optimal solution is x0 = 1/sqrt(5), x1 = 2/sqrt(5).
+public:
+    DuplicatedVariableNonlinearProgram1();
 
-  void CheckSolution(
-      const SolverInterface& solver, const Eigen::Vector2d& x_init,
-      const std::optional<SolverOptions>& solver_options = std::nullopt,
-      double tol = 1E-7) const;
+    void CheckSolution(const SolverInterface& solver,
+                       const Eigen::Vector2d& x_init,
+                       const std::optional<SolverOptions>& solver_options = std::nullopt,
+                       double tol = 1E-7) const;
 
- protected:
-  std::unique_ptr<MathematicalProgram> prog_;
-  Vector2<symbolic::Variable> x_;
+protected:
+    std::unique_ptr<MathematicalProgram> prog_;
+    Vector2<symbolic::Variable> x_;
 };
 
 // Test a nonlinear program with quadratic constraints.
 // max x + 2*y
 // s.t x² + y² = 1
 class QuadraticEqualityConstrainedProgram1 : public ::testing::Test {
- public:
-  QuadraticEqualityConstrainedProgram1();
+public:
+    QuadraticEqualityConstrainedProgram1();
 
-  void CheckSolution(
-      const SolverInterface& solver, const Eigen::Vector2d& x_init,
-      const std::optional<SolverOptions>& solver_options = std::nullopt,
-      double tol = 1E-7, bool check_dual = true) const;
+    void CheckSolution(const SolverInterface& solver,
+                       const Eigen::Vector2d& x_init,
+                       const std::optional<SolverOptions>& solver_options = std::nullopt,
+                       double tol = 1E-7,
+                       bool check_dual = true) const;
 
- protected:
-  std::unique_ptr<MathematicalProgram> prog_;
-  Vector2<symbolic::Variable> x_;
+protected:
+    std::unique_ptr<MathematicalProgram> prog_;
+    Vector2<symbolic::Variable> x_;
 };
 }  // namespace test
 }  // namespace solvers

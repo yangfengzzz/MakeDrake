@@ -30,52 +30,52 @@ bool EndsWithCaseInsensitive(std::string_view str, std::string_view ext);
 // Helper class that provides for either a file name xor file contents to be
 // passed between our various parsing functions.
 class DataSource {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DataSource);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DataSource);
 
-  // The result of calling GetStem on a file-contents data source.
-  static constexpr char kContentsPseudoStem[] = "<literal-string>";
+    // The result of calling GetStem on a file-contents data source.
+    static constexpr char kContentsPseudoStem[] = "<literal-string>";
 
-  // A data source contains either a file name, or file contents.
-  enum DataSourceType {kFilename, kContents};
+    // A data source contains either a file name, or file contents.
+    enum DataSourceType { kFilename, kContents };
 
-  // Depending on the DataSourceType value supplied, @p data will be treated as
-  // either a file name or contents. The data is aliased, so the lifetime of
-  // the passed data must exceed the lifetime of the created object.
-  // @pre data cannot be nullptr.
-  DataSource(DataSourceType type, const std::string* data);
+    // Depending on the DataSourceType value supplied, @p data will be treated as
+    // either a file name or contents. The data is aliased, so the lifetime of
+    // the passed data must exceed the lifetime of the created object.
+    // @pre data cannot be nullptr.
+    DataSource(DataSourceType type, const std::string* data);
 
-  // @return true iff the data source is a file name.
-  bool IsFilename() const { return type_ == kFilename; }
+    // @return true iff the data source is a file name.
+    bool IsFilename() const { return type_ == kFilename; }
 
-  // @return true iff the data source is file contents.
-  bool IsContents() const { return type_ == kContents; }
+    // @return true iff the data source is file contents.
+    bool IsContents() const { return type_ == kContents; }
 
-  // Returns a reference to the filename.
-  // @pre IsFilename().
-  const std::string& filename() const;
+    // Returns a reference to the filename.
+    // @pre IsFilename().
+    const std::string& filename() const;
 
-  // Returns a reference to the contents.
-  // @pre IsContents().
-  const std::string& contents() const;
+    // Returns a reference to the contents.
+    // @pre IsContents().
+    const std::string& contents() const;
 
-  // If the data source is a file name, returns its absolute path. If the
-  // absolute path calculation causes errors, throw std::exception. Otherwise,
-  // returns an empty string.
-  std::string GetAbsolutePath() const;
+    // If the data source is a file name, returns its absolute path. If the
+    // absolute path calculation causes errors, throw std::exception. Otherwise,
+    // returns an empty string.
+    std::string GetAbsolutePath() const;
 
-  // If the data source is a file name, returns its parent path. If the parent
-  // path calculation causes errors, throw std::exception. Otherwise, returns
-  // an empty string.
-  std::string GetRootDir() const;
+    // If the data source is a file name, returns its parent path. If the parent
+    // path calculation causes errors, throw std::exception. Otherwise, returns
+    // an empty string.
+    std::string GetRootDir() const;
 
-  // If the data source is a file name, returns its base name, without
-  // directory or extension. Otherwise, returns kContentsPseudoStem.
-  std::string GetStem() const;
+    // If the data source is a file name, returns its base name, without
+    // directory or extension. Otherwise, returns kContentsPseudoStem.
+    std::string GetStem() const;
 
- private:
-  DataSourceType type_{};
-  const std::string* data_{};
+private:
+    DataSourceType type_{};
+    const std::string* data_{};
 };
 
 // Note:
@@ -86,7 +86,7 @@ class DataSource {
 // Default value of the Coulomb's law coefficients of friction for when they
 // are not specified in the URDF/SDF file.
 inline CoulombFriction<double> default_friction() {
-  return CoulombFriction<double>(1.0, 1.0);
+    return CoulombFriction<double>(1.0, 1.0);
 }
 
 // Populates an instance of geometry::ProximityProperties from a reading
@@ -118,9 +118,10 @@ inline CoulombFriction<double> default_friction() {
 // @return All proximity properties discovered via the `read_double` function.
 // @pre At most one of `is_rigid` and `is_compliant` is true.
 geometry::ProximityProperties ParseProximityProperties(
-    const drake::internal::DiagnosticPolicy& diagnostic,
-    const std::function<std::optional<double>(const char*)>& read_double,
-    bool is_rigid, bool is_compliant);
+        const drake::internal::DiagnosticPolicy& diagnostic,
+        const std::function<std::optional<double>(const char*)>& read_double,
+        bool is_rigid,
+        bool is_compliant);
 
 // Populates a LinearBushingRollPitchYaw from a reading interface in a URDF/SDF
 // agnostic manner. This function does no semantic parsing and leaves the
@@ -159,9 +160,9 @@ geometry::ProximityProperties ParseProximityProperties(
 // ParseLinearBushingRollPitchYaw() may return nullptr when read_frame has
 // returned nullptr.
 const LinearBushingRollPitchYaw<double>* ParseLinearBushingRollPitchYaw(
-    const std::function<Eigen::Vector3d(const char*)>& read_vector,
-    const std::function<const Frame<double>*(const char*)>& read_frame,
-    MultibodyPlant<double>* plant);
+        const std::function<Eigen::Vector3d(const char*)>& read_vector,
+        const std::function<const Frame<double>*(const char*)>& read_frame,
+        MultibodyPlant<double>* plant);
 
 // Adds a ball constraint to `plant` from a reading interface in a URDF/SDF
 // agnostic manner. This function does no semantic parsing and leaves the
@@ -193,9 +194,9 @@ const LinearBushingRollPitchYaw<double>* ParseLinearBushingRollPitchYaw(
 // ParseBallConstraint() may return nullopt when read_body has
 // returned nullptr.
 std::optional<MultibodyConstraintId> ParseBallConstraint(
-    const std::function<Eigen::Vector3d(const char*)>& read_vector,
-    const std::function<const RigidBody<double>*(const char*)>& read_body,
-    MultibodyPlant<double>* plant);
+        const std::function<Eigen::Vector3d(const char*)>& read_vector,
+        const std::function<const RigidBody<double>*(const char*)>& read_body,
+        MultibodyPlant<double>* plant);
 
 // TODO(@SeanCurtis-TRI): The real solution here is to create a wrapper
 // class that provides a consistent interface to either representation.
@@ -232,21 +233,17 @@ std::optional<MultibodyConstraintId> ParseBallConstraint(
 // @param read_bool_attribute   Function that reads a boolean attribute with
 //                              the name provided in the ElementNode provided.
 void ParseCollisionFilterGroupCommon(
-    const drake::internal::DiagnosticPolicy& diagnostic,
-    ModelInstanceIndex model_instance, const ElementNode& model_node,
-    MultibodyPlant<double>* plant,
-    internal::CollisionFilterGroupResolver* resolver,
-    const std::function<ElementNode(const ElementNode&, const char*)>&
-        next_child_element,
-    const std::function<ElementNode(const ElementNode&, const char*)>&
-        next_sibling_element,
-    const std::function<bool(const ElementNode&, const char*)>& has_attribute,
-    const std::function<std::string(const ElementNode&, const char*)>&
-        read_string_attribute,
-    const std::function<bool(const ElementNode&, const char*)>&
-        read_bool_attribute,
-    const std::function<std::string(const ElementNode&, const char*)>&
-        read_tag_string);
+        const drake::internal::DiagnosticPolicy& diagnostic,
+        ModelInstanceIndex model_instance,
+        const ElementNode& model_node,
+        MultibodyPlant<double>* plant,
+        internal::CollisionFilterGroupResolver* resolver,
+        const std::function<ElementNode(const ElementNode&, const char*)>& next_child_element,
+        const std::function<ElementNode(const ElementNode&, const char*)>& next_sibling_element,
+        const std::function<bool(const ElementNode&, const char*)>& has_attribute,
+        const std::function<std::string(const ElementNode&, const char*)>& read_string_attribute,
+        const std::function<bool(const ElementNode&, const char*)>& read_bool_attribute,
+        const std::function<std::string(const ElementNode&, const char*)>& read_tag_string);
 
 // This struct helps label and order the rotational inertia inputs at call
 // sites of ParseSpatialInertia. Units of all quantities are kg⋅m².
@@ -255,14 +252,14 @@ void ParseCollisionFilterGroupCommon(
 // `/robot/link/inertial/inertia` tag or from the SDFormat
 // `//model/link/inertial/inertia` tag.
 struct InertiaInputs {
-  // Moments.
-  double ixx{};
-  double iyy{};
-  double izz{};
-  // Products of inertia.
-  double ixy{};
-  double ixz{};
-  double iyz{};
+    // Moments.
+    double ixx{};
+    double iyy{};
+    double izz{};
+    // Products of inertia.
+    double ixy{};
+    double ixz{};
+    double iyz{};
 };
 
 // Combines the given user inputs into a SpatialInertia. When any data is
@@ -283,11 +280,10 @@ struct InertiaInputs {
 // @param mass        Mass of the body.
 // @param inertia_Bi_Bi  The moments and products of inertia about Bi's origin,
 //                      expressed in frame Bi.
-SpatialInertia<double> ParseSpatialInertia(
-    const drake::internal::DiagnosticPolicy& diagnostic,
-    const math::RigidTransformd& X_BBi,
-    double mass,
-    const InertiaInputs& inertia_Bi_Bi);
+SpatialInertia<double> ParseSpatialInertia(const drake::internal::DiagnosticPolicy& diagnostic,
+                                           const math::RigidTransformd& X_BBi,
+                                           double mass,
+                                           const InertiaInputs& inertia_Bi_Bi);
 
 }  // namespace internal
 }  // namespace multibody

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 project(MakeDrake)
 
+list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_SOURCE_DIR}/cmake")
+
 set(CMAKE_CXX_STANDARD 20)
 find_package(Eigen3 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
@@ -22,6 +24,7 @@ find_package(lcm CONFIG REQUIRED)
 find_package(nanoflann CONFIG REQUIRED)
 find_package(tinyxml2 CONFIG REQUIRED)
 find_package(sdformat13 CONFIG REQUIRED)
+find_package(GLIB2 REQUIRED)
 
 add_subdirectory(third_party)
 add_subdirectory(drake)
@@ -37,3 +40,5 @@ add_subdirectory(perception)
 add_subdirectory(planning)
 
 add_subdirectory(systems)
+add_subdirectory(lcm)
+add_subdirectory(visualization)

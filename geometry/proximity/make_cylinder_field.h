@@ -47,9 +47,9 @@ namespace internal {
  @tparam_nonsymbolic_scalar
  */
 template <typename T>
-VolumeMeshFieldLinear<T, T> MakeCylinderPressureField(
-    const Cylinder& cylinder, const VolumeMesh<T>* mesh_C,
-    const T hydroelastic_modulus);
+VolumeMeshFieldLinear<T, T> MakeCylinderPressureField(const Cylinder& cylinder,
+                                                      const VolumeMesh<T>* mesh_C,
+                                                      const T hydroelastic_modulus);
 
 }  // namespace internal
 }  // namespace geometry

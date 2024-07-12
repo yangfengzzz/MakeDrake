@@ -9,7 +9,6 @@
 // For example, to link to the notation group: @ref multibody_notation
 // To link to the Spatial Inertia discussion: @ref multibody_spatial_inertia.
 
-
 //------------------------------------------------------------------------------
 /** @addtogroup multibody_notation
 
@@ -132,7 +131,7 @@ We are more careful about the font for more complex symbols and equations.
 Physical quantities in general may be characterized by
 - a symbol for the quantity type, e.g. @f$v@f$ for velocity or @f$I@f$ for
   inertia,
-- a reference symbol (typically a "measured-in" body or frame, can 
+- a reference symbol (typically a "measured-in" body or frame, can
   sometimes be a "measured from" point),
 - a target symbol (can be a point, body, or frame), and
 - an index for selecting a particular quantity from a collection (rarely
@@ -320,33 +319,37 @@ Quantity                     |Symbol|     Typeset              | Monogram   | Me
 -----------------------------|:----:|:------------------------:|:----------:|----------------------------
 Generic vector v             |  v   |@f$[v]_E@f$               |`v_E`       |Vector v expressed in frame E.
 Rotation matrix              |  R   |@f$^BR^C@f$               |`R_BC`      |Frame C's orientation in frame B
-Position vector              |  p   |@f$^Bp^C@f$               |`p_BC`      |Position vector from Bo (frame B's origin) to Co (frame C's origin), expressed in frame B (implied).
-Position vector              |  p   |@f$[^Pp^Q]_E@f$           |`p_PQ_E`    |Position vector from point P to point Q, expressed in frame E.
-Transform/pose               |  X   |@f$^BX^C@f$               |`X_BC`      |Frame C's *rigid* transform (pose) in frame B
-General Transform            |  T   |@f$^BT^C@f$               |`T_BC`      |The relationship between two spaces -- it may be affine, projective, isometric, etc. Every X_AB can be written as T_AB, but not every T_AB can be written as X_AB.
-Angular velocity             |  w   |@f$^B\omega^C@f$          |`w_BC`      |Frame C's angular velocity in frame Bᵃ
-Velocity                     |  v   |@f$^Bv^Q@f$               |`v_BQ`      |%Point Q's translational velocity in frame B
-Relative velocity            |  v   |@f$^Bv^{Q/P}@f$           |`v_B_PQ`    |%Point Q's translational velocity relative to point P in frame B
-Spatial velocity             |  V   |@f$^BV^{C}@f$             |`V_BC`      |Frame C's spatial velocity in frame B (for point Co)ᵇ
-Relative spatial velocity    |  V   |@f$^BV^{C/D}@f$           |`V_B_DC`    |%Frame C's spatial velocity relative to frame D in frame B
-Angular acceleration         |alpha |@f$^B\alpha^C@f$          |`alpha_BC`  |Frame C's angular acceleration in frame B
-Acceleration                 |  a   |@f$^Ba^Q@f$               |`a_BQ`      |%Point Q's translational acceleration in frame B
-Relative acceleration        |  a   |@f$^Ba^{Q/P}@f$           |`a_B_PQ`    |%Point Q's translational acceleration relative to point P in frame B
-Spatial acceleration         |  A   |@f$^BA^{C}@f$             |`A_BC`      |Frame C's spatial acceleration in frame B (for point Co)ᵇ
-Relative spatial acceleration|  A   |@f$^BA^{C/D}@f$           |`A_B_DC`    |%Frame C's spatial acceleration relative to frame D in frame B
-Torque                       |  t   |@f$\tau^{B}@f$            |`t_B`       |Torque on a body (or frame) B
-Force                        |  f   |@f$f^{P}@f$               |`f_P`       |Force on a point P
-Spatial force                |  F   |@f$F^{B}@f$               |`F_B`       |Spatial force (torque/force) on a body (or frame) Bᶜ
-Inertia matrix               |  I   |@f$I^{B/Bo}@f$            |`I_BBo`     |Body B's inertia matrix about Bo
-Spatial inertia              |  M   |@f$M^{B/Bo}@f$            |`M_BBo`     |Body B's spatial inertia about Boᵃ
-Spatial momentum             |  L   |@f$^BL^{S/P}@f$           |`L_BSP`     |System S's spatial momentum about point P in frame B
-Spatial momentum             |  L   |@f$^BL^{S/Scm}@f$         |`L_BScm`    |System S's spatial momentum about point Scm in frame B
-Kinetic energy               |  K   |@f$^BK^S@f$               |`K_BS`      |System S's kinetic energy in frame B
-Jacobian wrt qᵈ              | Jq   |@f$[J_{q}^{{}^Pp^Q}]_E@f$ |`Jq_p_PQ_E` |%Point Q's position Jacobian from point P <b>in</b> frame E wrt q <SMALL>(<b>in</b> means both measured-in and expressed-in)</SMALL>
-Jacobian wrt q̇               | Jqdot|@f$J_{q̇}^{{}^Bv^Q}@f$     |`Jqdot_v_BQ`|%Point Q's translational velocity Jacobian in frame B wrt q̇
-Jacobian wrt v               | Jv   |@f$J_{v}^{{}^Bv^Q}@f$     |`Jv_v_BQ`   |%Point Q's translational velocity Jacobian in frame B wrt v
-Jacobian wrt v               | Jv   |@f$J_{v}^{{}^B\omega^C}@f$|`Jv_w_BC`   |%Frame C's angular velocity Jacobian in frame B wrt v
-Ez measure of vector v       |  v   |@f$[v]_{Ez}@f$            |`v_Ez`      |Ez scalar component of vector v, i.e., v • Ez, where Ez is frame E's z-direction unit vector.
+Position vector              |  p   |@f$^Bp^C@f$               |`p_BC`      |Position vector from Bo (frame B's origin)
+to Co (frame C's origin), expressed in frame B (implied). Position vector              |  p   |@f$[^Pp^Q]_E@f$ |`p_PQ_E`
+|Position vector from point P to point Q, expressed in frame E. Transform/pose               |  X   |@f$^BX^C@f$ |`X_BC`
+|Frame C's *rigid* transform (pose) in frame B General Transform            |  T   |@f$^BT^C@f$               |`T_BC`
+|The relationship between two spaces -- it may be affine, projective, isometric, etc. Every X_AB can be written as T_AB,
+but not every T_AB can be written as X_AB. Angular velocity             |  w   |@f$^B\omega^C@f$          |`w_BC` |Frame
+C's angular velocity in frame Bᵃ Velocity                     |  v   |@f$^Bv^Q@f$               |`v_BQ`      |%Point Q's
+translational velocity in frame B Relative velocity            |  v   |@f$^Bv^{Q/P}@f$           |`v_B_PQ`    |%Point
+Q's translational velocity relative to point P in frame B Spatial velocity             |  V   |@f$^BV^{C}@f$ |`V_BC`
+|Frame C's spatial velocity in frame B (for point Co)ᵇ Relative spatial velocity    |  V   |@f$^BV^{C/D}@f$ |`V_B_DC`
+|%Frame C's spatial velocity relative to frame D in frame B Angular acceleration         |alpha |@f$^B\alpha^C@f$
+|`alpha_BC`  |Frame C's angular acceleration in frame B Acceleration                 |  a   |@f$^Ba^Q@f$ |`a_BQ` |%Point
+Q's translational acceleration in frame B Relative acceleration        |  a   |@f$^Ba^{Q/P}@f$           |`a_B_PQ`
+|%Point Q's translational acceleration relative to point P in frame B Spatial acceleration         |  A   |@f$^BA^{C}@f$
+|`A_BC`      |Frame C's spatial acceleration in frame B (for point Co)ᵇ Relative spatial acceleration|  A
+|@f$^BA^{C/D}@f$           |`A_B_DC`    |%Frame C's spatial acceleration relative to frame D in frame B Torque |  t
+|@f$\tau^{B}@f$            |`t_B`       |Torque on a body (or frame) B Force                        |  f   |@f$f^{P}@f$
+|`f_P`       |Force on a point P Spatial force                |  F   |@f$F^{B}@f$               |`F_B`       |Spatial
+force (torque/force) on a body (or frame) Bᶜ Inertia matrix               |  I   |@f$I^{B/Bo}@f$            |`I_BBo`
+|Body B's inertia matrix about Bo Spatial inertia              |  M   |@f$M^{B/Bo}@f$            |`M_BBo`     |Body B's
+spatial inertia about Boᵃ Spatial momentum             |  L   |@f$^BL^{S/P}@f$           |`L_BSP`     |System S's
+spatial momentum about point P in frame B Spatial momentum             |  L   |@f$^BL^{S/Scm}@f$         |`L_BScm`
+|System S's spatial momentum about point Scm in frame B Kinetic energy               |  K   |@f$^BK^S@f$ |`K_BS` |System
+S's kinetic energy in frame B Jacobian wrt qᵈ              | Jq   |@f$[J_{q}^{{}^Pp^Q}]_E@f$ |`Jq_p_PQ_E` |%Point Q's
+position Jacobian from point P <b>in</b> frame E wrt q <SMALL>(<b>in</b> means both measured-in and
+expressed-in)</SMALL> Jacobian wrt q̇               | Jqdot|@f$J_{q̇}^{{}^Bv^Q}@f$     |`Jqdot_v_BQ`|%Point Q's
+translational velocity Jacobian in frame B wrt q̇ Jacobian wrt v               | Jv   |@f$J_{v}^{{}^Bv^Q}@f$ |`Jv_v_BQ`
+|%Point Q's translational velocity Jacobian in frame B wrt v Jacobian wrt v               | Jv
+|@f$J_{v}^{{}^B\omega^C}@f$|`Jv_w_BC`   |%Frame C's angular velocity Jacobian in frame B wrt v Ez measure of vector v |
+v   |@f$[v]_{Ez}@f$            |`v_Ez`      |Ez scalar component of vector v, i.e., v • Ez, where Ez is frame E's
+z-direction unit vector.
 
 ᵃ In code, a vector has an expressed-in-frame which appears after the quantity.
 <br>Example: `w_BC_E` is C's angular velocity in B, expressed in frame E, typeset
@@ -403,12 +406,13 @@ way (and in collaboration with reviewers), extend notation to related concepts.
 Some examples are shown below.
 Extended notation         || Description (herein E is the vectors' expressed-in-frame)
 :------------------------:||---------------------------------------------
-p_PQset_E  | p_PQlist_E   |  Set of position vectors from a point P to each of the points in the set Q = {Q₀, Q₁, Q₂, ...}
-v_BQset_E  | v_BQlist_E   |  Set of translational velocities in frame B for the set of points Q = {Q₀, Q₁, Q₂, ...}
+p_PQset_E  | p_PQlist_E   |  Set of position vectors from a point P to each of the points in the set Q = {Q₀, Q₁, Q₂,
+...} v_BQset_E  | v_BQlist_E   |  Set of translational velocities in frame B for the set of points Q = {Q₀, Q₁, Q₂, ...}
 w_BCset_E  | w_BClist_E   |  Set of angular velocities in frame B for the frames in the set C = {C₀, C₁, C₂, ...}
 vset_E     | vlist_E      |  Set of generic vectors v = {v₀,  v₁,  v₂} expressed in frame E
-mesh_B                    || A mesh whose underlying vertices' positions are from Bo (frame B's origin), expressed in frame B
-point_cloud_B             || A point cloud whose underlying points' positions are from Bo (frame B's origin), expressed in frame B
+mesh_B                    || A mesh whose underlying vertices' positions are from Bo (frame B's origin), expressed in
+frame B point_cloud_B             || A point cloud whose underlying points' positions are from Bo (frame B's origin),
+expressed in frame B
 
  Next topic: @ref multibody_quantities_units
 */

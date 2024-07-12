@@ -11,25 +11,23 @@ namespace drake {
 namespace solvers {
 namespace test {
 enum class QuadraticProblems {
-  kQuadraticProgram0 = 0,
-  kQuadraticProgram1 = 1,
-  kQuadraticProgram2 = 2,
-  kQuadraticProgram3 = 3,
-  kQuadraticProgram4 = 4,
+    kQuadraticProgram0 = 0,
+    kQuadraticProgram1 = 1,
+    kQuadraticProgram2 = 2,
+    kQuadraticProgram3 = 3,
+    kQuadraticProgram4 = 4,
 };
 
 std::ostream& operator<<(std::ostream& os, QuadraticProblems value);
 
-class QuadraticProgramTest
-    : public ::testing::TestWithParam<
-          std::tuple<CostForm, ConstraintForm, QuadraticProblems>> {
- public:
-  QuadraticProgramTest();
+class QuadraticProgramTest : public ::testing::TestWithParam<std::tuple<CostForm, ConstraintForm, QuadraticProblems>> {
+public:
+    QuadraticProgramTest();
 
-  OptimizationProgram* prob() const { return prob_.get(); }
+    OptimizationProgram* prob() const { return prob_.get(); }
 
- private:
-  std::unique_ptr<OptimizationProgram> prob_;
+private:
+    std::unique_ptr<OptimizationProgram> prob_;
 };
 
 std::vector<QuadraticProblems> quadratic_problems();
@@ -42,18 +40,18 @@ std::vector<QuadraticProblems> quadratic_problems();
 //     x2 >= 0
 //     x1 + x2 = 1
 class QuadraticProgram0 : public OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticProgram0);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticProgram0);
 
-  QuadraticProgram0(CostForm cost_form, ConstraintForm constraint_form);
+    QuadraticProgram0(CostForm cost_form, ConstraintForm constraint_form);
 
-  ~QuadraticProgram0() override = default;
+    ~QuadraticProgram0() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<2> x_;
-  Eigen::Vector2d x_expected_;
+private:
+    VectorDecisionVariable<2> x_;
+    Eigen::Vector2d x_expected_;
 };
 
 // Adapted from the simple test on the Gurobi documentation.
@@ -66,18 +64,18 @@ class QuadraticProgram0 : public OptimizationProgram {
 //                 x, y, z >= 0
 //   The optimal solution is (0, 1, 2/3)
 class QuadraticProgram1 : public OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticProgram1);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticProgram1);
 
-  QuadraticProgram1(CostForm cost_form, ConstraintForm constraint_form);
+    QuadraticProgram1(CostForm cost_form, ConstraintForm constraint_form);
 
-  ~QuadraticProgram1() override = default;
+    ~QuadraticProgram1() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<3> x_;
-  Eigen::Vector3d x_expected_;
+private:
+    VectorDecisionVariable<3> x_;
+    Eigen::Vector3d x_expected_;
 };
 
 // Closed form (exact) solution test of QP problem.
@@ -88,18 +86,18 @@ class QuadraticProgram1 : public OptimizationProgram {
 // The test also verifies the quadratic program works when
 // matrix Q has off-diagonal terms.
 class QuadraticProgram2 : public OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticProgram2);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticProgram2);
 
-  QuadraticProgram2(CostForm cost_form, ConstraintForm constraint_form);
+    QuadraticProgram2(CostForm cost_form, ConstraintForm constraint_form);
 
-  ~QuadraticProgram2() override = default;
+    ~QuadraticProgram2() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<5> x_;
-  Eigen::Matrix<double, 5, 1> x_expected_;
+private:
+    VectorDecisionVariable<5> x_;
+    Eigen::Matrix<double, 5, 1> x_expected_;
 };
 
 // Closed form (exact) solution test of QP problem.
@@ -114,18 +112,18 @@ class QuadraticProgram2 : public OptimizationProgram {
 // This is to test that we can add multiple costs for the same variables (in
 // this case, the quadratic costs on x(2), x(3) are added for twice).
 class QuadraticProgram3 : public OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticProgram3);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticProgram3);
 
-  QuadraticProgram3(CostForm cost_form, ConstraintForm constraint_form);
+    QuadraticProgram3(CostForm cost_form, ConstraintForm constraint_form);
 
-  ~QuadraticProgram3() override = default;
+    ~QuadraticProgram3() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<6> x_;
-  Vector6d x_expected_;
+private:
+    VectorDecisionVariable<6> x_;
+    Vector6d x_expected_;
 };
 
 // Test the simple QP
@@ -135,18 +133,18 @@ class QuadraticProgram3 : public OptimizationProgram {
 // The optimal solution should be
 // x(0) = 4/5, x(1) = 1/5, x(2) = 3/5
 class QuadraticProgram4 : public OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticProgram4);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticProgram4);
 
-  QuadraticProgram4(CostForm cost_form, ConstraintForm constraint_form);
+    QuadraticProgram4(CostForm cost_form, ConstraintForm constraint_form);
 
-  ~QuadraticProgram4() override = default;
+    ~QuadraticProgram4() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<3> x_;
-  Eigen::Vector3d x_expected_;
+private:
+    VectorDecisionVariable<3> x_;
+    Eigen::Vector3d x_expected_;
 };
 
 // Solve a series of QPs with the objective being the Euclidean distance
@@ -159,9 +157,7 @@ void TestQPonUnitBallExample(const SolverInterface& solver);
  * Test getting the dual solution for a QP problem.
  * This QP problem has active linear equality constraints.
  */
-void TestQPDualSolution1(const SolverInterface& solver,
-                         const SolverOptions& solver_options = {},
-                         double tol = 1e-6);
+void TestQPDualSolution1(const SolverInterface& solver, const SolverOptions& solver_options = {}, double tol = 1e-6);
 
 /**
  * Test getting the dual solution for a QP problem.
@@ -175,8 +171,7 @@ void TestQPDualSolution2(const SolverInterface& solver);
  * @param tol The tolerance on checking the solution.
  * @param sensitivity_tol The tolerance on checking the constraint sensitivity.
  */
-void TestQPDualSolution3(const SolverInterface& solver, double tol = 1e-6,
-                         double sensitivity_tol = 2e-5);
+void TestQPDualSolution3(const SolverInterface& solver, double tol = 1e-6, double sensitivity_tol = 2e-5);
 
 /**
  * Test getting the dual solution for an equality constrained QP.
@@ -191,23 +186,20 @@ void TestEqualityConstrainedQPDualSolution2(const SolverInterface& solver);
 /**
  * Test nonconvex QP.
  */
-void TestNonconvexQP(const SolverInterface& solver, bool convex_solver,
-                     double tol = 1E-5);
+void TestNonconvexQP(const SolverInterface& solver, bool convex_solver, double tol = 1E-5);
 
 /**
  Test formulating a QP where adding costs or constraints where the `vars` vector
 will have repeated entries for given variables.
  */
-void TestDuplicatedVariableQuadraticProgram(const SolverInterface& solver,
-                                            double tol = 1E-7);
+void TestDuplicatedVariableQuadraticProgram(const SolverInterface& solver, double tol = 1E-7);
 
 /**
  This program is reported in
  https://github.com/RobotLocomotion/drake/issues/19524
  This program has infinitely many equally good optimal solution.
  */
-void TestEqualityConstrainedQP1(const SolverInterface& solver,
-                                double tol = 1E-7);
+void TestEqualityConstrainedQP1(const SolverInterface& solver, double tol = 1E-7);
 
 /**
  This program is to expose the github issue
@@ -215,8 +207,7 @@ void TestEqualityConstrainedQP1(const SolverInterface& solver,
  quadratic cost, the variables are not in the order stored inside the program.
  For example, the variables are {x(1), x(0)} instead of {x(0), x(1)}.
  */
-void TestQuadraticCostVariableOrder(const SolverInterface& solver,
-                                    double tol = 1E-7);
+void TestQuadraticCostVariableOrder(const SolverInterface& solver, double tol = 1E-7);
 }  // namespace test
 }  // namespace solvers
 }  // namespace drake

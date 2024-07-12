@@ -49,8 +49,7 @@ namespace internal {
                   IROS 2019: 8238-8245.
  */
 template <typename T>
-VolumeMeshFieldLinear<T, T> MakeVolumeMeshPressureField(
-    const VolumeMesh<T>* mesh_M, const T& hydroelastic_modulus);
+VolumeMeshFieldLinear<T, T> MakeVolumeMeshPressureField(const VolumeMesh<T>* mesh_M, const T& hydroelastic_modulus);
 
 }  // namespace internal
 }  // namespace geometry

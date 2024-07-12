@@ -393,10 +393,10 @@ cos(p);
     // Check that CalcMatrixRelatingRpyDtToAngularVelocityInParent() and
     // CalcMatrixRelatingRpyDtToAngularVelocityInChild() throw near gimbal lock.
     const RollPitchYaw<double> rpyA(0.2, M_PI / 2, 0.4);
-    const char *expected_message_parentA =
+    const char* expected_message_parentA =
             "RollPitchYaw::CalcMatrixRelatingRpyDtToAngularVelocityInParent()"
             ".*gimbal-lock.*";
-    const char *expected_message_childA =
+    const char* expected_message_childA =
             "RollPitchYaw::CalcMatrixRelatingRpyDtToAngularVelocityInChild()"
             ".*gimbal-lock.*";
     DRAKE_EXPECT_THROWS_MESSAGE(rpyA.
@@ -420,10 +420,10 @@ cos(p);
 
     // Check that CalcRpyDtFromAngularVelocityInParent() and
     // CalcRpyDtFromAngularVelocityInChild() throw near gimbal lock.
-    const char *expected_message_parentB =
+    const char* expected_message_parentB =
             "RollPitchYaw::CalcRpyDtFromAngularVelocityInParent()"
             ".*gimbal-lock.*";
-    const char *expected_message_childB =
+    const char* expected_message_childB =
             "RollPitchYaw::CalcRpyDtFromAngularVelocityInChild()"
             ".*gimbal-lock.*";
     DRAKE_EXPECT_THROWS_MESSAGE(rpyA.CalcRpyDtFromAngularVelocityInParent(w_AD_A), expected_message_parentB);
@@ -469,7 +469,7 @@ GTEST_TEST(RollPitchYaw, PrecisionOfAngularVelocityFromRpyDtAndViceVersa) {
         Vector3d rpyDt, rpyDDt;
         if (is_imprecise) {
             ++number_of_imprecise_cases;
-            const char *expected_message =
+            const char* expected_message =
                     "RollPitchYaw::CalcRpyDtFromAngularVelocityInParent()"
                     ".*gimbal-lock.*";
             DRAKE_EXPECT_THROWS_MESSAGE(rpyDt = rpy.CalcRpyDtFromAngularVelocityInParent(wA), expected_message);
@@ -567,7 +567,7 @@ GTEST_TEST(RollPitchYaw, CalcRpyDDtFromAngularAccel) {
                     DoesPitchAngleViolateGimbalLockTolerance()
 
                 ) {
-                    const char *expected_message =
+                    const char* expected_message =
                             "RollPitchYaw::CalcRpyDDtFromRpyDtAndAngularAccelInParent()"
                             ".*gimbal-lock.*";
                     DRAKE_EXPECT_THROWS_MESSAGE(

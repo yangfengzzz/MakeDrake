@@ -47,8 +47,8 @@ IntegratorBase<T>& ResetIntegratorFromGflags(Simulator<T>* simulator);
 // @tparam_nonsymbolic_scalar
 // @returns The newly created Simulator.
 template <typename T>
-std::unique_ptr<Simulator<T>> MakeSimulatorFromGflags(
-    const System<T>& system, std::unique_ptr<Context<T>> context = nullptr);
+std::unique_ptr<Simulator<T>> MakeSimulatorFromGflags(const System<T>& system,
+                                                      std::unique_ptr<Context<T>> context = nullptr);
 
 }  // namespace internal
 }  // namespace systems

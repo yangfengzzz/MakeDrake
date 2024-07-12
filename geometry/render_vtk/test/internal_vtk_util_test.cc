@@ -24,9 +24,9 @@ const double kHalfSize = kSize * 0.5;
 const int kNumPoints = 4;
 
 struct Point {
-  double x;
-  double y;
-  double z;
+    double x;
+    double y;
+    double z;
 };
 
 // clang-format off
@@ -39,66 +39,63 @@ const Point kExpectedPointSet[kNumPoints] = {
 // clang-format on
 
 GTEST_TEST(PointsCorrespondenceTest, PlaneCreationTest) {
-  vtkSmartPointer<vtkPlaneSource> dut = CreateSquarePlane(kSize);
+    vtkSmartPointer<vtkPlaneSource> dut = CreateSquarePlane(kSize);
 
-  EXPECT_EQ(kNumPoints, dut->GetOutput()->GetPoints()->GetNumberOfPoints());
-  for (int i = 0; i < kNumPoints; ++i) {
-    double dut_point[3];
-    dut->GetOutput()->GetPoints()->GetPoint(i, dut_point);
+    EXPECT_EQ(kNumPoints, dut->GetOutput()->GetPoints()->GetNumberOfPoints());
+    for (int i = 0; i < kNumPoints; ++i) {
+        double dut_point[3];
+        dut->GetOutput()->GetPoints()->GetPoint(i, dut_point);
 
-    EXPECT_NEAR(kExpectedPointSet[i].x, dut_point[0], kTolerance);
-    EXPECT_NEAR(kExpectedPointSet[i].y, dut_point[1], kTolerance);
-    EXPECT_NEAR(kExpectedPointSet[i].z, dut_point[2], kTolerance);
-  }
+        EXPECT_NEAR(kExpectedPointSet[i].x, dut_point[0], kTolerance);
+        EXPECT_NEAR(kExpectedPointSet[i].y, dut_point[1], kTolerance);
+        EXPECT_NEAR(kExpectedPointSet[i].z, dut_point[2], kTolerance);
+    }
 }
 
 // Verifies whether the conversion is correct.
 GTEST_TEST(ConvertToVtkTransformTest, ConversionTest) {
-  const math::RigidTransformd X_AB(
-      Eigen::AngleAxisd(1.0, Eigen::Vector3d::Constant(1.0 / std::sqrt(3.0))),
-      Eigen::Vector3d(1.0, 2.0, 3.0));
+    const math::RigidTransformd X_AB(Eigen::AngleAxisd(1.0, Eigen::Vector3d::Constant(1.0 / std::sqrt(3.0))),
+                                     Eigen::Vector3d(1.0, 2.0, 3.0));
 
-  auto dut_X_AB = ConvertToVtkTransform(X_AB);
+    auto dut_X_AB = ConvertToVtkTransform(X_AB);
 
-  for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      EXPECT_NEAR(X_AB.GetAsMatrix4()(i, j),
-                  dut_X_AB->GetMatrix()->GetElement(i, j), kTolerance);
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            EXPECT_NEAR(X_AB.GetAsMatrix4()(i, j), dut_X_AB->GetMatrix()->GetElement(i, j), kTolerance);
+        }
     }
-  }
 
-  const double scale = 1.5;
-  auto dut_T_AB = ConvertToVtkTransform(X_AB, scale);
-  Eigen::Matrix4d T_AB_expected = X_AB.GetAsMatrix4();
-  T_AB_expected.block<3, 3>(0, 0) *= scale;
+    const double scale = 1.5;
+    auto dut_T_AB = ConvertToVtkTransform(X_AB, scale);
+    Eigen::Matrix4d T_AB_expected = X_AB.GetAsMatrix4();
+    T_AB_expected.block<3, 3>(0, 0) *= scale;
 
-  for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      EXPECT_NEAR(T_AB_expected(i, j), dut_T_AB->GetMatrix()->GetElement(i, j),
-                  kTolerance);
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            EXPECT_NEAR(T_AB_expected(i, j), dut_T_AB->GetMatrix()->GetElement(i, j), kTolerance);
+        }
     }
-  }
 }
 
 GTEST_TEST(MakeVtkPointerArrayTest, ValidTest) {
-  vtkNew<vtkCellData> data0;
-  vtkNew<vtkCellData> data1;
-  vtkNew<vtkCellData> data2;
+    vtkNew<vtkCellData> data0;
+    vtkNew<vtkCellData> data1;
+    vtkNew<vtkCellData> data2;
 
-  const auto dut1 = MakeVtkPointerArray(data0);
-  EXPECT_EQ(dut1.size(), 1);
-  EXPECT_EQ(dut1[0], data0.GetPointer());
+    const auto dut1 = MakeVtkPointerArray(data0);
+    EXPECT_EQ(dut1.size(), 1);
+    EXPECT_EQ(dut1[0], data0.GetPointer());
 
-  const auto dut2 = MakeVtkPointerArray(data0, data1);
-  EXPECT_EQ(dut2.size(), 2);
-  EXPECT_EQ(dut2[0], data0.GetPointer());
-  EXPECT_EQ(dut2[1], data1.GetPointer());
+    const auto dut2 = MakeVtkPointerArray(data0, data1);
+    EXPECT_EQ(dut2.size(), 2);
+    EXPECT_EQ(dut2[0], data0.GetPointer());
+    EXPECT_EQ(dut2[1], data1.GetPointer());
 
-  const auto dut3 = MakeVtkPointerArray(data0, data1, data2);
-  EXPECT_EQ(dut3.size(), 3);
-  EXPECT_EQ(dut3[0], data0.GetPointer());
-  EXPECT_EQ(dut3[1], data1.GetPointer());
-  EXPECT_EQ(dut3[2], data2.GetPointer());
+    const auto dut3 = MakeVtkPointerArray(data0, data1, data2);
+    EXPECT_EQ(dut3.size(), 3);
+    EXPECT_EQ(dut3[0], data0.GetPointer());
+    EXPECT_EQ(dut3[1], data1.GetPointer());
+    EXPECT_EQ(dut3[2], data2.GetPointer());
 }
 
 }  // namespace

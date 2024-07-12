@@ -17,25 +17,25 @@ namespace lcm {
  * should advance automatically during simulation.
  */
 class LcmLogPlaybackSystem : public LeafSystem<double> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LcmLogPlaybackSystem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LcmLogPlaybackSystem);
 
-  /**
-   * Constructs a playback system that advances the given @p log.
-   *
-   * @param log non-null pointer that is aliased and retained by this object.
-   */
-  explicit LcmLogPlaybackSystem(drake::lcm::DrakeLcmLog* log);
+    /**
+     * Constructs a playback system that advances the given @p log.
+     *
+     * @param log non-null pointer that is aliased and retained by this object.
+     */
+    explicit LcmLogPlaybackSystem(drake::lcm::DrakeLcmLog* log);
 
-  ~LcmLogPlaybackSystem() override;
+    ~LcmLogPlaybackSystem() override;
 
- protected:
-  void DoCalcNextUpdateTime(const Context<double>&,
-                            systems::CompositeEventCollection<double>*,
-                            double*) const override;
+protected:
+    void DoCalcNextUpdateTime(const Context<double>&,
+                              systems::CompositeEventCollection<double>*,
+                              double*) const override;
 
- private:
-  drake::lcm::DrakeLcmLog* const log_;
+private:
+    drake::lcm::DrakeLcmLog* const log_;
 };
 
 }  // namespace lcm

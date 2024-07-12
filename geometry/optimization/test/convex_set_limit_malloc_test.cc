@@ -18,32 +18,32 @@ using test::LimitMalloc;
 
 // The amount of copying is as small as possible.
 GTEST_TEST(MakeConvexSetsTest, NoExtraCopying) {
-  const HPolyhedron box = HPolyhedron::MakeUnitBox(2);
+    const HPolyhedron box = HPolyhedron::MakeUnitBox(2);
 
-  // A `unique_ptr<ConvexSet>` is moved into place, no copies.
-  // The only allocation is the std::vector storage itself.
-  {
-    std::unique_ptr<ConvexSet> box1{box.Clone()};
-    std::unique_ptr<ConvexSet> box2{box.Clone()};
-    LimitMalloc guard({.max_num_allocations = 1});
-    MakeConvexSets(std::move(box1), std::move(box2));
-  }
+    // A `unique_ptr<ConvexSet>` is moved into place, no copies.
+    // The only allocation is the std::vector storage itself.
+    {
+        std::unique_ptr<ConvexSet> box1{box.Clone()};
+        std::unique_ptr<ConvexSet> box2{box.Clone()};
+        LimitMalloc guard({.max_num_allocations = 1});
+        MakeConvexSets(std::move(box1), std::move(box2));
+    }
 
-  // A `copyable_unique_ptr<ConvexSet>` is moved into place, no copies.
-  {
-    copyable_unique_ptr<ConvexSet> box1{box.Clone()};
-    copyable_unique_ptr<ConvexSet> box2{box.Clone()};
-    LimitMalloc guard({.max_num_allocations = 1});
-    MakeConvexSets(std::move(box1), std::move(box2));
-  }
+    // A `copyable_unique_ptr<ConvexSet>` is moved into place, no copies.
+    {
+        copyable_unique_ptr<ConvexSet> box1{box.Clone()};
+        copyable_unique_ptr<ConvexSet> box2{box.Clone()};
+        LimitMalloc guard({.max_num_allocations = 1});
+        MakeConvexSets(std::move(box1), std::move(box2));
+    }
 
-  // A `const ConvexSet&` is copied just once.
-  {
-    const int box_clone_num_allocs = 3;  // HPolyhedron, A_ , b_.
-    const int num = 1 + box_clone_num_allocs;
-    LimitMalloc guard({.max_num_allocations = num, .min_num_allocations = num});
-    MakeConvexSets(box);
-  }
+    // A `const ConvexSet&` is copied just once.
+    {
+        const int box_clone_num_allocs = 3;  // HPolyhedron, A_ , b_.
+        const int num = 1 + box_clone_num_allocs;
+        LimitMalloc guard({.max_num_allocations = num, .min_num_allocations = num});
+        MakeConvexSets(box);
+    }
 }
 
 }  // namespace

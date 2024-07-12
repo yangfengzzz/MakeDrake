@@ -68,39 +68,29 @@ namespace sensors {
 /// @ingroup sensor_systems
 template <typename T>
 class BeamModel final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(BeamModel);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(BeamModel);
 
-  BeamModel(int num_depth_readings, double max_range);
+    BeamModel(int num_depth_readings, double max_range);
 
-  /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  template <typename U>
-  explicit BeamModel(const BeamModel<U>&);
+    /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    template <typename U>
+    explicit BeamModel(const BeamModel<U>&);
 
-  const InputPort<T>& get_depth_input_port() const {
-    return this->get_input_port(0);
-  }
-  const InputPort<T>& get_event_random_input_port() const {
-    return this->get_input_port(1);
-  }
-  const InputPort<T>& get_hit_random_input_port() const {
-    return this->get_input_port(2);
-  }
-  const InputPort<T>& get_short_random_input_port() const {
-    return this->get_input_port(3);
-  }
-  const InputPort<T>& get_uniform_random_input_port() const {
-    return this->get_input_port(4);
-  }
+    const InputPort<T>& get_depth_input_port() const { return this->get_input_port(0); }
+    const InputPort<T>& get_event_random_input_port() const { return this->get_input_port(1); }
+    const InputPort<T>& get_hit_random_input_port() const { return this->get_input_port(2); }
+    const InputPort<T>& get_short_random_input_port() const { return this->get_input_port(3); }
+    const InputPort<T>& get_uniform_random_input_port() const { return this->get_input_port(4); }
 
-  BeamModelParams<T>& get_mutable_parameters(Context<T>* context) const;
+    BeamModelParams<T>& get_mutable_parameters(Context<T>* context) const;
 
-  double max_range() const { return max_range_; }
+    double max_range() const { return max_range_; }
 
- private:
-  void CalcOutput(const Context<T>& context, BasicVector<T>* output) const;
+private:
+    void CalcOutput(const Context<T>& context, BasicVector<T>* output) const;
 
-  const double max_range_{1.0};
+    const double max_range_{1.0};
 };
 
 }  // namespace sensors

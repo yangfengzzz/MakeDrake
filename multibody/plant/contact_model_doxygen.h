@@ -150,7 +150,7 @@ compliant_contact.
   https://arxiv.org/abs/2312.03908
 - @anchor PfeifferGlocker1996 [Pfeiffer & Glocker, 1996]
   Pfeiffer, F., Glocker, C. (1996). Multibody Dynamics with Unilateral
-  Contacts. Germany: Wiley.  
+  Contacts. Germany: Wiley.
 - @anchor HuntCrossley1975 [Hunt and Crossley 1975] Hunt, K.H. and Crossley,
   F.R.E., 1975. Coefficient of restitution interpreted as damping in
   vibroimpact. Journal of Applied Mechanics, vol. 42, pp. 440–445.
@@ -312,12 +312,10 @@ For a given penetration allowance, the contact interaction that takes two bodies
 with a non-zero approaching velocity to zero approaching velocity, takes place
 in a finite amount of time (for ideal rigid contact this time is zero.) A good
 estimate of this time period is given by a call to
-@ref drake::multibody::MultibodyPlant::get_contact_penalty_method_time_scale() "get_contact_penalty_method_time_scale()".
- Users might want to query this value to
-either set the maximum time step in error-controlled time integration or to set
-the time step for fixed time step integration. As a guidance, typical fixed time
-step integrators will become unstable for time steps larger than about a tenth
-of this time scale.
+@ref drake::multibody::MultibodyPlant::get_contact_penalty_method_time_scale()
+"get_contact_penalty_method_time_scale()". Users might want to query this value to either set the maximum time step in
+error-controlled time integration or to set the time step for fixed time step integration. As a guidance, typical fixed
+time step integrators will become unstable for time steps larger than about a tenth of this time scale.
 
 @subsection crafting_collision_geometry Choosing the Right Collision Geometry
 
@@ -335,9 +333,11 @@ Both of these issues can be addressed by changing the geometry that
 represent the body's contact surface. For some shapes (e.g., boxes), we can
 introduce two sets of collision elements: discrete "points" at the corners,
 and a box capturing the volume (see
-<a href="https://github.com/RobotLocomotion/drake/blob/master/examples/kuka_iiwa_arm/models/objects/block_for_pick_and_place.urdf">
+<a
+href="https://github.com/RobotLocomotion/drake/blob/master/examples/kuka_iiwa_arm/models/objects/block_for_pick_and_place.urdf">
 block_for_pick_and_place.urdf</a> and
-<a href="https://github.com/RobotLocomotion/drake/blob/master/examples/multibody/inclined_plane_with_body/inclined_plane_with_body.cc">
+<a
+href="https://github.com/RobotLocomotion/drake/blob/master/examples/multibody/inclined_plane_with_body/inclined_plane_with_body.cc">
 inclined_plane_with_body.cc</a> in Drake's examples).
 With this strategy, the contact "points" are actually small-radius spheres. The
 volume-capturing box should actually be inset from those spheres such that when
@@ -581,9 +581,9 @@ convergence guarantees.
  force directly opposes vₜ and its magnitude is μₖfₙ (or μₖpₙ), where μₖ is the
  "dynamic" (or kinetic) coefficient of friction, with μₖ ≤ μₛ. This can be
  written as:
- <pre> 
+ <pre>
   fₜ = -μₖ vₜ/‖vₜ‖ fₙ.
- </pre> 
+ </pre>
 
  @section friction_numerical_approximations Numerical Approximations
 

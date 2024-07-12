@@ -14,62 +14,62 @@ namespace multibody {
 
 /// Configuration structure for the DoorHinge.
 struct DoorHingeConfig {
-  /** Passes this object to an Archive.
-  Refer to @ref yaml_serialization "YAML Serialization" for background. */
-  template <typename Archive>
-  void Serialize(Archive* a) {
-    a->Visit(DRAKE_NVP(spring_zero_angle_rad));
-    a->Visit(DRAKE_NVP(spring_constant));
-    a->Visit(DRAKE_NVP(dynamic_friction_torque));
-    a->Visit(DRAKE_NVP(static_friction_torque));
-    a->Visit(DRAKE_NVP(viscous_friction));
-    a->Visit(DRAKE_NVP(catch_width));
-    a->Visit(DRAKE_NVP(catch_torque));
-    a->Visit(DRAKE_NVP(motion_threshold));
-  }
+    /** Passes this object to an Archive.
+    Refer to @ref yaml_serialization "YAML Serialization" for background. */
+    template <typename Archive>
+    void Serialize(Archive* a) {
+        a->Visit(DRAKE_NVP(spring_zero_angle_rad));
+        a->Visit(DRAKE_NVP(spring_constant));
+        a->Visit(DRAKE_NVP(dynamic_friction_torque));
+        a->Visit(DRAKE_NVP(static_friction_torque));
+        a->Visit(DRAKE_NVP(viscous_friction));
+        a->Visit(DRAKE_NVP(catch_width));
+        a->Visit(DRAKE_NVP(catch_torque));
+        a->Visit(DRAKE_NVP(motion_threshold));
+    }
 
-  /// qs₀ measured outward from the closed position [radian].
-  double spring_zero_angle_rad{};
-  /// k_ts torsional spring constant measured toward the spring zero angle
-  /// [Nm/rad]. It should be non-negative.
-  double spring_constant{};
-  /// k_df maximum dynamic friction torque measured opposite direction of motion
-  /// [Nm]. It should be non-negative.
-  double dynamic_friction_torque{};
-  /// k_sf maximum static friction measured opposite direction of motion [Nm].
-  /// It should be non-negative.
-  double static_friction_torque{};
-  /// k_vf viscous friction measured opposite direction of motion [Nm]. It
-  /// should be non-negative.
-  double viscous_friction{};
-  /// qc₀ measured from closed (q=0) position [radian]. It should be
-  /// non-negative.
-  double catch_width{};
-  /// k_c maximum catch torque applied over `catch_width` [Nm]. It should be
-  /// non-negative.
-  double catch_torque{};
+    /// qs₀ measured outward from the closed position [radian].
+    double spring_zero_angle_rad{};
+    /// k_ts torsional spring constant measured toward the spring zero angle
+    /// [Nm/rad]. It should be non-negative.
+    double spring_constant{};
+    /// k_df maximum dynamic friction torque measured opposite direction of motion
+    /// [Nm]. It should be non-negative.
+    double dynamic_friction_torque{};
+    /// k_sf maximum static friction measured opposite direction of motion [Nm].
+    /// It should be non-negative.
+    double static_friction_torque{};
+    /// k_vf viscous friction measured opposite direction of motion [Nm]. It
+    /// should be non-negative.
+    double viscous_friction{};
+    /// qc₀ measured from closed (q=0) position [radian]. It should be
+    /// non-negative.
+    double catch_width{};
+    /// k_c maximum catch torque applied over `catch_width` [Nm]. It should be
+    /// non-negative.
+    double catch_torque{};
 
-  /// k_q̇₀ motion threshold to start to apply friction torques [rad/s]. It
-  /// should be non-negative. Realistic frictional force is very stiff,
-  /// reversing entirely over zero change in position or velocity, which kills
-  /// integrators.  We approximate it with a continuous function.  This constant
-  /// [rad/s] is the scaling factor on that function -- very approximately the
-  /// rad/s at which half of the full frictional force is applied.  This number
-  /// is nonphysical; make it small but not so small that the simulation
-  /// vibrates or explodes.
-  double motion_threshold{};
+    /// k_q̇₀ motion threshold to start to apply friction torques [rad/s]. It
+    /// should be non-negative. Realistic frictional force is very stiff,
+    /// reversing entirely over zero change in position or velocity, which kills
+    /// integrators.  We approximate it with a continuous function.  This constant
+    /// [rad/s] is the scaling factor on that function -- very approximately the
+    /// rad/s at which half of the full frictional force is applied.  This number
+    /// is nonphysical; make it small but not so small that the simulation
+    /// vibrates or explodes.
+    double motion_threshold{};
 
-  /// Initialize to empirically reasonable values measured approximately by
-  /// banging on the door of a dishwasher with a force gauge.
-  DoorHingeConfig()
-      : spring_zero_angle_rad(-1.5),
-        spring_constant(1.5),
-        dynamic_friction_torque(3),  // See note above.
-        static_friction_torque(2),
-        viscous_friction(1),  // In addition to what is in the sdf.
-        catch_width(0.02),
-        catch_torque(15),
-        motion_threshold(0.001) {}
+    /// Initialize to empirically reasonable values measured approximately by
+    /// banging on the door of a dishwasher with a force gauge.
+    DoorHingeConfig()
+        : spring_zero_angle_rad(-1.5),
+          spring_constant(1.5),
+          dynamic_friction_torque(3),  // See note above.
+          static_friction_torque(2),
+          viscous_friction(1),  // In addition to what is in the sdf.
+          catch_width(0.02),
+          catch_torque(15),
+          motion_threshold(0.001) {}
 };
 
 /// This %ForceElement models a revolute DoorHinge joint that could exhibit
@@ -137,103 +137,95 @@ struct DoorHingeConfig {
 /// @tparam_default_scalar
 template <typename T>
 class DoorHinge final : public ForceElement<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DoorHinge);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DoorHinge);
 
-  /// Constructs a hinge force element with parameters @p config applied to the
-  /// specified @p joint. It will throw an exception if the DoorHingeConfig is
-  /// invalid.
-  DoorHinge(const RevoluteJoint<T>& joint, const DoorHingeConfig& config);
+    /// Constructs a hinge force element with parameters @p config applied to the
+    /// specified @p joint. It will throw an exception if the DoorHingeConfig is
+    /// invalid.
+    DoorHinge(const RevoluteJoint<T>& joint, const DoorHingeConfig& config);
 
-  ~DoorHinge() override;
+    ~DoorHinge() override;
 
-  const RevoluteJoint<T>& joint() const;
+    const RevoluteJoint<T>& joint() const;
 
-  const DoorHingeConfig& config() const { return config_; }
+    const DoorHingeConfig& config() const { return config_; }
 
-  T CalcPotentialEnergy(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>&) const override;
+    T CalcPotentialEnergy(const systems::Context<T>& context,
+                          const internal::PositionKinematicsCache<T>&) const override;
 
-  T CalcConservativePower(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>&,
-      const internal::VelocityKinematicsCache<T>&) const override;
+    T CalcConservativePower(const systems::Context<T>& context,
+                            const internal::PositionKinematicsCache<T>&,
+                            const internal::VelocityKinematicsCache<T>&) const override;
 
-  T CalcNonConservativePower(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>&,
-      const internal::VelocityKinematicsCache<T>&) const override;
+    T CalcNonConservativePower(const systems::Context<T>& context,
+                               const internal::PositionKinematicsCache<T>&,
+                               const internal::VelocityKinematicsCache<T>&) const override;
 
-  /**
-   @anchor door_hinge_advanced
-   @name Advanced Functions
-    Convenience functions for evaluating %DoorHinge operations without worrying
-    about context-related issues.
-   @{
-  */
+    /**
+     @anchor door_hinge_advanced
+     @name Advanced Functions
+      Convenience functions for evaluating %DoorHinge operations without worrying
+      about context-related issues.
+     @{
+    */
 
-  /// Calculates the total frictional torque with the given @p angular_rate
-  /// and the internal DoorHingeConfig.
-  T CalcHingeFrictionalTorque(const T& angular_rate) const;
+    /// Calculates the total frictional torque with the given @p angular_rate
+    /// and the internal DoorHingeConfig.
+    T CalcHingeFrictionalTorque(const T& angular_rate) const;
 
-  /// Calculate the total spring related torque with the given @p angle
-  /// and the internal DoorHingeConfig.
-  T CalcHingeSpringTorque(const T& angle) const;
+    /// Calculate the total spring related torque with the given @p angle
+    /// and the internal DoorHingeConfig.
+    T CalcHingeSpringTorque(const T& angle) const;
 
-  /// Calculate the total torque with the given @p angle and
-  /// @p angular_rate and the internal DoorHingeConfig.
-  T CalcHingeTorque(const T& angle, const T& angular_rate) const;
+    /// Calculate the total torque with the given @p angle and
+    /// @p angular_rate and the internal DoorHingeConfig.
+    T CalcHingeTorque(const T& angle, const T& angular_rate) const;
 
-  /// Calculate the total conservative power with the given @p angle,
-  /// @p angular_rate, and the internal DoorHingeConfig.
-  T CalcHingeConservativePower(const T& angle, const T& angular_rate) const;
+    /// Calculate the total conservative power with the given @p angle,
+    /// @p angular_rate, and the internal DoorHingeConfig.
+    T CalcHingeConservativePower(const T& angle, const T& angular_rate) const;
 
-  /// Calculate the total non-conservative power with the given
-  /// @p angular_rate and the internal DoorHingeConfig.
-  T CalcHingeNonConservativePower(const T& angular_rate) const;
+    /// Calculate the total non-conservative power with the given
+    /// @p angular_rate and the internal DoorHingeConfig.
+    T CalcHingeNonConservativePower(const T& angular_rate) const;
 
-  /// Calculate the total potential energy of the DoorHinge ForceElement with
-  /// the given @p angle and the internal DoorHingeConfig.
-  T CalcHingeStoredEnergy(const T& angle) const;
-  /// @}
+    /// Calculate the total potential energy of the DoorHinge ForceElement with
+    /// the given @p angle and the internal DoorHingeConfig.
+    T CalcHingeStoredEnergy(const T& angle) const;
+    /// @}
 
- protected:
-  void DoCalcAndAddForceContribution(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>&,
-      const internal::VelocityKinematicsCache<T>&,
-      MultibodyForces<T>* forces) const override;
+protected:
+    void DoCalcAndAddForceContribution(const systems::Context<T>& context,
+                                       const internal::PositionKinematicsCache<T>&,
+                                       const internal::VelocityKinematicsCache<T>&,
+                                       MultibodyForces<T>* forces) const override;
 
-  std::unique_ptr<ForceElement<double>> DoCloneToScalar(
-      const internal::MultibodyTree<double>&) const override;
+    std::unique_ptr<ForceElement<double>> DoCloneToScalar(const internal::MultibodyTree<double>&) const override;
 
-  std::unique_ptr<ForceElement<AutoDiffXd>> DoCloneToScalar(
-      const internal::MultibodyTree<AutoDiffXd>&) const override;
+    std::unique_ptr<ForceElement<AutoDiffXd>> DoCloneToScalar(
+            const internal::MultibodyTree<AutoDiffXd>&) const override;
 
-  std::unique_ptr<ForceElement<symbolic::Expression>> DoCloneToScalar(
-      const internal::MultibodyTree<symbolic::Expression>&) const override;
+    std::unique_ptr<ForceElement<symbolic::Expression>> DoCloneToScalar(
+            const internal::MultibodyTree<symbolic::Expression>&) const override;
 
- private:
-  // For unit test only.
-  friend class DoorHingeTest;
+private:
+    // For unit test only.
+    friend class DoorHingeTest;
 
-  template <typename U>
-  friend class DoorHinge;
+    template <typename U>
+    friend class DoorHinge;
 
-  DoorHinge(ModelInstanceIndex model_instance, JointIndex joint_index,
-            const DoorHingeConfig& config);
+    DoorHinge(ModelInstanceIndex model_instance, JointIndex joint_index, const DoorHingeConfig& config);
 
-  template <typename ToScalar>
-  std::unique_ptr<ForceElement<ToScalar>> TemplatedClone(
-      const internal::MultibodyTree<ToScalar>&) const;
+    template <typename ToScalar>
+    std::unique_ptr<ForceElement<ToScalar>> TemplatedClone(const internal::MultibodyTree<ToScalar>&) const;
 
-  const JointIndex joint_index_;
-  const DoorHingeConfig config_;
+    const JointIndex joint_index_;
+    const DoorHingeConfig config_;
 };
 
 }  // namespace multibody
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::multibody::DoorHinge);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::multibody::DoorHinge);

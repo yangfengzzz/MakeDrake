@@ -11,7 +11,9 @@ namespace math {
 namespace {
 const double kEps = std::numeric_limits<double>::epsilon();
 
-GTEST_TEST(TestDifferentiableNorm, test_double) { EXPECT_NEAR(DifferentiableNorm(Eigen::Vector3d(1, 0, 0)), 1., kEps); }
+GTEST_TEST(TestDifferentiableNorm, test_double) {
+    EXPECT_NEAR(DifferentiableNorm(Eigen::Vector3d(1, 0, 0)), 1., kEps);
+}
 
 GTEST_TEST(TestDifferentiableNorm, test_autodiff) {
     Eigen::Matrix3Xd x_grad(3, 1);

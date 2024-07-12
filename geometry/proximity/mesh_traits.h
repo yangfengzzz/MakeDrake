@@ -29,18 +29,15 @@ namespace geometry {
  */
 template <typename T, typename U>
 struct promoted_numerical {
-  static_assert(
-      std::conjunction_v<std::disjunction<std::is_same<U, double>,
-                                          std::is_same<U, AutoDiffXd>>,
-                         std::disjunction<std::is_same<T, double>,
-                                          std::is_same<T, AutoDiffXd>>>,
-      "This utility is only compatible with 'double' and 'AutoDiffXd' scalar "
-      "types");
-  /* If U is double, then the return type is ultimately determined by T. If
-   U is AutoDiff (i.e. "not double"), then we can just return that. If we ever
-   change the space of scalar types this supports, this logic will have to
-   change. */
-  using type = std::conditional_t<std::is_same_v<U, double>, T, U>;
+    static_assert(std::conjunction_v<std::disjunction<std::is_same<U, double>, std::is_same<U, AutoDiffXd>>,
+                                     std::disjunction<std::is_same<T, double>, std::is_same<T, AutoDiffXd>>>,
+                  "This utility is only compatible with 'double' and 'AutoDiffXd' scalar "
+                  "types");
+    /* If U is double, then the return type is ultimately determined by T. If
+     U is AutoDiff (i.e. "not double"), then we can just return that. If we ever
+     change the space of scalar types this supports, this logic will have to
+     change. */
+    using type = std::conditional_t<std::is_same_v<U, double>, T, U>;
 };
 
 template <typename T, typename U>

@@ -30,19 +30,19 @@ namespace systems {
 /// @see LinearSystem
 template <typename T>
 class MatrixGain final : public LinearSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MatrixGain);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MatrixGain);
 
-  /// A constructor where the gain matrix `D` is a square identity matrix of
-  /// size @p size.
-  explicit MatrixGain(int size);
+    /// A constructor where the gain matrix `D` is a square identity matrix of
+    /// size @p size.
+    explicit MatrixGain(int size);
 
-  /// A constructor where the gain matrix `D` is @p D.
-  explicit MatrixGain(const Eigen::MatrixXd& D);
+    /// A constructor where the gain matrix `D` is @p D.
+    explicit MatrixGain(const Eigen::MatrixXd& D);
 
-  /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  template <typename U>
-  explicit MatrixGain(const MatrixGain<U>&);
+    /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    template <typename U>
+    explicit MatrixGain(const MatrixGain<U>&);
 };
 
 }  // namespace systems

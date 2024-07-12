@@ -136,7 +136,7 @@ set(PROJECT_FILES
         ${PROXIMITY_FILES}
         ${QUERY_RESULT_FILES}
         ${RENDER_FILES}
-#        ${RENDER_GL_FILES}
+        #        ${RENDER_GL_FILES}
         ${RENDER_GLTF_CLIENT}
         ${RENDER_VTK}
         collision_filter_declaration.cc

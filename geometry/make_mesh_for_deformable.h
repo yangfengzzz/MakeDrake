@@ -13,8 +13,7 @@ namespace internal {
  discretizes the shape with the resolution provided at construction.
  @pre resolution_hint > 0.
  @throws std::exception if `shape` doesn't support a mesh discretization. */
-std::unique_ptr<VolumeMesh<double>> MakeMeshForDeformable(
-    const Shape& shape, double resolution_hint);
+std::unique_ptr<VolumeMesh<double>> MakeMeshForDeformable(const Shape& shape, double resolution_hint);
 
 }  // namespace internal
 }  // namespace geometry

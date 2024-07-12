@@ -29,8 +29,8 @@ namespace math {
  * and has the "shortest" geodesic distance on the unit sphere to `quat1`.
  */
 template <typename Scalar>
-Eigen::Quaternion<Scalar> ClosestQuaternion(const Eigen::Quaternion<Scalar> &quat1,
-                                            const Eigen::Quaternion<Scalar> &quat2) {
+Eigen::Quaternion<Scalar> ClosestQuaternion(const Eigen::Quaternion<Scalar>& quat1,
+                                            const Eigen::Quaternion<Scalar>& quat2) {
     Eigen::Quaternion<Scalar> q = quat2;
     if (quat1.dot(q) < 0) {
         q.coeffs() *= -1;
@@ -40,7 +40,7 @@ Eigen::Quaternion<Scalar> ClosestQuaternion(const Eigen::Quaternion<Scalar> &qua
 }
 
 template <typename Derived>
-Vector4<typename Derived::Scalar> quatConjugate(const Eigen::MatrixBase<Derived> &q) {
+Vector4<typename Derived::Scalar> quatConjugate(const Eigen::MatrixBase<Derived>& q) {
     // TODO(hongkai.dai@tri.global): Switch to Eigen's Quaternion when we fix
     // the range problem in Eigen
     static_assert(Derived::SizeAtCompileTime == 4, "Wrong size.");
@@ -50,8 +50,8 @@ Vector4<typename Derived::Scalar> quatConjugate(const Eigen::MatrixBase<Derived>
 }
 
 template <typename Derived1, typename Derived2>
-Vector4<typename Derived1::Scalar> quatProduct(const Eigen::MatrixBase<Derived1> &q1,
-                                               const Eigen::MatrixBase<Derived2> &q2) {
+Vector4<typename Derived1::Scalar> quatProduct(const Eigen::MatrixBase<Derived1>& q1,
+                                               const Eigen::MatrixBase<Derived2>& q2) {
     // TODO(hongkai.dai@tri.global): Switch to Eigen's Quaternion when we fix
     // the range problem in Eigen
     static_assert(Derived1::SizeAtCompileTime == 4, "Wrong size.");
@@ -67,8 +67,8 @@ Vector4<typename Derived1::Scalar> quatProduct(const Eigen::MatrixBase<Derived1>
 }
 
 template <typename DerivedQ, typename DerivedV>
-Vector3<typename DerivedV::Scalar> quatRotateVec(const Eigen::MatrixBase<DerivedQ> &q,
-                                                 const Eigen::MatrixBase<DerivedV> &v) {
+Vector3<typename DerivedV::Scalar> quatRotateVec(const Eigen::MatrixBase<DerivedQ>& q,
+                                                 const Eigen::MatrixBase<DerivedV>& v) {
     // TODO(hongkai.dai@tri.global): Switch to Eigen's Quaternion when we fix
     // the range problem in Eigen
     static_assert(DerivedQ::SizeAtCompileTime == 4, "Wrong size.");
@@ -84,17 +84,17 @@ Vector3<typename DerivedV::Scalar> quatRotateVec(const Eigen::MatrixBase<Derived
 }
 
 template <typename Derived1, typename Derived2>
-Vector4<typename Derived1::Scalar> quatDiff(const Eigen::MatrixBase<Derived1> &q1,
-                                            const Eigen::MatrixBase<Derived2> &q2) {
+Vector4<typename Derived1::Scalar> quatDiff(const Eigen::MatrixBase<Derived1>& q1,
+                                            const Eigen::MatrixBase<Derived2>& q2) {
     // TODO(hongkai.dai@tri.global): Switch to Eigen's Quaternion when we fix
     // the range problem in Eigen
     return quatProduct(quatConjugate(q1), q2);
 }
 
 template <typename Derived1, typename Derived2, typename DerivedU>
-typename Derived1::Scalar quatDiffAxisInvar(const Eigen::MatrixBase<Derived1> &q1,
-                                            const Eigen::MatrixBase<Derived2> &q2,
-                                            const Eigen::MatrixBase<DerivedU> &u) {
+typename Derived1::Scalar quatDiffAxisInvar(const Eigen::MatrixBase<Derived1>& q1,
+                                            const Eigen::MatrixBase<Derived2>& q2,
+                                            const Eigen::MatrixBase<DerivedU>& u) {
     // TODO(hongkai.dai@tri.global): Switch to Eigen's Quaternion when we fix
     // the range problem in Eigen
     static_assert(DerivedU::SizeAtCompileTime == 3, "Wrong size.");
@@ -113,7 +113,7 @@ typename Derived1::Scalar quatDiffAxisInvar(const Eigen::MatrixBase<Derived1> &q
  * @return `true` if quat.w() is nonnegative (in canonical form), else `false`.
  */
 template <typename T>
-boolean<T> is_quaternion_in_canonical_form(const Eigen::Quaternion<T> &quat) {
+boolean<T> is_quaternion_in_canonical_form(const Eigen::Quaternion<T>& quat) {
     return quat.w() >= 0.0;
 }
 
@@ -130,7 +130,7 @@ boolean<T> is_quaternion_in_canonical_form(const Eigen::Quaternion<T> &quat) {
  *   negated [w, x, y, z], to ensure a positive w in returned quaternion.
  */
 template <typename T>
-Eigen::Quaternion<T> QuaternionToCanonicalForm(const Eigen::Quaternion<T> &quat) {
+Eigen::Quaternion<T> QuaternionToCanonicalForm(const Eigen::Quaternion<T>& quat) {
     return is_quaternion_in_canonical_form(quat) ? quat
                                                  : Eigen::Quaternion<T>(-quat.w(), -quat.x(), -quat.y(), -quat.z());
 }
@@ -150,8 +150,8 @@ Eigen::Quaternion<T> QuaternionToCanonicalForm(const Eigen::Quaternion<T> &quat)
  * tolerance), otherwise `false`.
  */
 template <typename T>
-boolean<T> AreQuaternionsEqualForOrientation(const Eigen::Quaternion<T> &quat1,
-                                             const Eigen::Quaternion<T> &quat2,
+boolean<T> AreQuaternionsEqualForOrientation(const Eigen::Quaternion<T>& quat1,
+                                             const Eigen::Quaternion<T>& quat2,
                                              const T tolerance) {
     const Eigen::Quaternion<T> quat1_canonical = QuaternionToCanonicalForm(quat1);
     const Eigen::Quaternion<T> quat2_canonical = QuaternionToCanonicalForm(quat2);
@@ -175,8 +175,8 @@ boolean<T> AreQuaternionsEqualForOrientation(const Eigen::Quaternion<T> &quat1,
  * @retval quatDt Time-derivative of quat_AB, i.e., [ẇ, ẋ, ẏ, ż].
  */
 template <typename T>
-Vector4<T> CalculateQuaternionDtFromAngularVelocityExpressedInB(const Eigen::Quaternion<T> &quat_AB,
-                                                                const Vector3<T> &w_AB_B) {
+Vector4<T> CalculateQuaternionDtFromAngularVelocityExpressedInB(const Eigen::Quaternion<T>& quat_AB,
+                                                                const Vector3<T>& w_AB_B) {
     const T e0 = quat_AB.w(), e1 = quat_AB.x(), e2 = quat_AB.y(), e3 = quat_AB.z();
     const T wx = w_AB_B[0], wy = w_AB_B[1], wz = w_AB_B[2];
 
@@ -205,8 +205,8 @@ Vector4<T> CalculateQuaternionDtFromAngularVelocityExpressedInB(const Eigen::Qua
  * @retval w_AB_B  B's angular velocity in A, expressed in B.
  */
 template <typename T>
-Vector3<T> CalculateAngularVelocityExpressedInBFromQuaternionDt(const Eigen::Quaternion<T> &quat_AB,
-                                                                const Vector4<T> &quatDt) {
+Vector3<T> CalculateAngularVelocityExpressedInBFromQuaternionDt(const Eigen::Quaternion<T>& quat_AB,
+                                                                const Vector4<T>& quatDt) {
     const T e0 = quat_AB.w(), e1 = quat_AB.x(), e2 = quat_AB.y(), e3 = quat_AB.z();
     const T e0Dt = quatDt[0], e1Dt = quatDt[1], e2Dt = quatDt[2], e3Dt = quatDt[3];
 
@@ -236,7 +236,7 @@ Vector3<T> CalculateAngularVelocityExpressedInBFromQuaternionDt(const Eigen::Qua
  *   positive or negative (0 means the constraint is perfectly satisfied).
  */
 template <typename T>
-T CalculateQuaternionDtConstraintViolation(const Eigen::Quaternion<T> &quat, const Vector4<T> &quatDt) {
+T CalculateQuaternionDtConstraintViolation(const Eigen::Quaternion<T>& quat, const Vector4<T>& quatDt) {
     const T w = quat.w(), x = quat.x(), y = quat.y(), z = quat.z();
     const T wDt = quatDt[0], xDt = quatDt[1], yDt = quatDt[2], zDt = quatDt[3];
     const T quaternionDt_constraint_violation = 2 * (w * wDt + x * xDt + y * yDt + z * zDt);
@@ -259,7 +259,7 @@ T CalculateQuaternionDtConstraintViolation(const Eigen::Quaternion<T> &quat, con
  * @return `true` if the quaternion constraint is satisfied within tolerance.
  */
 template <typename T>
-boolean<T> IsQuaternionValid(const Eigen::Quaternion<T> &quat, const double tolerance) {
+boolean<T> IsQuaternionValid(const Eigen::Quaternion<T>& quat, const double tolerance) {
     using std::abs;
     const T quat_norm_error = abs(1.0 - quat.norm());
     return (quat_norm_error <= tolerance);
@@ -284,8 +284,8 @@ boolean<T> IsQuaternionValid(const Eigen::Quaternion<T> &quat, const double tole
  * @return `true` if both of the two previous constraints are within tolerance.
  */
 template <typename T>
-boolean<T> IsBothQuaternionAndQuaternionDtOK(const Eigen::Quaternion<T> &quat,
-                                             const Vector4<T> &quatDt,
+boolean<T> IsBothQuaternionAndQuaternionDtOK(const Eigen::Quaternion<T>& quat,
+                                             const Vector4<T>& quatDt,
                                              const double tolerance) {
     using std::abs;
 
@@ -314,9 +314,9 @@ boolean<T> IsBothQuaternionAndQuaternionDtOK(const Eigen::Quaternion<T> &quat,
  * @return `true` if all three of the previous constraints are within tolerance.
  */
 template <typename T>
-bool IsQuaternionAndQuaternionDtEqualAngularVelocityExpressedInB(const Eigen::Quaternion<T> &quat,
-                                                                 const Vector4<T> &quatDt,
-                                                                 const Vector3<T> &w_B,
+bool IsQuaternionAndQuaternionDtEqualAngularVelocityExpressedInB(const Eigen::Quaternion<T>& quat,
+                                                                 const Vector4<T>& quatDt,
+                                                                 const Vector3<T>& w_B,
                                                                  const double tolerance) {
     // Ensure time-derivative of quaternion satisfies quarternionDt test.
     if (!math::IsBothQuaternionAndQuaternionDtOK(quat, quatDt, tolerance)) return false;
@@ -339,7 +339,7 @@ namespace internal {
  * that the angle is within [0, pi].
  */
 template <typename T>
-Eigen::AngleAxis<T> QuaternionToAngleAxisLikeEigen(const Eigen::Quaternion<T> &quaternion) {
+Eigen::AngleAxis<T> QuaternionToAngleAxisLikeEigen(const Eigen::Quaternion<T>& quaternion) {
     Eigen::AngleAxis<T> result;
     using std::atan2;
     T sin_half_angle_abs = quaternion.vec().norm();

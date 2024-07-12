@@ -57,112 +57,109 @@ namespace systems {
 /// @tparam_nonsymbolic_scalar
 template <typename T>
 class InitialValueProblem {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(InitialValueProblem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(InitialValueProblem);
 
-  /// Default integration accuracy in the relative tolerance sense.
-  static const double kDefaultAccuracy;
-  /// Default initial integration step size.
-  static const T kInitialStepSize;
-  /// Default maximum integration step size.
-  static const T kMaxStepSize;
+    /// Default integration accuracy in the relative tolerance sense.
+    static const double kDefaultAccuracy;
+    /// Default initial integration step size.
+    static const T kInitialStepSize;
+    /// Default maximum integration step size.
+    static const T kMaxStepSize;
 
-  /// General ODE system d𝐱/dt = f(t, 𝐱; 𝐤) function type.
-  ///
-  /// @param t The independent scalar variable t ∈ ℝ.
-  /// @param x The dependent vector variable 𝐱 ∈ ℝⁿ.
-  /// @param k The vector of parameters 𝐤 ∈ ℝᵐ.
-  /// @return The derivative vector d𝐱/dt ∈ ℝⁿ.
-  using OdeFunction = std::function<VectorX<T>(const T& t, const VectorX<T>& x,
-                                               const VectorX<T>& k)>;
+    /// General ODE system d𝐱/dt = f(t, 𝐱; 𝐤) function type.
+    ///
+    /// @param t The independent scalar variable t ∈ ℝ.
+    /// @param x The dependent vector variable 𝐱 ∈ ℝⁿ.
+    /// @param k The vector of parameters 𝐤 ∈ ℝᵐ.
+    /// @return The derivative vector d𝐱/dt ∈ ℝⁿ.
+    using OdeFunction = std::function<VectorX<T>(const T& t, const VectorX<T>& x, const VectorX<T>& k)>;
 
-  /// Constructs an IVP described by the given @p ode_function, using @p x0 as
-  /// initial conditions, and parameterized with @p k.
-  ///
-  /// @param ode_function The ODE function f(t, 𝐱; 𝐤) that describes the state
-  ///                     evolution over time.
-  /// @param x0 The initial state vector 𝐱₀ ∈ ℝⁿ.
-  /// @param k The parameter vector 𝐤 ∈ ℝᵐ.  By default m=0 (no parameters).
-  InitialValueProblem(const OdeFunction& ode_function,
-                      const Eigen::Ref<const VectorX<T>>& x0,
-                      const Eigen::Ref<const VectorX<T>>& k = Vector0<T>{});
+    /// Constructs an IVP described by the given @p ode_function, using @p x0 as
+    /// initial conditions, and parameterized with @p k.
+    ///
+    /// @param ode_function The ODE function f(t, 𝐱; 𝐤) that describes the state
+    ///                     evolution over time.
+    /// @param x0 The initial state vector 𝐱₀ ∈ ℝⁿ.
+    /// @param k The parameter vector 𝐤 ∈ ℝᵐ.  By default m=0 (no parameters).
+    InitialValueProblem(const OdeFunction& ode_function,
+                        const Eigen::Ref<const VectorX<T>>& x0,
+                        const Eigen::Ref<const VectorX<T>>& k = Vector0<T>{});
 
-  /// Solves the IVP from the initial time @p t0 up to time @p tf, using the
-  /// initial state vector 𝐱₀ and parameter vector 𝐤 provided in the
-  /// constructor.
-  /// @throws std::exception if t0 > tf.
-  VectorX<T> Solve(const T& t0, const T& tf) const;
+    /// Solves the IVP from the initial time @p t0 up to time @p tf, using the
+    /// initial state vector 𝐱₀ and parameter vector 𝐤 provided in the
+    /// constructor.
+    /// @throws std::exception if t0 > tf.
+    VectorX<T> Solve(const T& t0, const T& tf) const;
 
-  /// Solves and yields an approximation of the IVP solution x(t; 𝐤) for the
-  /// closed time interval between the given initial time @p t0 and the given
-  /// final time @p tf, using initial state 𝐱₀ and parameter vector 𝐤 provided
-  /// in the constructor.
-  ///
-  /// To this end, the wrapped IntegratorBase instance solves this IVP,
-  /// advancing time and state from t₀ and 𝐱₀ = 𝐱(t₀) to @p tf and 𝐱(@p tf),
-  /// creating a dense output over that [t₀, @p tf] interval along the way.
-  ///
-  /// @param tf The IVP will be solved up to this time, which must be ≥ t₀.
-  /// Usually, t₀ < @p tf as an empty dense output would result if t₀ = @p tf.
-  /// @returns A dense approximation to 𝐱(t; 𝐤) with 𝐱(t₀; 𝐤) = 𝐱₀,
-  /// defined for t₀ ≤ t ≤ tf.
-  /// @note The larger the given @p tf value is, the larger the approximated
-  ///       interval will be. See documentation of the specific dense output
-  ///       technique in use for reference on performance impact as this
-  ///       interval grows.
-  /// @throws std::exception if t0 > tf.
-  std::unique_ptr<DenseOutput<T>> DenseSolve(const T& t0, const T& tf) const;
+    /// Solves and yields an approximation of the IVP solution x(t; 𝐤) for the
+    /// closed time interval between the given initial time @p t0 and the given
+    /// final time @p tf, using initial state 𝐱₀ and parameter vector 𝐤 provided
+    /// in the constructor.
+    ///
+    /// To this end, the wrapped IntegratorBase instance solves this IVP,
+    /// advancing time and state from t₀ and 𝐱₀ = 𝐱(t₀) to @p tf and 𝐱(@p tf),
+    /// creating a dense output over that [t₀, @p tf] interval along the way.
+    ///
+    /// @param tf The IVP will be solved up to this time, which must be ≥ t₀.
+    /// Usually, t₀ < @p tf as an empty dense output would result if t₀ = @p tf.
+    /// @returns A dense approximation to 𝐱(t; 𝐤) with 𝐱(t₀; 𝐤) = 𝐱₀,
+    /// defined for t₀ ≤ t ≤ tf.
+    /// @note The larger the given @p tf value is, the larger the approximated
+    ///       interval will be. See documentation of the specific dense output
+    ///       technique in use for reference on performance impact as this
+    ///       interval grows.
+    /// @throws std::exception if t0 > tf.
+    std::unique_ptr<DenseOutput<T>> DenseSolve(const T& t0, const T& tf) const;
 
-  /// Resets the internal integrator instance by in-place
-  /// construction of the given integrator type.
-  ///
-  /// A usage example is shown below.
-  /// @code{.cpp}
-  ///    ivp.reset_integrator<RungeKutta2Integrator<T>>(max_step);
-  /// @endcode
-  ///
-  /// @param args The integrator type-specific arguments.
-  /// @returns The new integrator instance.
-  /// @tparam Integrator The integrator type, which must be an
-  ///         IntegratorBase subclass.
-  /// @tparam Args The integrator specific argument types.
-  /// @warning This operation invalidates pointers returned by
-  ///          InitialValueProblem::get_integrator() and
-  ///          InitialValueProblem::get_mutable_integrator().
-  template <typename Integrator, typename... Args>
-  Integrator* reset_integrator(Args&&... args) {
-    integrator_ =
-        std::make_unique<Integrator>(*system_, std::forward<Args>(args)...);
-    integrator_->reset_context(context_.get());
-    return static_cast<Integrator*>(integrator_.get());
-  }
+    /// Resets the internal integrator instance by in-place
+    /// construction of the given integrator type.
+    ///
+    /// A usage example is shown below.
+    /// @code{.cpp}
+    ///    ivp.reset_integrator<RungeKutta2Integrator<T>>(max_step);
+    /// @endcode
+    ///
+    /// @param args The integrator type-specific arguments.
+    /// @returns The new integrator instance.
+    /// @tparam Integrator The integrator type, which must be an
+    ///         IntegratorBase subclass.
+    /// @tparam Args The integrator specific argument types.
+    /// @warning This operation invalidates pointers returned by
+    ///          InitialValueProblem::get_integrator() and
+    ///          InitialValueProblem::get_mutable_integrator().
+    template <typename Integrator, typename... Args>
+    Integrator* reset_integrator(Args&&... args) {
+        integrator_ = std::make_unique<Integrator>(*system_, std::forward<Args>(args)...);
+        integrator_->reset_context(context_.get());
+        return static_cast<Integrator*>(integrator_.get());
+    }
 
-  /// Gets a reference to the internal integrator instance.
-  const IntegratorBase<T>& get_integrator() const {
-    DRAKE_DEMAND(integrator_ != nullptr);
-    return *integrator_.get();
-  }
+    /// Gets a reference to the internal integrator instance.
+    const IntegratorBase<T>& get_integrator() const {
+        DRAKE_DEMAND(integrator_ != nullptr);
+        return *integrator_.get();
+    }
 
-  /// Gets a mutable reference to the internal integrator instance.
-  IntegratorBase<T>& get_mutable_integrator() {
-    DRAKE_DEMAND(integrator_ != nullptr);
-    return *integrator_.get();
-  }
+    /// Gets a mutable reference to the internal integrator instance.
+    IntegratorBase<T>& get_mutable_integrator() {
+        DRAKE_DEMAND(integrator_ != nullptr);
+        return *integrator_.get();
+    }
 
- private:
-  // Resets the context / integrator between multiple solves.
-  void ResetState() const;
+private:
+    // Resets the context / integrator between multiple solves.
+    void ResetState() const;
 
-  // IVP ODE solver integration context.
-  std::unique_ptr<Context<T>> context_;
-  // IVP system representation used for ODE solving.
-  std::unique_ptr<System<T>> system_;
-  // Numerical integrator used for IVP ODE solving.
-  std::unique_ptr<IntegratorBase<T>> integrator_;
+    // IVP ODE solver integration context.
+    std::unique_ptr<Context<T>> context_;
+    // IVP system representation used for ODE solving.
+    std::unique_ptr<System<T>> system_;
+    // Numerical integrator used for IVP ODE solving.
+    std::unique_ptr<IntegratorBase<T>> integrator_;
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class drake::systems::InitialValueProblem);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(class drake::systems::InitialValueProblem);

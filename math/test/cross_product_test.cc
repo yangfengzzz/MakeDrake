@@ -10,7 +10,7 @@ using Eigen::Vector3d;
 namespace drake {
 namespace math {
 namespace {
-void SkewSymMatTestFun(const Vector3d &x) {
+void SkewSymMatTestFun(const Vector3d& x) {
     // Manually computes the skew symmetric matrix.
     Matrix3d x_skew_mat_expected;
     x_skew_mat_expected << 0, -x(2), x(1), x(2), 0, -x(0), -x(1), x(0), 0;

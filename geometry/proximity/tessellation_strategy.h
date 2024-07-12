@@ -10,11 +10,11 @@ namespace internal {
  free to choose to select an alternate default algorithm, throw, warn, or
  whatever.  */
 enum class TessellationStrategy {
-  /* The interior of the volume mesh has a single vertex.  */
-  kSingleInteriorVertex,
-  /* The interior of the volume mesh has many vertices to maintain well-aspected
-   tetrahedra.  */
-  kDenseInteriorVertices
+    /* The interior of the volume mesh has a single vertex.  */
+    kSingleInteriorVertex,
+    /* The interior of the volume mesh has many vertices to maintain well-aspected
+     tetrahedra.  */
+    kDenseInteriorVertices
 };
 
 }  // namespace internal

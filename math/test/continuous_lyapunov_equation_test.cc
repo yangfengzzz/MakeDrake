@@ -17,7 +17,7 @@ using Eigen::MatrixXd;
 
 const double kTolerance = 5 * std::numeric_limits<double>::epsilon();
 
-void SolveRealLyapunovEquationAndVerify(const Eigen::Ref<const MatrixXd> &A, const Eigen::Ref<const MatrixXd> &Q) {
+void SolveRealLyapunovEquationAndVerify(const Eigen::Ref<const MatrixXd>& A, const Eigen::Ref<const MatrixXd>& Q) {
     MatrixXd X{RealContinuousLyapunovEquation(A, Q)};
     // Check that X is symmetric
     EXPECT_TRUE(CompareMatrices(X, X.transpose(), 5 * kTolerance, MatrixCompareType::absolute));

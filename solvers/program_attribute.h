@@ -10,33 +10,33 @@
 namespace drake {
 namespace solvers {
 enum class ProgramAttribute {
-  kGenericCost,  ///< A generic cost, doesn't belong to any specific cost type
-                 /// below.
-  kGenericConstraint,  ///< A generic constraint, doesn't belong to any specific
-                       /// constraint type below.
+    kGenericCost,        ///< A generic cost, doesn't belong to any specific cost type
+                         /// below.
+    kGenericConstraint,  ///< A generic constraint, doesn't belong to any specific
+                         /// constraint type below.
 
-  kQuadraticCost,        ///< A quadratic function as the cost.
-  kQuadraticConstraint,  ///< A constraint on a quadratic function.
+    kQuadraticCost,        ///< A quadratic function as the cost.
+    kQuadraticConstraint,  ///< A constraint on a quadratic function.
 
-  kLinearCost,                ///< A linear function as the cost.
-  kLinearConstraint,          ///< A constraint on a linear function.
-  kLinearEqualityConstraint,  ///< An equality constraint on a linear function.
+    kLinearCost,                ///< A linear function as the cost.
+    kLinearConstraint,          ///< A constraint on a linear function.
+    kLinearEqualityConstraint,  ///< An equality constraint on a linear function.
 
-  kLinearComplementarityConstraint,  ///< A linear complementarity constraint in
-                                     /// the form 0 ≤ z ⊥ Mz+q ≥ 0.
+    kLinearComplementarityConstraint,  ///< A linear complementarity constraint in
+                                       /// the form 0 ≤ z ⊥ Mz+q ≥ 0.
 
-  kLorentzConeConstraint,         ///< A Lorentz cone constraint.
-  kRotatedLorentzConeConstraint,  ///< A rotated Lorentz cone constraint.
+    kLorentzConeConstraint,         ///< A Lorentz cone constraint.
+    kRotatedLorentzConeConstraint,  ///< A rotated Lorentz cone constraint.
 
-  kPositiveSemidefiniteConstraint,  ///< A positive semidefinite constraint.
+    kPositiveSemidefiniteConstraint,  ///< A positive semidefinite constraint.
 
-  kExponentialConeConstraint,  ///< An exponential cone constraint.
+    kExponentialConeConstraint,  ///< An exponential cone constraint.
 
-  kL2NormCost,  ///< An L2 norm |Ax+b|
+    kL2NormCost,  ///< An L2 norm |Ax+b|
 
-  kBinaryVariable,  ///< Variable taking binary value {0, 1}.
+    kBinaryVariable,  ///< Variable taking binary value {0, 1}.
 
-  kCallback,  ///< Supports callback during solving the problem.
+    kCallback,  ///< Supports callback during solving the problem.
 };
 
 using ProgramAttributes = std::unordered_set<ProgramAttribute, DefaultHash>;
@@ -64,34 +64,34 @@ std::ostream& operator<<(std::ostream&, const ProgramAttributes&);
  * we have a specific solver for equality-constrained convex QP.
  */
 enum class ProgramType {
-  kLP,      ///< Linear Programming, with a linear cost and linear constraints.
-  kQP,      ///< Quadratic Programming, with a convex quadratic cost and linear
-            ///< constraints.
-  kSOCP,    ///< Second-order Cone Programming, with a linear cost and
-            ///< second-order cone constraints.
-  kSDP,     ///< Semidefinite Programming, with a linear cost and positive
-            ///< semidefinite matrix constraints.
-  kGP,      ///< Geometric Programming, with a linear cost and exponential cone
-            ///< constraints.
-  kCGP,     ///< Conic Geometric Programming, this is a superset that unifies
-            ///< GP and SDP. Refer to
-            ///< http://people.lids.mit.edu/pari/cgp_preprint.pdf for more
-            ///< details.
-  kMILP,    ///< Mixed-integer Linear Programming. LP with some variables
-            ///< taking binary values.
-  kMIQP,    ///< Mixed-integer Quadratic Programming. QP with some variables
-            ///< taking binary values.
-  kMISOCP,  ///< Mixed-integer Second-order Cone Programming. SOCP with some
-            ///< variables taking binary values.
-  kMISDP,   ///< Mixed-integer Semidefinite Programming. SDP with some
-            ///< variables taking binary values.
-  kQuadraticCostConicConstraint,  ///< convex quadratic cost with nonlinear
-                                  ///< conic constraints.
-  kNLP,      ///< nonlinear programming. Programs with generic costs or
-             ///< constraints.
-  kLCP,      ///< Linear Complementarity Programs. Programs with linear
-             ///< complementary constraints and no cost.
-  kUnknown,  ///< Does not fall into any of the types above.
+    kLP,                            ///< Linear Programming, with a linear cost and linear constraints.
+    kQP,                            ///< Quadratic Programming, with a convex quadratic cost and linear
+                                    ///< constraints.
+    kSOCP,                          ///< Second-order Cone Programming, with a linear cost and
+                                    ///< second-order cone constraints.
+    kSDP,                           ///< Semidefinite Programming, with a linear cost and positive
+                                    ///< semidefinite matrix constraints.
+    kGP,                            ///< Geometric Programming, with a linear cost and exponential cone
+                                    ///< constraints.
+    kCGP,                           ///< Conic Geometric Programming, this is a superset that unifies
+                                    ///< GP and SDP. Refer to
+                                    ///< http://people.lids.mit.edu/pari/cgp_preprint.pdf for more
+                                    ///< details.
+    kMILP,                          ///< Mixed-integer Linear Programming. LP with some variables
+                                    ///< taking binary values.
+    kMIQP,                          ///< Mixed-integer Quadratic Programming. QP with some variables
+                                    ///< taking binary values.
+    kMISOCP,                        ///< Mixed-integer Second-order Cone Programming. SOCP with some
+                                    ///< variables taking binary values.
+    kMISDP,                         ///< Mixed-integer Semidefinite Programming. SDP with some
+                                    ///< variables taking binary values.
+    kQuadraticCostConicConstraint,  ///< convex quadratic cost with nonlinear
+                                    ///< conic constraints.
+    kNLP,                           ///< nonlinear programming. Programs with generic costs or
+                                    ///< constraints.
+    kLCP,                           ///< Linear Complementarity Programs. Programs with linear
+                                    ///< complementary constraints and no cost.
+    kUnknown,                       ///< Does not fall into any of the types above.
 };
 
 std::string to_string(const ProgramType&);
@@ -102,11 +102,9 @@ std::ostream& operator<<(std::ostream&, const ProgramType&);
 // TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
 namespace fmt {
 template <>
-struct formatter<drake::solvers::ProgramAttribute> : drake::ostream_formatter {
-};
+struct formatter<drake::solvers::ProgramAttribute> : drake::ostream_formatter {};
 template <>
-struct formatter<drake::solvers::ProgramAttributes> : drake::ostream_formatter {
-};
+struct formatter<drake::solvers::ProgramAttributes> : drake::ostream_formatter {};
 template <>
 struct formatter<drake::solvers::ProgramType> : drake::ostream_formatter {};
 }  // namespace fmt

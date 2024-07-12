@@ -34,18 +34,17 @@ void UpdateContextConfiguration(systems::Context<AutoDiffXd>* context,
  * positions and velocities to @p q_v. Otherwise, leave @p context unchanged.
  * The intention is to avoid dirtying the computation cache unnecessarily.
  */
-void UpdateContextPositionsAndVelocities(
-    systems::Context<double>* context, const MultibodyPlant<double>& plant,
-    const Eigen::Ref<const Eigen::VectorXd>& q_v);
+void UpdateContextPositionsAndVelocities(systems::Context<double>* context,
+                                         const MultibodyPlant<double>& plant,
+                                         const Eigen::Ref<const Eigen::VectorXd>& q_v);
 
-void UpdateContextPositionsAndVelocities(
-    systems::Context<double>* context, const MultibodyPlant<double>& plant,
-    const Eigen::Ref<const AutoDiffVecXd>& q_v);
+void UpdateContextPositionsAndVelocities(systems::Context<double>* context,
+                                         const MultibodyPlant<double>& plant,
+                                         const Eigen::Ref<const AutoDiffVecXd>& q_v);
 
-void UpdateContextPositionsAndVelocities(
-    systems::Context<AutoDiffXd>* context,
-    const MultibodyPlant<AutoDiffXd>& plant,
-    const Eigen::Ref<const AutoDiffVecXd>& q_v);
+void UpdateContextPositionsAndVelocities(systems::Context<AutoDiffXd>* context,
+                                         const MultibodyPlant<AutoDiffXd>& plant,
+                                         const Eigen::Ref<const AutoDiffVecXd>& q_v);
 
 /*
  * Normalize an Eigen vector of doubles. This function is used in the
@@ -53,15 +52,14 @@ void UpdateContextPositionsAndVelocities(
  * @throws std::exception if the vector is close to zero.
  */
 template <typename DerivedA>
-typename std::enable_if_t<
-    is_eigen_vector_of<DerivedA, double>::value,
-    Eigen::Matrix<double, DerivedA::RowsAtCompileTime, 1>>
+typename std::enable_if_t<is_eigen_vector_of<DerivedA, double>::value,
+                          Eigen::Matrix<double, DerivedA::RowsAtCompileTime, 1>>
 NormalizeVector(const Eigen::MatrixBase<DerivedA>& a) {
-  const double a_norm = a.norm();
-  if (a_norm < 100 * a.rows() * std::numeric_limits<double>::epsilon()) {
-    throw std::invalid_argument("a is close to a zero vector.");
-  }
-  return a / a_norm;
+    const double a_norm = a.norm();
+    if (a_norm < 100 * a.rows() * std::numeric_limits<double>::epsilon()) {
+        throw std::invalid_argument("a is close to a zero vector.");
+    }
+    return a / a_norm;
 }
 
 /*
@@ -70,18 +68,17 @@ NormalizeVector(const Eigen::MatrixBase<DerivedA>& a) {
  * @throws std::exception if `plant` is nullptr.
  */
 template <typename T>
-const MultibodyPlant<T>& RefFromPtrOrThrow(
-    const MultibodyPlant<T>* const plant) {
-  if (plant == nullptr) throw std::invalid_argument("plant is nullptr.");
-  return *plant;
+const MultibodyPlant<T>& RefFromPtrOrThrow(const MultibodyPlant<T>* const plant) {
+    if (plant == nullptr) throw std::invalid_argument("plant is nullptr.");
+    return *plant;
 }
 
 template <typename T>
 T* PtrOrThrow(T* ptr, std::string_view error) {
-  if (ptr == nullptr) {
-    throw std::invalid_argument(std::string(error));
-  }
-  return ptr;
+    if (ptr == nullptr) {
+        throw std::invalid_argument(std::string(error));
+    }
+    return ptr;
 }
 
 }  // namespace internal

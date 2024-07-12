@@ -21,7 +21,7 @@ thus interested readers are referred to the documentation for
 
 As of today (May 2024), for multibody problems involving contact with friction,
 discrete solvers in Drake perform significantly better than error-controlled
-integration methods. 
+integration methods.
 */
 
 /** @addtogroup mbp_discrete Discrete Models for Simulation

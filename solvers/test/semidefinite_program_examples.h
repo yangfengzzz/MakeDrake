@@ -24,9 +24,7 @@ void TestTrivialSDP(const SolverInterface& solver, double tol);
 // min 0
 // s.t P is positive definite
 //     - (Ai'*P + P*Ai) is positive definite
-void FindCommonLyapunov(const SolverInterface& solver,
-                        const std::optional<SolverOptions>& solver_options,
-                        double tol);
+void FindCommonLyapunov(const SolverInterface& solver, const std::optional<SolverOptions>& solver_options, double tol);
 
 /*
  * Given some ellipsoids ℰᵢ : xᵀQᵢx + 2 bᵢᵀx ≤ 1, i = 1, 2, ..., n, find an
@@ -53,9 +51,7 @@ void FindCommonLyapunov(const SolverInterface& solver,
  *     ⎣sᵢbᵢᵀ - cᵀ   1 - sᵢ⎦
  * P is p.s.d
  */
-void FindOuterEllipsoid(const SolverInterface& solver,
-                        const std::optional<SolverOptions>& solver_options,
-                        double tol);
+void FindOuterEllipsoid(const SolverInterface& solver, const std::optional<SolverOptions>& solver_options, double tol);
 
 // Solve an eigen value problem through a semidefinite programming.
 // Minimize the maximum eigen value of a matrix that depends affinely on a
@@ -70,8 +66,7 @@ void SolveEigenvalueProblem(const SolverInterface& solver,
 
 /// Solve an SDP with a second order cone constraint. This example is taken from
 /// https://docs.mosek.com/10.1/capi/tutorial-sdo-shared.html
-void SolveSDPwithSecondOrderConeExample1(const SolverInterface& solver,
-                                         double tol);
+void SolveSDPwithSecondOrderConeExample1(const SolverInterface& solver, double tol);
 
 /** Solve an SDP with second order cone constraints. Notice that the variables
  * appear in the second order cone constraints appear also in the positive
@@ -82,8 +77,7 @@ void SolveSDPwithSecondOrderConeExample1(const SolverInterface& solver,
  *     X(1, 0) + X(2, 1) = 1
  *     X is psd, x(0) >= 0
  */
-void SolveSDPwithSecondOrderConeExample2(const SolverInterface& solver,
-                                         double tol);
+void SolveSDPwithSecondOrderConeExample2(const SolverInterface& solver, double tol);
 
 /** Solve an SDP with two PSD constraint, where each PSD constraint has
  * duplicate entries and the two PSD matrix share a common variables.
@@ -95,8 +89,7 @@ void SolveSDPwithSecondOrderConeExample2(const SolverInterface& solver,
  *     x1 == 1
  * The optimal solution will be x = (1, 1, -1).
  */
-void SolveSDPwithOverlappingVariables(const SolverInterface& solver,
-                                      double tol);
+void SolveSDPwithOverlappingVariables(const SolverInterface& solver, double tol);
 
 /** Solve an SDP with quadratic cost and two PSD constraints, where each PSD
  * constraint has duplicate entries and the two PSD matrix share a common

@@ -18,13 +18,12 @@ namespace graph_algorithms {
  * repeated until no candidates are left.
  */
 class MaxCliqueSolverViaGreedy final : public MaxCliqueSolverBase {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MaxCliqueSolverViaGreedy);
-  MaxCliqueSolverViaGreedy() = default;
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MaxCliqueSolverViaGreedy);
+    MaxCliqueSolverViaGreedy() = default;
 
- private:
-  VectorX<bool> DoSolveMaxClique(
-      const Eigen::SparseMatrix<bool>& adjacency_matrix) const final;
+private:
+    VectorX<bool> DoSolveMaxClique(const Eigen::SparseMatrix<bool>& adjacency_matrix) const final;
 };
 
 }  // namespace graph_algorithms

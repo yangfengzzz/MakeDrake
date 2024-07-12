@@ -12,8 +12,8 @@ namespace multibody {
  * a pair of geometries.
  */
 struct SignedDistanceWithTimeDerivative {
-  double distance;
-  double distance_time_derivative;
+    double distance;
+    double distance_time_derivative;
 };
 
 /**
@@ -34,9 +34,8 @@ struct SignedDistanceWithTimeDerivative {
  * @param[out] distance_time_derivative The time derivative of the signed
  * distance.
  */
-SignedDistanceWithTimeDerivative CalcDistanceAndTimeDerivative(
-    const multibody::MultibodyPlant<double>& plant,
-    const SortedPair<geometry::GeometryId>& geometry_pair,
-    const systems::Context<double>& context);
+SignedDistanceWithTimeDerivative CalcDistanceAndTimeDerivative(const multibody::MultibodyPlant<double>& plant,
+                                                               const SortedPair<geometry::GeometryId>& geometry_pair,
+                                                               const systems::Context<double>& context);
 }  // namespace multibody
 }  // namespace drake

@@ -15,12 +15,7 @@ namespace drake {
 namespace solvers {
 namespace test {
 
-enum class EllipsoidsSeparationProblem {
-  kProblem0,
-  kProblem1,
-  kProblem2,
-  kProblem3
-};
+enum class EllipsoidsSeparationProblem { kProblem0, kProblem1, kProblem2, kProblem3 };
 
 std::ostream& operator<<(std::ostream& os, EllipsoidsSeparationProblem value);
 
@@ -44,24 +39,22 @@ std::vector<EllipsoidsSeparationProblem> GetEllipsoidsSeparationProblems();
 /// @param x2  the center of ellipsoid 2
 /// @param R1  the shape of ellipsoid 1
 /// @param R2  the shape of ellipsoid 2
-class TestEllipsoidsSeparation
-    : public ::testing::TestWithParam<EllipsoidsSeparationProblem> {
- public:
-  TestEllipsoidsSeparation();
+class TestEllipsoidsSeparation : public ::testing::TestWithParam<EllipsoidsSeparationProblem> {
+public:
+    TestEllipsoidsSeparation();
 
-  void SolveAndCheckSolution(
-      const SolverInterface& solver,
-      const std::optional<SolverOptions>& solver_options = std::nullopt,
-      double tol = 1E-8);
+    void SolveAndCheckSolution(const SolverInterface& solver,
+                               const std::optional<SolverOptions>& solver_options = std::nullopt,
+                               double tol = 1E-8);
 
- private:
-  Eigen::VectorXd x1_;
-  Eigen::VectorXd x2_;
-  Eigen::MatrixXd R1_;
-  Eigen::MatrixXd R2_;
-  MathematicalProgram prog_;
-  VectorDecisionVariable<2> t_;
-  VectorXDecisionVariable a_;
+private:
+    Eigen::VectorXd x1_;
+    Eigen::VectorXd x2_;
+    Eigen::MatrixXd R1_;
+    Eigen::MatrixXd R2_;
+    MathematicalProgram prog_;
+    VectorDecisionVariable<2> t_;
+    VectorXDecisionVariable a_;
 };
 
 enum class QPasSOCPProblem { kProblem0, kProblem1 };
@@ -88,22 +81,22 @@ std::vector<QPasSOCPProblem> GetQPasSOCPProblems();
 /// @param b_lb A column vector
 /// @param b_ub A column vector
 class TestQPasSOCP : public ::testing::TestWithParam<QPasSOCPProblem> {
- public:
-  TestQPasSOCP();
+public:
+    TestQPasSOCP();
 
-  void SolveAndCheckSolution(const SolverInterface& solver, double tol = 1E-6);
+    void SolveAndCheckSolution(const SolverInterface& solver, double tol = 1E-6);
 
- private:
-  Eigen::MatrixXd Q_;
-  Eigen::VectorXd c_;
-  Eigen::MatrixXd A_;
-  Eigen::VectorXd b_lb_;
-  Eigen::VectorXd b_ub_;
-  MathematicalProgram prog_socp_;
-  MathematicalProgram prog_qp_;
-  VectorXDecisionVariable x_socp_;
-  symbolic::Variable y_;
-  VectorXDecisionVariable x_qp_;
+private:
+    Eigen::MatrixXd Q_;
+    Eigen::VectorXd c_;
+    Eigen::MatrixXd A_;
+    Eigen::VectorXd b_lb_;
+    Eigen::VectorXd b_ub_;
+    MathematicalProgram prog_socp_;
+    MathematicalProgram prog_qp_;
+    VectorXDecisionVariable x_socp_;
+    symbolic::Variable y_;
+    VectorXDecisionVariable x_qp_;
 };
 
 /// This example is taken from the paper
@@ -135,27 +128,25 @@ class TestQPasSOCP : public ::testing::TestWithParam<QPasSOCPProblem> {
 enum class FindSpringEquilibriumProblem { kProblem0 };
 std::ostream& operator<<(std::ostream& os, FindSpringEquilibriumProblem value);
 std::vector<FindSpringEquilibriumProblem> GetFindSpringEquilibriumProblems();
-class TestFindSpringEquilibrium
-    : public ::testing::TestWithParam<FindSpringEquilibriumProblem> {
- public:
-  TestFindSpringEquilibrium();
+class TestFindSpringEquilibrium : public ::testing::TestWithParam<FindSpringEquilibriumProblem> {
+public:
+    TestFindSpringEquilibrium();
 
-  void SolveAndCheckSolution(
-      const SolverInterface& solver,
-      const std::optional<SolverOptions>& solver_options = std::nullopt,
-      double tol = 2E-3);
+    void SolveAndCheckSolution(const SolverInterface& solver,
+                               const std::optional<SolverOptions>& solver_options = std::nullopt,
+                               double tol = 2E-3);
 
- private:
-  Eigen::VectorXd weight_;
-  double spring_rest_length_;
-  double spring_stiffness_;
-  Eigen::Vector2d end_pos1_;
-  Eigen::Vector2d end_pos2_;
-  MathematicalProgram prog_;
-  VectorXDecisionVariable x_;
-  VectorXDecisionVariable y_;
-  VectorXDecisionVariable t_;
-  symbolic::Variable z_;
+private:
+    Eigen::VectorXd weight_;
+    double spring_rest_length_;
+    double spring_stiffness_;
+    Eigen::Vector2d end_pos1_;
+    Eigen::Vector2d end_pos2_;
+    MathematicalProgram prog_;
+    VectorXDecisionVariable x_;
+    VectorXDecisionVariable y_;
+    VectorXDecisionVariable t_;
+    symbolic::Variable z_;
 };
 
 /**
@@ -169,19 +160,19 @@ class TestFindSpringEquilibrium
  * The optimal is x* = 10.
  */
 class MaximizeGeometricMeanTrivialProblem1 {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MaximizeGeometricMeanTrivialProblem1);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MaximizeGeometricMeanTrivialProblem1);
 
-  MaximizeGeometricMeanTrivialProblem1();
+    MaximizeGeometricMeanTrivialProblem1();
 
-  const MathematicalProgram& prog() const { return *prog_; }
+    const MathematicalProgram& prog() const { return *prog_; }
 
-  void CheckSolution(const MathematicalProgramResult& result, double tol);
+    void CheckSolution(const MathematicalProgramResult& result, double tol);
 
- private:
-  std::unique_ptr<MathematicalProgram> prog_;
-  symbolic::Variable x_;
-  std::unique_ptr<Binding<LinearCost>> cost_;
+private:
+    std::unique_ptr<MathematicalProgram> prog_;
+    symbolic::Variable x_;
+    std::unique_ptr<Binding<LinearCost>> cost_;
 };
 
 /**
@@ -196,19 +187,19 @@ class MaximizeGeometricMeanTrivialProblem1 {
  * 4x+5. The optimal is x* = 10.
  */
 class MaximizeGeometricMeanTrivialProblem2 {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MaximizeGeometricMeanTrivialProblem2);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MaximizeGeometricMeanTrivialProblem2);
 
-  MaximizeGeometricMeanTrivialProblem2();
+    MaximizeGeometricMeanTrivialProblem2();
 
-  const MathematicalProgram& prog() const { return *prog_; }
+    const MathematicalProgram& prog() const { return *prog_; }
 
-  void CheckSolution(const MathematicalProgramResult& result, double tol);
+    void CheckSolution(const MathematicalProgramResult& result, double tol);
 
- private:
-  std::unique_ptr<MathematicalProgram> prog_;
-  symbolic::Variable x_;
-  std::unique_ptr<Binding<LinearCost>> cost_;
+private:
+    std::unique_ptr<MathematicalProgram> prog_;
+    symbolic::Variable x_;
+    std::unique_ptr<Binding<LinearCost>> cost_;
 };
 
 /**
@@ -222,48 +213,44 @@ class MaximizeGeometricMeanTrivialProblem2 {
  *     a(j) > 0
  */
 class SmallestEllipsoidCoveringProblem {
- public:
-  // p.col(i) is the point pᵢ.
-  explicit SmallestEllipsoidCoveringProblem(
-      const Eigen::Ref<const Eigen::MatrixXd>& p);
+public:
+    // p.col(i) is the point pᵢ.
+    explicit SmallestEllipsoidCoveringProblem(const Eigen::Ref<const Eigen::MatrixXd>& p);
 
-  virtual ~SmallestEllipsoidCoveringProblem() {}
+    virtual ~SmallestEllipsoidCoveringProblem() {}
 
-  const MathematicalProgram& prog() const { return *prog_; }
+    const MathematicalProgram& prog() const { return *prog_; }
 
-  void CheckSolution(const MathematicalProgramResult& result, double tol) const;
+    void CheckSolution(const MathematicalProgramResult& result, double tol) const;
 
- protected:
-  const VectorX<symbolic::Variable>& a() const { return a_; }
+protected:
+    const VectorX<symbolic::Variable>& a() const { return a_; }
 
- private:
-  // CheckSolution() already checks if the result is successful, and if all the
-  // points are within the ellipsoid, with at least one point on the boundary
-  // of the ellipsoid. CheckSolutionExtra can do extra checks for each specific
-  // problem.
-  virtual void CheckSolutionExtra(const MathematicalProgramResult&,
-                                  double) const {}
-  std::unique_ptr<MathematicalProgram> prog_;
-  VectorX<symbolic::Variable> a_;
-  Eigen::MatrixXd p_;
-  std::unique_ptr<Binding<LinearCost>> cost_;
+private:
+    // CheckSolution() already checks if the result is successful, and if all the
+    // points are within the ellipsoid, with at least one point on the boundary
+    // of the ellipsoid. CheckSolutionExtra can do extra checks for each specific
+    // problem.
+    virtual void CheckSolutionExtra(const MathematicalProgramResult&, double) const {}
+    std::unique_ptr<MathematicalProgram> prog_;
+    VectorX<symbolic::Variable> a_;
+    Eigen::MatrixXd p_;
+    std::unique_ptr<Binding<LinearCost>> cost_;
 };
 
-class SmallestEllipsoidCoveringProblem1
-    : public SmallestEllipsoidCoveringProblem {
- public:
-  SmallestEllipsoidCoveringProblem1();
+class SmallestEllipsoidCoveringProblem1 : public SmallestEllipsoidCoveringProblem {
+public:
+    SmallestEllipsoidCoveringProblem1();
 
-  ~SmallestEllipsoidCoveringProblem1() override {}
+    ~SmallestEllipsoidCoveringProblem1() override {}
 
- private:
-  void CheckSolutionExtra(const MathematicalProgramResult& result,
-                          double tol) const override;
+private:
+    void CheckSolutionExtra(const MathematicalProgramResult& result, double tol) const override;
 };
 
-void SolveAndCheckSmallestEllipsoidCoveringProblems(
-    const SolverInterface& solver,
-    const std::optional<SolverOptions>& solver_options, double tol);
+void SolveAndCheckSmallestEllipsoidCoveringProblems(const SolverInterface& solver,
+                                                    const std::optional<SolverOptions>& solver_options,
+                                                    double tol);
 
 /**
  * Computes the minimal distance to a point from a sphere.
@@ -273,96 +260,88 @@ void SolveAndCheckSmallestEllipsoidCoveringProblems(
  */
 template <int Dim>
 class MinimalDistanceFromSphereProblem {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MinimalDistanceFromSphereProblem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MinimalDistanceFromSphereProblem);
 
-  /** @param with_linear_cost If set to true, we add the quadratic cost as the
-   * sum of a quadratic and a linear cost. Otherwise we add it as a single
-   * quadratic cost.
-   */
-  MinimalDistanceFromSphereProblem(const Eigen::Matrix<double, Dim, 1>& pt,
-                                   const Eigen::Matrix<double, Dim, 1>& center,
-                                   double radius, bool with_linear_cost)
-      : prog_{},
-        x_{prog_.NewContinuousVariables<Dim>()},
-        pt_{pt},
-        center_{center},
-        radius_{radius} {
-    if (with_linear_cost) {
-      prog_.AddQuadraticCost(2 * Eigen::Matrix<double, Dim, Dim>::Identity(),
-                             Eigen::Matrix<double, Dim, 1>::Zero(),
-                             0.5 * pt_.squaredNorm(), x_);
-      prog_.AddLinearCost(-2 * pt_, 0.5 * pt_.squaredNorm(), x_);
-    } else {
-      prog_.AddQuadraticErrorCost(Eigen::Matrix<double, Dim, Dim>::Identity(),
-                                  pt_, x_);
+    /** @param with_linear_cost If set to true, we add the quadratic cost as the
+     * sum of a quadratic and a linear cost. Otherwise we add it as a single
+     * quadratic cost.
+     */
+    MinimalDistanceFromSphereProblem(const Eigen::Matrix<double, Dim, 1>& pt,
+                                     const Eigen::Matrix<double, Dim, 1>& center,
+                                     double radius,
+                                     bool with_linear_cost)
+        : prog_{}, x_{prog_.NewContinuousVariables<Dim>()}, pt_{pt}, center_{center}, radius_{radius} {
+        if (with_linear_cost) {
+            prog_.AddQuadraticCost(2 * Eigen::Matrix<double, Dim, Dim>::Identity(),
+                                   Eigen::Matrix<double, Dim, 1>::Zero(), 0.5 * pt_.squaredNorm(), x_);
+            prog_.AddLinearCost(-2 * pt_, 0.5 * pt_.squaredNorm(), x_);
+        } else {
+            prog_.AddQuadraticErrorCost(Eigen::Matrix<double, Dim, Dim>::Identity(), pt_, x_);
+        }
+        VectorX<symbolic::Expression> lorentz_cone_expr(Dim + 1);
+        lorentz_cone_expr(0) = radius_;
+        lorentz_cone_expr.tail(Dim) = x_ - center_;
+
+        prog_.AddLorentzConeConstraint(lorentz_cone_expr);
     }
-    VectorX<symbolic::Expression> lorentz_cone_expr(Dim + 1);
-    lorentz_cone_expr(0) = radius_;
-    lorentz_cone_expr.tail(Dim) = x_ - center_;
 
-    prog_.AddLorentzConeConstraint(lorentz_cone_expr);
-  }
+    MathematicalProgram* get_mutable_prog() { return &prog_; }
 
-  MathematicalProgram* get_mutable_prog() { return &prog_; }
-
-  void SolveAndCheckSolution(const SolverInterface& solver, double tol) const {
-    if (solver.available()) {
-      MathematicalProgramResult result;
-      solver.Solve(prog_, {}, {}, &result);
-      EXPECT_TRUE(result.is_success());
-      const Eigen::Matrix<double, Dim, 1> x_sol = result.GetSolution(x_);
-      // If pt is inside the sphere, then the optimal solution is x=pt.
-      if ((pt_ - center_).norm() <= radius_) {
-        EXPECT_TRUE(CompareMatrices(x_sol, pt_, tol));
-        EXPECT_NEAR(result.get_optimal_cost(), 0, tol);
-      } else {
-        // pt should be the intersection of the ray from center to pt, and the
-        // sphere surface.
-        Eigen::Matrix<double, Dim, 1> ray = pt_ - center_;
-        EXPECT_TRUE(CompareMatrices(
-            x_sol, center_ + radius_ * (ray.normalized()), tol));
-      }
+    void SolveAndCheckSolution(const SolverInterface& solver, double tol) const {
+        if (solver.available()) {
+            MathematicalProgramResult result;
+            solver.Solve(prog_, {}, {}, &result);
+            EXPECT_TRUE(result.is_success());
+            const Eigen::Matrix<double, Dim, 1> x_sol = result.GetSolution(x_);
+            // If pt is inside the sphere, then the optimal solution is x=pt.
+            if ((pt_ - center_).norm() <= radius_) {
+                EXPECT_TRUE(CompareMatrices(x_sol, pt_, tol));
+                EXPECT_NEAR(result.get_optimal_cost(), 0, tol);
+            } else {
+                // pt should be the intersection of the ray from center to pt, and the
+                // sphere surface.
+                Eigen::Matrix<double, Dim, 1> ray = pt_ - center_;
+                EXPECT_TRUE(CompareMatrices(x_sol, center_ + radius_ * (ray.normalized()), tol));
+            }
+        }
     }
-  }
 
- private:
-  MathematicalProgram prog_;
-  Eigen::Matrix<symbolic::Variable, Dim, 1> x_;
-  Eigen::Matrix<double, Dim, 1> pt_;
-  Eigen::Matrix<double, Dim, 1> center_;
-  const double radius_;
+private:
+    MathematicalProgram prog_;
+    Eigen::Matrix<symbolic::Variable, Dim, 1> x_;
+    Eigen::Matrix<double, Dim, 1> pt_;
+    Eigen::Matrix<double, Dim, 1> center_;
+    const double radius_;
 };
 
-void TestSocpDualSolution1(const SolverInterface& solver,
-                           const SolverOptions& solver_options, double tol);
+void TestSocpDualSolution1(const SolverInterface& solver, const SolverOptions& solver_options, double tol);
 
-void TestSocpDualSolution2(const SolverInterface& solver,
-                           const SolverOptions& solver_options, double tol);
+void TestSocpDualSolution2(const SolverInterface& solver, const SolverOptions& solver_options, double tol);
 
 // We intentionally use duplicated variables in the second order cone constraint
 // to test if Drake's solver wrappers can handle duplicated variables.
 // min x0 + x1
 // s.t 4x0²+3x1² ≤ 1
-void TestSocpDuplicatedVariable1(
-    const SolverInterface& solver,
-    const std::optional<SolverOptions>& solver_options, double tol);
+void TestSocpDuplicatedVariable1(const SolverInterface& solver,
+                                 const std::optional<SolverOptions>& solver_options,
+                                 double tol);
 
 // We intentionally use duplicated variables in the second order cone constraint
 // to test if Drake's solver wrappers can handle duplicated variables.
 // min x0 + x1
 // s.t 4x0²+9x1² ≤ 1
-void TestSocpDuplicatedVariable2(
-    const SolverInterface& solver,
-    const std::optional<SolverOptions>& solver_options, double tol);
+void TestSocpDuplicatedVariable2(const SolverInterface& solver,
+                                 const std::optional<SolverOptions>& solver_options,
+                                 double tol);
 
 // We intentionally use duplicated variables in the second order cone constraint
 // to test if Drake's solver wrappers can handle duplicated variables.
 // min 2x₀+x₁
 // s.t 2x₀≥ √(x₀²+2x₁²+2)
-void TestSocpDuplicatedVariable3(
-    const SolverInterface& solver,
-    const std::optional<SolverOptions>& solver_options, double tol);
+void TestSocpDuplicatedVariable3(const SolverInterface& solver,
+                                 const std::optional<SolverOptions>& solver_options,
+                                 double tol);
 
 // This SOCP is degenerate, in the sense it can be formulated as an LP.
 // find x

@@ -161,7 +161,7 @@ X(2, 1), X(2, 2);
     EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(decltype(submatrix), drake::MatrixX<symbolic::Variable>);
 
     auto TestSubmatrix = [&submatrix_indices,
-                          &submatrix_manual](const drake::MatrixX<symbolic::Variable> &submatrix_tested) {
+                          &submatrix_manual](const drake::MatrixX<symbolic::Variable>& submatrix_tested) {
         EXPECT_EQ(submatrix_tested.rows(), submatrix_tested.cols());
         EXPECT_EQ(static_cast<int>(submatrix_tested.rows()), static_cast<int>(submatrix_indices.size()));
         for (int r = 0; r < submatrix_tested.rows(); ++r) {

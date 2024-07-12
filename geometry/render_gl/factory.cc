@@ -11,10 +11,8 @@ namespace geometry {
 // RenderEngineGl is always available.
 const bool kHasRenderEngineGl = true;
 
-std::unique_ptr<render::RenderEngine> MakeRenderEngineGl(
-    RenderEngineGlParams params) {
-  return std::make_unique<render_gl::internal::RenderEngineGl>(
-      std::move(params));
+std::unique_ptr<render::RenderEngine> MakeRenderEngineGl(RenderEngineGlParams params) {
+    return std::make_unique<render_gl::internal::RenderEngineGl>(std::move(params));
 }
 
 }  // namespace geometry

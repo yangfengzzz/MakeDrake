@@ -4,10 +4,13 @@ namespace drake {
 namespace multibody {
 
 template <typename T>
-PointPairContactInfo<T>::PointPairContactInfo(
-    BodyIndex bodyA_index, BodyIndex bodyB_index, const Vector3<T>& f_Bc_W,
-    const Vector3<T>& p_WC, const T& separation_velocity, const T& slip_speed,
-    const drake::geometry::PenetrationAsPointPair<T>& point_pair)
+PointPairContactInfo<T>::PointPairContactInfo(BodyIndex bodyA_index,
+                                              BodyIndex bodyB_index,
+                                              const Vector3<T>& f_Bc_W,
+                                              const Vector3<T>& p_WC,
+                                              const T& separation_velocity,
+                                              const T& slip_speed,
+                                              const drake::geometry::PenetrationAsPointPair<T>& point_pair)
     : point_pair_(point_pair),
       bodyA_index_(bodyA_index),
       bodyB_index_(bodyB_index),
@@ -19,5 +22,4 @@ PointPairContactInfo<T>::PointPairContactInfo(
 }  // namespace multibody
 }  // namespace drake
 
-DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::multibody::PointPairContactInfo);
+DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::multibody::PointPairContactInfo);

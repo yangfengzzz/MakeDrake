@@ -15,7 +15,7 @@ namespace {
 
 // Tests the value and the gradient of NormalizeVector function.
 template <int nx>
-void NormalizeVectorTestFun(const Eigen::Matrix<double, nx, 1> &x) {
+void NormalizeVectorTestFun(const Eigen::Matrix<double, nx, 1>& x) {
     Eigen::Matrix<double, nx, 1> x_normalized;
     typename Gradient<Eigen::Matrix<double, nx, 1>, nx, 1>::type dx_normalized;
     typename Gradient<Eigen::Matrix<double, nx, 1>, nx, 2>::type ddx_normalized;

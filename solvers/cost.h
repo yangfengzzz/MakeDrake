@@ -24,17 +24,16 @@ namespace solvers {
  * @ingroup solver_evaluators
  */
 class Cost : public EvaluatorBase {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Cost);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Cost);
 
- protected:
-  /**
-   * Constructs a cost evaluator.
-   * @param num_vars Number of input variables.
-   * @param description Human-friendly description.
-   */
-  explicit Cost(int num_vars, const std::string& description = "")
-      : EvaluatorBase(1, num_vars, description) {}
+protected:
+    /**
+     * Constructs a cost evaluator.
+     * @param num_vars Number of input variables.
+     * @param description Human-friendly description.
+     */
+    explicit Cost(int num_vars, const std::string& description = "") : EvaluatorBase(1, num_vars, description) {}
 };
 
 /**
@@ -43,67 +42,62 @@ class Cost : public EvaluatorBase {
  * @ingroup solver_evaluators
  */
 class LinearCost : public Cost {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearCost);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearCost);
 
-  /**
-   * Construct a linear cost of the form @f[ a'x + b @f].
-   * @param a Linear term.
-   * @param b (optional) Constant term.
-   */
-  // NOLINTNEXTLINE(runtime/explicit) This conversion is desirable.
-  LinearCost(const Eigen::Ref<const Eigen::VectorXd>& a, double b = 0.)
-      : Cost(a.rows()), a_(a), b_(b) {}
+    /**
+     * Construct a linear cost of the form @f[ a'x + b @f].
+     * @param a Linear term.
+     * @param b (optional) Constant term.
+     */
+    // NOLINTNEXTLINE(runtime/explicit) This conversion is desirable.
+    LinearCost(const Eigen::Ref<const Eigen::VectorXd>& a, double b = 0.) : Cost(a.rows()), a_(a), b_(b) {}
 
-  ~LinearCost() override {}
+    ~LinearCost() override {}
 
-  Eigen::SparseMatrix<double> GetSparseMatrix() const {
-    // TODO(eric.cousineau): Consider storing or caching sparse matrix, such
-    // that we can return a const lvalue reference.
-    return a_.sparseView();
-  }
-
-  const Eigen::VectorXd& a() const { return a_; }
-
-  double b() const { return b_; }
-
-  /**
-   * Updates the coefficients of the cost.
-   * Note that the number of variables (size of a) cannot change.
-   * @param new_a New linear term.
-   * @param new_b (optional) New constant term.
-   */
-  void UpdateCoefficients(const Eigen::Ref<const Eigen::VectorXd>& new_a,
-                          double new_b = 0.) {
-    if (new_a.rows() != a_.rows()) {
-      throw std::runtime_error("Can't change the number of decision variables");
+    Eigen::SparseMatrix<double> GetSparseMatrix() const {
+        // TODO(eric.cousineau): Consider storing or caching sparse matrix, such
+        // that we can return a const lvalue reference.
+        return a_.sparseView();
     }
 
-    a_ = new_a;
-    b_ = new_b;
-  }
+    const Eigen::VectorXd& a() const { return a_; }
 
- protected:
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override;
+    double b() const { return b_; }
 
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override;
+    /**
+     * Updates the coefficients of the cost.
+     * Note that the number of variables (size of a) cannot change.
+     * @param new_a New linear term.
+     * @param new_b (optional) New constant term.
+     */
+    void UpdateCoefficients(const Eigen::Ref<const Eigen::VectorXd>& new_a, double new_b = 0.) {
+        if (new_a.rows() != a_.rows()) {
+            throw std::runtime_error("Can't change the number of decision variables");
+        }
 
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const override;
+        a_ = new_a;
+        b_ = new_b;
+    }
 
-  std::ostream& DoDisplay(std::ostream&,
-                          const VectorX<symbolic::Variable>&) const override;
+protected:
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override;
 
-  std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override;
 
- private:
-  template <typename DerivedX, typename U>
-  void DoEvalGeneric(const Eigen::MatrixBase<DerivedX>& x, VectorX<U>* y) const;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                VectorX<symbolic::Expression>* y) const override;
 
-  Eigen::VectorXd a_;
-  double b_{};
+    std::ostream& DoDisplay(std::ostream&, const VectorX<symbolic::Variable>&) const override;
+
+    std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
+
+private:
+    template <typename DerivedX, typename U>
+    void DoEvalGeneric(const Eigen::MatrixBase<DerivedX>& x, VectorX<U>* y) const;
+
+    Eigen::VectorXd a_;
+    double b_{};
 };
 
 /**
@@ -112,111 +106,108 @@ class LinearCost : public Cost {
  * @ingroup solver_evaluators
  */
 class QuadraticCost : public Cost {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticCost);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuadraticCost);
 
-  /**
-   * Constructs a cost of the form @f[ .5 x'Qx + b'x + c @f].
-   * @param Q Quadratic term.
-   * @param b Linear term.
-   * @param c (optional) Constant term.
-   * @param is_hessian_psd (optional) Indicates if the Hessian matrix Q is
-   * positive semidefinite (psd) or not. If set to true, then the user
-   * guarantees that Q is psd; if set to false, then the user guarantees that Q
-   * is not psd. If set to std::nullopt, then the constructor will check if Q is
-   * psd or not. The default is std::nullopt. To speed up the constructor, set
-   * is_hessian_psd to either true or false.
-   */
-  template <typename DerivedQ, typename Derivedb>
-  QuadraticCost(const Eigen::MatrixBase<DerivedQ>& Q,
-                const Eigen::MatrixBase<Derivedb>& b, double c = 0.,
-                std::optional<bool> is_hessian_psd = std::nullopt)
-      : Cost(Q.rows()), Q_((Q + Q.transpose()) / 2), b_(b), c_(c) {
-    DRAKE_THROW_UNLESS(Q_.rows() == Q_.cols());
-    DRAKE_THROW_UNLESS(Q_.cols() == b_.rows());
-    if (is_hessian_psd.has_value()) {
-      is_convex_ = is_hessian_psd.value();
-    } else {
-      is_convex_ = CheckHessianPsd();
-    }
-  }
-
-  ~QuadraticCost() override {}
-
-  /// Returns the symmetric matrix Q, as the Hessian of the cost.
-  const Eigen::MatrixXd& Q() const { return Q_; }
-
-  const Eigen::VectorXd& b() const { return b_; }
-
-  double c() const { return c_; }
-
-  /**
-   * Returns true if this cost is convex. A quadratic cost if convex if and only
-   * if its Hessian matrix Q is positive semidefinite.
-   */
-  bool is_convex() const { return is_convex_; }
-
-  /**
-   * Updates the quadratic and linear term of the constraint. The new
-   * matrices need to have the same dimension as before.
-   * @param new_Q New quadratic term.
-   * @param new_b New linear term.
-   * @param new_c (optional) New constant term.
-   * @param is_hessian_psd (optional) Indicates if the Hessian matrix Q is
-   * positive semidefinite (psd) or not. If set to true, then the user
-   * guarantees that Q is psd; if set to false, then the user guarantees that Q
-   * is not psd. If set to std::nullopt, then this function will check if Q is
-   * psd or not. The default is std::nullopt. To speed up the computation, set
-   * is_hessian_psd to either true or false.
-   */
-  template <typename DerivedQ, typename DerivedB>
-  void UpdateCoefficients(const Eigen::MatrixBase<DerivedQ>& new_Q,
-                          const Eigen::MatrixBase<DerivedB>& new_b,
-                          double new_c = 0.,
-                          std::optional<bool> is_hessian_psd = std::nullopt) {
-    if (new_Q.rows() != new_Q.cols() || new_Q.rows() != new_b.rows() ||
-        new_b.cols() != 1) {
-      throw std::runtime_error("New constraints have invalid dimensions");
+    /**
+     * Constructs a cost of the form @f[ .5 x'Qx + b'x + c @f].
+     * @param Q Quadratic term.
+     * @param b Linear term.
+     * @param c (optional) Constant term.
+     * @param is_hessian_psd (optional) Indicates if the Hessian matrix Q is
+     * positive semidefinite (psd) or not. If set to true, then the user
+     * guarantees that Q is psd; if set to false, then the user guarantees that Q
+     * is not psd. If set to std::nullopt, then the constructor will check if Q is
+     * psd or not. The default is std::nullopt. To speed up the constructor, set
+     * is_hessian_psd to either true or false.
+     */
+    template <typename DerivedQ, typename Derivedb>
+    QuadraticCost(const Eigen::MatrixBase<DerivedQ>& Q,
+                  const Eigen::MatrixBase<Derivedb>& b,
+                  double c = 0.,
+                  std::optional<bool> is_hessian_psd = std::nullopt)
+        : Cost(Q.rows()), Q_((Q + Q.transpose()) / 2), b_(b), c_(c) {
+        DRAKE_THROW_UNLESS(Q_.rows() == Q_.cols());
+        DRAKE_THROW_UNLESS(Q_.cols() == b_.rows());
+        if (is_hessian_psd.has_value()) {
+            is_convex_ = is_hessian_psd.value();
+        } else {
+            is_convex_ = CheckHessianPsd();
+        }
     }
 
-    if (new_b.rows() != b_.rows()) {
-      throw std::runtime_error("Can't change the number of decision variables");
+    ~QuadraticCost() override {}
+
+    /// Returns the symmetric matrix Q, as the Hessian of the cost.
+    const Eigen::MatrixXd& Q() const { return Q_; }
+
+    const Eigen::VectorXd& b() const { return b_; }
+
+    double c() const { return c_; }
+
+    /**
+     * Returns true if this cost is convex. A quadratic cost if convex if and only
+     * if its Hessian matrix Q is positive semidefinite.
+     */
+    bool is_convex() const { return is_convex_; }
+
+    /**
+     * Updates the quadratic and linear term of the constraint. The new
+     * matrices need to have the same dimension as before.
+     * @param new_Q New quadratic term.
+     * @param new_b New linear term.
+     * @param new_c (optional) New constant term.
+     * @param is_hessian_psd (optional) Indicates if the Hessian matrix Q is
+     * positive semidefinite (psd) or not. If set to true, then the user
+     * guarantees that Q is psd; if set to false, then the user guarantees that Q
+     * is not psd. If set to std::nullopt, then this function will check if Q is
+     * psd or not. The default is std::nullopt. To speed up the computation, set
+     * is_hessian_psd to either true or false.
+     */
+    template <typename DerivedQ, typename DerivedB>
+    void UpdateCoefficients(const Eigen::MatrixBase<DerivedQ>& new_Q,
+                            const Eigen::MatrixBase<DerivedB>& new_b,
+                            double new_c = 0.,
+                            std::optional<bool> is_hessian_psd = std::nullopt) {
+        if (new_Q.rows() != new_Q.cols() || new_Q.rows() != new_b.rows() || new_b.cols() != 1) {
+            throw std::runtime_error("New constraints have invalid dimensions");
+        }
+
+        if (new_b.rows() != b_.rows()) {
+            throw std::runtime_error("Can't change the number of decision variables");
+        }
+
+        Q_ = (new_Q + new_Q.transpose()) / 2;
+        b_ = new_b;
+        c_ = new_c;
+        if (is_hessian_psd.has_value()) {
+            is_convex_ = is_hessian_psd.value();
+        } else {
+            is_convex_ = CheckHessianPsd();
+        }
     }
 
-    Q_ = (new_Q + new_Q.transpose()) / 2;
-    b_ = new_b;
-    c_ = new_c;
-    if (is_hessian_psd.has_value()) {
-      is_convex_ = is_hessian_psd.value();
-    } else {
-      is_convex_ = CheckHessianPsd();
-    }
-  }
+private:
+    template <typename DerivedX, typename U>
+    void DoEvalGeneric(const Eigen::MatrixBase<DerivedX>& x, VectorX<U>* y) const;
 
- private:
-  template <typename DerivedX, typename U>
-  void DoEvalGeneric(const Eigen::MatrixBase<DerivedX>& x, VectorX<U>* y) const;
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                VectorX<symbolic::Expression>* y) const override;
 
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const override;
+    std::ostream& DoDisplay(std::ostream&, const VectorX<symbolic::Variable>&) const override;
 
-  std::ostream& DoDisplay(std::ostream&,
-                          const VectorX<symbolic::Variable>&) const override;
+    std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
 
-  std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
+    bool CheckHessianPsd();
 
-  bool CheckHessianPsd();
-
-  Eigen::MatrixXd Q_;
-  Eigen::VectorXd b_;
-  double c_{};
-  bool is_convex_{};
+    Eigen::MatrixXd Q_;
+    Eigen::VectorXd b_;
+    double c_{};
+    bool is_convex_{};
 };
 
 /**
@@ -224,18 +215,16 @@ class QuadraticCost : public Cost {
  *
  * @ingroup solver_evaluators
  */
-std::shared_ptr<QuadraticCost> MakeQuadraticErrorCost(
-    const Eigen::Ref<const Eigen::MatrixXd>& Q,
-    const Eigen::Ref<const Eigen::VectorXd>& x_desired);
+std::shared_ptr<QuadraticCost> MakeQuadraticErrorCost(const Eigen::Ref<const Eigen::MatrixXd>& Q,
+                                                      const Eigen::Ref<const Eigen::VectorXd>& x_desired);
 
 /**
  * Creates a quadratic cost of the form |Ax-b|²=(Ax-b)ᵀ(Ax-b)
  *
  * @ingroup solver_evaluators
  */
-std::shared_ptr<QuadraticCost> Make2NormSquaredCost(
-    const Eigen::Ref<const Eigen::MatrixXd>& A,
-    const Eigen::Ref<const Eigen::VectorXd>& b);
+std::shared_ptr<QuadraticCost> Make2NormSquaredCost(const Eigen::Ref<const Eigen::MatrixXd>& A,
+                                                    const Eigen::Ref<const Eigen::VectorXd>& b);
 
 /**
  * Implements a cost of the form ‖Ax + b‖₁. Note that this cost is
@@ -244,51 +233,47 @@ std::shared_ptr<QuadraticCost> Make2NormSquaredCost(
  * @ingroup solver_evaluators
  */
 class L1NormCost : public Cost {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(L1NormCost);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(L1NormCost);
 
-  /**
-   * Construct a cost of the form ‖Ax + b‖₁.
-   * @param A Linear term.
-   * @param b Constant term.
-   * @throws std::exception if the size of A and b don't match.
-   */
-  L1NormCost(const Eigen::Ref<const Eigen::MatrixXd>& A,
-             const Eigen::Ref<const Eigen::VectorXd>& b);
+    /**
+     * Construct a cost of the form ‖Ax + b‖₁.
+     * @param A Linear term.
+     * @param b Constant term.
+     * @throws std::exception if the size of A and b don't match.
+     */
+    L1NormCost(const Eigen::Ref<const Eigen::MatrixXd>& A, const Eigen::Ref<const Eigen::VectorXd>& b);
 
-  ~L1NormCost() override {}
+    ~L1NormCost() override {}
 
-  const Eigen::MatrixXd& A() const { return A_; }
+    const Eigen::MatrixXd& A() const { return A_; }
 
-  const Eigen::VectorXd& b() const { return b_; }
+    const Eigen::VectorXd& b() const { return b_; }
 
-  /**
-   * Updates the coefficients of the cost.
-   * Note that the number of variables (columns of A) cannot change.
-   * @param new_A New linear term.
-   * @param new_b New constant term.
-   */
-  void UpdateCoefficients(const Eigen::Ref<const Eigen::MatrixXd>& new_A,
-                          const Eigen::Ref<const Eigen::VectorXd>& new_b);
+    /**
+     * Updates the coefficients of the cost.
+     * Note that the number of variables (columns of A) cannot change.
+     * @param new_A New linear term.
+     * @param new_b New constant term.
+     */
+    void UpdateCoefficients(const Eigen::Ref<const Eigen::MatrixXd>& new_A,
+                            const Eigen::Ref<const Eigen::VectorXd>& new_b);
 
- protected:
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override;
+protected:
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const override;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                VectorX<symbolic::Expression>* y) const override;
 
-  std::ostream& DoDisplay(std::ostream&,
-                          const VectorX<symbolic::Variable>&) const override;
+    std::ostream& DoDisplay(std::ostream&, const VectorX<symbolic::Variable>&) const override;
 
-  std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
+    std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
 
- private:
-  Eigen::MatrixXd A_;
-  Eigen::VectorXd b_;
+private:
+    Eigen::MatrixXd A_;
+    Eigen::VectorXd b_;
 };
 
 /**
@@ -297,76 +282,68 @@ class L1NormCost : public Cost {
  * @ingroup solver_evaluators
  */
 class L2NormCost : public Cost {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(L2NormCost);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(L2NormCost);
 
-  // TODO(russt): Add an option to select an implementation that smooths the
-  // gradient discontinuity at the origin.
-  /**
-   * Construct a cost of the form ‖Ax + b‖₂.
-   * @param A Linear term.
-   * @param b Constant term.
-   * @throws std::exception if the size of A and b don't match.
-   * @pydrake_mkdoc_identifier{dense_A}
-   */
-  L2NormCost(const Eigen::Ref<const Eigen::MatrixXd>& A,
-             const Eigen::Ref<const Eigen::VectorXd>& b);
+    // TODO(russt): Add an option to select an implementation that smooths the
+    // gradient discontinuity at the origin.
+    /**
+     * Construct a cost of the form ‖Ax + b‖₂.
+     * @param A Linear term.
+     * @param b Constant term.
+     * @throws std::exception if the size of A and b don't match.
+     * @pydrake_mkdoc_identifier{dense_A}
+     */
+    L2NormCost(const Eigen::Ref<const Eigen::MatrixXd>& A, const Eigen::Ref<const Eigen::VectorXd>& b);
 
-  /**
-   * Overloads constructor with a sparse A matrix.
-   * @pydrake_mkdoc_identifier{sparse_A}
-   */
-  L2NormCost(const Eigen::SparseMatrix<double>& A,
-             const Eigen::Ref<const Eigen::VectorXd>& b);
+    /**
+     * Overloads constructor with a sparse A matrix.
+     * @pydrake_mkdoc_identifier{sparse_A}
+     */
+    L2NormCost(const Eigen::SparseMatrix<double>& A, const Eigen::Ref<const Eigen::VectorXd>& b);
 
-  ~L2NormCost() override {}
+    ~L2NormCost() override {}
 
-  DRAKE_DEPRECATED("2024-08-01", "Use A_dense function instead.")
-  const Eigen::MatrixXd& A() const { return GetDenseA(); }
+    DRAKE_DEPRECATED("2024-08-01", "Use A_dense function instead.")
+    const Eigen::MatrixXd& A() const { return GetDenseA(); }
 
-  const Eigen::SparseMatrix<double>& get_sparse_A() const {
-    return A_.get_as_sparse();
-  }
+    const Eigen::SparseMatrix<double>& get_sparse_A() const { return A_.get_as_sparse(); }
 
-  const Eigen::MatrixXd& GetDenseA() const { return A_.GetAsDense(); }
+    const Eigen::MatrixXd& GetDenseA() const { return A_.GetAsDense(); }
 
-  const Eigen::VectorXd& b() const { return b_; }
+    const Eigen::VectorXd& b() const { return b_; }
 
-  /**
-   * Updates the coefficients of the cost.
-   * Note that the number of variables (columns of A) cannot change.
-   * @param new_A New linear term.
-   * @param new_b New constant term.
-   * @pydrake_mkdoc_identifier{dense_A}
-   */
-  void UpdateCoefficients(const Eigen::Ref<const Eigen::MatrixXd>& new_A,
-                          const Eigen::Ref<const Eigen::VectorXd>& new_b);
+    /**
+     * Updates the coefficients of the cost.
+     * Note that the number of variables (columns of A) cannot change.
+     * @param new_A New linear term.
+     * @param new_b New constant term.
+     * @pydrake_mkdoc_identifier{dense_A}
+     */
+    void UpdateCoefficients(const Eigen::Ref<const Eigen::MatrixXd>& new_A,
+                            const Eigen::Ref<const Eigen::VectorXd>& new_b);
 
-  /**
-   * Overloads UpdateCoefficients but with a sparse A matrix.
-   * @pydrake_mkdoc_identifier{sparse_A}
-   */
-  void UpdateCoefficients(const Eigen::SparseMatrix<double>& new_A,
-                          const Eigen::Ref<const Eigen::VectorXd>& new_b);
+    /**
+     * Overloads UpdateCoefficients but with a sparse A matrix.
+     * @pydrake_mkdoc_identifier{sparse_A}
+     */
+    void UpdateCoefficients(const Eigen::SparseMatrix<double>& new_A, const Eigen::Ref<const Eigen::VectorXd>& new_b);
 
- protected:
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override;
+protected:
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const override;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                VectorX<symbolic::Expression>* y) const override;
 
-  std::ostream& DoDisplay(std::ostream&,
-                          const VectorX<symbolic::Variable>&) const override;
+    std::ostream& DoDisplay(std::ostream&, const VectorX<symbolic::Variable>&) const override;
 
-  std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
+    std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
 
- private:
-  internal::SparseAndDenseMatrix A_;
-  Eigen::VectorXd b_;
+private:
+    internal::SparseAndDenseMatrix A_;
+    Eigen::VectorXd b_;
 };
 
 /**
@@ -376,51 +353,47 @@ class L2NormCost : public Cost {
  * @ingroup solver_evaluators
  */
 class LInfNormCost : public Cost {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LInfNormCost);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LInfNormCost);
 
-  /**
-   * Construct a cost of the form ‖Ax + b‖∞.
-   * @param A Linear term.
-   * @param b Constant term.
-   * @throws std::exception if the size of A and b don't match.
-   */
-  LInfNormCost(const Eigen::Ref<const Eigen::MatrixXd>& A,
-               const Eigen::Ref<const Eigen::VectorXd>& b);
+    /**
+     * Construct a cost of the form ‖Ax + b‖∞.
+     * @param A Linear term.
+     * @param b Constant term.
+     * @throws std::exception if the size of A and b don't match.
+     */
+    LInfNormCost(const Eigen::Ref<const Eigen::MatrixXd>& A, const Eigen::Ref<const Eigen::VectorXd>& b);
 
-  ~LInfNormCost() override {}
+    ~LInfNormCost() override {}
 
-  const Eigen::MatrixXd& A() const { return A_; }
+    const Eigen::MatrixXd& A() const { return A_; }
 
-  const Eigen::VectorXd& b() const { return b_; }
+    const Eigen::VectorXd& b() const { return b_; }
 
-  /**
-   * Updates the coefficients of the cost.
-   * Note that the number of variables (columns of A) cannot change.
-   * @param new_A New linear term.
-   * @param new_b New constant term.
-   */
-  void UpdateCoefficients(const Eigen::Ref<const Eigen::MatrixXd>& new_A,
-                          const Eigen::Ref<const Eigen::VectorXd>& new_b);
+    /**
+     * Updates the coefficients of the cost.
+     * Note that the number of variables (columns of A) cannot change.
+     * @param new_A New linear term.
+     * @param new_b New constant term.
+     */
+    void UpdateCoefficients(const Eigen::Ref<const Eigen::MatrixXd>& new_A,
+                            const Eigen::Ref<const Eigen::VectorXd>& new_b);
 
- protected:
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override;
+protected:
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const override;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                VectorX<symbolic::Expression>* y) const override;
 
-  std::ostream& DoDisplay(std::ostream&,
-                          const VectorX<symbolic::Variable>&) const override;
+    std::ostream& DoDisplay(std::ostream&, const VectorX<symbolic::Variable>&) const override;
 
-  std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
+    std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
 
- private:
-  Eigen::MatrixXd A_;
-  Eigen::VectorXd b_;
+private:
+    Eigen::MatrixXd A_;
+    Eigen::VectorXd b_;
 };
 
 /**
@@ -436,54 +409,50 @@ class LInfNormCost : public Cost {
  * @ingroup solver_evaluators
  */
 class PerspectiveQuadraticCost : public Cost {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(PerspectiveQuadraticCost);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(PerspectiveQuadraticCost);
 
-  /**
-   * Construct a cost of the form (z_1^2 + z_2^2 + ... + z_{n-1}^2) / z_0 where
-   * z = Ax + b.
-   * @param A Linear term.
-   * @param b Constant term.
-   */
-  PerspectiveQuadraticCost(const Eigen::Ref<const Eigen::MatrixXd>& A,
-                           const Eigen::Ref<const Eigen::VectorXd>& b);
+    /**
+     * Construct a cost of the form (z_1^2 + z_2^2 + ... + z_{n-1}^2) / z_0 where
+     * z = Ax + b.
+     * @param A Linear term.
+     * @param b Constant term.
+     */
+    PerspectiveQuadraticCost(const Eigen::Ref<const Eigen::MatrixXd>& A, const Eigen::Ref<const Eigen::VectorXd>& b);
 
-  ~PerspectiveQuadraticCost() override {}
+    ~PerspectiveQuadraticCost() override {}
 
-  const Eigen::MatrixXd& A() const { return A_; }
+    const Eigen::MatrixXd& A() const { return A_; }
 
-  const Eigen::VectorXd& b() const { return b_; }
+    const Eigen::VectorXd& b() const { return b_; }
 
-  /**
-   * Updates the coefficients of the cost.
-   * Note that the number of variables (columns of A) cannot change.
-   * @param new_A New linear term.
-   * @param new_b New constant term.
-   */
-  void UpdateCoefficients(const Eigen::Ref<const Eigen::MatrixXd>& new_A,
-                          const Eigen::Ref<const Eigen::VectorXd>& new_b);
+    /**
+     * Updates the coefficients of the cost.
+     * Note that the number of variables (columns of A) cannot change.
+     * @param new_A New linear term.
+     * @param new_b New constant term.
+     */
+    void UpdateCoefficients(const Eigen::Ref<const Eigen::MatrixXd>& new_A,
+                            const Eigen::Ref<const Eigen::VectorXd>& new_b);
 
- protected:
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override;
+protected:
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const override;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                VectorX<symbolic::Expression>* y) const override;
 
-  std::ostream& DoDisplay(std::ostream&,
-                          const VectorX<symbolic::Variable>&) const override;
+    std::ostream& DoDisplay(std::ostream&, const VectorX<symbolic::Variable>&) const override;
 
-  std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
+    std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
 
- private:
-  template <typename DerivedX, typename U>
-  void DoEvalGeneric(const Eigen::MatrixBase<DerivedX>& x, VectorX<U>* y) const;
+private:
+    template <typename DerivedX, typename U>
+    void DoEvalGeneric(const Eigen::MatrixBase<DerivedX>& x, VectorX<U>* y) const;
 
-  Eigen::MatrixXd A_;
-  Eigen::VectorXd b_;
+    Eigen::MatrixXd A_;
+    Eigen::VectorXd b_;
 };
 
 /**
@@ -498,61 +467,56 @@ class PerspectiveQuadraticCost : public Cost {
 // recognize that the compounded cost is linear.
 template <typename EvaluatorType = EvaluatorBase>
 class EvaluatorCost : public Cost {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(EvaluatorCost);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(EvaluatorCost);
 
-  explicit EvaluatorCost(const std::shared_ptr<EvaluatorType>& evaluator)
-      : Cost(evaluator->num_vars()),
-        evaluator_{evaluator},
-        a_{std::nullopt},
-        b_{0} {
-    DRAKE_THROW_UNLESS(evaluator->num_outputs() == 1);
-  }
-
-  /**
-   * This cost computes a.dot(evaluator(x)) + b
-   * @pre a.rows() == evaluator->num_outputs()
-   */
-  EvaluatorCost(const std::shared_ptr<EvaluatorType>& evaluator,
-                const Eigen::Ref<const Eigen::VectorXd>& a, double b = 0)
-      : Cost(evaluator->num_vars()), evaluator_(evaluator), a_{a}, b_{b} {
-    DRAKE_THROW_UNLESS(evaluator->num_outputs() == a_->rows());
-  }
-
- protected:
-  const EvaluatorType& evaluator() const { return *evaluator_; }
-
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override {
-    this->DoEvalGeneric<double, double>(x, y);
-  }
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override {
-    this->DoEvalGeneric<AutoDiffXd, AutoDiffXd>(x, y);
-  }
-
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const override {
-    this->DoEvalGeneric<symbolic::Variable, symbolic::Expression>(x, y);
-  }
-
- private:
-  template <typename T, typename S>
-  void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>& x,
-                     VectorX<S>* y) const {
-    if (a_.has_value()) {
-      VectorX<S> y_inner;
-      evaluator_->Eval(x, &y_inner);
-      y->resize(1);
-      (*y)(0) = a_->dot(y_inner) + b_;
-    } else {
-      evaluator_->Eval(x, y);
+    explicit EvaluatorCost(const std::shared_ptr<EvaluatorType>& evaluator)
+        : Cost(evaluator->num_vars()), evaluator_{evaluator}, a_{std::nullopt}, b_{0} {
+        DRAKE_THROW_UNLESS(evaluator->num_outputs() == 1);
     }
-  }
 
-  std::shared_ptr<EvaluatorType> evaluator_;
-  std::optional<Eigen::VectorXd> a_;
-  double b_{};
+    /**
+     * This cost computes a.dot(evaluator(x)) + b
+     * @pre a.rows() == evaluator->num_outputs()
+     */
+    EvaluatorCost(const std::shared_ptr<EvaluatorType>& evaluator,
+                  const Eigen::Ref<const Eigen::VectorXd>& a,
+                  double b = 0)
+        : Cost(evaluator->num_vars()), evaluator_(evaluator), a_{a}, b_{b} {
+        DRAKE_THROW_UNLESS(evaluator->num_outputs() == a_->rows());
+    }
+
+protected:
+    const EvaluatorType& evaluator() const { return *evaluator_; }
+
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override {
+        this->DoEvalGeneric<double, double>(x, y);
+    }
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override {
+        this->DoEvalGeneric<AutoDiffXd, AutoDiffXd>(x, y);
+    }
+
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                VectorX<symbolic::Expression>* y) const override {
+        this->DoEvalGeneric<symbolic::Variable, symbolic::Expression>(x, y);
+    }
+
+private:
+    template <typename T, typename S>
+    void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>& x, VectorX<S>* y) const {
+        if (a_.has_value()) {
+            VectorX<S> y_inner;
+            evaluator_->Eval(x, &y_inner);
+            y->resize(1);
+            (*y)(0) = a_->dot(y_inner) + b_;
+        } else {
+            evaluator_->Eval(x, y);
+        }
+    }
+
+    std::shared_ptr<EvaluatorType> evaluator_;
+    std::optional<Eigen::VectorXd> a_;
+    double b_{};
 };
 
 /**
@@ -567,24 +531,20 @@ class EvaluatorCost : public Cost {
  * @ingroup solver_evaluators
  */
 class PolynomialCost : public EvaluatorCost<PolynomialEvaluator> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(PolynomialCost);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(PolynomialCost);
 
-  /**
-   * Constructs a polynomial cost
-   * @param polynomials Polynomial vector, a 1 x 1 vector.
-   * @param poly_vars Polynomial variables, a `num_vars` x 1 vector.
-   */
-  PolynomialCost(const VectorXPoly& polynomials,
-                 const std::vector<Polynomiald::VarType>& poly_vars)
-      : EvaluatorCost(
-            std::make_shared<PolynomialEvaluator>(polynomials, poly_vars)) {}
+    /**
+     * Constructs a polynomial cost
+     * @param polynomials Polynomial vector, a 1 x 1 vector.
+     * @param poly_vars Polynomial variables, a `num_vars` x 1 vector.
+     */
+    PolynomialCost(const VectorXPoly& polynomials, const std::vector<Polynomiald::VarType>& poly_vars)
+        : EvaluatorCost(std::make_shared<PolynomialEvaluator>(polynomials, poly_vars)) {}
 
-  const VectorXPoly& polynomials() const { return evaluator().polynomials(); }
+    const VectorXPoly& polynomials() const { return evaluator().polynomials(); }
 
-  const std::vector<Polynomiald::VarType>& poly_vars() const {
-    return evaluator().poly_vars();
-  }
+    const std::vector<Polynomiald::VarType>& poly_vars() const { return evaluator().poly_vars(); }
 };
 
 /**
@@ -596,39 +556,36 @@ class PolynomialCost : public EvaluatorCost<PolynomialEvaluator> {
  * @ingroup solver_evaluators
  */
 class ExpressionCost : public Cost {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ExpressionCost);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ExpressionCost);
 
-  explicit ExpressionCost(const symbolic::Expression& e);
+    explicit ExpressionCost(const symbolic::Expression& e);
 
-  /**
-   * @return the list of the variables involved in the vector of expressions,
-   * in the order that they are expected to be received during DoEval.
-   * Any Binding that connects this constraint to decision variables should
-   * pass this list of variables to the Binding.
-   */
-  const VectorXDecisionVariable& vars() const;
+    /**
+     * @return the list of the variables involved in the vector of expressions,
+     * in the order that they are expected to be received during DoEval.
+     * Any Binding that connects this constraint to decision variables should
+     * pass this list of variables to the Binding.
+     */
+    const VectorXDecisionVariable& vars() const;
 
-  /** @return the symbolic expression. */
-  const symbolic::Expression& expression() const;
+    /** @return the symbolic expression. */
+    const symbolic::Expression& expression() const;
 
- protected:
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override;
+protected:
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const override;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                VectorX<symbolic::Expression>* y) const override;
 
-  std::ostream& DoDisplay(std::ostream&,
-                          const VectorX<symbolic::Variable>&) const override;
+    std::ostream& DoDisplay(std::ostream&, const VectorX<symbolic::Variable>&) const override;
 
-  std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
+    std::string DoToLatex(const VectorX<symbolic::Variable>&, int) const override;
 
- private:
-  std::unique_ptr<EvaluatorBase> evaluator_;
+private:
+    std::unique_ptr<EvaluatorBase> evaluator_;
 };
 
 /**
@@ -641,8 +598,7 @@ class ExpressionCost : public Cost {
  */
 template <typename FF>
 std::shared_ptr<Cost> MakeFunctionCost(FF&& f) {
-  return std::make_shared<EvaluatorCost<>>(
-      MakeFunctionEvaluator(std::forward<FF>(f)));
+    return std::make_shared<EvaluatorCost<>>(MakeFunctionEvaluator(std::forward<FF>(f)));
 }
 
 }  // namespace solvers

@@ -18,69 +18,59 @@ namespace internal {
  * AddStaticFrictionConeComplementarityConstraint()
  * The bound variable vector for this constraint is x = [q; λ; α; β]
  */
-class StaticFrictionConeComplementarityNonlinearConstraint
-    : public solvers::Constraint {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(
-      StaticFrictionConeComplementarityNonlinearConstraint);
+class StaticFrictionConeComplementarityNonlinearConstraint : public solvers::Constraint {
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(StaticFrictionConeComplementarityNonlinearConstraint);
 
-  /*
-   * See AddStaticFrictionConeComplementarityConstraint() for details.
-   */
-  StaticFrictionConeComplementarityNonlinearConstraint(
-      const ContactWrenchEvaluator* contact_wrench_evaluator,
-      double complementarity_tolerance);
+    /*
+     * See AddStaticFrictionConeComplementarityConstraint() for details.
+     */
+    StaticFrictionConeComplementarityNonlinearConstraint(const ContactWrenchEvaluator* contact_wrench_evaluator,
+                                                         double complementarity_tolerance);
 
-  ~StaticFrictionConeComplementarityNonlinearConstraint() override {}
+    ~StaticFrictionConeComplementarityNonlinearConstraint() override {}
 
-  /* The slack variable for n_Wᵀ * f_W. See
-   * AddStaticFrictionConeComplementarityConstraint().*/
-  const symbolic::Variable& alpha_var() const { return alpha_var_; }
+    /* The slack variable for n_Wᵀ * f_W. See
+     * AddStaticFrictionConeComplementarityConstraint().*/
+    const symbolic::Variable& alpha_var() const { return alpha_var_; }
 
-  /* The slack variable for sdf. See
-   * AddStaticFrictionConeComplementarityConstraint(). */
-  const symbolic::Variable& beta_var() const { return beta_var_; }
+    /* The slack variable for sdf. See
+     * AddStaticFrictionConeComplementarityConstraint(). */
+    const symbolic::Variable& beta_var() const { return beta_var_; }
 
-  void UpdateComplementarityTolerance(double complementarity_tolerance);
+    void UpdateComplementarityTolerance(double complementarity_tolerance);
 
-  const ContactWrenchEvaluator& contact_wrench_evaluator() const {
-    return *contact_wrench_evaluator_;
-  }
+    const ContactWrenchEvaluator& contact_wrench_evaluator() const { return *contact_wrench_evaluator_; }
 
-  template <typename T>
-  void DecomposeX(const Eigen::Ref<const VectorX<T>>& x, VectorX<T>* q,
-                  VectorX<T>* lambda, T* alpha, T* beta) const {
-    *q = x.head(contact_wrench_evaluator_->plant().num_positions());
-    *lambda = x.segment(q->rows(), contact_wrench_evaluator_->num_lambda());
-    *alpha = x(x.rows() - 2);
-    *beta = x(x.rows() - 1);
-  }
+    template <typename T>
+    void DecomposeX(const Eigen::Ref<const VectorX<T>>& x, VectorX<T>* q, VectorX<T>* lambda, T* alpha, T* beta) const {
+        *q = x.head(contact_wrench_evaluator_->plant().num_positions());
+        *lambda = x.segment(q->rows(), contact_wrench_evaluator_->num_lambda());
+        *alpha = x(x.rows() - 2);
+        *beta = x(x.rows() - 1);
+    }
 
-  /*
-   * Create a binding of the constraint, together with the bound variables
-   * q, λ, α and β. See AddStaticFrictionConeComplementarityConstraint()
-   * for more details.
-   */
-  static solvers::Binding<
-      internal::StaticFrictionConeComplementarityNonlinearConstraint>
-  MakeBinding(const ContactWrenchEvaluator* contact_wrench_evaluator,
-              double complementarity_tolerance,
-              const Eigen::Ref<const VectorX<symbolic::Variable>>& q_vars,
-              const Eigen::Ref<const VectorX<symbolic::Variable>>& lambda_vars);
+    /*
+     * Create a binding of the constraint, together with the bound variables
+     * q, λ, α and β. See AddStaticFrictionConeComplementarityConstraint()
+     * for more details.
+     */
+    static solvers::Binding<internal::StaticFrictionConeComplementarityNonlinearConstraint> MakeBinding(
+            const ContactWrenchEvaluator* contact_wrench_evaluator,
+            double complementarity_tolerance,
+            const Eigen::Ref<const VectorX<symbolic::Variable>>& q_vars,
+            const Eigen::Ref<const VectorX<symbolic::Variable>>& lambda_vars);
 
- private:
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const final;
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const final;
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const final;
+private:
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const final;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const final;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x, VectorX<symbolic::Expression>* y) const final;
 
-  const ContactWrenchEvaluator* const contact_wrench_evaluator_;
+    const ContactWrenchEvaluator* const contact_wrench_evaluator_;
 
-  symbolic::Variable alpha_var_;
+    symbolic::Variable alpha_var_;
 
-  symbolic::Variable beta_var_;
+    symbolic::Variable beta_var_;
 };
 }  // namespace internal
 
@@ -117,12 +107,11 @@ class StaticFrictionConeComplementarityNonlinearConstraint
  * @ingroup solver_evaluators
  */
 solvers::Binding<internal::StaticFrictionConeComplementarityNonlinearConstraint>
-AddStaticFrictionConeComplementarityConstraint(
-    const ContactWrenchEvaluator* contact_wrench_evaluator,
-    double complementarity_tolerance,
-    const Eigen::Ref<const VectorX<symbolic::Variable>>& q_vars,
-    const Eigen::Ref<const VectorX<symbolic::Variable>>& lambda_vars,
-    solvers::MathematicalProgram* prog);
+AddStaticFrictionConeComplementarityConstraint(const ContactWrenchEvaluator* contact_wrench_evaluator,
+                                               double complementarity_tolerance,
+                                               const Eigen::Ref<const VectorX<symbolic::Variable>>& q_vars,
+                                               const Eigen::Ref<const VectorX<symbolic::Variable>>& lambda_vars,
+                                               solvers::MathematicalProgram* prog);
 
 }  // namespace multibody
 }  // namespace drake

@@ -24,23 +24,23 @@ namespace systems {
 /// @ingroup primitive_systems
 template <typename T>
 class Adder final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Adder);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Adder);
 
-  /// Construct an %Adder System.
-  /// @param num_inputs is the number of input ports to be added.
-  /// @param size number of elements in each input and output signal.
-  Adder(int num_inputs, int size);
+    /// Construct an %Adder System.
+    /// @param num_inputs is the number of input ports to be added.
+    /// @param size number of elements in each input and output signal.
+    Adder(int num_inputs, int size);
 
-  /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  template <typename U>
-  explicit Adder(const Adder<U>&);
+    /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    template <typename U>
+    explicit Adder(const Adder<U>&);
 
- private:
-  // Sums the input ports into a value suitable for the output port. If the
-  // input ports are not the appropriate count or size, std::runtime_error will
-  // be thrown.
-  void CalcSum(const Context<T>& context, BasicVector<T>* sum) const;
+private:
+    // Sums the input ports into a value suitable for the output port. If the
+    // input ports are not the appropriate count or size, std::runtime_error will
+    // be thrown.
+    void CalcSum(const Context<T>& context, BasicVector<T>* sum) const;
 };
 
 }  // namespace systems

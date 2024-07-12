@@ -60,39 +60,38 @@ namespace multibody {
 /// @tparam_default_scalar
 template <typename T>
 class CoulombFriction {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(CoulombFriction);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(CoulombFriction);
 
-  /// Default constructor for a frictionless surface, i.e. with zero static and
-  /// dynamic coefficients of friction.
-  CoulombFriction() = default;
+    /// Default constructor for a frictionless surface, i.e. with zero static and
+    /// dynamic coefficients of friction.
+    CoulombFriction() = default;
 
-  /// Specifies both the static and dynamic friction coefficients for a given
-  /// surface.
-  /// @throws std::exception if any of the friction coefficients are
-  /// negative or if `dynamic_friction > static_friction` (they can be equal.)
-  CoulombFriction(const T& static_friction, const T& dynamic_friction);
+    /// Specifies both the static and dynamic friction coefficients for a given
+    /// surface.
+    /// @throws std::exception if any of the friction coefficients are
+    /// negative or if `dynamic_friction > static_friction` (they can be equal.)
+    CoulombFriction(const T& static_friction, const T& dynamic_friction);
 
-  /// Returns the coefficient of static friction.
-  const T& static_friction() const { return static_friction_; }
+    /// Returns the coefficient of static friction.
+    const T& static_friction() const { return static_friction_; }
 
-  /// Returns the coefficient of dynamic friction.
-  const T& dynamic_friction() const { return dynamic_friction_; }
+    /// Returns the coefficient of dynamic friction.
+    const T& dynamic_friction() const { return dynamic_friction_; }
 
-  /// Performs a bitwise-identical comparison, not done to any tolerance.
-  boolean<T> operator==(const CoulombFriction& other) const;
+    /// Performs a bitwise-identical comparison, not done to any tolerance.
+    boolean<T> operator==(const CoulombFriction& other) const;
 
- private:
-  // Confirms two properties on the friction coefficient pair:
-  //  1. Both values non-negative.
-  //  2. static_friction >= dynamic_friction.
-  // Throws std::exception on failure of these tests.
-  static void ThrowForBadFriction(const T& static_friction,
-                                  const T& dynamic_friction);
+private:
+    // Confirms two properties on the friction coefficient pair:
+    //  1. Both values non-negative.
+    //  2. static_friction >= dynamic_friction.
+    // Throws std::exception on failure of these tests.
+    static void ThrowForBadFriction(const T& static_friction, const T& dynamic_friction);
 
-  // Default values are for an ideal frictionless surface.
-  T static_friction_{0.0};
-  T dynamic_friction_{0.0};
+    // Default values are for an ideal frictionless surface.
+    T static_friction_{0.0};
+    T dynamic_friction_{0.0};
 };
 
 /// Given the surface properties of two different surfaces, this method computes
@@ -120,26 +119,23 @@ class CoulombFriction {
 ///   Coulomb's law coefficients of friction.
 /// @returns the combined friction coefficients for the interacting surfaces.
 template <typename T>
-CoulombFriction<T> CalcContactFrictionFromSurfaceProperties(
-    const CoulombFriction<T>& surface_properties1,
-    const CoulombFriction<T>& surface_properties2) {
-  // Aliases to shorten expressions below.
-  const auto& s1 = surface_properties1;
-  const auto& s2 = surface_properties2;
-  // Simple utility to detect 0 / 0. As it is used in this method, denom
-  // can only be zero if num is also zero, so we'll simply return zero.
-  auto safe_divide = [](const T& num, const T& denom) {
-    return denom == 0.0 ? 0.0 : num / denom;
-  };
-  return CoulombFriction<T>(
-      safe_divide(2 * s1.static_friction() * s2.static_friction(),
-                  s1.static_friction() + s2.static_friction()),
-      safe_divide(2 * s1.dynamic_friction() * s2.dynamic_friction(),
-                  s1.dynamic_friction() + s2.dynamic_friction()));
+CoulombFriction<T> CalcContactFrictionFromSurfaceProperties(const CoulombFriction<T>& surface_properties1,
+                                                            const CoulombFriction<T>& surface_properties2) {
+    // Aliases to shorten expressions below.
+    const auto& s1 = surface_properties1;
+    const auto& s2 = surface_properties2;
+    // Simple utility to detect 0 / 0. As it is used in this method, denom
+    // can only be zero if num is also zero, so we'll simply return zero.
+    auto safe_divide = [](const T& num, const T& denom) {
+        return denom == 0.0 ? 0.0 : num / denom;
+    };
+    return CoulombFriction<T>(
+            safe_divide(2 * s1.static_friction() * s2.static_friction(), s1.static_friction() + s2.static_friction()),
+            safe_divide(2 * s1.dynamic_friction() * s2.dynamic_friction(),
+                        s1.dynamic_friction() + s2.dynamic_friction()));
 }
 
 }  // namespace multibody
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::multibody::CoulombFriction);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::multibody::CoulombFriction);

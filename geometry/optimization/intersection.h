@@ -21,69 +21,63 @@ case, which we treat as being {0}, the unique zero-dimensional vector space.
 
 @ingroup geometry_optimization */
 class Intersection final : public ConvexSet {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Intersection);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Intersection);
 
-  /** Constructs a default (zero-dimensional, nonempty) set. */
-  Intersection();
+    /** Constructs a default (zero-dimensional, nonempty) set. */
+    Intersection();
 
-  /** Constructs the intersection from a vector of convex sets. */
-  explicit Intersection(const ConvexSets& sets);
+    /** Constructs the intersection from a vector of convex sets. */
+    explicit Intersection(const ConvexSets& sets);
 
-  /** Constructs the intersection from a pair of convex sets. */
-  Intersection(const ConvexSet& setA, const ConvexSet& setB);
+    /** Constructs the intersection from a pair of convex sets. */
+    Intersection(const ConvexSet& setA, const ConvexSet& setB);
 
-  ~Intersection() final;
+    ~Intersection() final;
 
-  /** The number of elements (or sets) used in the intersection. */
-  int num_elements() const { return sets_.size(); }
+    /** The number of elements (or sets) used in the intersection. */
+    int num_elements() const { return sets_.size(); }
 
-  /** Returns a reference to the ConvexSet defining the `index` element in the
-  intersection. */
-  const ConvexSet& element(int i) const;
+    /** Returns a reference to the ConvexSet defining the `index` element in the
+    intersection. */
+    const ConvexSet& element(int i) const;
 
-  /** @throws  Not implemented. */
-  using ConvexSet::CalcVolume;
+    /** @throws  Not implemented. */
+    using ConvexSet::CalcVolume;
 
- private:
-  std::unique_ptr<ConvexSet> DoClone() const final;
+private:
+    std::unique_ptr<ConvexSet> DoClone() const final;
 
-  std::optional<bool> DoIsBoundedShortcut() const final;
+    std::optional<bool> DoIsBoundedShortcut() const final;
 
-  bool DoIsEmpty() const final;
+    bool DoIsEmpty() const final;
 
-  std::optional<Eigen::VectorXd> DoMaybeGetPoint() const final;
+    std::optional<Eigen::VectorXd> DoMaybeGetPoint() const final;
 
-  bool DoPointInSet(const Eigen::Ref<const Eigen::VectorXd>& x,
-                    double tol) const final;
+    bool DoPointInSet(const Eigen::Ref<const Eigen::VectorXd>& x, double tol) const final;
 
-  std::pair<VectorX<symbolic::Variable>,
-            std::vector<solvers::Binding<solvers::Constraint>>>
-  DoAddPointInSetConstraints(
-      solvers::MathematicalProgram* prog,
-      const Eigen::Ref<const solvers::VectorXDecisionVariable>& vars)
-      const final;
+    std::pair<VectorX<symbolic::Variable>, std::vector<solvers::Binding<solvers::Constraint>>>
+    DoAddPointInSetConstraints(solvers::MathematicalProgram* prog,
+                               const Eigen::Ref<const solvers::VectorXDecisionVariable>& vars) const final;
 
-  std::vector<solvers::Binding<solvers::Constraint>>
-  DoAddPointInNonnegativeScalingConstraints(
-      solvers::MathematicalProgram* prog,
-      const Eigen::Ref<const solvers::VectorXDecisionVariable>& x,
-      const symbolic::Variable& t) const final;
+    std::vector<solvers::Binding<solvers::Constraint>> DoAddPointInNonnegativeScalingConstraints(
+            solvers::MathematicalProgram* prog,
+            const Eigen::Ref<const solvers::VectorXDecisionVariable>& x,
+            const symbolic::Variable& t) const final;
 
-  std::vector<solvers::Binding<solvers::Constraint>>
-  DoAddPointInNonnegativeScalingConstraints(
-      solvers::MathematicalProgram* prog,
-      const Eigen::Ref<const Eigen::MatrixXd>& A,
-      const Eigen::Ref<const Eigen::VectorXd>& b,
-      const Eigen::Ref<const Eigen::VectorXd>& c, double d,
-      const Eigen::Ref<const solvers::VectorXDecisionVariable>& x,
-      const Eigen::Ref<const solvers::VectorXDecisionVariable>& t) const final;
+    std::vector<solvers::Binding<solvers::Constraint>> DoAddPointInNonnegativeScalingConstraints(
+            solvers::MathematicalProgram* prog,
+            const Eigen::Ref<const Eigen::MatrixXd>& A,
+            const Eigen::Ref<const Eigen::VectorXd>& b,
+            const Eigen::Ref<const Eigen::VectorXd>& c,
+            double d,
+            const Eigen::Ref<const solvers::VectorXDecisionVariable>& x,
+            const Eigen::Ref<const solvers::VectorXDecisionVariable>& t) const final;
 
-  // TODO(mpetersen94): Implement DoToShapeWithPose.
-  std::pair<std::unique_ptr<Shape>, math::RigidTransformd> DoToShapeWithPose()
-      const final;
+    // TODO(mpetersen94): Implement DoToShapeWithPose.
+    std::pair<std::unique_ptr<Shape>, math::RigidTransformd> DoToShapeWithPose() const final;
 
-  ConvexSets sets_{};  // Not marked const to support move semantics.
+    ConvexSets sets_{};  // Not marked const to support move semantics.
 };
 
 }  // namespace optimization

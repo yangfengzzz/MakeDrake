@@ -17,16 +17,14 @@ namespace fem {
  an FemPlantData is usually cheap. */
 template <typename T>
 struct FemPlantData {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(FemPlantData);
-  FemPlantData(
-      const systems::Context<T>& plant_context_in,
-      const std::vector<const ForceDensityField<T>*>& force_density_fields_in)
-      : plant_context(plant_context_in),
-        force_density_fields(force_density_fields_in) {}
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(FemPlantData);
+    FemPlantData(const systems::Context<T>& plant_context_in,
+                 const std::vector<const ForceDensityField<T>*>& force_density_fields_in)
+        : plant_context(plant_context_in), force_density_fields(force_density_fields_in) {}
 
-  const systems::Context<T>& plant_context;
-  std::vector<const ForceDensityField<T>*> force_density_fields;
+    const systems::Context<T>& plant_context;
+    std::vector<const ForceDensityField<T>*> force_density_fields;
 };
 
 }  // namespace fem
@@ -34,4 +32,4 @@ struct FemPlantData {
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    struct ::drake::multibody::fem::FemPlantData);
+        struct ::drake::multibody::fem::FemPlantData);

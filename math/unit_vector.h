@@ -22,7 +22,7 @@ constexpr double kToleranceUnitVectorNorm = 1.0E-14;
 // @note: When type T is symbolic::Expression, this function is a no-op that
 // does not throw an exception.
 template <typename T>
-void ThrowIfNotUnitVector(const Vector3<T> &unit_vector,
+void ThrowIfNotUnitVector(const Vector3<T>& unit_vector,
                           std::string_view function_name,
                           double tolerance_unit_vector_norm = kToleranceUnitVectorNorm);
 
@@ -37,7 +37,7 @@ void ThrowIfNotUnitVector(const Vector3<T> &unit_vector,
 // TODO(Mitiguy) Consider evolving towards a consistent policy of ‖v‖ ≈ 1.0
 //  instead of ‖v‖ ≥ 1E-10, somewhat similar to ThrowIfNotUnitVector().
 template <typename T>
-Vector3<T> NormalizeOrThrow(const Vector3<T> &v, std::string_view function_name);
+Vector3<T> NormalizeOrThrow(const Vector3<T>& v, std::string_view function_name);
 
 }  // namespace internal
 }  // namespace math

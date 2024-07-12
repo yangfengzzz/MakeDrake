@@ -11,10 +11,9 @@ namespace drake {
 namespace solvers {
 namespace test {
 namespace {
-void GetMixedIntegerLinearProgramSolvers(
-    std::list<std::unique_ptr<SolverInterface>>* solvers) {
-  AddSolverIfAvailable<GurobiSolver>(solvers);
-  AddSolverIfAvailable<MosekSolver>(solvers);
+void GetMixedIntegerLinearProgramSolvers(std::list<std::unique_ptr<SolverInterface>>* solvers) {
+    AddSolverIfAvailable<GurobiSolver>(solvers);
+    AddSolverIfAvailable<MosekSolver>(solvers);
 }
 }  // namespace
 
@@ -26,27 +25,24 @@ void GetMixedIntegerLinearProgramSolvers(
 //         x(0), x(1), x(2) are binary
 // The optimal solution is x(0) = 1, x(1) = 0, x(2) = 1;
 GTEST_TEST(TestMixedIntegerOptimization, TestMixedIntegerLinearProgram1) {
-  std::list<std::unique_ptr<SolverInterface>> solvers;
-  GetMixedIntegerLinearProgramSolvers(&solvers);
-  for (const auto& solver : solvers) {
-    MathematicalProgram prog;
-    auto x = prog.NewBinaryVariables(3, "x");
-    Eigen::Vector3d c(-1, -1, -2);
-    prog.AddLinearCost(c, x);
-    Eigen::RowVector3d a1(1, 2, 3);
-    prog.AddLinearConstraint(a1, -std::numeric_limits<double>::infinity(), 4,
-                             x);
-    Eigen::RowVector2d a2(1, 1);
-    prog.AddLinearConstraint(a2, 1, std::numeric_limits<double>::infinity(),
-                             x.head<2>());
+    std::list<std::unique_ptr<SolverInterface>> solvers;
+    GetMixedIntegerLinearProgramSolvers(&solvers);
+    for (const auto& solver : solvers) {
+        MathematicalProgram prog;
+        auto x = prog.NewBinaryVariables(3, "x");
+        Eigen::Vector3d c(-1, -1, -2);
+        prog.AddLinearCost(c, x);
+        Eigen::RowVector3d a1(1, 2, 3);
+        prog.AddLinearConstraint(a1, -std::numeric_limits<double>::infinity(), 4, x);
+        Eigen::RowVector2d a2(1, 1);
+        prog.AddLinearConstraint(a2, 1, std::numeric_limits<double>::infinity(), x.head<2>());
 
-    const MathematicalProgramResult result = RunSolver(prog, *solver);
+        const MathematicalProgramResult result = RunSolver(prog, *solver);
 
-    Eigen::Vector3d x_expected(1, 0, 1);
-    const auto& x_value = result.GetSolution(x);
-    EXPECT_TRUE(CompareMatrices(x_value, x_expected, 1E-6,
-                                MatrixCompareType::absolute));
-  }
+        Eigen::Vector3d x_expected(1, 0, 1);
+        const auto& x_value = result.GetSolution(x);
+        EXPECT_TRUE(CompareMatrices(x_value, x_expected, 1E-6, MatrixCompareType::absolute));
+    }
 }
 
 // Take the example from
@@ -56,24 +52,22 @@ GTEST_TEST(TestMixedIntegerOptimization, TestMixedIntegerLinearProgram1) {
 // z1, z2, z3 are integers.
 // The optimal solution is (1, 1, 1)
 GTEST_TEST(TestMixedIntegerOptimization, TestMixedIntegerLinearProgram2) {
-  std::list<std::unique_ptr<SolverInterface>> solvers;
-  GetMixedIntegerLinearProgramSolvers(&solvers);
-  for (const auto& solver : solvers) {
-    MathematicalProgram prog;
-    auto x = prog.NewBinaryVariables<3>("x");
-    Eigen::Vector3d c(2, 1, -2);
-    prog.AddLinearCost(c, x);
-    Eigen::RowVector3d a1(0.7, 0.5, 1);
-    prog.AddLinearConstraint(a1, 1.8, std::numeric_limits<double>::infinity(),
-                             x);
+    std::list<std::unique_ptr<SolverInterface>> solvers;
+    GetMixedIntegerLinearProgramSolvers(&solvers);
+    for (const auto& solver : solvers) {
+        MathematicalProgram prog;
+        auto x = prog.NewBinaryVariables<3>("x");
+        Eigen::Vector3d c(2, 1, -2);
+        prog.AddLinearCost(c, x);
+        Eigen::RowVector3d a1(0.7, 0.5, 1);
+        prog.AddLinearConstraint(a1, 1.8, std::numeric_limits<double>::infinity(), x);
 
-    const MathematicalProgramResult result = RunSolver(prog, *solver);
+        const MathematicalProgramResult result = RunSolver(prog, *solver);
 
-    Eigen::Vector3d x_expected(1, 1, 1);
-    const auto& x_value = result.GetSolution(x);
-    EXPECT_TRUE(CompareMatrices(x_value, x_expected, 1E-6,
-                                MatrixCompareType::absolute));
-  }
+        Eigen::Vector3d x_expected(1, 1, 1);
+        const auto& x_value = result.GetSolution(x);
+        EXPECT_TRUE(CompareMatrices(x_value, x_expected, 1E-6, MatrixCompareType::absolute));
+    }
 }
 }  // namespace test
 }  // namespace solvers

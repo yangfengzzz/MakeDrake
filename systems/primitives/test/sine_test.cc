@@ -25,115 +25,105 @@ void TestSineSystem(const Sine<T>& sine_system,
                     const Eigen::MatrixXd& expected_outputs,
                     const Eigen::MatrixXd& expected_first_derivs,
                     const Eigen::MatrixXd& expected_second_derivs) {
-  auto context = sine_system.CreateDefaultContext();
+    auto context = sine_system.CreateDefaultContext();
 
-  // The tolerance used for testing the system outputs. System inputs are
-  // specified to four significant digits, and the tolerance here is chosen to
-  // match this precision.
-  T ktest_tolerance = 1e-4;
+    // The tolerance used for testing the system outputs. System inputs are
+    // specified to four significant digits, and the tolerance here is chosen to
+    // match this precision.
+    T ktest_tolerance = 1e-4;
 
-  // Verifies that Sine allocates no state variables in the context.
-  EXPECT_EQ(0, context->num_continuous_states());
+    // Verifies that Sine allocates no state variables in the context.
+    EXPECT_EQ(0, context->num_continuous_states());
 
-  if (sine_system.is_time_based()) {
-    // If the system is time based, the input_vectors Matrix should only contain
-    // a row vector of time instances to test against. In this case, the system
-    // has zero inputs ports.
-    ASSERT_EQ(input_vectors.rows(), 1);
-    ASSERT_EQ(0, sine_system.num_input_ports());
-    ASSERT_EQ(0, context->num_input_ports());
+    if (sine_system.is_time_based()) {
+        // If the system is time based, the input_vectors Matrix should only contain
+        // a row vector of time instances to test against. In this case, the system
+        // has zero inputs ports.
+        ASSERT_EQ(input_vectors.rows(), 1);
+        ASSERT_EQ(0, sine_system.num_input_ports());
+        ASSERT_EQ(0, context->num_input_ports());
 
-    for (int i = 0; i < input_vectors.cols(); i++) {
-      // Initialize the time in seconds to be used by the Sine system.
-      context->SetTime(input_vectors(0, i));
+        for (int i = 0; i < input_vectors.cols(); i++) {
+            // Initialize the time in seconds to be used by the Sine system.
+            context->SetTime(input_vectors(0, i));
 
-      // Check the Sine output.
-      ASSERT_EQ(3, sine_system.num_output_ports());
-      EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(0).Eval(*context),
-                                  expected_outputs.col(i), ktest_tolerance));
-      EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(1).Eval(*context),
-                                  expected_first_derivs.col(i),
-                                  ktest_tolerance));
-      EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(2).Eval(*context),
-                                  expected_second_derivs.col(i),
-                                  ktest_tolerance));
+            // Check the Sine output.
+            ASSERT_EQ(3, sine_system.num_output_ports());
+            EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(0).Eval(*context), expected_outputs.col(i),
+                                        ktest_tolerance));
+            EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(1).Eval(*context), expected_first_derivs.col(i),
+                                        ktest_tolerance));
+            EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(2).Eval(*context), expected_second_derivs.col(i),
+                                        ktest_tolerance));
+        }
+    } else {
+        // Loop over the input vectors and check that the Sine system outputs match
+        // the expected outputs.
+        for (int i = 0; i < input_vectors.cols(); i++) {
+            ASSERT_EQ(1, sine_system.num_input_ports());
+            ASSERT_EQ(1, context->num_input_ports());
+
+            // Confirm the size of the input port matches the size of the sample
+            // inputs (i.e., each column in the input_vectors matrix represents a
+            // sampling instant. The number of rows in input_vectors should match the
+            // size of the input port).
+            ASSERT_EQ(sine_system.amplitude_vector().size(), input_vectors.rows());
+
+            // Initialize the input and associate it with the context.
+            sine_system.get_input_port(0).FixValue(context.get(), input_vectors.col(i));
+
+            // Check the Sine output.
+            ASSERT_EQ(3, sine_system.num_output_ports());
+            EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(0).Eval(*context), expected_outputs.col(i),
+                                        ktest_tolerance));
+            EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(1).Eval(*context), expected_first_derivs.col(i),
+                                        ktest_tolerance));
+            EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(2).Eval(*context), expected_second_derivs.col(i),
+                                        ktest_tolerance));
+        }
     }
-  } else {
-    // Loop over the input vectors and check that the Sine system outputs match
-    // the expected outputs.
-    for (int i = 0; i < input_vectors.cols(); i++) {
-      ASSERT_EQ(1, sine_system.num_input_ports());
-      ASSERT_EQ(1, context->num_input_ports());
-
-      // Confirm the size of the input port matches the size of the sample
-      // inputs (i.e., each column in the input_vectors matrix represents a
-      // sampling instant. The number of rows in input_vectors should match the
-      // size of the input port).
-      ASSERT_EQ(sine_system.amplitude_vector().size(), input_vectors.rows());
-
-      // Initialize the input and associate it with the context.
-      sine_system.get_input_port(0).FixValue(context.get(),
-                                             input_vectors.col(i));
-
-      // Check the Sine output.
-      ASSERT_EQ(3, sine_system.num_output_ports());
-      EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(0).Eval(*context),
-                                  expected_outputs.col(i), ktest_tolerance));
-      EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(1).Eval(*context),
-                                  expected_first_derivs.col(i),
-                                  ktest_tolerance));
-      EXPECT_TRUE(CompareMatrices(sine_system.get_output_port(2).Eval(*context),
-                                  expected_second_derivs.col(i),
-                                  ktest_tolerance));
-    }
-  }
 }
 
 // Test with scalar input instances and scalar Sine parameters.
 GTEST_TEST(SineTest, SineScalarTest) {
-  const double kAmp = 1;
-  const double kPhase = 2;
-  const double kFreq = 3;
-  const auto sine_system =
-      make_unique<Sine<double>>(kAmp, kFreq, kPhase, 1, false);
+    const double kAmp = 1;
+    const double kPhase = 2;
+    const double kFreq = 3;
+    const auto sine_system = make_unique<Sine<double>>(kAmp, kFreq, kPhase, 1, false);
 
-  const Eigen::Vector4d input_vector(M_PI / 6.0, M_PI / 4.0, M_PI / 2.0, M_PI);
-  const Eigen::Vector4d expected_output(-0.4161, -0.9372, 0.4161, -0.9093);
-  const Eigen::Vector4d expected_first_deriv(-2.7279, -1.0461, 2.7279, 1.2484);
-  const Eigen::Vector4d expected_second_deriv(3.7453, 8.4351, -3.7453, 8.1837);
+    const Eigen::Vector4d input_vector(M_PI / 6.0, M_PI / 4.0, M_PI / 2.0, M_PI);
+    const Eigen::Vector4d expected_output(-0.4161, -0.9372, 0.4161, -0.9093);
+    const Eigen::Vector4d expected_first_deriv(-2.7279, -1.0461, 2.7279, 1.2484);
+    const Eigen::Vector4d expected_second_deriv(3.7453, 8.4351, -3.7453, 8.1837);
 
-  TestSineSystem(*sine_system, input_vector.transpose(),
-                 expected_output.transpose(), expected_first_deriv.transpose(),
-                 expected_second_deriv.transpose());
+    TestSineSystem(*sine_system, input_vector.transpose(), expected_output.transpose(),
+                   expected_first_deriv.transpose(), expected_second_deriv.transpose());
 }
 
 // Test with time based instances and scalar Sine parameters.
 GTEST_TEST(SineTest, SineScalarTimeTest) {
-  const double kAmp = 1;
-  const double kPhase = 2;
-  const double kFreq = 3;
-  const auto sine_system =
-      make_unique<Sine<double>>(kAmp, kFreq, kPhase, 1, true);
+    const double kAmp = 1;
+    const double kPhase = 2;
+    const double kFreq = 3;
+    const auto sine_system = make_unique<Sine<double>>(kAmp, kFreq, kPhase, 1, true);
 
-  const Eigen::Vector4d input_vector(M_PI / 6.0, M_PI / 4.0, M_PI / 2.0, M_PI);
-  const Eigen::Vector4d expected_output(-0.4161, -0.9372, 0.4161, -0.9093);
-  const Eigen::Vector4d expected_first_deriv(-2.7279, -1.0461, 2.7279, 1.2484);
-  const Eigen::Vector4d expected_second_deriv(3.7453, 8.4351, -3.7453, 8.1837);
+    const Eigen::Vector4d input_vector(M_PI / 6.0, M_PI / 4.0, M_PI / 2.0, M_PI);
+    const Eigen::Vector4d expected_output(-0.4161, -0.9372, 0.4161, -0.9093);
+    const Eigen::Vector4d expected_first_deriv(-2.7279, -1.0461, 2.7279, 1.2484);
+    const Eigen::Vector4d expected_second_deriv(3.7453, 8.4351, -3.7453, 8.1837);
 
-  TestSineSystem(*sine_system, input_vector.transpose(),
-                 expected_output.transpose(), expected_first_deriv.transpose(),
-                 expected_second_deriv.transpose());
+    TestSineSystem(*sine_system, input_vector.transpose(), expected_output.transpose(),
+                   expected_first_deriv.transpose(), expected_second_deriv.transpose());
 }
 
 // Test with vector input instances and scalar Sine parameters.
 GTEST_TEST(SineTest, SineVectorTest) {
-  const double kAmp = 1;
-  const double kPhase = 2;
-  const double kFreq = 3;
-  const auto sine_system =
-      make_unique<Sine<double>>(kAmp, kFreq, kPhase, 4, false);
+    const double kAmp = 1;
+    const double kPhase = 2;
+    const double kFreq = 3;
+    const auto sine_system = make_unique<Sine<double>>(kAmp, kFreq, kPhase, 4, false);
 
-  // clang-format off
+    // clang-format off
   Eigen::Matrix4d input_vectors;
   input_vectors << 0.1, 0.2, 0.3, 0.4,
                    0.5, 0.6, 0.7, 0.8,
@@ -154,21 +144,19 @@ GTEST_TEST(SineTest, SineVectorTest) {
                            3.1570, 5.5067, 7.3645, 8.5644,
                            8.9993, 8.6303, 7.4904, 5.6814,
                            3.3649, 0.7478, -1.9361, -4.4470;
-  // clang-format on
+    // clang-format on
 
-  TestSineSystem(*sine_system, input_vectors, expected_output,
-                 expected_first_deriv, expected_second_deriv);
+    TestSineSystem(*sine_system, input_vectors, expected_output, expected_first_deriv, expected_second_deriv);
 }
 
 // Test with vector input instances and vector Sine parameters.
 GTEST_TEST(SineTest, SineParameterTest) {
-  Eigen::Vector4d kAmp(1.1, 1.2, 1.3, 1.4);
-  Eigen::Vector4d kFreq(1.5, 1.6, 1.7, 1.8);
-  Eigen::Vector4d kPhase(1.9, 2.0, 2.1, 2.2);
-  const auto sine_system =
-      make_unique<Sine<double>>(kAmp, kFreq, kPhase, false);
+    Eigen::Vector4d kAmp(1.1, 1.2, 1.3, 1.4);
+    Eigen::Vector4d kFreq(1.5, 1.6, 1.7, 1.8);
+    Eigen::Vector4d kPhase(1.9, 2.0, 2.1, 2.2);
+    const auto sine_system = make_unique<Sine<double>>(kAmp, kFreq, kPhase, false);
 
-  // clang-format off
+    // clang-format off
   Eigen::Matrix4d input_vectors;
   input_vectors << 0.1, 0.2, 0.3, 0.4,
                    0.5, 0.6, 0.7, 0.8,
@@ -189,20 +177,19 @@ GTEST_TEST(SineTest, SineParameterTest) {
                            -1.0291, -0.5548, -0.0663, 0.4238,
                            1.7629, 2.2988, 2.7684, 3.1582,
                            4.4688, 4.5359, 4.4564, 4.2329;
-  // clang-format on
+    // clang-format on
 
-  TestSineSystem(*sine_system, input_vectors, expected_output,
-                 expected_first_deriv, expected_second_deriv);
+    TestSineSystem(*sine_system, input_vectors, expected_output, expected_first_deriv, expected_second_deriv);
 }
 
 // Test with time instances, and vector Sine parameters.
 GTEST_TEST(SineTest, SineParameterTimeTest) {
-  Eigen::Vector4d kAmp(1.1, 1.2, 1.3, 1.4);
-  Eigen::Vector4d kFreq(1.5, 1.6, 1.7, 1.8);
-  Eigen::Vector4d kPhase(1.9, 2.0, 2.1, 2.2);
-  const auto sine_system = make_unique<Sine<double>>(kAmp, kFreq, kPhase, true);
+    Eigen::Vector4d kAmp(1.1, 1.2, 1.3, 1.4);
+    Eigen::Vector4d kFreq(1.5, 1.6, 1.7, 1.8);
+    Eigen::Vector4d kPhase(1.9, 2.0, 2.1, 2.2);
+    const auto sine_system = make_unique<Sine<double>>(kAmp, kFreq, kPhase, true);
 
-  // clang-format off
+    // clang-format off
   Eigen::Vector4d input_vectors(0.1, 0.6, 1.1, 1.5);
   Eigen::Matrix4d expected_output;
   expected_output << 0.9761, 0.3685, -0.4369, -0.9306,
@@ -219,47 +206,45 @@ GTEST_TEST(SineTest, SineParameterTimeTest) {
                            -2.5540, -0.5548, 1.7810, 2.9233,
                            -2.8754, -0.0811, 2.7684, 3.7497,
                            -3.1302, 0.6258, 3.9082, 4.4564;
-  // clang-format on
+    // clang-format on
 
-  TestSineSystem(*sine_system, input_vectors.transpose(), expected_output,
-                 expected_first_deriv, expected_second_deriv);
+    TestSineSystem(*sine_system, input_vectors.transpose(), expected_output, expected_first_deriv,
+                   expected_second_deriv);
 }
 
 GTEST_TEST(SineTest, BadSizeTest) {
-  Eigen::Vector4d kAmp(1.1, 1.2, 1.3, 1.4);
-  Eigen::Vector4d kFreq(1.5, 1.6, 1.7, 1.8);
-  Eigen::Vector3d kPhase(1.9, 2.0, 2.1);
-  DRAKE_EXPECT_THROWS_MESSAGE(Sine<double>(kAmp, kFreq, kPhase, true),
-                              ".*amplitudes.*==.*phases.*");
+    Eigen::Vector4d kAmp(1.1, 1.2, 1.3, 1.4);
+    Eigen::Vector4d kFreq(1.5, 1.6, 1.7, 1.8);
+    Eigen::Vector3d kPhase(1.9, 2.0, 2.1);
+    DRAKE_EXPECT_THROWS_MESSAGE(Sine<double>(kAmp, kFreq, kPhase, true), ".*amplitudes.*==.*phases.*");
 }
 
 GTEST_TEST(SineTest, SineAccessorTest) {
-  Eigen::Vector4d kAmp(1.1, 1.2, 1.3, 1.4);
-  Eigen::Vector4d kFreq(1.5, 1.6, 1.7, 1.8);
-  Eigen::Vector4d kPhase(1.9, 2.0, 2.1, 2.2);
-  const auto sine_system = make_unique<Sine<double>>(kAmp, kFreq, kPhase, true);
-  // Verifies the Sine accessors are OK.
-  EXPECT_THROW(sine_system->amplitude(), std::logic_error);
-  EXPECT_THROW(sine_system->frequency(), std::logic_error);
-  EXPECT_THROW(sine_system->phase(), std::logic_error);
+    Eigen::Vector4d kAmp(1.1, 1.2, 1.3, 1.4);
+    Eigen::Vector4d kFreq(1.5, 1.6, 1.7, 1.8);
+    Eigen::Vector4d kPhase(1.9, 2.0, 2.1, 2.2);
+    const auto sine_system = make_unique<Sine<double>>(kAmp, kFreq, kPhase, true);
+    // Verifies the Sine accessors are OK.
+    EXPECT_THROW(sine_system->amplitude(), std::logic_error);
+    EXPECT_THROW(sine_system->frequency(), std::logic_error);
+    EXPECT_THROW(sine_system->phase(), std::logic_error);
 }
 
 GTEST_TEST(SineTest, ToAutoDiff) {
-  Eigen::Vector4d kAmp(1.1, 1.2, 1.3, 1.4);
-  Eigen::Vector4d kFreq(1.5, 1.6, 1.7, 1.8);
-  Eigen::Vector4d kPhase(1.9, 2.0, 2.1, 2.2);
-  const Sine<double> sine_system(kAmp, kFreq, kPhase, true);
-  EXPECT_TRUE(
-      is_autodiffxd_convertible(sine_system, [&](const auto& converted) {
+    Eigen::Vector4d kAmp(1.1, 1.2, 1.3, 1.4);
+    Eigen::Vector4d kFreq(1.5, 1.6, 1.7, 1.8);
+    Eigen::Vector4d kPhase(1.9, 2.0, 2.1, 2.2);
+    const Sine<double> sine_system(kAmp, kFreq, kPhase, true);
+    EXPECT_TRUE(is_autodiffxd_convertible(sine_system, [&](const auto& converted) {
         EXPECT_EQ(0, converted.num_input_ports());
         EXPECT_EQ(3, converted.num_output_ports());
         EXPECT_EQ(kAmp, converted.amplitude_vector());
-      }));
+    }));
 }
 
 GTEST_TEST(SineTest, ToSymbolic) {
-  const Sine<double> sine(1.0, 2.0, 3.0, true);
-  EXPECT_TRUE(is_symbolic_convertible(sine));
+    const Sine<double> sine(1.0, 2.0, 3.0, true);
+    EXPECT_TRUE(is_symbolic_convertible(sine));
 }
 
 }  // namespace

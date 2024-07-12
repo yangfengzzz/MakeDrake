@@ -89,130 +89,113 @@ namespace sensors {
 
  @ingroup sensor_systems  */
 class RgbdSensor final : public LeafSystem<double> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(RgbdSensor);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(RgbdSensor);
 
-  /** Constructs an %RgbdSensor with fully specified render camera models for
-   both color/label and depth cameras.
-   @pydrake_mkdoc_identifier{individual_intrinsics}  */
-  RgbdSensor(geometry::FrameId parent_id, const math::RigidTransformd& X_PB,
-             geometry::render::ColorRenderCamera color_camera,
-             geometry::render::DepthRenderCamera depth_camera);
+    /** Constructs an %RgbdSensor with fully specified render camera models for
+     both color/label and depth cameras.
+     @pydrake_mkdoc_identifier{individual_intrinsics}  */
+    RgbdSensor(geometry::FrameId parent_id,
+               const math::RigidTransformd& X_PB,
+               geometry::render::ColorRenderCamera color_camera,
+               geometry::render::DepthRenderCamera depth_camera);
 
-  /** Constructs an %RgbdSensor with fully specified render camera models for
-   both the depth camera. The color camera in inferred from the `depth_camera`;
-   it shares the same geometry::render::RenderCameraCore and is configured to
-   show the window based on the value of `show_color_window`.
-   @pydrake_mkdoc_identifier{combined_intrinsics}  */
-  RgbdSensor(geometry::FrameId parent_id, const math::RigidTransformd& X_PB,
-             const geometry::render::DepthRenderCamera& depth_camera,
-             bool show_color_window = false);
+    /** Constructs an %RgbdSensor with fully specified render camera models for
+     both the depth camera. The color camera in inferred from the `depth_camera`;
+     it shares the same geometry::render::RenderCameraCore and is configured to
+     show the window based on the value of `show_color_window`.
+     @pydrake_mkdoc_identifier{combined_intrinsics}  */
+    RgbdSensor(geometry::FrameId parent_id,
+               const math::RigidTransformd& X_PB,
+               const geometry::render::DepthRenderCamera& depth_camera,
+               bool show_color_window = false);
 
-  ~RgbdSensor() = default;
+    ~RgbdSensor() = default;
 
-  // TODO(eric.cousineau): Expose which renderer color / depth uses?
+    // TODO(eric.cousineau): Expose which renderer color / depth uses?
 
-  // TODO(SeanCurtis-TRI): Deprecate this in favor of the color render camera.
-  /** Returns the intrinsics properties of the color camera model.  */
-  const CameraInfo& color_camera_info() const {
-    return color_camera_.core().intrinsics();
-  }
+    // TODO(SeanCurtis-TRI): Deprecate this in favor of the color render camera.
+    /** Returns the intrinsics properties of the color camera model.  */
+    const CameraInfo& color_camera_info() const { return color_camera_.core().intrinsics(); }
 
-  // TODO(SeanCurtis-TRI): Deprecate this in favor of the depth render camera.
-  /** Returns the intrinsics properties of the depth camera model.  */
-  const CameraInfo& depth_camera_info() const {
-    return depth_camera_.core().intrinsics();
-  }
+    // TODO(SeanCurtis-TRI): Deprecate this in favor of the depth render camera.
+    /** Returns the intrinsics properties of the depth camera model.  */
+    const CameraInfo& depth_camera_info() const { return depth_camera_.core().intrinsics(); }
 
-  /** Returns the render camera for color/label renderings.  */
-  const geometry::render::ColorRenderCamera& color_render_camera() const {
-    return color_camera_;
-  }
+    /** Returns the render camera for color/label renderings.  */
+    const geometry::render::ColorRenderCamera& color_render_camera() const { return color_camera_; }
 
-  /** Returns the render camera for depth renderings.  */
-  const geometry::render::DepthRenderCamera& depth_render_camera() const {
-    return depth_camera_;
-  }
+    /** Returns the render camera for depth renderings.  */
+    const geometry::render::DepthRenderCamera& depth_render_camera() const { return depth_camera_; }
 
-  /** Returns `X_BC`.  */
-  const math::RigidTransformd& X_BC() const {
-    return color_camera_.core().sensor_pose_in_camera_body();
-  }
+    /** Returns `X_BC`.  */
+    const math::RigidTransformd& X_BC() const { return color_camera_.core().sensor_pose_in_camera_body(); }
 
-  /** Returns `X_BD`.  */
-  const math::RigidTransformd& X_BD() const {
-    return depth_camera_.core().sensor_pose_in_camera_body();
-  }
+    /** Returns `X_BD`.  */
+    const math::RigidTransformd& X_BD() const { return depth_camera_.core().sensor_pose_in_camera_body(); }
 
-  /** Returns the id of the frame to which the body is affixed.  */
-  geometry::FrameId parent_frame_id() const { return parent_frame_id_; }
+    /** Returns the id of the frame to which the body is affixed.  */
+    geometry::FrameId parent_frame_id() const { return parent_frame_id_; }
 
-  /** Returns the geometry::QueryObject<double>-valued input port.  */
-  const InputPort<double>& query_object_input_port() const;
+    /** Returns the geometry::QueryObject<double>-valued input port.  */
+    const InputPort<double>& query_object_input_port() const;
 
-  /** Returns the abstract-valued output port that contains an ImageRgba8U.  */
-  const OutputPort<double>& color_image_output_port() const;
+    /** Returns the abstract-valued output port that contains an ImageRgba8U.  */
+    const OutputPort<double>& color_image_output_port() const;
 
-  /** Returns the abstract-valued output port that contains an ImageDepth32F.
-   */
-  const OutputPort<double>& depth_image_32F_output_port() const;
+    /** Returns the abstract-valued output port that contains an ImageDepth32F.
+     */
+    const OutputPort<double>& depth_image_32F_output_port() const;
 
-  /** Returns the abstract-valued output port that contains an ImageDepth16U.
-   */
-  const OutputPort<double>& depth_image_16U_output_port() const;
+    /** Returns the abstract-valued output port that contains an ImageDepth16U.
+     */
+    const OutputPort<double>& depth_image_16U_output_port() const;
 
-  /** Returns the abstract-valued output port that contains an ImageLabel16I.
-   */
-  const OutputPort<double>& label_image_output_port() const;
+    /** Returns the abstract-valued output port that contains an ImageLabel16I.
+     */
+    const OutputPort<double>& label_image_output_port() const;
 
-  /** Returns the abstract-valued output port (containing a RigidTransform)
-   which reports the pose of the body in the world frame (X_WB).  */
-  const OutputPort<double>& body_pose_in_world_output_port() const;
+    /** Returns the abstract-valued output port (containing a RigidTransform)
+     which reports the pose of the body in the world frame (X_WB).  */
+    const OutputPort<double>& body_pose_in_world_output_port() const;
 
-  /** Returns the vector-valued output port (with size == 1) that reports the
-   current simulation time, in seconds. This is provided for consistency with
-   RgbdSensorDiscrete and RgbdSensorAsync (where the image time is not always
-   the current time). */
-  const OutputPort<double>& image_time_output_port() const;
+    /** Returns the vector-valued output port (with size == 1) that reports the
+     current simulation time, in seconds. This is provided for consistency with
+     RgbdSensorDiscrete and RgbdSensorAsync (where the image time is not always
+     the current time). */
+    const OutputPort<double>& image_time_output_port() const;
 
- private:
-  // The calculator methods for the four output ports.
-  void CalcColorImage(const Context<double>& context,
-                      ImageRgba8U* color_image) const;
-  void CalcDepthImage32F(const Context<double>& context,
-                         ImageDepth32F* depth_image) const;
-  void CalcDepthImage16U(const Context<double>& context,
-                         ImageDepth16U* depth_image) const;
-  void CalcLabelImage(const Context<double>& context,
-                      ImageLabel16I* label_image) const;
-  void CalcX_WB(const Context<double>& context,
-                math::RigidTransformd* X_WB) const;
-  void CalcImageTime(const Context<double>&, BasicVector<double>*) const;
+private:
+    // The calculator methods for the four output ports.
+    void CalcColorImage(const Context<double>& context, ImageRgba8U* color_image) const;
+    void CalcDepthImage32F(const Context<double>& context, ImageDepth32F* depth_image) const;
+    void CalcDepthImage16U(const Context<double>& context, ImageDepth16U* depth_image) const;
+    void CalcLabelImage(const Context<double>& context, ImageLabel16I* label_image) const;
+    void CalcX_WB(const Context<double>& context, math::RigidTransformd* X_WB) const;
+    void CalcImageTime(const Context<double>&, BasicVector<double>*) const;
 
-  // Extract the query object from the given context (via the appropriate input
-  // port.
-  const geometry::QueryObject<double>& get_query_object(
-      const Context<double>& context) const {
-    return query_object_input_port().Eval<geometry::QueryObject<double>>(
-        context);
-  }
+    // Extract the query object from the given context (via the appropriate input
+    // port.
+    const geometry::QueryObject<double>& get_query_object(const Context<double>& context) const {
+        return query_object_input_port().Eval<geometry::QueryObject<double>>(context);
+    }
 
-  const InputPort<double>* query_object_input_port_{};
-  const OutputPort<double>* color_image_port_{};
-  const OutputPort<double>* depth_image_32F_port_{};
-  const OutputPort<double>* depth_image_16U_port_{};
-  const OutputPort<double>* label_image_port_{};
-  const OutputPort<double>* body_pose_in_world_output_port_{};
-  const OutputPort<double>* image_time_output_port_{};
+    const InputPort<double>* query_object_input_port_{};
+    const OutputPort<double>* color_image_port_{};
+    const OutputPort<double>* depth_image_32F_port_{};
+    const OutputPort<double>* depth_image_16U_port_{};
+    const OutputPort<double>* label_image_port_{};
+    const OutputPort<double>* body_pose_in_world_output_port_{};
+    const OutputPort<double>* image_time_output_port_{};
 
-  // The identifier for the parent frame `P`.
-  const geometry::FrameId parent_frame_id_;
+    // The identifier for the parent frame `P`.
+    const geometry::FrameId parent_frame_id_;
 
-  // The camera specifications for color/label and depth.
-  const geometry::render::ColorRenderCamera color_camera_;
-  const geometry::render::DepthRenderCamera depth_camera_;
-  // The position of the camera's B frame relative to its parent frame P.
-  const math::RigidTransformd X_PB_;
+    // The camera specifications for color/label and depth.
+    const geometry::render::ColorRenderCamera color_camera_;
+    const geometry::render::DepthRenderCamera depth_camera_;
+    // The position of the camera's B frame relative to its parent frame P.
+    const math::RigidTransformd X_PB_;
 };
 
 }  // namespace sensors

@@ -45,97 +45,83 @@ namespace systems {
  */
 template <typename T>
 class LinearTransformDensity final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearTransformDensity);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearTransformDensity);
 
-  /**
-   * @param distribution The random input w_in should satisfy this distribution.
-   * @param input_size The dimension of the input w_in.
-   * @param output_size The dimension of the output w_out.
-   * @note The matrix A will have `output_size` columns and `input_size` rows.
-   * The vector b will have `output_size` columns.
-   */
-  LinearTransformDensity(RandomDistribution distribution, int input_size,
-                         int output_size);
+    /**
+     * @param distribution The random input w_in should satisfy this distribution.
+     * @param input_size The dimension of the input w_in.
+     * @param output_size The dimension of the output w_out.
+     * @note The matrix A will have `output_size` columns and `input_size` rows.
+     * The vector b will have `output_size` columns.
+     */
+    LinearTransformDensity(RandomDistribution distribution, int input_size, int output_size);
 
-  /** Scalar-converting copy constructor. See @ref system_scalar_conversion. */
-  template <typename U>
-  explicit LinearTransformDensity(const LinearTransformDensity<U>&);
+    /** Scalar-converting copy constructor. See @ref system_scalar_conversion. */
+    template <typename U>
+    explicit LinearTransformDensity(const LinearTransformDensity<U>&);
 
-  /** Gets the input port for w_in. */
-  const InputPort<T>& get_input_port_w_in() const {
-    return this->get_input_port(w_in_port_id_);
-  }
+    /** Gets the input port for w_in. */
+    const InputPort<T>& get_input_port_w_in() const { return this->get_input_port(w_in_port_id_); }
 
-  /** Gets the input port for A. */
-  const InputPort<T>& get_input_port_A() const {
-    return this->get_input_port(A_port_id_);
-  }
+    /** Gets the input port for A. */
+    const InputPort<T>& get_input_port_A() const { return this->get_input_port(A_port_id_); }
 
-  /** Gets the input port for b. */
-  const InputPort<T>& get_input_port_b() const {
-    return this->get_input_port(b_port_id_);
-  }
+    /** Gets the input port for b. */
+    const InputPort<T>& get_input_port_b() const { return this->get_input_port(b_port_id_); }
 
-  const OutputPort<T>& get_output_port_w_out() const {
-    return this->get_output_port(w_out_port_id_);
-  }
+    const OutputPort<T>& get_output_port_w_out() const { return this->get_output_port(w_out_port_id_); }
 
-  const OutputPort<T>& get_output_port_w_out_density() const {
-    return this->get_output_port(w_out_density_port_id_);
-  }
+    const OutputPort<T>& get_output_port_w_out_density() const { return this->get_output_port(w_out_density_port_id_); }
 
-  /** Gets the random distribution type. */
-  RandomDistribution get_distribution() const { return distribution_; }
+    /** Gets the random distribution type. */
+    RandomDistribution get_distribution() const { return distribution_; }
 
-  /**
-   * Fix the input port `A` to a constant value in a given context.
-   * @param context The context into which A's value is set.
-   * @param A The value to which the port is fixed. The matrix A has num_output
-   * rows and num_input columns, note that A is column-majored.
-   */
-  FixedInputPortValue& FixConstantA(
-      Context<T>* context, const Eigen::Ref<const MatrixX<T>>& A) const;
+    /**
+     * Fix the input port `A` to a constant value in a given context.
+     * @param context The context into which A's value is set.
+     * @param A The value to which the port is fixed. The matrix A has num_output
+     * rows and num_input columns, note that A is column-majored.
+     */
+    FixedInputPortValue& FixConstantA(Context<T>* context, const Eigen::Ref<const MatrixX<T>>& A) const;
 
-  /**
-   * Fix the input port `b` to a constant value in a given context.
-   * @param context The context into which b's value is set.
-   * @param b The value to which the port is fixed. The vector b has num_output
-   * rows.
-   */
-  FixedInputPortValue& FixConstantB(
-      Context<T>* context, const Eigen::Ref<const VectorX<T>>& b) const;
+    /**
+     * Fix the input port `b` to a constant value in a given context.
+     * @param context The context into which b's value is set.
+     * @param b The value to which the port is fixed. The vector b has num_output
+     * rows.
+     */
+    FixedInputPortValue& FixConstantB(Context<T>* context, const Eigen::Ref<const VectorX<T>>& b) const;
 
-  /**
-   * Compute the density (pdf) of a sampled output w_out.
-   *
-   * When T=AutoDiffXd, this function computes the gradient of the function
-   * density(w_out_sample). Namely given an output sample, we want to know
-   * how the probability of drawing this sample would change, when the
-   * parameters of the distribution (like A and b) change. Such information is
-   * locally expressed in the gradient. Note this is different from computing
-   * the density of the input.
-   *
-   * @throw std::exception if A is not an invertible matrix.
-   */
-  T CalcDensity(const Context<T>& context) const;
+    /**
+     * Compute the density (pdf) of a sampled output w_out.
+     *
+     * When T=AutoDiffXd, this function computes the gradient of the function
+     * density(w_out_sample). Namely given an output sample, we want to know
+     * how the probability of drawing this sample would change, when the
+     * parameters of the distribution (like A and b) change. Such information is
+     * locally expressed in the gradient. Note this is different from computing
+     * the density of the input.
+     *
+     * @throw std::exception if A is not an invertible matrix.
+     */
+    T CalcDensity(const Context<T>& context) const;
 
- private:
-  void CalcOutput(const Context<T>& context, BasicVector<T>* w_out) const;
+private:
+    void CalcOutput(const Context<T>& context, BasicVector<T>* w_out) const;
 
-  void CalcOutputDensity(const Context<T>& context,
-                         BasicVector<T>* w_out_density) const;
+    void CalcOutputDensity(const Context<T>& context, BasicVector<T>* w_out_density) const;
 
-  Eigen::Map<const MatrixX<T>> GetA(const Context<T>& context) const;
+    Eigen::Map<const MatrixX<T>> GetA(const Context<T>& context) const;
 
-  const RandomDistribution distribution_;
-  const int input_size_{};
-  const int output_size_{};
-  InputPortIndex w_in_port_id_;
-  InputPortIndex A_port_id_;
-  InputPortIndex b_port_id_;
-  OutputPortIndex w_out_port_id_;
-  OutputPortIndex w_out_density_port_id_;
+    const RandomDistribution distribution_;
+    const int input_size_{};
+    const int output_size_{};
+    InputPortIndex w_in_port_id_;
+    InputPortIndex A_port_id_;
+    InputPortIndex b_port_id_;
+    OutputPortIndex w_out_port_id_;
+    OutputPortIndex w_out_density_port_id_;
 };
 
 // Exclude symbolic::Expression from the scalartype conversion of

@@ -21,146 +21,146 @@ namespace optimization {
 @ingroup geometry_optimization
 */
 struct IrisOptions {
-  /** Passes this object to an Archive.
-  Refer to @ref yaml_serialization "YAML Serialization" for background.
-  Note: This only serializes options that are YAML built-in types. */
-  template <typename Archive>
-  void Serialize(Archive* a) {
-    a->Visit(DRAKE_NVP(require_sample_point_is_contained));
-    a->Visit(DRAKE_NVP(iteration_limit));
-    a->Visit(DRAKE_NVP(termination_threshold));
-    a->Visit(DRAKE_NVP(relative_termination_threshold));
-    a->Visit(DRAKE_NVP(configuration_space_margin));
-    a->Visit(DRAKE_NVP(num_collision_infeasible_samples));
-    a->Visit(DRAKE_NVP(num_additional_constraint_infeasible_samples));
-    a->Visit(DRAKE_NVP(random_seed));
-    a->Visit(DRAKE_NVP(mixing_steps));
-  }
-
-  /** The initial polytope is guaranteed to contain the point if that point is
-  collision-free. However, the IRIS alternation objectives do not include (and
-  can not easily include) a constraint that the original sample point is
-  contained. Therefore, the IRIS paper recommends that if containment is a
-  requirement, then the algorithm should simply terminate early if alternations
-  would ever cause the set to not contain the point. */
-  bool require_sample_point_is_contained{false};
-
-  /** Maximum number of iterations. */
-  int iteration_limit{100};
-
-  /** IRIS will terminate if the change in the *volume* of the hyperellipsoid
-  between iterations is less that this threshold. This termination condition can
-  be disabled by setting to a negative value. */
-  double termination_threshold{2e-2};  // from rdeits/iris-distro.
-
-  /** IRIS will terminate if the change in the *volume* of the hyperellipsoid
-  between iterations is less that this percent of the previous best volume.
-  This termination condition can be disabled by setting to a negative value. */
-  double relative_termination_threshold{1e-3};  // from rdeits/iris-distro.
-
-  // TODO(russt): Improve the implementation so that we can clearly document the
-  // units for this margin.
-  /** For IRIS in configuration space, we retreat by this margin from each
-  C-space obstacle in order to avoid the possibility of requiring an infinite
-  number of faces to approximate a curved boundary.
-  */
-  double configuration_space_margin{1e-2};
-
-  /** For each possible collision, IRIS will search for a counter-example by
-  formulating a (likely nonconvex) optimization problem. The initial guess for
-  this optimization is taken by sampling uniformly inside the current IRIS
-  region. This option controls the termination condition for that
-  counter-example search, defining the number of consecutive failures to find a
-  counter-example requested before moving on to the next constraint. */
-  int num_collision_infeasible_samples{5};
-
-  /** For IRIS in configuration space, it can be beneficial to not only specify
-  task-space obstacles (passed in through the plant) but also obstacles that are
-  defined by convex sets in the configuration space. This option can be used to
-  pass in such configuration space obstacles. */
-  ConvexSets configuration_obstacles{};
-
-  /** The initial hyperellipsoid that IRIS will use for calculating hyperplanes
-  in the first iteration. If no hyperellipsoid is provided, a small hypershpere
-  centered at the given sample will be used. */
-  std::optional<Hyperellipsoid> starting_ellipse{};
-
-  /** Optionally allows the caller to restrict the space within which IRIS
-  regions are allowed to grow. By default, IRIS regions are bounded by the
-  `domain` argument in the case of `Iris` or the joint limits of the input
-  `plant` in the case of `IrisInConfigurationSpace`. If this option is
-  specified, IRIS regions will be confined to the intersection between the
-  domain and `bounding_region` */
-  std::optional<HPolyhedron> bounding_region{};
-
-  /** By default, IRIS in configuration space certifies regions for collision
-  avoidance constraints and joint limits. This option can be used to pass
-  additional constraints that should be satisfied by the IRIS region. We accept
-  these in the form of a MathematicalProgram:
-
-    find q subject to g(q) ≤ 0.
-
-  The decision_variables() for the program are taken to define `q`. IRIS will
-  silently ignore any costs in `prog_with_additional_constraints`, and will
-  throw std::runtime_error if it contains any unsupported constraints.
-
-  For example, one could create an InverseKinematics problem with rich
-  kinematic constraints, and then pass `InverseKinematics::prog()` into this
-  option.
-  */
-  const solvers::MathematicalProgram* prog_with_additional_constraints{};
-
-  /** For each constraint in `prog_with_additional_constraints`, IRIS will
-  search for a counter-example by formulating a (likely nonconvex) optimization
-  problem. The initial guess for this optimization is taken by sampling
-  uniformly inside the current IRIS region. This option controls the
-  termination condition for that counter-example search, defining the number of
-  consecutive failures to find a counter-example requested before moving on to
-  the next constraint. */
-  int num_additional_constraint_infeasible_samples{5};
-
-  /** The only randomization in IRIS is the random sampling done to find
-  counter-examples for the additional constraints using in
-  IrisInConfigurationSpace. Use this option to set the initial seed. */
-  int random_seed{1234};
-
-  /** Passing a meshcat instance may enable debugging visualizations; this
-  currently only happens in IrisInConfigurationSpace and when the
-  configuration space is <= 3 dimensional.*/
-  std::shared_ptr<Meshcat> meshcat{};
-
-  /** A user-defined termination function to
-  determine whether the iterations should stop. This function is called after
-  computing each hyperplane at every IRIS iteration. If the function returns
-  true, then the computations will stop and the last step region will be
-  returned. Therefore, it is highly recommended that the termination function
-  possesses a monotonic property such that for any two HPolyhedrons A and B such
-  that B ⊆ A, we have if termination(A) -> termination(B). For example, a valid
-  termination function is to check whether if the region does not contain any of
-  a set of desired points.
-  ```
-  auto termination_func = [](const HPolyhedron& set) {
-    for (const VectorXd& point : desired_points) {
-      if (!set.PointInSet(point)) {
-        return true;
-      }
+    /** Passes this object to an Archive.
+    Refer to @ref yaml_serialization "YAML Serialization" for background.
+    Note: This only serializes options that are YAML built-in types. */
+    template <typename Archive>
+    void Serialize(Archive* a) {
+        a->Visit(DRAKE_NVP(require_sample_point_is_contained));
+        a->Visit(DRAKE_NVP(iteration_limit));
+        a->Visit(DRAKE_NVP(termination_threshold));
+        a->Visit(DRAKE_NVP(relative_termination_threshold));
+        a->Visit(DRAKE_NVP(configuration_space_margin));
+        a->Visit(DRAKE_NVP(num_collision_infeasible_samples));
+        a->Visit(DRAKE_NVP(num_additional_constraint_infeasible_samples));
+        a->Visit(DRAKE_NVP(random_seed));
+        a->Visit(DRAKE_NVP(mixing_steps));
     }
-    return false;
-  };
-  ```
-  The algorithm will stop when as soon as the region leaves one
-  of the desired points, in a similar way to how @p
-  require_sample_point_is_contained is enforced.
-  */
-  std::function<bool(const HPolyhedron&)> termination_func{};
 
-  /* The `mixing_steps` parameters is passed to HPolyhedron::UniformSample to
-  control the total number of hit-and-run steps taken for each new random
-  sample. */
-  int mixing_steps{10};
+    /** The initial polytope is guaranteed to contain the point if that point is
+    collision-free. However, the IRIS alternation objectives do not include (and
+    can not easily include) a constraint that the original sample point is
+    contained. Therefore, the IRIS paper recommends that if containment is a
+    requirement, then the algorithm should simply terminate early if alternations
+    would ever cause the set to not contain the point. */
+    bool require_sample_point_is_contained{false};
 
-  /* The SolverOptions used in the optimization program. */
-  std::optional<solvers::SolverOptions> solver_options;
+    /** Maximum number of iterations. */
+    int iteration_limit{100};
+
+    /** IRIS will terminate if the change in the *volume* of the hyperellipsoid
+    between iterations is less that this threshold. This termination condition can
+    be disabled by setting to a negative value. */
+    double termination_threshold{2e-2};  // from rdeits/iris-distro.
+
+    /** IRIS will terminate if the change in the *volume* of the hyperellipsoid
+    between iterations is less that this percent of the previous best volume.
+    This termination condition can be disabled by setting to a negative value. */
+    double relative_termination_threshold{1e-3};  // from rdeits/iris-distro.
+
+    // TODO(russt): Improve the implementation so that we can clearly document the
+    // units for this margin.
+    /** For IRIS in configuration space, we retreat by this margin from each
+    C-space obstacle in order to avoid the possibility of requiring an infinite
+    number of faces to approximate a curved boundary.
+    */
+    double configuration_space_margin{1e-2};
+
+    /** For each possible collision, IRIS will search for a counter-example by
+    formulating a (likely nonconvex) optimization problem. The initial guess for
+    this optimization is taken by sampling uniformly inside the current IRIS
+    region. This option controls the termination condition for that
+    counter-example search, defining the number of consecutive failures to find a
+    counter-example requested before moving on to the next constraint. */
+    int num_collision_infeasible_samples{5};
+
+    /** For IRIS in configuration space, it can be beneficial to not only specify
+    task-space obstacles (passed in through the plant) but also obstacles that are
+    defined by convex sets in the configuration space. This option can be used to
+    pass in such configuration space obstacles. */
+    ConvexSets configuration_obstacles{};
+
+    /** The initial hyperellipsoid that IRIS will use for calculating hyperplanes
+    in the first iteration. If no hyperellipsoid is provided, a small hypershpere
+    centered at the given sample will be used. */
+    std::optional<Hyperellipsoid> starting_ellipse{};
+
+    /** Optionally allows the caller to restrict the space within which IRIS
+    regions are allowed to grow. By default, IRIS regions are bounded by the
+    `domain` argument in the case of `Iris` or the joint limits of the input
+    `plant` in the case of `IrisInConfigurationSpace`. If this option is
+    specified, IRIS regions will be confined to the intersection between the
+    domain and `bounding_region` */
+    std::optional<HPolyhedron> bounding_region{};
+
+    /** By default, IRIS in configuration space certifies regions for collision
+    avoidance constraints and joint limits. This option can be used to pass
+    additional constraints that should be satisfied by the IRIS region. We accept
+    these in the form of a MathematicalProgram:
+
+      find q subject to g(q) ≤ 0.
+
+    The decision_variables() for the program are taken to define `q`. IRIS will
+    silently ignore any costs in `prog_with_additional_constraints`, and will
+    throw std::runtime_error if it contains any unsupported constraints.
+
+    For example, one could create an InverseKinematics problem with rich
+    kinematic constraints, and then pass `InverseKinematics::prog()` into this
+    option.
+    */
+    const solvers::MathematicalProgram* prog_with_additional_constraints{};
+
+    /** For each constraint in `prog_with_additional_constraints`, IRIS will
+    search for a counter-example by formulating a (likely nonconvex) optimization
+    problem. The initial guess for this optimization is taken by sampling
+    uniformly inside the current IRIS region. This option controls the
+    termination condition for that counter-example search, defining the number of
+    consecutive failures to find a counter-example requested before moving on to
+    the next constraint. */
+    int num_additional_constraint_infeasible_samples{5};
+
+    /** The only randomization in IRIS is the random sampling done to find
+    counter-examples for the additional constraints using in
+    IrisInConfigurationSpace. Use this option to set the initial seed. */
+    int random_seed{1234};
+
+    /** Passing a meshcat instance may enable debugging visualizations; this
+    currently only happens in IrisInConfigurationSpace and when the
+    configuration space is <= 3 dimensional.*/
+    std::shared_ptr<Meshcat> meshcat{};
+
+    /** A user-defined termination function to
+    determine whether the iterations should stop. This function is called after
+    computing each hyperplane at every IRIS iteration. If the function returns
+    true, then the computations will stop and the last step region will be
+    returned. Therefore, it is highly recommended that the termination function
+    possesses a monotonic property such that for any two HPolyhedrons A and B such
+    that B ⊆ A, we have if termination(A) -> termination(B). For example, a valid
+    termination function is to check whether if the region does not contain any of
+    a set of desired points.
+    ```
+    auto termination_func = [](const HPolyhedron& set) {
+      for (const VectorXd& point : desired_points) {
+        if (!set.PointInSet(point)) {
+          return true;
+        }
+      }
+      return false;
+    };
+    ```
+    The algorithm will stop when as soon as the region leaves one
+    of the desired points, in a similar way to how @p
+    require_sample_point_is_contained is enforced.
+    */
+    std::function<bool(const HPolyhedron&)> termination_func{};
+
+    /* The `mixing_steps` parameters is passed to HPolyhedron::UniformSample to
+    control the total number of hit-and-run steps taken for each new random
+    sample. */
+    int mixing_steps{10};
+
+    /* The SolverOptions used in the optimization program. */
+    std::optional<solvers::SolverOptions> solver_options;
 };
 
 /** The IRIS (Iterative Region Inflation by Semidefinite programming) algorithm,
@@ -211,9 +211,8 @@ for the current implementation of the IRIS algorithm.
 
 @ingroup geometry_optimization
 */
-ConvexSets MakeIrisObstacles(
-    const QueryObject<double>& query_object,
-    std::optional<FrameId> reference_frame = std::nullopt);
+ConvexSets MakeIrisObstacles(const QueryObject<double>& query_object,
+                             std::optional<FrameId> reference_frame = std::nullopt);
 
 /** A variation of the Iris (Iterative Region Inflation by Semidefinite
 programming) algorithm which finds collision-free regions in the *configuration
@@ -243,10 +242,9 @@ run-time of the algorithm. The same goes for
 IrisOptions.termination_func for more details.
 @ingroup geometry_optimization
 */
-HPolyhedron IrisInConfigurationSpace(
-    const multibody::MultibodyPlant<double>& plant,
-    const systems::Context<double>& context,
-    const IrisOptions& options = IrisOptions());
+HPolyhedron IrisInConfigurationSpace(const multibody::MultibodyPlant<double>& plant,
+                                     const systems::Context<double>& context,
+                                     const IrisOptions& options = IrisOptions());
 
 /** Modifies the @p iris_options to facilitate finding a region that contains
 the edge between x_1 and x_2. It sets @p iris_options.starting_ellipse to be a
@@ -260,10 +258,11 @@ is no longer contained in the IRIS region with tolerance tol.
 hyperellipsoid for @p iris_options.starting_ellipse must have non-zero volume.
 @ingroup geometry_optimization
 */
-void SetEdgeContainmentTerminationCondition(
-    IrisOptions* iris_options, const Eigen::Ref<const Eigen::VectorXd>& x_1,
-    const Eigen::Ref<const Eigen::VectorXd>& x_2, const double epsilon = 1e-3,
-    const double tol = 1e-6);
+void SetEdgeContainmentTerminationCondition(IrisOptions* iris_options,
+                                            const Eigen::Ref<const Eigen::VectorXd>& x_1,
+                                            const Eigen::Ref<const Eigen::VectorXd>& x_2,
+                                            const double epsilon = 1e-3,
+                                            const double tol = 1e-6);
 
 /** Defines a standardized representation for (named) IrisRegions, which can be
 serialized in both C++ and Python. */

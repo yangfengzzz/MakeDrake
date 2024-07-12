@@ -23,26 +23,25 @@ namespace fem {
  @tparam_nonsymbolic_scalar */
 template <typename T>
 class DampingModel {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DampingModel);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DampingModel);
 
-  /** Constructs a Rayleigh damping model by storing the mass coefficient α and
-   the stiffness coefficient β that appears in the damping matrix D = αM + βK.
-   @throw std::exception if either `mass_coeff_alpha` or `stiffness_coeff_beta`
-   is negative. */
-  DampingModel(const T& mass_coeff_alpha, const T& stiffness_coeff_beta);
+    /** Constructs a Rayleigh damping model by storing the mass coefficient α and
+     the stiffness coefficient β that appears in the damping matrix D = αM + βK.
+     @throw std::exception if either `mass_coeff_alpha` or `stiffness_coeff_beta`
+     is negative. */
+    DampingModel(const T& mass_coeff_alpha, const T& stiffness_coeff_beta);
 
-  const T& mass_coeff_alpha() const { return mass_coeff_alpha_; }
-  const T& stiffness_coeff_beta() const { return stiffness_coeff_beta_; }
+    const T& mass_coeff_alpha() const { return mass_coeff_alpha_; }
+    const T& stiffness_coeff_beta() const { return stiffness_coeff_beta_; }
 
- private:
-  T mass_coeff_alpha_{};
-  T stiffness_coeff_beta_{};
+private:
+    T mass_coeff_alpha_{};
+    T stiffness_coeff_beta_{};
 };
 
 }  // namespace fem
 }  // namespace multibody
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class ::drake::multibody::fem::DampingModel);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(class ::drake::multibody::fem::DampingModel);

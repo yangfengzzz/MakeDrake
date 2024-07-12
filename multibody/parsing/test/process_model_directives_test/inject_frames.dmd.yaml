@@ -6,40 +6,40 @@
 
 directives:
 
-# Top level model, for example the robot arm.
-- add_model:
-    name: top_level_model
-    file: package://process_model_directives_test/simple_model.sdf
+  # Top level model, for example the robot arm.
+  - add_model:
+      name: top_level_model
+      file: package://process_model_directives_test/simple_model.sdf
 
-# Injecting a frame from the world level into top_level_model, for example the
-# gripper of the robot arm.
-- add_frame:
-    name: top_injected_frame
-    X_PF:
-      base_frame: top_level_model::base
-      translation: [1, 2, 3]
+  # Injecting a frame from the world level into top_level_model, for example the
+  # gripper of the robot arm.
+  - add_frame:
+      name: top_injected_frame
+      X_PF:
+        base_frame: top_level_model::base
+        translation: [ 1, 2, 3 ]
 
-# Including a new model, for example a new tool.
-- add_model:
-    name: mid_level_model
-    file: package://process_model_directives_test/simple_model.sdf
+  # Including a new model, for example a new tool.
+  - add_model:
+      name: mid_level_model
+      file: package://process_model_directives_test/simple_model.sdf
 
-# Welding the newly included tool to top_injected_frame, from the world level.
-- add_weld:
-    parent: top_injected_frame
-    child: mid_level_model::base
+  # Welding the newly included tool to top_injected_frame, from the world level.
+  - add_weld:
+      parent: top_injected_frame
+      child: mid_level_model::base
 
-# Repeat the steps for another level lower.
-- add_frame:
-    name: mid_injected_frame
-    X_PF:
-      base_frame: mid_level_model::base
-      translation: [1, 2, 3]
-- add_model:
-    name: bottom_level_model
-    file: package://process_model_directives_test/simple_model.sdf
-- add_weld:
-    parent: mid_injected_frame
-    child: bottom_level_model::base
-    X_PC:
-      translation: [4, 5, 6]
+  # Repeat the steps for another level lower.
+  - add_frame:
+      name: mid_injected_frame
+      X_PF:
+        base_frame: mid_level_model::base
+        translation: [ 1, 2, 3 ]
+  - add_model:
+      name: bottom_level_model
+      file: package://process_model_directives_test/simple_model.sdf
+  - add_weld:
+      parent: mid_injected_frame
+      child: bottom_level_model::base
+      X_PC:
+        translation: [ 4, 5, 6 ]

@@ -55,39 +55,37 @@ namespace multibody {
  * @ingroup solver_evaluators
  */
 class QuaternionEulerIntegrationConstraint final : public solvers::Constraint {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuaternionEulerIntegrationConstraint);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(QuaternionEulerIntegrationConstraint);
 
-  /**
-   * @param allow_quaternion_negation. Refer to the class documentation.
-   */
-  explicit QuaternionEulerIntegrationConstraint(bool allow_quaternion_negation);
+    /**
+     * @param allow_quaternion_negation. Refer to the class documentation.
+     */
+    explicit QuaternionEulerIntegrationConstraint(bool allow_quaternion_negation);
 
-  ~QuaternionEulerIntegrationConstraint() override {}
+    ~QuaternionEulerIntegrationConstraint() override {}
 
-  template <typename T>
-  Eigen::Matrix<T, 12, 1> ComposeVariable(
-      const Eigen::Ref<const Vector4<T>>& quat1,
-      const Eigen::Ref<const Vector4<T>>& quat2,
-      const Eigen::Ref<const Vector3<T>>& angular_vel, const T& h) const {
-    Eigen::Matrix<T, 12, 1> vars;
-    vars << quat1, quat2, angular_vel, h;
-    return vars;
-  }
+    template <typename T>
+    Eigen::Matrix<T, 12, 1> ComposeVariable(const Eigen::Ref<const Vector4<T>>& quat1,
+                                            const Eigen::Ref<const Vector4<T>>& quat2,
+                                            const Eigen::Ref<const Vector3<T>>& angular_vel,
+                                            const T& h) const {
+        Eigen::Matrix<T, 12, 1> vars;
+        vars << quat1, quat2, angular_vel, h;
+        return vars;
+    }
 
-  bool allow_quaternion_negation() const { return allow_quaternion_negation_; }
+    bool allow_quaternion_negation() const { return allow_quaternion_negation_; }
 
- private:
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override;
+private:
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
-              VectorX<symbolic::Expression>* y) const override;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                VectorX<symbolic::Expression>* y) const override;
 
-  bool allow_quaternion_negation_;
+    bool allow_quaternion_negation_;
 };
 
 }  // namespace multibody

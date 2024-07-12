@@ -38,65 +38,57 @@ class DeformationGradientData;
  @tparam_nonsymbolic_scalar T.
  @tparam num_locations_at_compile_time Number of locations at which the data are
  evaluated. */
-template <template <typename, int> class DerivedDeformationGradientData,
-          typename T, int num_locations_at_compile_time>
-class DeformationGradientData<
-    DerivedDeformationGradientData<T, num_locations_at_compile_time>> {
- public:
-  using Derived =
-      DerivedDeformationGradientData<T, num_locations_at_compile_time>;
+template <template <typename, int> class DerivedDeformationGradientData, typename T, int num_locations_at_compile_time>
+class DeformationGradientData<DerivedDeformationGradientData<T, num_locations_at_compile_time>> {
+public:
+    using Derived = DerivedDeformationGradientData<T, num_locations_at_compile_time>;
 
-  /* The number of locations at which the data needs to be evaluated. */
-  static constexpr int num_locations = num_locations_at_compile_time;
+    /* The number of locations at which the data needs to be evaluated. */
+    static constexpr int num_locations = num_locations_at_compile_time;
 
-  /* Updates the data with the given deformation gradients. The deformation
-   gradient dependent quantities are also updated with the given
-   `deformation_gradient`.
-   @param deformation_gradient The up-to-date deformation gradients evaluated at
-   the prescribed locations. */
-  void UpdateData(std::array<Matrix3<T>, num_locations> deformation_gradient,
-                  std::array<Matrix3<T>, num_locations>
-                      previous_step_deformation_gradient) {
-    deformation_gradient_ = std::move(deformation_gradient);
-    previous_step_deformation_gradient_ =
-        std::move(previous_step_deformation_gradient);
-    static_cast<Derived*>(this)->UpdateFromDeformationGradient();
-  }
+    /* Updates the data with the given deformation gradients. The deformation
+     gradient dependent quantities are also updated with the given
+     `deformation_gradient`.
+     @param deformation_gradient The up-to-date deformation gradients evaluated at
+     the prescribed locations. */
+    void UpdateData(std::array<Matrix3<T>, num_locations> deformation_gradient,
+                    std::array<Matrix3<T>, num_locations> previous_step_deformation_gradient) {
+        deformation_gradient_ = std::move(deformation_gradient);
+        previous_step_deformation_gradient_ = std::move(previous_step_deformation_gradient);
+        static_cast<Derived*>(this)->UpdateFromDeformationGradient();
+    }
 
-  const std::array<Matrix3<T>, num_locations>& deformation_gradient() const {
-    return deformation_gradient_;
-  }
+    const std::array<Matrix3<T>, num_locations>& deformation_gradient() const { return deformation_gradient_; }
 
-  /* Returns the deformation gradient evaluated at all quadrature points at the
-   previous time step t₀. */
-  const std::array<Matrix3<T>, num_locations>&
-  previous_step_deformation_gradient() const {
-    return previous_step_deformation_gradient_;
-  }
+    /* Returns the deformation gradient evaluated at all quadrature points at the
+     previous time step t₀. */
+    const std::array<Matrix3<T>, num_locations>& previous_step_deformation_gradient() const {
+        return previous_step_deformation_gradient_;
+    }
 
- protected:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DeformationGradientData);
+protected:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DeformationGradientData);
 
-  /* Constructs a DeformationGradientData with identity deformation gradients.
-   */
-  DeformationGradientData() {
-    deformation_gradient_.fill(Matrix3<T>::Identity());
-    previous_step_deformation_gradient_.fill(Matrix3<T>::Identity());
-  }
+    /* Constructs a DeformationGradientData with identity deformation gradients.
+     */
+    DeformationGradientData() {
+        deformation_gradient_.fill(Matrix3<T>::Identity());
+        previous_step_deformation_gradient_.fill(Matrix3<T>::Identity());
+    }
 
-  /* Derived classes *must* shadow this method to compute quantities derived
-   from deformation gradients. `deformation_gradient()` will be up to date
-   before any call to this method. */
-  void UpdateFromDeformationGradient() {
-    throw std::logic_error(
-        fmt::format("The derived class {} must provide a shadow definition of "
-                    "UpdateFromDeformationGradient() to be correct.",
-                    NiceTypeName::Get(*static_cast<Derived*>(this))));
-  }
+    /* Derived classes *must* shadow this method to compute quantities derived
+     from deformation gradients. `deformation_gradient()` will be up to date
+     before any call to this method. */
+    void UpdateFromDeformationGradient() {
+        throw std::logic_error(
+                fmt::format("The derived class {} must provide a shadow definition of "
+                            "UpdateFromDeformationGradient() to be correct.",
+                            NiceTypeName::Get(*static_cast<Derived*>(this))));
+    }
 
- private:
-  std::array<Matrix3<T>, num_locations> deformation_gradient_;
-  std::array<Matrix3<T>, num_locations> previous_step_deformation_gradient_;
+private:
+    std::array<Matrix3<T>, num_locations> deformation_gradient_;
+    std::array<Matrix3<T>, num_locations> previous_step_deformation_gradient_;
 };
 
 }  // namespace internal

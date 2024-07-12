@@ -18,64 +18,55 @@ namespace analysis_test {
 /// α > 0 (growth rate), and k is the upper asymptote.
 template <class T>
 class LogisticSystem : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LogisticSystem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LogisticSystem);
 
-  LogisticSystem(double k, double alpha, double nu)
-      : k_(k), alpha_(alpha), nu_(nu) {
-    this->DeclareContinuousState(1);
-    witness_ = this->MakeWitnessFunction(
-        "Logistic witness", WitnessFunctionDirection::kCrossesZero,
-        &LogisticSystem::GetStateValue, &LogisticSystem::InvokePublishCallback);
-  }
+    LogisticSystem(double k, double alpha, double nu) : k_(k), alpha_(alpha), nu_(nu) {
+        this->DeclareContinuousState(1);
+        witness_ = this->MakeWitnessFunction("Logistic witness", WitnessFunctionDirection::kCrossesZero,
+                                             &LogisticSystem::GetStateValue, &LogisticSystem::InvokePublishCallback);
+    }
 
-  void set_publish_callback(
-      std::function<void(const Context<double>&)> callback) {
-    publish_callback_ = callback;
-  }
+    void set_publish_callback(std::function<void(const Context<double>&)> callback) { publish_callback_ = callback; }
 
- protected:
-  void DoCalcTimeDerivatives(const systems::Context<T>& context,
-      systems::ContinuousState<T>* continuous_state) const override {
-    using std::pow;
+protected:
+    void DoCalcTimeDerivatives(const systems::Context<T>& context,
+                               systems::ContinuousState<T>* continuous_state) const override {
+        using std::pow;
 
-    // Get the current time.
-    const T& t = context.get_time();
+        // Get the current time.
+        const T& t = context.get_time();
 
-    // Get state.
-    const T& x = context.get_continuous_state()[0];
+        // Get state.
+        const T& x = context.get_continuous_state()[0];
 
-    // Compute the derivative.
-    (*continuous_state)[0] = alpha_ * (1 - pow(x/k_, nu_)) * t;
-  }
+        // Compute the derivative.
+        (*continuous_state)[0] = alpha_ * (1 - pow(x / k_, nu_)) * t;
+    }
 
-  void DoGetWitnessFunctions(
-      const systems::Context<T>&,
-      std::vector<const systems::WitnessFunction<T>*>* w) const override {
-    w->push_back(witness_.get());
-  }
+    void DoGetWitnessFunctions(const systems::Context<T>&,
+                               std::vector<const systems::WitnessFunction<T>*>* w) const override {
+        w->push_back(witness_.get());
+    }
 
-  void InvokePublishCallback(const Context<T>& context,
-                             const PublishEvent<T>&) const {
-    if (this->publish_callback_ != nullptr) this->publish_callback_(context);
-  }
+    void InvokePublishCallback(const Context<T>& context, const PublishEvent<T>&) const {
+        if (this->publish_callback_ != nullptr) this->publish_callback_(context);
+    }
 
- private:
-  std::unique_ptr<WitnessFunction<T>> witness_;
-  std::function<void(const Context<double>&)> publish_callback_{nullptr};
+private:
+    std::unique_ptr<WitnessFunction<T>> witness_;
+    std::function<void(const Context<double>&)> publish_callback_{nullptr};
 
-  T GetStateValue(const Context<T>& context) const {
-    return context.get_continuous_state()[0];
-  }
+    T GetStateValue(const Context<T>& context) const { return context.get_continuous_state()[0]; }
 
-  // The upper asymptote on the logistic function.
-  double k_{1.0};
+    // The upper asymptote on the logistic function.
+    double k_{1.0};
 
-  // The rate (> 0) at which the logistic function approaches the asymptote.
-  double alpha_{1.0};
+    // The rate (> 0) at which the logistic function approaches the asymptote.
+    double alpha_{1.0};
 
-  // Parameter (> 0) that affects near which asymptote maximum growth occurs.
-  double nu_{1.0};
+    // Parameter (> 0) that affects near which asymptote maximum growth occurs.
+    double nu_{1.0};
 };
 
 }  // namespace analysis_test

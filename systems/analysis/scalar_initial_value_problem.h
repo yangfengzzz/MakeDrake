@@ -49,95 +49,88 @@ namespace systems {
 /// @tparam_nonsymbolic_scalar
 template <typename T>
 class ScalarInitialValueProblem {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ScalarInitialValueProblem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ScalarInitialValueProblem);
 
-  /// Scalar ODE dx/dt = f(t, x; 𝐤) function type.
-  ///
-  /// @param t The independent variable t ∈ ℝ .
-  /// @param x The dependent variable x ∈ ℝ .
-  /// @param k The parameter vector 𝐤 ∈ ℝᵐ.
-  /// @return The derivative dx/dt ∈ ℝ.
-  using ScalarOdeFunction =
-      std::function<T(const T& t, const T& x, const VectorX<T>& k)>;
+    /// Scalar ODE dx/dt = f(t, x; 𝐤) function type.
+    ///
+    /// @param t The independent variable t ∈ ℝ .
+    /// @param x The dependent variable x ∈ ℝ .
+    /// @param k The parameter vector 𝐤 ∈ ℝᵐ.
+    /// @return The derivative dx/dt ∈ ℝ.
+    using ScalarOdeFunction = std::function<T(const T& t, const T& x, const VectorX<T>& k)>;
 
-  /// Constructs a scalar IVP described by the given @p scalar_ode_function,
-  /// using given @p x0 as initial conditions, and parameterized with @p k.
-  ///
-  /// @param scalar_ode_function The ODE function f(t, 𝐱; 𝐤) that describes
-  /// the state evolution over time. @param x0 The initial state 𝐱₀ ∈ ℝ.
-  /// @param k The parameter vector 𝐤 ∈ ℝᵐ.  By default m=0 (no parameters).
-  ScalarInitialValueProblem(
-      const ScalarOdeFunction& scalar_ode_function, const T& x0,
-      const Eigen::Ref<const VectorX<T>>& k = Vector0<T>{});
+    /// Constructs a scalar IVP described by the given @p scalar_ode_function,
+    /// using given @p x0 as initial conditions, and parameterized with @p k.
+    ///
+    /// @param scalar_ode_function The ODE function f(t, 𝐱; 𝐤) that describes
+    /// the state evolution over time. @param x0 The initial state 𝐱₀ ∈ ℝ.
+    /// @param k The parameter vector 𝐤 ∈ ℝᵐ.  By default m=0 (no parameters).
+    ScalarInitialValueProblem(const ScalarOdeFunction& scalar_ode_function,
+                              const T& x0,
+                              const Eigen::Ref<const VectorX<T>>& k = Vector0<T>{});
 
-  /// Solves the IVP from time @p t0 up to time @p tf, using the initial state
-  /// 𝐱₀ and parameter vector 𝐤 provided in the constructor.
-  /// @throws std::exception if t0 > tf.
-  T Solve(const T& t0, const T& tf) const;
+    /// Solves the IVP from time @p t0 up to time @p tf, using the initial state
+    /// 𝐱₀ and parameter vector 𝐤 provided in the constructor.
+    /// @throws std::exception if t0 > tf.
+    T Solve(const T& t0, const T& tf) const;
 
-  /// Solves and yields an approximation of the IVP solution x(t; 𝐤) for the
-  /// closed time interval between the initial time @p t0 and the final time @p
-  /// tf, using initial state 𝐱₀ and parameter vector 𝐤 provided in the
-  /// constructor.
-  ///
-  /// To this end, the wrapped IntegratorBase instance solves this IVP,
-  /// advancing time and state from t₀ and 𝐱₀ = 𝐱(@p t0) to @p tf and 𝐱(@p
-  /// tf), creating a dense output over that [@p t0, @p tf] interval along the
-  /// way.
-  ///
-  /// @param tf The IVP will be solved up to this time, which must be ≥ @p t0.
-  /// Usually, @p t0 < @p tf as an empty dense output would result if @p t0 =
-  /// @p tf.
-  /// @returns A dense approximation to 𝐱(t; 𝐤) with 𝐱(t0; 𝐤) = 𝐱₀,
-  /// defined for t0 ≤ t ≤ tf.
-  /// @note The larger the given @p tf value is, the larger the approximated
-  ///       interval will be. See documentation of the specific dense output
-  ///       technique in use for reference on performance impact as this
-  ///       interval grows.
-  /// @throws std::exception if t0 > tf.
-  std::unique_ptr<ScalarDenseOutput<T>> DenseSolve(const T& t0,
-                                                   const T& tf) const;
+    /// Solves and yields an approximation of the IVP solution x(t; 𝐤) for the
+    /// closed time interval between the initial time @p t0 and the final time @p
+    /// tf, using initial state 𝐱₀ and parameter vector 𝐤 provided in the
+    /// constructor.
+    ///
+    /// To this end, the wrapped IntegratorBase instance solves this IVP,
+    /// advancing time and state from t₀ and 𝐱₀ = 𝐱(@p t0) to @p tf and 𝐱(@p
+    /// tf), creating a dense output over that [@p t0, @p tf] interval along the
+    /// way.
+    ///
+    /// @param tf The IVP will be solved up to this time, which must be ≥ @p t0.
+    /// Usually, @p t0 < @p tf as an empty dense output would result if @p t0 =
+    /// @p tf.
+    /// @returns A dense approximation to 𝐱(t; 𝐤) with 𝐱(t0; 𝐤) = 𝐱₀,
+    /// defined for t0 ≤ t ≤ tf.
+    /// @note The larger the given @p tf value is, the larger the approximated
+    ///       interval will be. See documentation of the specific dense output
+    ///       technique in use for reference on performance impact as this
+    ///       interval grows.
+    /// @throws std::exception if t0 > tf.
+    std::unique_ptr<ScalarDenseOutput<T>> DenseSolve(const T& t0, const T& tf) const;
 
-  /// Resets the internal integrator instance by in-place
-  /// construction of the given integrator type.
-  ///
-  /// A usage example is shown below.
-  /// @code{.cpp}
-  ///    scalar_ivp.reset_integrator<RungeKutta2Integrator<T>>(max_step);
-  /// @endcode
-  ///
-  /// @param args The integrator type-specific arguments.
-  /// @returns The new integrator instance.
-  /// @tparam Integrator The integrator type, which must be an
-  ///                    IntegratorBase subclass.
-  /// @tparam Args The integrator specific argument types.
-  /// @warning This operation invalidates pointers returned by
-  ///          ScalarInitialValueProblem::get_integrator() and
-  ///          ScalarInitialValueProblem::get_mutable_integrator().
-  template <typename Integrator, typename... Args>
-  Integrator* reset_integrator(Args&&... args) {
-    return vector_ivp_->template reset_integrator<Integrator>(
-        std::forward<Args>(args)...);
-  }
+    /// Resets the internal integrator instance by in-place
+    /// construction of the given integrator type.
+    ///
+    /// A usage example is shown below.
+    /// @code{.cpp}
+    ///    scalar_ivp.reset_integrator<RungeKutta2Integrator<T>>(max_step);
+    /// @endcode
+    ///
+    /// @param args The integrator type-specific arguments.
+    /// @returns The new integrator instance.
+    /// @tparam Integrator The integrator type, which must be an
+    ///                    IntegratorBase subclass.
+    /// @tparam Args The integrator specific argument types.
+    /// @warning This operation invalidates pointers returned by
+    ///          ScalarInitialValueProblem::get_integrator() and
+    ///          ScalarInitialValueProblem::get_mutable_integrator().
+    template <typename Integrator, typename... Args>
+    Integrator* reset_integrator(Args&&... args) {
+        return vector_ivp_->template reset_integrator<Integrator>(std::forward<Args>(args)...);
+    }
 
-  /// Gets a reference to the internal integrator instance.
-  const IntegratorBase<T>& get_integrator() const {
-    return vector_ivp_->get_integrator();
-  }
+    /// Gets a reference to the internal integrator instance.
+    const IntegratorBase<T>& get_integrator() const { return vector_ivp_->get_integrator(); }
 
-  /// Gets a mutable reference to the internal integrator instance.
-  IntegratorBase<T>& get_mutable_integrator() {
-    return vector_ivp_->get_mutable_integrator();
-  }
+    /// Gets a mutable reference to the internal integrator instance.
+    IntegratorBase<T>& get_mutable_integrator() { return vector_ivp_->get_mutable_integrator(); }
 
- private:
-  // Vector IVP representation of this scalar IVP.
-  std::unique_ptr<InitialValueProblem<T>> vector_ivp_;
+private:
+    // Vector IVP representation of this scalar IVP.
+    std::unique_ptr<InitialValueProblem<T>> vector_ivp_;
 };
 
 }  // namespace systems
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class drake::systems::ScalarInitialValueProblem);
+        class drake::systems::ScalarInitialValueProblem);

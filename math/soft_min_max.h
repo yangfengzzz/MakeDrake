@@ -16,7 +16,7 @@ namespace math {
  @throws std::exception if α is non-finite.
  @tparam_nonsymbolic_scalar */
 template <typename T>
-[[nodiscard]] T SoftOverMax(const std::vector<T> &x, double alpha = 1.0);
+[[nodiscard]] T SoftOverMax(const std::vector<T>& x, double alpha = 1.0);
 
 /**
  Computes a smooth under approximation of max function, namely SoftUnderMax(x)
@@ -30,7 +30,7 @@ template <typename T>
  @throws std::exception if α is non-finite.
  @tparam_nonsymbolic_scalar */
 template <typename T>
-[[nodiscard]] T SoftUnderMax(const std::vector<T> &x, double alpha = 1.0);
+[[nodiscard]] T SoftUnderMax(const std::vector<T>& x, double alpha = 1.0);
 
 /**
  Computes a smooth over approximation of min function, namely SoftOverMin(x) >=
@@ -45,7 +45,7 @@ template <typename T>
  @throws std::exception if α is non-finite.
  @tparam_nonsymbolic_scalar */
 template <typename T>
-[[nodiscard]] T SoftOverMin(const std::vector<T> &x, double alpha = 1.0);
+[[nodiscard]] T SoftOverMin(const std::vector<T>& x, double alpha = 1.0);
 
 /**
  Computes a smooth under approximation of min function, namely SoftUnderMin(x)
@@ -58,6 +58,6 @@ template <typename T>
  @throws std::exception if α is non-finite.
  @tparam_nonsymbolic_scalar */
 template <typename T>
-[[nodiscard]] T SoftUnderMin(const std::vector<T> &x, double alpha = 1.0);
+[[nodiscard]] T SoftUnderMin(const std::vector<T>& x, double alpha = 1.0);
 }  // namespace math
 }  // namespace drake

@@ -44,27 +44,24 @@ namespace internal {
                          positions and the pressure value.
  */
 template <typename T>
-VolumeMeshFieldLinear<T, T> MakeCapsulePressureField(
-    const Capsule& capsule, const VolumeMesh<T>* mesh_C,
-    const T hydroelastic_modulus) {
-  DRAKE_DEMAND(hydroelastic_modulus > T(0));
-  DRAKE_DEMAND(mesh_C != nullptr);
-  // We only partially check the precondition of the mesh (see @pre). The first
-  // two vertices should always be the endpoints of the capsule's medial axis.
-  // The first with positive z and the second with negative z.
-  DRAKE_DEMAND(mesh_C->vertex(0) ==
-               Eigen::Vector3d(0, 0, capsule.length() / 2));
-  DRAKE_DEMAND(mesh_C->vertex(1) ==
-               Eigen::Vector3d(0, 0, -capsule.length() / 2));
+VolumeMeshFieldLinear<T, T> MakeCapsulePressureField(const Capsule& capsule,
+                                                     const VolumeMesh<T>* mesh_C,
+                                                     const T hydroelastic_modulus) {
+    DRAKE_DEMAND(hydroelastic_modulus > T(0));
+    DRAKE_DEMAND(mesh_C != nullptr);
+    // We only partially check the precondition of the mesh (see @pre). The first
+    // two vertices should always be the endpoints of the capsule's medial axis.
+    // The first with positive z and the second with negative z.
+    DRAKE_DEMAND(mesh_C->vertex(0) == Eigen::Vector3d(0, 0, capsule.length() / 2));
+    DRAKE_DEMAND(mesh_C->vertex(1) == Eigen::Vector3d(0, 0, -capsule.length() / 2));
 
-  std::vector<T> pressure_values(mesh_C->num_vertices(), 0.0);
+    std::vector<T> pressure_values(mesh_C->num_vertices(), 0.0);
 
-  // Only the inner vertices lying on the medial axis (vertex 0 and 1) have
-  // non-zero pressure values.
-  pressure_values[0] = pressure_values[1] = hydroelastic_modulus;
+    // Only the inner vertices lying on the medial axis (vertex 0 and 1) have
+    // non-zero pressure values.
+    pressure_values[0] = pressure_values[1] = hydroelastic_modulus;
 
-  return VolumeMeshFieldLinear<T, T>(std::move(pressure_values), mesh_C,
-                                     MeshGradientMode::kOkOrMarkDegenerate);
+    return VolumeMeshFieldLinear<T, T>(std::move(pressure_values), mesh_C, MeshGradientMode::kOkOrMarkDegenerate);
 }
 
 }  // namespace internal

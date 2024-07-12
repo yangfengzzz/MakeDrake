@@ -14,23 +14,21 @@ namespace analysis_test {
 /// @tparam_default_scalar
 template <typename T>
 class StationarySystem final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(StationarySystem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(StationarySystem);
 
-  StationarySystem();
+    StationarySystem();
 
-  /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  template <typename U>
-  explicit StationarySystem(const StationarySystem<U>&) : StationarySystem() {}
+    /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    template <typename U>
+    explicit StationarySystem(const StationarySystem<U>&) : StationarySystem() {}
 
- protected:
-  void DoCalcTimeDerivatives(const Context<T>&,
-                             ContinuousState<T>* derivatives) const override;
+protected:
+    void DoCalcTimeDerivatives(const Context<T>&, ContinuousState<T>* derivatives) const override;
 };
 
 }  // namespace analysis_test
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class drake::systems::analysis_test::StationarySystem);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class drake::systems::analysis_test::StationarySystem);

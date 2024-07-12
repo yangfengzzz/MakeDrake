@@ -54,72 +54,67 @@ namespace systems {
 /// @ingroup primitive_systems
 template <class T>
 class DiscreteDerivative final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiscreteDerivative);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiscreteDerivative);
 
-  /// Constructor taking @p num_inputs, the size of the vector to be
-  /// differentiated, and @p time_step, the sampling interval. If @p
-  /// suppress_initial_transient is true (the default), then the output will be
-  /// zero for the first two time steps (see the class documentation for
-  /// details and exceptions).
-  DiscreteDerivative(int num_inputs, double time_step,
-                     bool suppress_initial_transient = true);
+    /// Constructor taking @p num_inputs, the size of the vector to be
+    /// differentiated, and @p time_step, the sampling interval. If @p
+    /// suppress_initial_transient is true (the default), then the output will be
+    /// zero for the first two time steps (see the class documentation for
+    /// details and exceptions).
+    DiscreteDerivative(int num_inputs, double time_step, bool suppress_initial_transient = true);
 
-  /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  template <typename U>
-  explicit DiscreteDerivative(const DiscreteDerivative<U>& other)
-      : DiscreteDerivative<T>(other.get_input_port().size(), other.time_step(),
-                              other.suppress_initial_transient()) {}
+    /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    template <typename U>
+    explicit DiscreteDerivative(const DiscreteDerivative<U>& other)
+        : DiscreteDerivative<T>(other.get_input_port().size(), other.time_step(), other.suppress_initial_transient()) {}
 
-  /// Sets the input history so that the initial output is fully specified.
-  /// This is useful during initialization to avoid large derivative outputs if
-  /// u[0] ≠ 0.  @p u_n and @ u_n_minus_1 must be the same size as the
-  /// input/output ports.  If suppress_initial_transient() is true, then also
-  /// sets x₂ to be >= 2 to disable the suppression for this `state`.
-  void set_input_history(systems::State<T>* state,
-                         const Eigen::Ref<const VectorX<T>>& u_n,
-                         const Eigen::Ref<const VectorX<T>>& u_n_minus_1) const;
+    /// Sets the input history so that the initial output is fully specified.
+    /// This is useful during initialization to avoid large derivative outputs if
+    /// u[0] ≠ 0.  @p u_n and @ u_n_minus_1 must be the same size as the
+    /// input/output ports.  If suppress_initial_transient() is true, then also
+    /// sets x₂ to be >= 2 to disable the suppression for this `state`.
+    void set_input_history(systems::State<T>* state,
+                           const Eigen::Ref<const VectorX<T>>& u_n,
+                           const Eigen::Ref<const VectorX<T>>& u_n_minus_1) const;
 
-  /// Sets the input history so that the initial output is fully specified.
-  /// This is useful during initialization to avoid large derivative outputs if
-  /// u[0] ≠ 0.  @p u_n and @ u_n_minus_1 must be the same size as the
-  /// input/output ports.  If suppress_initial_transient() is true, then also
-  /// sets x₂ to be >= 2 to disable the suppression for this `context`.
-  void set_input_history(
-      systems::Context<T>* context, const Eigen::Ref<const VectorX<T>>& u_n,
-      const Eigen::Ref<const VectorX<T>>& u_n_minus_1) const {
-    // N.B. The set_input_history(State* ...) overload is responsible for
-    // validating the state (context) belongs to the this System.
-    set_input_history(&context->get_mutable_state(), u_n, u_n_minus_1);
-  }
+    /// Sets the input history so that the initial output is fully specified.
+    /// This is useful during initialization to avoid large derivative outputs if
+    /// u[0] ≠ 0.  @p u_n and @ u_n_minus_1 must be the same size as the
+    /// input/output ports.  If suppress_initial_transient() is true, then also
+    /// sets x₂ to be >= 2 to disable the suppression for this `context`.
+    void set_input_history(systems::Context<T>* context,
+                           const Eigen::Ref<const VectorX<T>>& u_n,
+                           const Eigen::Ref<const VectorX<T>>& u_n_minus_1) const {
+        // N.B. The set_input_history(State* ...) overload is responsible for
+        // validating the state (context) belongs to the this System.
+        set_input_history(&context->get_mutable_state(), u_n, u_n_minus_1);
+    }
 
-  /// Convenience method that sets the entire input history to a constant
-  /// vector value (x₀ = x₁ = u,resulting in a derivative = 0).  This is
-  /// useful during initialization to avoid large derivative outputs if
-  /// u[0] ≠ 0.  @p u must be the same size as the input/output ports.
-  /// If suppress_initial_transient() is true, then also sets x₂ to be >= 2
-  /// to disable the suppression for this `context`.
-  void set_input_history(systems::Context<T>* context,
-                         const Eigen::Ref<const VectorX<T>>& u) const {
-    this->ValidateContext(context);
-    set_input_history(&context->get_mutable_state(), u, u);
-  }
+    /// Convenience method that sets the entire input history to a constant
+    /// vector value (x₀ = x₁ = u,resulting in a derivative = 0).  This is
+    /// useful during initialization to avoid large derivative outputs if
+    /// u[0] ≠ 0.  @p u must be the same size as the input/output ports.
+    /// If suppress_initial_transient() is true, then also sets x₂ to be >= 2
+    /// to disable the suppression for this `context`.
+    void set_input_history(systems::Context<T>* context, const Eigen::Ref<const VectorX<T>>& u) const {
+        this->ValidateContext(context);
+        set_input_history(&context->get_mutable_state(), u, u);
+    }
 
-  double time_step() const { return time_step_; }
+    double time_step() const { return time_step_; }
 
-  /// Returns the `suppress_initial_transient` passed to the constructor.
-  bool suppress_initial_transient() const;
+    /// Returns the `suppress_initial_transient` passed to the constructor.
+    bool suppress_initial_transient() const;
 
- private:
-  EventStatus CalcDiscreteUpdate(const Context<T>& context,
-                                 DiscreteValues<T>* discrete_state) const;
+private:
+    EventStatus CalcDiscreteUpdate(const Context<T>& context, DiscreteValues<T>* discrete_state) const;
 
-  void CalcOutput(const Context<T>& context,
-                  BasicVector<T>* output_vector) const;
+    void CalcOutput(const Context<T>& context, BasicVector<T>* output_vector) const;
 
-  const int n_;  // The size of the input (and output) ports.
-  const double time_step_;
-  const bool suppress_initial_transient_;
+    const int n_;  // The size of the input (and output) ports.
+    const double time_step_;
+    const bool suppress_initial_transient_;
 };
 
 /// Supports the common pattern of combining a (feed-through) position with
@@ -149,78 +144,75 @@ class DiscreteDerivative final : public LeafSystem<T> {
 /// @ingroup primitive_systems
 template <typename T>
 class StateInterpolatorWithDiscreteDerivative final : public Diagram<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(StateInterpolatorWithDiscreteDerivative);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(StateInterpolatorWithDiscreteDerivative);
 
-  /// Constructor taking @p num_positions, the size of the position vector to
-  /// be differentiated, and @p time_step, the sampling interval. If @p
-  /// suppress_initial_transient is true (the default), then the velocity
-  /// output will be zero for the first two time steps (see the
-  /// DiscreteDerivative class documentation for details and exceptions).
-  StateInterpolatorWithDiscreteDerivative(
-      int num_positions, double time_step,
-      bool suppress_initial_transient = true);
+    /// Constructor taking @p num_positions, the size of the position vector to
+    /// be differentiated, and @p time_step, the sampling interval. If @p
+    /// suppress_initial_transient is true (the default), then the velocity
+    /// output will be zero for the first two time steps (see the
+    /// DiscreteDerivative class documentation for details and exceptions).
+    StateInterpolatorWithDiscreteDerivative(int num_positions,
+                                            double time_step,
+                                            bool suppress_initial_transient = true);
 
-  /// Returns the `suppress_initial_transient` passed to the constructor.
-  bool suppress_initial_transient() const;
+    /// Returns the `suppress_initial_transient` passed to the constructor.
+    bool suppress_initial_transient() const;
 
-  /// Convenience method that sets the entire position history for the
-  /// discrete-time derivative to a constant vector value (resulting in
-  /// velocity estimate of zero). This is useful during initialization to
-  /// avoid large derivative outputs.  @p position must be the same
-  /// size as the input/output ports.  If suppress_initial_transient() is
-  /// true, then also disables the suppression for this `state`.
-  /// @warning This only changes the position history used for the velocity
-  /// half of the output port; it has no effect on the feedthrough position.
-  void set_initial_position(systems::State<T>* state,
-                            const Eigen::Ref<const VectorX<T>>& position) const;
+    /// Convenience method that sets the entire position history for the
+    /// discrete-time derivative to a constant vector value (resulting in
+    /// velocity estimate of zero). This is useful during initialization to
+    /// avoid large derivative outputs.  @p position must be the same
+    /// size as the input/output ports.  If suppress_initial_transient() is
+    /// true, then also disables the suppression for this `state`.
+    /// @warning This only changes the position history used for the velocity
+    /// half of the output port; it has no effect on the feedthrough position.
+    void set_initial_position(systems::State<T>* state, const Eigen::Ref<const VectorX<T>>& position) const;
 
-  /// Convenience method that sets the entire position history for the
-  /// discrete-time derivative as if the most recent input was @p position,
-  /// and the input before that was whatever was required to produce the
-  /// output velocity @p velocity.  @p position and @p velocity must be the
-  /// same size as the input/output ports.  If suppress_initial_transient() is
-  /// true, then also disables the suppression for this `state`.
-  /// @warning This only changes the position history used for the velocity
-  /// half of the output port; it has no effect on the feedthrough position.
-  void set_initial_state(systems::State<T>* state,
-                         const Eigen::Ref<const VectorX<T>>& position,
-                         const Eigen::Ref<const VectorX<T>>& velocity) const;
+    /// Convenience method that sets the entire position history for the
+    /// discrete-time derivative as if the most recent input was @p position,
+    /// and the input before that was whatever was required to produce the
+    /// output velocity @p velocity.  @p position and @p velocity must be the
+    /// same size as the input/output ports.  If suppress_initial_transient() is
+    /// true, then also disables the suppression for this `state`.
+    /// @warning This only changes the position history used for the velocity
+    /// half of the output port; it has no effect on the feedthrough position.
+    void set_initial_state(systems::State<T>* state,
+                           const Eigen::Ref<const VectorX<T>>& position,
+                           const Eigen::Ref<const VectorX<T>>& velocity) const;
 
-  /// Convenience method that sets the entire position history for the
-  /// discrete-time derivative to a constant vector value (resulting in
-  /// velocity estimate of zero). This is useful during initialization to
-  /// avoid large derivative outputs.  @p position must be the same
-  /// size as the input/output ports.  If suppress_initial_transient() is
-  /// true, then also disables the suppression for this `context`.
-  /// @warning This only changes the position history used for the velocity
-  /// half of the output port; it has no effect on the feedthrough position.
-  void set_initial_position(
-      systems::Context<T>* context,
-      const Eigen::Ref<const VectorX<T>>& position) const {
-    // N.B. The set_input_history(State* ...) overload is responsible for
-    // validating the state (context) belongs to the this System.
-    set_initial_position(&context->get_mutable_state(), position);
-  }
+    /// Convenience method that sets the entire position history for the
+    /// discrete-time derivative to a constant vector value (resulting in
+    /// velocity estimate of zero). This is useful during initialization to
+    /// avoid large derivative outputs.  @p position must be the same
+    /// size as the input/output ports.  If suppress_initial_transient() is
+    /// true, then also disables the suppression for this `context`.
+    /// @warning This only changes the position history used for the velocity
+    /// half of the output port; it has no effect on the feedthrough position.
+    void set_initial_position(systems::Context<T>* context, const Eigen::Ref<const VectorX<T>>& position) const {
+        // N.B. The set_input_history(State* ...) overload is responsible for
+        // validating the state (context) belongs to the this System.
+        set_initial_position(&context->get_mutable_state(), position);
+    }
 
-  /// Convenience method that sets the entire position history for the
-  /// discrete-time derivative as if the most recent input was @p position,
-  /// and the input before that was whatever was required to produce the
-  /// output velocity @p velocity.  @p position and @p velocity must be the
-  /// same size as the input/output ports.  If suppress_initial_transient() is
-  /// true, then also disables the suppression for this `context`.
-  /// @warning This only changes the position history used for the velocity
-  /// half of the output port; it has no effect on the feedthrough position.
-  void set_initial_state(systems::Context<T>* context,
-                         const Eigen::Ref<const VectorX<T>>& position,
-                         const Eigen::Ref<const VectorX<T>>& velocity) const {
-    // N.B. The set_input_history(State* ...) overload is responsible for
-    // validating the state (context) belongs to the this System.
-    set_initial_state(&context->get_mutable_state(), position, velocity);
-  }
+    /// Convenience method that sets the entire position history for the
+    /// discrete-time derivative as if the most recent input was @p position,
+    /// and the input before that was whatever was required to produce the
+    /// output velocity @p velocity.  @p position and @p velocity must be the
+    /// same size as the input/output ports.  If suppress_initial_transient() is
+    /// true, then also disables the suppression for this `context`.
+    /// @warning This only changes the position history used for the velocity
+    /// half of the output port; it has no effect on the feedthrough position.
+    void set_initial_state(systems::Context<T>* context,
+                           const Eigen::Ref<const VectorX<T>>& position,
+                           const Eigen::Ref<const VectorX<T>>& velocity) const {
+        // N.B. The set_input_history(State* ...) overload is responsible for
+        // validating the state (context) belongs to the this System.
+        set_initial_state(&context->get_mutable_state(), position, velocity);
+    }
 
- private:
-  DiscreteDerivative<T>* derivative_{};
+private:
+    DiscreteDerivative<T>* derivative_{};
 };
 
 }  // namespace systems

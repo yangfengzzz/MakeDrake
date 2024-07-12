@@ -50,63 +50,61 @@ namespace internal {
  (adding an additional vertex to the declared vertices). */
 template <typename T>
 class TriMeshBuilder {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(TriMeshBuilder);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(TriMeshBuilder);
 
-  using ScalarType = T;
-  using MeshType = TriangleSurfaceMesh<T>;
-  using FieldType = TriangleSurfaceMeshFieldLinear<T, T>;
+    using ScalarType = T;
+    using MeshType = TriangleSurfaceMesh<T>;
+    using FieldType = TriangleSurfaceMeshFieldLinear<T, T>;
 
-  TriMeshBuilder() = default;
+    TriMeshBuilder() = default;
 
-  /* Adds a vertex V (and its corresponding field value) to the mesh.
+    /* Adds a vertex V (and its corresponding field value) to the mesh.
 
-   @param p_BV         The position of the new vertex (measured and expressed in
-                       the builder's frame B).
-   @param field_value  The value of the pressure field evaluated at V.
-   @returns The index of the newly added vertex. */
-  int AddVertex(const Vector3<T>& p_BV, const T& field_value) {
-    vertices_B_.push_back(p_BV);
-    pressures_.push_back(field_value);
-    return static_cast<int>(vertices_B_.size() - 1);
-  }
+     @param p_BV         The position of the new vertex (measured and expressed in
+                         the builder's frame B).
+     @param field_value  The value of the pressure field evaluated at V.
+     @returns The index of the newly added vertex. */
+    int AddVertex(const Vector3<T>& p_BV, const T& field_value) {
+        vertices_B_.push_back(p_BV);
+        pressures_.push_back(field_value);
+        return static_cast<int>(vertices_B_.size() - 1);
+    }
 
-  /* Adds the polygon to the in-progress mesh. The polygon is defined by
-   indices into the set of vertices that have already been added to the builder.
+    /* Adds the polygon to the in-progress mesh. The polygon is defined by
+     indices into the set of vertices that have already been added to the builder.
 
-   @param polygon_vertices  The definition of the polygon to add, expressed as
-                            ordered indices into the currently existing
-                            vertices. They should be ordered in a counter-
-                            clockwise manner such that the implied face normal
-                            points "outward" (using the right-hand rule).
-   @param nhat_B            The normal to the polygon, measured and expressed in
-                            the builder's frame B.
-   @param grad_e_MN_B       The gradient of the pressure field in the domain of
-                            the polygon, expressed in the builder's frame B.
-   @returns The number of faces added to the mesh.
+     @param polygon_vertices  The definition of the polygon to add, expressed as
+                              ordered indices into the currently existing
+                              vertices. They should be ordered in a counter-
+                              clockwise manner such that the implied face normal
+                              points "outward" (using the right-hand rule).
+     @param nhat_B            The normal to the polygon, measured and expressed in
+                              the builder's frame B.
+     @param grad_e_MN_B       The gradient of the pressure field in the domain of
+                              the polygon, expressed in the builder's frame B.
+     @returns The number of faces added to the mesh.
 
-   @sa AddVertex(). */
-  int AddPolygon(const std::vector<int>& polygon_vertices,
-                 const Vector3<T>& nhat_B, const Vector3<T>& grad_e_MN_B);
+     @sa AddVertex(). */
+    int AddPolygon(const std::vector<int>& polygon_vertices, const Vector3<T>& nhat_B, const Vector3<T>& grad_e_MN_B);
 
-  /* Returns the total number of vertices accumulated so far. */
-  int num_vertices() const { return static_cast<int>(vertices_B_.size()); }
+    /* Returns the total number of vertices accumulated so far. */
+    int num_vertices() const { return static_cast<int>(vertices_B_.size()); }
 
-  /* Returns the total number of faces added by calls to AddPolygon(). */
-  int num_faces() const { return static_cast<int>(faces_.size()); }
+    /* Returns the total number of faces added by calls to AddPolygon(). */
+    int num_faces() const { return static_cast<int>(faces_.size()); }
 
-  /* Create a mesh and field from the mesh data that has been aggregated by
-   this builder. */
-  std::pair<std::unique_ptr<MeshType>, std::unique_ptr<FieldType>>
-  MakeMeshAndField();
+    /* Create a mesh and field from the mesh data that has been aggregated by
+     this builder. */
+    std::pair<std::unique_ptr<MeshType>, std::unique_ptr<FieldType>> MakeMeshAndField();
 
- private:
-  /* The faces of the mesh being built. */
-  std::vector<SurfaceTriangle> faces_;
-  /* The vertices of the mesh being built. */
-  std::vector<Vector3<T>> vertices_B_;
-  /* The pressure values (e) of the surface being built. */
-  std::vector<T> pressures_;
+private:
+    /* The faces of the mesh being built. */
+    std::vector<SurfaceTriangle> faces_;
+    /* The vertices of the mesh being built. */
+    std::vector<Vector3<T>> vertices_B_;
+    /* The pressure values (e) of the surface being built. */
+    std::vector<T> pressures_;
 };
 
 /* A MeshBuilder type to build a polygon surface mesh. The mesh is built
@@ -115,77 +113,73 @@ class TriMeshBuilder {
  previously added vertices by index. */
 template <typename T>
 class PolyMeshBuilder {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(PolyMeshBuilder);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(PolyMeshBuilder);
 
-  using ScalarType = T;
-  using MeshType = PolygonSurfaceMesh<T>;
-  using FieldType = PolygonSurfaceMeshFieldLinear<T, T>;
+    using ScalarType = T;
+    using MeshType = PolygonSurfaceMesh<T>;
+    using FieldType = PolygonSurfaceMeshFieldLinear<T, T>;
 
-  PolyMeshBuilder();
+    PolyMeshBuilder();
 
-  /* Adds a vertex V (and its corresponding field value) to the mesh.
+    /* Adds a vertex V (and its corresponding field value) to the mesh.
 
-   @param p_BV         The position of the new vertex (measured and expressed in
-                       the builder's frame B).
-   @param field_value  The value of the pressure field evaluated at V.
-   @returns The index of the newly added vertex. */
-  int AddVertex(const Vector3<T>& p_BV, const T& field_value) {
-    vertices_B_.push_back(p_BV);
-    pressures_.push_back(field_value);
-    return static_cast<int>(vertices_B_.size() - 1);
-  }
+     @param p_BV         The position of the new vertex (measured and expressed in
+                         the builder's frame B).
+     @param field_value  The value of the pressure field evaluated at V.
+     @returns The index of the newly added vertex. */
+    int AddVertex(const Vector3<T>& p_BV, const T& field_value) {
+        vertices_B_.push_back(p_BV);
+        pressures_.push_back(field_value);
+        return static_cast<int>(vertices_B_.size() - 1);
+    }
 
-  /* Adds the polygon to the in-progress mesh. The polygon is defined by
-   indices into the set of vertices that have already been added to the builder.
+    /* Adds the polygon to the in-progress mesh. The polygon is defined by
+     indices into the set of vertices that have already been added to the builder.
 
-   @param polygon_vertices  The definition of the polygon to add, expressed as
-                            ordered indices into the currently existing
-                            vertices. They should be ordered in a counter-
-                            clockwise manner such that the implied face normal
-                            points "outward" (using the right-hand rule).
-   @param nhat_B            The normal to the polygon, measured and expressed in
-                            the builder's frame B.
-   @param grad_e_MN_B       The gradient of the pressure field in the domain of
-                            the polygon, expressed in the builder's frame B.
-   @returns The number of faces added to the mesh.
+     @param polygon_vertices  The definition of the polygon to add, expressed as
+                              ordered indices into the currently existing
+                              vertices. They should be ordered in a counter-
+                              clockwise manner such that the implied face normal
+                              points "outward" (using the right-hand rule).
+     @param nhat_B            The normal to the polygon, measured and expressed in
+                              the builder's frame B.
+     @param grad_e_MN_B       The gradient of the pressure field in the domain of
+                              the polygon, expressed in the builder's frame B.
+     @returns The number of faces added to the mesh.
 
-   @sa AddVertex(). */
-  int AddPolygon(const std::vector<int>& polygon_vertices,
-                 const Vector3<T>& nhat_B, const Vector3<T>& grad_e_MN_B);
+     @sa AddVertex(). */
+    int AddPolygon(const std::vector<int>& polygon_vertices, const Vector3<T>& nhat_B, const Vector3<T>& grad_e_MN_B);
 
-  /* Returns the total number of vertices accumulated so far. */
-  int num_vertices() const { return static_cast<int>(vertices_B_.size()); }
+    /* Returns the total number of vertices accumulated so far. */
+    int num_vertices() const { return static_cast<int>(vertices_B_.size()); }
 
-  /* Returns the total number of faces added by calls to AddPolygon(). */
-  int num_faces() const { return polygon_count_; }
+    /* Returns the total number of faces added by calls to AddPolygon(). */
+    int num_faces() const { return polygon_count_; }
 
-  /* Create a mesh and field from the mesh data that has been aggregated by
-   this builder. */
-  std::pair<std::unique_ptr<MeshType>, std::unique_ptr<FieldType>>
-  MakeMeshAndField();
+    /* Create a mesh and field from the mesh data that has been aggregated by
+     this builder. */
+    std::pair<std::unique_ptr<MeshType>, std::unique_ptr<FieldType>> MakeMeshAndField();
 
-  /* Expose the accumulated, per-face gradients for testing. */
-  std::vector<Vector3<T>>& mutable_per_element_gradients() {
-    return grad_e_MN_B_per_face_;
-  }
+    /* Expose the accumulated, per-face gradients for testing. */
+    std::vector<Vector3<T>>& mutable_per_element_gradients() { return grad_e_MN_B_per_face_; }
 
-  /* Expose the accumulated vertices measured and expressed in the
-   builder's frame B. */
-  const std::vector<Vector3<T>>& vertices() const { return vertices_B_; }
+    /* Expose the accumulated vertices measured and expressed in the
+     builder's frame B. */
+    const std::vector<Vector3<T>>& vertices() const { return vertices_B_; }
 
- private:
-  /* The number of polygons that have been added. It can't simply be inferred
-   from face_data_.size() because of the face encoding. */
-  int polygon_count_{0};
-  /* The definition of all faces of the mesh being built. */
-  std::vector<int> face_data_;
-  /* The per-face gradients of the pressure field. */
-  std::vector<Vector3<T>> grad_e_MN_B_per_face_;
-  /* The vertices of the mesh being built. */
-  std::vector<Vector3<T>> vertices_B_;
-  /* The pressure values (e) of the surface being built. */
-  std::vector<T> pressures_;
+private:
+    /* The number of polygons that have been added. It can't simply be inferred
+     from face_data_.size() because of the face encoding. */
+    int polygon_count_{0};
+    /* The definition of all faces of the mesh being built. */
+    std::vector<int> face_data_;
+    /* The per-face gradients of the pressure field. */
+    std::vector<Vector3<T>> grad_e_MN_B_per_face_;
+    /* The vertices of the mesh being built. */
+    std::vector<Vector3<T>> vertices_B_;
+    /* The pressure values (e) of the surface being built. */
+    std::vector<T> pressures_;
 };
 
 /* Given a planar, N-sided convex `polygon`, computes its centroid. The
@@ -266,8 +260,7 @@ void AddPolygonToTriangleMeshData(const std::vector<int>& polygon,
       of the entire set of mesh polygons (as documented by PolygonSurfaceMesh).
    2. No normal or vertices are required because adding a polygon requires no
       operation on pre-existing vertex data (i.e., calculation of centroid). */
-void AddPolygonToPolygonMeshData(const std::vector<int>& polygon,
-                                 std::vector<int>* face_data);
+void AddPolygonToPolygonMeshData(const std::vector<int>& polygon, std::vector<int>* face_data);
 
 /* Determines if the indicated triangle has a face normal that is "in the
  direction" of the given normal.

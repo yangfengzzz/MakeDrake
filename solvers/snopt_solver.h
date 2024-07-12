@@ -14,25 +14,25 @@ namespace solvers {
  * details.
  */
 struct SnoptSolverDetails {
-  /**
-   * The snopt INFO field. Please refer to section 8.6
-   * in "User's Guide for SNOPT Version 7: Software for Large-Scale Nonlinear
-   * Programming" (https://web.stanford.edu/group/SOL/guides/sndoc7.pdf) by
-   * Philip E. Gill to interpret the INFO field.
-   */
-  int info{};
+    /**
+     * The snopt INFO field. Please refer to section 8.6
+     * in "User's Guide for SNOPT Version 7: Software for Large-Scale Nonlinear
+     * Programming" (https://web.stanford.edu/group/SOL/guides/sndoc7.pdf) by
+     * Philip E. Gill to interpret the INFO field.
+     */
+    int info{};
 
-  /** The final value of the dual variables for the bound constraint x_lower <=
-   * x <= x_upper.
-   */
-  Eigen::VectorXd xmul;
-  /** The final value of the vector of problem functions F(x).
-   */
-  Eigen::VectorXd F;
-  /** The final value of the dual variables (Lagrange multipliers) for the
-   * general constraints F_lower <= F(x) <= F_upper.
-   */
-  Eigen::VectorXd Fmul;
+    /** The final value of the dual variables for the bound constraint x_lower <=
+     * x <= x_upper.
+     */
+    Eigen::VectorXd xmul;
+    /** The final value of the vector of problem functions F(x).
+     */
+    Eigen::VectorXd F;
+    /** The final value of the dual variables (Lagrange multipliers) for the
+     * general constraints F_lower <= F(x) <= F_upper.
+     */
+    Eigen::VectorXd Fmul;
 };
 
 /**
@@ -53,34 +53,36 @@ struct SnoptSolverDetails {
  * SNOPT, in which case SolverInterface::enabled() will return false.
  */
 class SnoptSolver final : public SolverBase {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(SnoptSolver);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(SnoptSolver);
 
-  /// Type of details stored in MathematicalProgramResult.
-  using Details = SnoptSolverDetails;
+    /// Type of details stored in MathematicalProgramResult.
+    using Details = SnoptSolverDetails;
 
-  SnoptSolver();
-  ~SnoptSolver() final;
+    SnoptSolver();
+    ~SnoptSolver() final;
 
-  /// For some reason, SNOPT 7.4 fails to detect a simple LP being unbounded.
-  static bool is_bounded_lp_broken();
+    /// For some reason, SNOPT 7.4 fails to detect a simple LP being unbounded.
+    static bool is_bounded_lp_broken();
 
-  /// @name Static versions of the instance methods with similar names.
-  //@{
-  static SolverId id();
-  static bool is_available();
-  /// Returns true iff the environment variable DRAKE_SNOPT_SOLVER_ENABLED is
-  /// unset or set to anything other than "0".
-  static bool is_enabled();
-  static bool ProgramAttributesSatisfied(const MathematicalProgram&);
-  //@}
+    /// @name Static versions of the instance methods with similar names.
+    //@{
+    static SolverId id();
+    static bool is_available();
+    /// Returns true iff the environment variable DRAKE_SNOPT_SOLVER_ENABLED is
+    /// unset or set to anything other than "0".
+    static bool is_enabled();
+    static bool ProgramAttributesSatisfied(const MathematicalProgram&);
+    //@}
 
-  // A using-declaration adds these methods into our class's Doxygen.
-  using SolverBase::Solve;
+    // A using-declaration adds these methods into our class's Doxygen.
+    using SolverBase::Solve;
 
- private:
-  void DoSolve(const MathematicalProgram&, const Eigen::VectorXd&,
-               const SolverOptions&, MathematicalProgramResult*) const final;
+private:
+    void DoSolve(const MathematicalProgram&,
+                 const Eigen::VectorXd&,
+                 const SolverOptions&,
+                 MathematicalProgramResult*) const final;
 };
 
 }  // namespace solvers

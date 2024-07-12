@@ -6,15 +6,15 @@ namespace drake {
 namespace geometry {
 
 std::string RenderEngineGltfClientParams::GetUrl() const {
-  std::string url = base_url;
-  std::string endpoint = render_endpoint;
-  while (url.size() > 0 && url.back() == '/') {
-    url.pop_back();
-  }
-  while (endpoint.size() > 0 && endpoint.front() == '/') {
-    endpoint.erase(0, 1);
-  }
-  return url + "/" + endpoint;
+    std::string url = base_url;
+    std::string endpoint = render_endpoint;
+    while (url.size() > 0 && url.back() == '/') {
+        url.pop_back();
+    }
+    while (endpoint.size() > 0 && endpoint.front() == '/') {
+        endpoint.erase(0, 1);
+    }
+    return url + "/" + endpoint;
 }
 
 }  // namespace geometry

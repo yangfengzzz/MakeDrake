@@ -36,13 +36,13 @@ namespace internal {
  @pre deformable1_sdf_W.mesh() refers to deformable1_mesh_W.mesh().
  @pre deformable_contact != nullptr.
  @pre deformable1_id < deformable0_id  */
-void AddDeformableDeformableContactSurface(
-    const VolumeMeshFieldLinear<double, double>& deformable0_sdf_W,
-    const DeformableVolumeMeshWithBvh<double>& deformable0_mesh_W,
-    GeometryId deformable0_id,
-    const VolumeMeshFieldLinear<double, double>& deformable1_sdf_W,
-    const DeformableVolumeMeshWithBvh<double>& deformable1_mesh_W,
-    GeometryId deformable1_id, DeformableContact<double>* deformable_contact);
+void AddDeformableDeformableContactSurface(const VolumeMeshFieldLinear<double, double>& deformable0_sdf_W,
+                                           const DeformableVolumeMeshWithBvh<double>& deformable0_mesh_W,
+                                           GeometryId deformable0_id,
+                                           const VolumeMeshFieldLinear<double, double>& deformable1_sdf_W,
+                                           const DeformableVolumeMeshWithBvh<double>& deformable1_mesh_W,
+                                           GeometryId deformable1_id,
+                                           DeformableContact<double>* deformable_contact);
 
 }  // namespace internal
 }  // namespace geometry

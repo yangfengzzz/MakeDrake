@@ -18,7 +18,7 @@ using Eigen::Vector3d;
 // Input parameters:
 //   w_AB: angular velocity of B in A.
 //   DtB_w_AB: Time derivative of w_AB in the B frame.
-void ConvertTimeDerivativeOfAngularVelocity(const Vector3d &w_AB, const Vector3d &DtB_w_AB) {
+void ConvertTimeDerivativeOfAngularVelocity(const Vector3d& w_AB, const Vector3d& DtB_w_AB) {
     const double kAbsoluteTolerance = 2 * std::numeric_limits<double>::epsilon();
     Vector3d DtA_w_AB = ConvertTimeDerivativeToOtherFrame(w_AB, DtB_w_AB, w_AB);
     EXPECT_TRUE(CompareMatrices(DtA_w_AB, DtB_w_AB, kAbsoluteTolerance, MatrixCompareType::absolute));

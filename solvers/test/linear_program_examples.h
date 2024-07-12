@@ -19,17 +19,17 @@ namespace test {
 ///   -1 <= 0x0+ 0x1 + 0x2 <= 0
 ///           x1 >= 1
 class LinearFeasibilityProgram : public OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearFeasibilityProgram);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearFeasibilityProgram);
 
-  explicit LinearFeasibilityProgram(ConstraintForm constraint_form);
+    explicit LinearFeasibilityProgram(ConstraintForm constraint_form);
 
-  ~LinearFeasibilityProgram() override = default;
+    ~LinearFeasibilityProgram() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<3> x_;
+private:
+    VectorDecisionVariable<3> x_;
 };
 
 /// Adapt from the linear programming example
@@ -43,18 +43,18 @@ class LinearFeasibilityProgram : public OptimizationProgram {
 ///      x0 >= 0
 /// The optimal solution is x0 = 1, x1 = 2
 class LinearProgram0 : public OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearProgram0);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearProgram0);
 
-  LinearProgram0(CostForm cost_form, ConstraintForm constraint_form);
+    LinearProgram0(CostForm cost_form, ConstraintForm constraint_form);
 
-  ~LinearProgram0() override = default;
+    ~LinearProgram0() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<2> x_;
-  Eigen::Vector2d x_expected_;
+private:
+    VectorDecisionVariable<2> x_;
+    Eigen::Vector2d x_expected_;
 };
 
 // Test a simple linear programming problem with only bounding box constraint
@@ -64,18 +64,18 @@ class LinearProgram0 : public OptimizationProgram {
 //    -1 <= x1 <= 4
 // The optimal solution is (0, 4)
 class LinearProgram1 : public OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearProgram1);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearProgram1);
 
-  LinearProgram1(CostForm cost_form, ConstraintForm constraint_form);
+    LinearProgram1(CostForm cost_form, ConstraintForm constraint_form);
 
-  ~LinearProgram1() override = default;
+    ~LinearProgram1() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<2> x_;
-  Eigen::Vector2d x_expected_;
+private:
+    VectorDecisionVariable<2> x_;
+    Eigen::Vector2d x_expected_;
 };
 
 // Test a simple linear programming problem
@@ -92,18 +92,18 @@ class LinearProgram1 : public OptimizationProgram {
 //           0 <= x3 <= inf
 // The optimal solution is at (0, 0, 15, 25/3)
 class LinearProgram2 : public OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearProgram2);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearProgram2);
 
-  LinearProgram2(CostForm cost_form, ConstraintForm constraint_form);
+    LinearProgram2(CostForm cost_form, ConstraintForm constraint_form);
 
-  ~LinearProgram2() override = default;
+    ~LinearProgram2() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<4> x_;
-  Eigen::Vector4d x_expected_;
+private:
+    VectorDecisionVariable<4> x_;
+    Eigen::Vector4d x_expected_;
 };
 
 // Test a simple linear programming problem
@@ -117,40 +117,38 @@ class LinearProgram2 : public OptimizationProgram {
 //     x0 >= 0 x1 >= 0 x2 >= 0
 // The optimal solution is at (8, 3, 11)
 class LinearProgram3 : public OptimizationProgram {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearProgram3);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearProgram3);
 
-  LinearProgram3(CostForm cost_form, ConstraintForm constraint_form);
+    LinearProgram3(CostForm cost_form, ConstraintForm constraint_form);
 
-  ~LinearProgram3() override = default;
+    ~LinearProgram3() override = default;
 
-  void CheckSolution(const MathematicalProgramResult& result) const override;
+    void CheckSolution(const MathematicalProgramResult& result) const override;
 
- private:
-  VectorDecisionVariable<3> x_;
-  Eigen::Vector3d x_expected_;
+private:
+    VectorDecisionVariable<3> x_;
+    Eigen::Vector3d x_expected_;
 };
 
 enum class LinearProblems {
-  kLinearFeasibilityProgram = 0,
-  kLinearProgram0 = 1,
-  kLinearProgram1 = 2,
-  kLinearProgram2 = 3,
-  kLinearProgram3 = 4,
+    kLinearFeasibilityProgram = 0,
+    kLinearProgram0 = 1,
+    kLinearProgram1 = 2,
+    kLinearProgram2 = 3,
+    kLinearProgram3 = 4,
 };
 
 std::ostream& operator<<(std::ostream& os, LinearProblems value);
 
-class LinearProgramTest
-    : public ::testing::TestWithParam<
-          std::tuple<CostForm, ConstraintForm, LinearProblems>> {
- public:
-  LinearProgramTest();
+class LinearProgramTest : public ::testing::TestWithParam<std::tuple<CostForm, ConstraintForm, LinearProblems>> {
+public:
+    LinearProgramTest();
 
-  OptimizationProgram* prob() const { return prob_.get(); }
+    OptimizationProgram* prob() const { return prob_.get(); }
 
- private:
-  std::unique_ptr<OptimizationProgram> prob_;
+private:
+    std::unique_ptr<OptimizationProgram> prob_;
 };
 
 std::vector<LinearProblems> linear_problems();
@@ -163,15 +161,15 @@ std::vector<LinearProblems> linear_problems();
  *     x0 >= 0, x1 >= 2
  */
 class InfeasibleLinearProgramTest0 : public ::testing::Test {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(InfeasibleLinearProgramTest0);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(InfeasibleLinearProgramTest0);
 
-  InfeasibleLinearProgramTest0();
+    InfeasibleLinearProgramTest0();
 
-  ~InfeasibleLinearProgramTest0() override {}
+    ~InfeasibleLinearProgramTest0() override {}
 
- protected:
-  std::unique_ptr<MathematicalProgram> prog_;
+protected:
+    std::unique_ptr<MathematicalProgram> prog_;
 };
 
 /**
@@ -181,16 +179,16 @@ class InfeasibleLinearProgramTest0 : public ::testing::Test {
  *     x0 >= 0, x1 >= 2
  */
 class UnboundedLinearProgramTest0 : public ::testing::Test {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnboundedLinearProgramTest0);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnboundedLinearProgramTest0);
 
-  UnboundedLinearProgramTest0();
+    UnboundedLinearProgramTest0();
 
-  ~UnboundedLinearProgramTest0() override {}
+    ~UnboundedLinearProgramTest0() override {}
 
- protected:
-  std::unique_ptr<MathematicalProgram> prog_;
-  Vector2<symbolic::Variable> x_;
+protected:
+    std::unique_ptr<MathematicalProgram> prog_;
+    Vector2<symbolic::Variable> x_;
 };
 
 /**
@@ -201,15 +199,15 @@ class UnboundedLinearProgramTest0 : public ::testing::Test {
  *     0 <= x0, x2 <= 1
  */
 class UnboundedLinearProgramTest1 : public ::testing::Test {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnboundedLinearProgramTest1);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnboundedLinearProgramTest1);
 
-  UnboundedLinearProgramTest1();
+    UnboundedLinearProgramTest1();
 
-  ~UnboundedLinearProgramTest1() override {}
+    ~UnboundedLinearProgramTest1() override {}
 
- protected:
-  std::unique_ptr<MathematicalProgram> prog_;
+protected:
+    std::unique_ptr<MathematicalProgram> prog_;
 };
 
 /**
@@ -223,19 +221,18 @@ class UnboundedLinearProgramTest1 : public ::testing::Test {
      x0 + 2x1 + 3x2 >= 0
  */
 class DuplicatedVariableLinearProgramTest1 : public ::testing::Test {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DuplicatedVariableLinearProgramTest1);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DuplicatedVariableLinearProgramTest1);
 
-  DuplicatedVariableLinearProgramTest1();
+    DuplicatedVariableLinearProgramTest1();
 
-  void CheckSolution(
-      const SolverInterface& solver,
-      const std::optional<SolverOptions>& solver_options = std::nullopt,
-      double tol = 1E-7) const;
+    void CheckSolution(const SolverInterface& solver,
+                       const std::optional<SolverOptions>& solver_options = std::nullopt,
+                       double tol = 1E-7) const;
 
- protected:
-  std::unique_ptr<MathematicalProgram> prog_;
-  Vector3<symbolic::Variable> x_;
+protected:
+    std::unique_ptr<MathematicalProgram> prog_;
+    Vector3<symbolic::Variable> x_;
 };
 
 /**
@@ -249,8 +246,7 @@ void TestLPDualSolution2(const SolverInterface& solver, double tol = 1e-6);
 
 /** This LP has only bounding box constraints. The decision variable is
  * scaled.*/
-void TestLPDualSolution2Scaled(const SolverInterface& solver,
-                               double tol = 1e-6);
+void TestLPDualSolution2Scaled(const SolverInterface& solver, double tol = 1e-6);
 
 /** This LP has only bounding box constraints. */
 void TestLPDualSolution3(const SolverInterface& solver, double tol = 1e-6);
@@ -268,10 +264,10 @@ void TestLPDualSolution5(const SolverInterface& solver, double tol = 1E-6);
  * smallest infinity norm to (0.99, 1.99). The point is within the convex hull
  * of four points (eps, eps), (1, 1), (eps, 2), (1, 2).
  */
-void TestLPPoorScaling1(
-    const SolverInterface& solver, bool expect_success = true,
-    double tol = 1E-12,
-    const std::optional<SolverOptions>& options = std::nullopt);
+void TestLPPoorScaling1(const SolverInterface& solver,
+                        bool expect_success = true,
+                        double tol = 1E-12,
+                        const std::optional<SolverOptions>& options = std::nullopt);
 
 /** This test confirms that the solver can solve problems with poorly scaled
  * data. See github issue https://github.com/RobotLocomotion/drake/issues/15341
@@ -279,10 +275,10 @@ void TestLPPoorScaling1(
  * The optimal solution isn't computed analytically, hence we take a loose
  * tolerance.
  */
-void TestLPPoorScaling2(
-    const SolverInterface& solver, bool expect_success = true,
-    double tol = 1E-4,
-    const std::optional<SolverOptions>& options = std::nullopt);
+void TestLPPoorScaling2(const SolverInterface& solver,
+                        bool expect_success = true,
+                        double tol = 1E-4,
+                        const std::optional<SolverOptions>& options = std::nullopt);
 }  // namespace test
 }  // namespace solvers
 }  // namespace drake

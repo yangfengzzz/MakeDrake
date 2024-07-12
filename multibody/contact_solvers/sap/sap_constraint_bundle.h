@@ -55,82 +55,78 @@ using SapConstraintBundleData = std::vector<std::unique_ptr<AbstractValue>>;
 @tparam_nonsymbolic_scalar */
 template <typename T>
 class SapConstraintBundle {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(SapConstraintBundle);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(SapConstraintBundle);
 
-  /* Constructs a bundle for the given `problem`.
-   @param[in] problem This bundle keeps a reference to the constraints owned by
-   `problem` and therefore it must outlive this object. An exception is thrown
-   if nullptr.
-   @param[in] delassus_diagonal It must have size problem.num_constraint() or an
-   exception is thrown. The i-th entry stores the scaling parameter used for
-   regularization estimation by the i-th constraint in `problem`, see
-   SapConstraint::CalcDiagonalRegularization(). */
-  SapConstraintBundle(const SapContactProblem<T>* problem,
-                      const VectorX<T>& delassus_diagonal);
+    /* Constructs a bundle for the given `problem`.
+     @param[in] problem This bundle keeps a reference to the constraints owned by
+     `problem` and therefore it must outlive this object. An exception is thrown
+     if nullptr.
+     @param[in] delassus_diagonal It must have size problem.num_constraint() or an
+     exception is thrown. The i-th entry stores the scaling parameter used for
+     regularization estimation by the i-th constraint in `problem`, see
+     SapConstraint::CalcDiagonalRegularization(). */
+    SapConstraintBundle(const SapContactProblem<T>* problem, const VectorX<T>& delassus_diagonal);
 
-  /* Returns the number of constraints in this bundle. */
-  int num_constraints() const;
+    /* Returns the number of constraints in this bundle. */
+    int num_constraints() const;
 
-  /* Returns the number of constraint equations in this bundle. This number
-   equals the number of rows in the bundle's Jacobian. */
-  int num_constraint_equations() const;
+    /* Returns the number of constraint equations in this bundle. This number
+     equals the number of rows in the bundle's Jacobian. */
+    int num_constraint_equations() const;
 
-  /* Returns the Jacobian of the bundle. Rows correspond to constraint equations
-   and columns correspond to generalized velocities of the contact problem
-   supplied at construction.
-   Rows (i.e. constraints) in the bundle's Jacobian are sorted according to the
-   problem's graph; each cluster (edge) in the graph corresponds to a block row,
-   with rows within this block row sorted in the order enumerated within the
-   cluster (see ContactProblemGraph::ConstraintCluster::constraint_index()).
-   Columns correspond to the generalized velocities of participating cliques
-   only, see ContactProblemGraph::participating_cliques(); each participating
-   clique corresponds to a block column, in the order enumerated by
-   ContactProblemGraph::participating_cliques(). */
-  const BlockSparseMatrix<T>& J() const { return J_; }
+    /* Returns the Jacobian of the bundle. Rows correspond to constraint equations
+     and columns correspond to generalized velocities of the contact problem
+     supplied at construction.
+     Rows (i.e. constraints) in the bundle's Jacobian are sorted according to the
+     problem's graph; each cluster (edge) in the graph corresponds to a block row,
+     with rows within this block row sorted in the order enumerated within the
+     cluster (see ContactProblemGraph::ConstraintCluster::constraint_index()).
+     Columns correspond to the generalized velocities of participating cliques
+     only, see ContactProblemGraph::participating_cliques(); each participating
+     clique corresponds to a block column, in the order enumerated by
+     ContactProblemGraph::participating_cliques(). */
+    const BlockSparseMatrix<T>& J() const { return J_; }
 
-  /* Makes data structure to store data needed for bundle computations.
-    `time_step` and `delassus_diagonal` can be used to pre-compute scale
-    quantities to condition the problem better.
-    @param[in] time_step The time step used in the contact problem.
-    @param[in] delassus_diagonal An estimation of the diagonal of the Delassus
-    operator, with one entry per constraint equation. Of size
-    num_constraint_equations().
-    */
-  SapConstraintBundleData MakeData(const T& time_step,
-                                   const VectorX<T>& delassus_diagonal) const;
+    /* Makes data structure to store data needed for bundle computations.
+      `time_step` and `delassus_diagonal` can be used to pre-compute scale
+      quantities to condition the problem better.
+      @param[in] time_step The time step used in the contact problem.
+      @param[in] delassus_diagonal An estimation of the diagonal of the Delassus
+      operator, with one entry per constraint equation. Of size
+      num_constraint_equations().
+      */
+    SapConstraintBundleData MakeData(const T& time_step, const VectorX<T>& delassus_diagonal) const;
 
-  /* Updates constraint data as a function of constraint velocities `vc`. */
-  void CalcData(const VectorX<T>& vc,
-                SapConstraintBundleData* constraints_data) const;
+    /* Updates constraint data as a function of constraint velocities `vc`. */
+    void CalcData(const VectorX<T>& vc, SapConstraintBundleData* constraints_data) const;
 
-  /* Computes the compound cost of the bundle as a function of the constraints'
-   velocities vector vc. */
-  T CalcCost(const SapConstraintBundleData& constraints_data) const;
+    /* Computes the compound cost of the bundle as a function of the constraints'
+     velocities vector vc. */
+    T CalcCost(const SapConstraintBundleData& constraints_data) const;
 
-  /* Computes the impulse gamma as a function of vc.
-   @pre vc.size() equals num_constraint_equations().
-   @pre gamma != nullptr and gamma->size() equals num_constraint_equations(). */
-  void CalcImpulses(const SapConstraintBundleData& bundle_data,
-                    VectorX<T>* gamma) const;
+    /* Computes the impulse gamma as a function of vc.
+     @pre vc.size() equals num_constraint_equations().
+     @pre gamma != nullptr and gamma->size() equals num_constraint_equations(). */
+    void CalcImpulses(const SapConstraintBundleData& bundle_data, VectorX<T>* gamma) const;
 
-  /* Computes the constraints's Hessian G(vc) = −∂γ/∂vc = ∂²ℓ/∂vc².
-   @pre vc.size() equals num_constraint_equations().
-   @pre gamma != nullptr and gamma->size() equals num_constraint_equations().
-   @pre G != nullptr and G->size() equals num_constraints(). */
-  void CalcImpulsesAndConstraintsHessian(
-      const SapConstraintBundleData& bundle_data, VectorX<T>* gamma,
-      std::vector<MatrixX<T>>* G) const;
+    /* Computes the constraints's Hessian G(vc) = −∂γ/∂vc = ∂²ℓ/∂vc².
+     @pre vc.size() equals num_constraint_equations().
+     @pre gamma != nullptr and gamma->size() equals num_constraint_equations().
+     @pre G != nullptr and G->size() equals num_constraints(). */
+    void CalcImpulsesAndConstraintsHessian(const SapConstraintBundleData& bundle_data,
+                                           VectorX<T>* gamma,
+                                           std::vector<MatrixX<T>>* G) const;
 
- private:
-  /* This method builds the BlockSparseMatrix representation of the Jacobian
-   matrix for the given contact problem. For further details on its structure,
-   refer to the documentation for the public accessor J(). */
-  void MakeConstraintBundleJacobian(const SapContactProblem<T>& problem);
+private:
+    /* This method builds the BlockSparseMatrix representation of the Jacobian
+     matrix for the given contact problem. For further details on its structure,
+     refer to the documentation for the public accessor J(). */
+    void MakeConstraintBundleJacobian(const SapContactProblem<T>& problem);
 
-  BlockSparseMatrix<T> J_;
-  // Constraint references in the order dictated by the ContactProblemGraph.
-  std::vector<const SapConstraint<T>*> constraints_;
+    BlockSparseMatrix<T> J_;
+    // Constraint references in the order dictated by the ContactProblemGraph.
+    std::vector<const SapConstraint<T>*> constraints_;
 };
 
 }  // namespace internal

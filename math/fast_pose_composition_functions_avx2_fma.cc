@@ -602,11 +602,15 @@ arguments' memory. */
 
 /* Dot product of a row of l and a column of m, where both l and m are 3x3s
 in column order. */
-double row_x_col(const double* l, const double* m) { return l[0] * m[0] + l[3] * m[1] + l[6] * m[2]; }
+double row_x_col(const double* l, const double* m) {
+    return l[0] * m[0] + l[3] * m[1] + l[6] * m[2];
+}
 
 /* Dot product of a column of l and a column of m, where both l and m are 3x3s
 in column order. */
-double col_x_col(const double* l, const double* m) { return l[0] * m[0] + l[1] * m[1] + l[2] * m[2]; }
+double col_x_col(const double* l, const double* m) {
+    return l[0] * m[0] + l[1] * m[1] + l[2] * m[2];
+}
 
 /* @pre R_AC is disjoint in memory from the inputs. */
 void ComposeRRNoAlias(const double* R_AB, const double* R_BC, double* R_AC) {
@@ -729,8 +733,12 @@ struct ChooseBestComposeXinvX {
 };
 
 // These sugar functions convert C++ types into bare arrays.
-const double* GetRawData(const RotationMatrix<double>& R) { return R.matrix().data(); }
-double* GetRawData(RotationMatrix<double>* R) { return const_cast<double*>(R->matrix().data()); }
+const double* GetRawData(const RotationMatrix<double>& R) {
+    return R.matrix().data();
+}
+double* GetRawData(RotationMatrix<double>* R) {
+    return const_cast<double*>(R->matrix().data());
+}
 const double* GetRawData(const RigidTransform<double>& X) {
     // In rigid_transform.h we assert that the memory layout is 12 doubles, with
     // the rotation matrix first followed by the translation.

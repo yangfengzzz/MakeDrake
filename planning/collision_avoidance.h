@@ -50,11 +50,12 @@ namespace internal {
  @pre context != nullptr and context_number != nullopt cannot be combined.
 
  @ingroup planning_collision_checker */
-Eigen::VectorXd ComputeCollisionAvoidanceDisplacement(
-    const CollisionChecker& checker, const Eigen::VectorXd& q,
-    double max_penetration, double max_clearance,
-    std::optional<int> context_number = std::nullopt,
-    CollisionCheckerContext* context = nullptr);
+Eigen::VectorXd ComputeCollisionAvoidanceDisplacement(const CollisionChecker& checker,
+                                                      const Eigen::VectorXd& q,
+                                                      double max_penetration,
+                                                      double max_clearance,
+                                                      std::optional<int> context_number = std::nullopt,
+                                                      CollisionCheckerContext* context = nullptr);
 
 // TODO(jwnimmer-tri) Before we promote the above function out of the internal
 // namespace, consider renaming "Displacement" to "Gradient" to better reflect

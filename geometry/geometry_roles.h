@@ -153,10 +153,10 @@ namespace geometry {
        properties and link to that.  -->
  */
 class ProximityProperties final : public GeometryProperties {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ProximityProperties);
-  // TODO(SeanCurtis-TRI): Should this have the physical properties built in?
-  ProximityProperties() = default;
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ProximityProperties);
+    // TODO(SeanCurtis-TRI): Should this have the physical properties built in?
+    ProximityProperties() = default;
 };
 
 /** The set of properties for geometry used in a "perception" role.
@@ -165,10 +165,10 @@ class ProximityProperties final : public GeometryProperties {
    - render::RenderEngineVtk
  */
 class PerceptionProperties final : public GeometryProperties {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(PerceptionProperties);
-  // TODO(SeanCurtis-TRI): Should this have a render label built in?
-  PerceptionProperties() = default;
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(PerceptionProperties);
+    // TODO(SeanCurtis-TRI): Should this have a render label built in?
+    PerceptionProperties() = default;
 };
 
 /** The set of properties for geometry used in an "illustration" role.
@@ -177,19 +177,19 @@ class PerceptionProperties final : public GeometryProperties {
    - @ref drake_visualizer_role_consumer "drake::geometry::DrakeVisualizer"
  */
 class IllustrationProperties final : public GeometryProperties {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(IllustrationProperties);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(IllustrationProperties);
 
-  IllustrationProperties() = default;
+    IllustrationProperties() = default;
 };
 
 /** General enumeration for indicating geometry role.  */
 enum class Role {
-  // Bitmask-able values so they can be OR'd together.
-  kUnassigned = 0x0,
-  kProximity = 0x1,
-  kIllustration = 0x2,
-  kPerception = 0x4
+    // Bitmask-able values so they can be OR'd together.
+    kUnassigned = 0x0,
+    kProximity = 0x1,
+    kIllustration = 0x2,
+    kPerception = 0x4
 };
 
 // NOTE: Currently this only includes new and replace; but someday it could also
@@ -197,9 +197,9 @@ enum class Role {
 /** The operations that can be performed on the given properties when assigning
  roles to geometry.  */
 enum class RoleAssign {
-  kNew,     ///< Assign the properties to a geometry that doesn't already have
-            ///< the role.
-  kReplace  ///< Replace the existing role properties completely.
+    kNew,     ///< Assign the properties to a geometry that doesn't already have
+              ///< the role.
+    kReplace  ///< Replace the existing role properties completely.
 };
 
 /** @name  Geometry role to string conversions
@@ -221,8 +221,7 @@ std::ostream& operator<<(std::ostream& out, const Role& role);
 
 /** Constructs an IllustrationProperties instance compatible with a simple
  "phong" material using only the given `diffuse` color.  */
-IllustrationProperties MakePhongIllustrationProperties(
-    const Vector4<double>& diffuse);
+IllustrationProperties MakePhongIllustrationProperties(const Vector4<double>& diffuse);
 
 //@}
 

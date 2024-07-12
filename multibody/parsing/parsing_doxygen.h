@@ -52,7 +52,8 @@ supports both SDFormat files and URDF files. Note that included URDF files pass
 through the Drake URDF parser, with all of its extensions and limitations.
 
 For full details, see the
-<a href='http://sdformat.org/tutorials?tut=composition_proposal#model-composition-proposed-behavior'>SDFormat documentation of model composition.</a>
+<a href='http://sdformat.org/tutorials?tut=composition_proposal#model-composition-proposed-behavior'>SDFormat
+documentation of model composition.</a>
 
 An important feature of SDFormat model composition is the ability to
 cross-reference features of other models. Cross-references are denoted by using
@@ -83,7 +84,8 @@ only refer to the current or a nested model. In particular, names must not
 start with `::`; there is no way to denote any "outer" or "outermost" scope.
 
 For a detailed design discussion with examples, see the
-<a href='http://sdformat.org/tutorials?tut=composition_proposal#1-3-name-scoping-and-cross-referencing'>SDFormat documentation of name scoping.</a>
+<a href='http://sdformat.org/tutorials?tut=composition_proposal#1-3-name-scoping-and-cross-referencing'>SDFormat
+documentation of name scoping.</a>
 
 @section multibody_parsing_urdf URDF Support
 Drake supports URDF files as described here: http://wiki.ros.org/urdf/XML.
@@ -446,7 +448,8 @@ different collision groups excludes collisions between members of those groups
 naming the same group twice excludes collisions within the group (see
 drake::geometry::CollisionFilterDeclaration::ExcludeWithin()).
 
-@see @ref tag_drake_member, @ref tag_drake_member_group, @ref tag_drake_ignored_collision_filter_group, @ref scoped_names
+@see @ref tag_drake_member, @ref tag_drake_member_group, @ref tag_drake_ignored_collision_filter_group, @ref
+scoped_names
 
 @subsection tag_drake_compliant_hydroelastic drake:compliant_hydroelastic
 

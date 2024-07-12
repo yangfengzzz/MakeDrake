@@ -41,72 +41,67 @@ namespace systems {
 /// @ingroup primitive_systems
 template <typename T>
 class PassThrough final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(PassThrough);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(PassThrough);
 
-  /// Constructs a pass-through system.
-  /// @param vector_size number of elements in the signal to be processed.
-  /// When no input is connected, the output will be a vector of all zeros.
-  explicit PassThrough(int vector_size)
-      : PassThrough(Eigen::VectorXd::Zero(vector_size), nullptr) {}
+    /// Constructs a pass-through system.
+    /// @param vector_size number of elements in the signal to be processed.
+    /// When no input is connected, the output will be a vector of all zeros.
+    explicit PassThrough(int vector_size) : PassThrough(Eigen::VectorXd::Zero(vector_size), nullptr) {}
 
-  /// Constructs a pass-through system with vector-valued input/output ports.
-  /// @param value The model value, which defines the size of the ports and
-  /// serves as the default when no input is connected.
-  explicit PassThrough(const Eigen::Ref<const Eigen::VectorXd>& value)
-      : PassThrough(value, nullptr) {}
+    /// Constructs a pass-through system with vector-valued input/output ports.
+    /// @param value The model value, which defines the size of the ports and
+    /// serves as the default when no input is connected.
+    explicit PassThrough(const Eigen::Ref<const Eigen::VectorXd>& value) : PassThrough(value, nullptr) {}
 
-  /// Constructs a pass-through system with abstract-valued input/output ports.
-  /// @param abstract_model_value A model value, which defines the type of the
-  /// ports and serves as the default when no input is connected.
-  explicit PassThrough(const AbstractValue& abstract_model_value)
-      : PassThrough(Vector0<double>(), abstract_model_value.Clone()) {}
+    /// Constructs a pass-through system with abstract-valued input/output ports.
+    /// @param abstract_model_value A model value, which defines the type of the
+    /// ports and serves as the default when no input is connected.
+    explicit PassThrough(const AbstractValue& abstract_model_value)
+        : PassThrough(Vector0<double>(), abstract_model_value.Clone()) {}
 
-  /// Scalar-type converting copy constructor.
-  /// See @ref system_scalar_conversion.
-  template <typename U>
-  explicit PassThrough(const PassThrough<U>&);
+    /// Scalar-type converting copy constructor.
+    /// See @ref system_scalar_conversion.
+    template <typename U>
+    explicit PassThrough(const PassThrough<U>&);
 
-  virtual ~PassThrough() = default;
+    virtual ~PassThrough() = default;
 
-  // TODO(eric.cousineau): Possibly share single port interface with
-  // ZeroOrderHold (#6490).
+    // TODO(eric.cousineau): Possibly share single port interface with
+    // ZeroOrderHold (#6490).
 
-  /// Returns the sole input port.
-  const InputPort<T>& get_input_port() const {
-    DRAKE_ASSERT(input_port_ != nullptr);
-    return *input_port_;
-  }
+    /// Returns the sole input port.
+    const InputPort<T>& get_input_port() const {
+        DRAKE_ASSERT(input_port_ != nullptr);
+        return *input_port_;
+    }
 
- private:
-  // Allow different specializations to access each other's private data.
-  template <typename U>
-  friend class PassThrough;
+private:
+    // Allow different specializations to access each other's private data.
+    template <typename U>
+    friend class PassThrough;
 
-  // All of the other constructors delegate here.
-  PassThrough(const Eigen::Ref<const Eigen::VectorXd>& model_vector,
-              std::unique_ptr<const AbstractValue> abstract_model_value);
+    // All of the other constructors delegate here.
+    PassThrough(const Eigen::Ref<const Eigen::VectorXd>& model_vector,
+                std::unique_ptr<const AbstractValue> abstract_model_value);
 
-  /// Sets the output port to equal the input port.
-  void DoCalcVectorOutput(const Context<T>& context,
-                          BasicVector<T>* output) const;
+    /// Sets the output port to equal the input port.
+    void DoCalcVectorOutput(const Context<T>& context, BasicVector<T>* output) const;
 
-  // Same as `DoCalcVectorOutput`, but for abstract values.
-  void DoCalcAbstractOutput(const Context<T>& context,
-                            AbstractValue* output) const;
+    // Same as `DoCalcVectorOutput`, but for abstract values.
+    void DoCalcAbstractOutput(const Context<T>& context, AbstractValue* output) const;
 
-  bool is_abstract() const { return abstract_model_value_ != nullptr; }
+    bool is_abstract() const { return abstract_model_value_ != nullptr; }
 
-  const Eigen::VectorXd model_vector_;
-  const std::unique_ptr<const AbstractValue> abstract_model_value_;
+    const Eigen::VectorXd model_vector_;
+    const std::unique_ptr<const AbstractValue> abstract_model_value_;
 
-  // We store our port pointer so that DoCalcVectorOutput's access to the
-  // input_port_->Eval is inlined (without any port-count bounds checking).
-  const InputPort<T>* input_port_{};
+    // We store our port pointer so that DoCalcVectorOutput's access to the
+    // input_port_->Eval is inlined (without any port-count bounds checking).
+    const InputPort<T>* input_port_{};
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::PassThrough);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::systems::PassThrough);

@@ -24,47 +24,48 @@ functions will throw.
 
 @ingroup planning_collision_checker */
 class BodyShapeDescription final {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(BodyShapeDescription);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(BodyShapeDescription);
 
-  /** Constructs a description with the given attributes. Does not check or
-  enforce correctness; callers are responsible for providing consistent
-  input. */
-  BodyShapeDescription(const geometry::Shape& shape,
-                       const math::RigidTransformd& X_BS,
-                       std::string model_instance_name, std::string body_name);
+    /** Constructs a description with the given attributes. Does not check or
+    enforce correctness; callers are responsible for providing consistent
+    input. */
+    BodyShapeDescription(const geometry::Shape& shape,
+                         const math::RigidTransformd& X_BS,
+                         std::string model_instance_name,
+                         std::string body_name);
 
-  /** @returns the shape passed at construction. */
-  const geometry::Shape& shape() const {
-    DRAKE_THROW_UNLESS(!is_moved_from());
-    return *shape_;
-  }
+    /** @returns the shape passed at construction. */
+    const geometry::Shape& shape() const {
+        DRAKE_THROW_UNLESS(!is_moved_from());
+        return *shape_;
+    }
 
-  /** @retval X_BS The pose passed at construction. */
-  const math::RigidTransformd& pose_in_body() const {
-    DRAKE_THROW_UNLESS(!is_moved_from());
-    return X_BS_;
-  }
+    /** @retval X_BS The pose passed at construction. */
+    const math::RigidTransformd& pose_in_body() const {
+        DRAKE_THROW_UNLESS(!is_moved_from());
+        return X_BS_;
+    }
 
-  /** @returns the model instance name passed at construction. */
-  const std::string& model_instance_name() const {
-    DRAKE_THROW_UNLESS(!is_moved_from());
-    return model_instance_name_;
-  }
+    /** @returns the model instance name passed at construction. */
+    const std::string& model_instance_name() const {
+        DRAKE_THROW_UNLESS(!is_moved_from());
+        return model_instance_name_;
+    }
 
-  /** @returns the body name passed at construction. */
-  const std::string& body_name() const {
-    DRAKE_THROW_UNLESS(!is_moved_from());
-    return body_name_;
-  }
+    /** @returns the body name passed at construction. */
+    const std::string& body_name() const {
+        DRAKE_THROW_UNLESS(!is_moved_from());
+        return body_name_;
+    }
 
- private:
-  bool is_moved_from() const { return shape_ == nullptr; }
+private:
+    bool is_moved_from() const { return shape_ == nullptr; }
 
-  copyable_unique_ptr<geometry::Shape> shape_;
-  math::RigidTransformd X_BS_;
-  std::string model_instance_name_;
-  std::string body_name_;
+    copyable_unique_ptr<geometry::Shape> shape_;
+    math::RigidTransformd X_BS_;
+    std::string model_instance_name_;
+    std::string body_name_;
 };
 
 /** Constructs a BodyShapeDescription by extracting the shape, pose, and names
@@ -74,10 +75,9 @@ associated with the provided geometry_id.
 @pre @p plant is connected to a scene graph.
 @pre @p geometry_id refers to a geometry rigidly affixed to a body of @p
      plant. */
-BodyShapeDescription MakeBodyShapeDescription(
-    const multibody::MultibodyPlant<double>& plant,
-    const systems::Context<double>& plant_context,
-    const geometry::GeometryId& geometry_id);
+BodyShapeDescription MakeBodyShapeDescription(const multibody::MultibodyPlant<double>& plant,
+                                              const systems::Context<double>& plant_context,
+                                              const geometry::GeometryId& geometry_id);
 
 }  // namespace planning
 }  // namespace drake

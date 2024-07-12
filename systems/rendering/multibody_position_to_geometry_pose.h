@@ -39,63 +39,61 @@ namespace rendering {
  */
 template <typename T>
 class MultibodyPositionToGeometryPose final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MultibodyPositionToGeometryPose);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MultibodyPositionToGeometryPose);
 
-  /**
-   * The %MultibodyPositionToGeometryPose holds an internal, non-owned
-   * reference to the MultibodyPlant object so you must ensure that @p plant
-   * has a longer lifetime than `this` %MultibodyPositionToGeometryPose system.
-   *
-   * @param input_multibody_state If true, the vector input port will be the
-   * size of the `plant` *state* vector.  If false, it will be the size
-   * of the `plant` *position* vector.  In both cases, only the
-   * positions will affect the output.  @default false.
-   *
-   * @throws if `plant` is not finalized and registered with a SceneGraph.
-   */
-  explicit MultibodyPositionToGeometryPose(
-      const multibody::MultibodyPlant<T>& plant,
-      bool input_multibody_state = false);
+    /**
+     * The %MultibodyPositionToGeometryPose holds an internal, non-owned
+     * reference to the MultibodyPlant object so you must ensure that @p plant
+     * has a longer lifetime than `this` %MultibodyPositionToGeometryPose system.
+     *
+     * @param input_multibody_state If true, the vector input port will be the
+     * size of the `plant` *state* vector.  If false, it will be the size
+     * of the `plant` *position* vector.  In both cases, only the
+     * positions will affect the output.  @default false.
+     *
+     * @throws if `plant` is not finalized and registered with a SceneGraph.
+     */
+    explicit MultibodyPositionToGeometryPose(const multibody::MultibodyPlant<T>& plant,
+                                             bool input_multibody_state = false);
 
-  /**
-   * The %MultibodyPositionToGeometryPose owns its internal plant.
-   *
-   * @param input_multibody_state If true, the vector input port will be the
-   * size of the `plant` *state* vector.  If false, it will be the size
-   * of the `plant` *position* vector.  In both cases, only the
-   * positions will affect the output.  @default: false.
-   *
-   * @throws if `owned_plant` is not finalized and registered with a SceneGraph.
-   */
-  explicit MultibodyPositionToGeometryPose(
-      std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant,
-      bool input_multibody_state = false);
+    /**
+     * The %MultibodyPositionToGeometryPose owns its internal plant.
+     *
+     * @param input_multibody_state If true, the vector input port will be the
+     * size of the `plant` *state* vector.  If false, it will be the size
+     * of the `plant` *position* vector.  In both cases, only the
+     * positions will affect the output.  @default: false.
+     *
+     * @throws if `owned_plant` is not finalized and registered with a SceneGraph.
+     */
+    explicit MultibodyPositionToGeometryPose(std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant,
+                                             bool input_multibody_state = false);
 
-  ~MultibodyPositionToGeometryPose() override = default;
+    ~MultibodyPositionToGeometryPose() override = default;
 
-  const multibody::MultibodyPlant<T>& multibody_plant() const { return plant_; }
+    const multibody::MultibodyPlant<T>& multibody_plant() const { return plant_; }
 
-  /** Returns true if this system owns its MultibodyPlant. */
-  bool owns_plant() const { return owned_plant_ != nullptr; }
+    /** Returns true if this system owns its MultibodyPlant. */
+    bool owns_plant() const { return owned_plant_ != nullptr; }
 
- private:
-  // Configure the input/output ports and prepare for calculation.
-  // @pre plant_ must reference a valid MBP.
-  void Configure(bool input_multibody_state);
+private:
+    // Configure the input/output ports and prepare for calculation.
+    // @pre plant_ must reference a valid MBP.
+    void Configure(bool input_multibody_state);
 
-  void CalcGeometryPose(const Context<T>& context, AbstractValue* poses) const;
+    void CalcGeometryPose(const Context<T>& context, AbstractValue* poses) const;
 
-  // NOTE: The constructor's correctness depends on these two members declared
-  // in this order (plant_ followed by owned_plant_). Do not change them.
-  const multibody::MultibodyPlant<T>& plant_;
-  // The optionally owned plant. If not null, owned_plant_ == &plant_ must be
-  // true.
-  const std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant_;
+    // NOTE: The constructor's correctness depends on these two members declared
+    // in this order (plant_ followed by owned_plant_). Do not change them.
+    const multibody::MultibodyPlant<T>& plant_;
+    // The optionally owned plant. If not null, owned_plant_ == &plant_ must be
+    // true.
+    const std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant_;
 
-  // This is a context of the plant_ system, which is only owned here to avoid
-  // runtime allocation.  It contains no relevant state.
-  mutable std::unique_ptr<Context<T>> plant_context_;
+    // This is a context of the plant_ system, which is only owned here to avoid
+    // runtime allocation.  It contains no relevant state.
+    mutable std::unique_ptr<Context<T>> plant_context_;
 };
 
 }  // namespace rendering

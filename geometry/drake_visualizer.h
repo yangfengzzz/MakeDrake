@@ -28,16 +28,15 @@ namespace internal {
 /* Data stored in the cache; populated when we transmit a load message and
  read from for a pose message.  */
 struct DynamicFrameData {
-  FrameId frame_id;
-  int num_geometry{};
-  std::string name;
+    FrameId frame_id;
+    int num_geometry{};
+    std::string name;
 };
 
 /* If requested in @p params, adds a suffix to the provided LCM channel name,
  based on the geometry role. If a suffix is requested, the passed role
  parameter cannot be kUnassigned. See also DrakeVisualizerParams. */
-std::string MakeLcmChannelNameForRole(const std::string& channel,
-                                      const DrakeVisualizerParams& params);
+std::string MakeLcmChannelNameForRole(const std::string& channel, const DrakeVisualizerParams& params);
 
 }  // namespace internal
 
@@ -145,190 +144,185 @@ std::string MakeLcmChannelNameForRole(const std::string& channel,
 */
 template <typename T>
 class DrakeVisualizer final : public systems::LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DrakeVisualizer);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DrakeVisualizer);
 
-  /** Creates an instance of %DrakeVisualizer.
+    /** Creates an instance of %DrakeVisualizer.
 
-   @param lcm     An optional LCM interface. If none is provided, this system
-                  will allocate its own instance. If one is provided it must
-                  remain valid for the lifetime of this object.
-   @param params  The set of parameters to control this system's behavior.
-   @throws std::exception if `params.publish_period <= 0`.
-   @throws std::exception if `params.role == Role::kUnassigned`.  */
-  DrakeVisualizer(lcm::DrakeLcmInterface* lcm = nullptr,
-                  DrakeVisualizerParams params = {});
+     @param lcm     An optional LCM interface. If none is provided, this system
+                    will allocate its own instance. If one is provided it must
+                    remain valid for the lifetime of this object.
+     @param params  The set of parameters to control this system's behavior.
+     @throws std::exception if `params.publish_period <= 0`.
+     @throws std::exception if `params.role == Role::kUnassigned`.  */
+    DrakeVisualizer(lcm::DrakeLcmInterface* lcm = nullptr, DrakeVisualizerParams params = {});
 
-  /** Scalar-converting copy constructor. See @ref system_scalar_conversion.
-   It should only be used to convert _from_ double _to_ other scalar types.
-   @throws std::exception if `other` does not *own* its lcm::DrakeLcmInterface.
-   */
-  template <typename U>
-  explicit DrakeVisualizer(const DrakeVisualizer<U>& other);
+    /** Scalar-converting copy constructor. See @ref system_scalar_conversion.
+     It should only be used to convert _from_ double _to_ other scalar types.
+     @throws std::exception if `other` does not *own* its lcm::DrakeLcmInterface.
+     */
+    template <typename U>
+    explicit DrakeVisualizer(const DrakeVisualizer<U>& other);
 
-  /** Returns the QueryObject-valued input port. It should be connected to
-   SceneGraph's QueryObject-valued output port. Failure to do so will cause a
-   runtime error when attempting to broadcast messages.  */
-  const systems::InputPort<T>& query_object_input_port() const {
-    return this->get_input_port(query_object_input_port_);
-  }
+    /** Returns the QueryObject-valued input port. It should be connected to
+     SceneGraph's QueryObject-valued output port. Failure to do so will cause a
+     runtime error when attempting to broadcast messages.  */
+    const systems::InputPort<T>& query_object_input_port() const {
+        return this->get_input_port(query_object_input_port_);
+    }
 
-  /** @name Utility functions for instantiating and connecting a visualizer
+    /** @name Utility functions for instantiating and connecting a visualizer
 
-   These methods provide a convenient mechanism for adding a DrakeVisualizer
-   instance to an existing diagram, handling the necessary connections. The
-   DrakeVisualizer instance must be connected to a QueryObject-valued output
-   port. The difference between the two methods is how that output port is
-   identified. Otherwise, the two methods have the same parameters and results.
+     These methods provide a convenient mechanism for adding a DrakeVisualizer
+     instance to an existing diagram, handling the necessary connections. The
+     DrakeVisualizer instance must be connected to a QueryObject-valued output
+     port. The difference between the two methods is how that output port is
+     identified. Otherwise, the two methods have the same parameters and results.
 
-   Both methods can be invoked with optional parameters:
+     Both methods can be invoked with optional parameters:
 
-     - `lcm`: The DrakeVisualizer will use the lcm object provided, otherwise,
-        if omitted, the DrakeVisualizer instance will create its own
-        self-configured lcm::DrakeLcmInterface object.
-     - `params`: The DrakeVisualizer will be configured according to the
-        provided parameters. If omitted, it uses default parameters.  */
-  //@{
+       - `lcm`: The DrakeVisualizer will use the lcm object provided, otherwise,
+          if omitted, the DrakeVisualizer instance will create its own
+          self-configured lcm::DrakeLcmInterface object.
+       - `params`: The DrakeVisualizer will be configured according to the
+          provided parameters. If omitted, it uses default parameters.  */
+    //@{
 
-  /** Connects the newly added DrakeVisualizer to the given SceneGraph's
-   QueryObject-valued output port.
-   The %DrakeVisualizer's name (see systems::SystemBase::set_name) will be set
-   to a sensible default value, unless the default name was already in use by
-   another system. */
-  static const DrakeVisualizer<T>& AddToBuilder(
-      systems::DiagramBuilder<T>* builder, const SceneGraph<T>& scene_graph,
-      lcm::DrakeLcmInterface* lcm = nullptr, DrakeVisualizerParams params = {});
+    /** Connects the newly added DrakeVisualizer to the given SceneGraph's
+     QueryObject-valued output port.
+     The %DrakeVisualizer's name (see systems::SystemBase::set_name) will be set
+     to a sensible default value, unless the default name was already in use by
+     another system. */
+    static const DrakeVisualizer<T>& AddToBuilder(systems::DiagramBuilder<T>* builder,
+                                                  const SceneGraph<T>& scene_graph,
+                                                  lcm::DrakeLcmInterface* lcm = nullptr,
+                                                  DrakeVisualizerParams params = {});
 
-  /** Connects the newly added DrakeVisualizer to the given QueryObject-valued
-   output port.
-   The %DrakeVisualizer's name (see systems::SystemBase::set_name) will be set
-   to a sensible default value, unless the default name was already in use by
-   another system. */
-  static const DrakeVisualizer<T>& AddToBuilder(
-      systems::DiagramBuilder<T>* builder,
-      const systems::OutputPort<T>& query_object_port,
-      lcm::DrakeLcmInterface* lcm = nullptr, DrakeVisualizerParams params = {});
-  //@}
+    /** Connects the newly added DrakeVisualizer to the given QueryObject-valued
+     output port.
+     The %DrakeVisualizer's name (see systems::SystemBase::set_name) will be set
+     to a sensible default value, unless the default name was already in use by
+     another system. */
+    static const DrakeVisualizer<T>& AddToBuilder(systems::DiagramBuilder<T>* builder,
+                                                  const systems::OutputPort<T>& query_object_port,
+                                                  lcm::DrakeLcmInterface* lcm = nullptr,
+                                                  DrakeVisualizerParams params = {});
+    //@}
 
-  // TODO(#7820) When we can easily bind lcmt_* messages, then replace
-  //  the DispatchLoadMessage API with something like:
-  //  lcmt_load_robot CreateLoadMessage(...)
-  //  (etc., for load from context, and draw from context).
+    // TODO(#7820) When we can easily bind lcmt_* messages, then replace
+    //  the DispatchLoadMessage API with something like:
+    //  lcmt_load_robot CreateLoadMessage(...)
+    //  (etc., for load from context, and draw from context).
 
-  /** (Advanced) Dispatches a load message built on the *model* geometry for the
-   given SceneGraph instance. This should be used sparingly. When we have a
-   starightforward method for binding lcmtypes in python, this will be replaced
-   with an API that will simply generate the lcm *messages* that the caller
-   can then do whatever they like with.
-   @pre `lcm != nullptr`.  */
-  static void DispatchLoadMessage(const SceneGraph<T>& scene_graph,
-                                  lcm::DrakeLcmInterface* lcm,
-                                  DrakeVisualizerParams params = {});
+    /** (Advanced) Dispatches a load message built on the *model* geometry for the
+     given SceneGraph instance. This should be used sparingly. When we have a
+     starightforward method for binding lcmtypes in python, this will be replaced
+     with an API that will simply generate the lcm *messages* that the caller
+     can then do whatever they like with.
+     @pre `lcm != nullptr`.  */
+    static void DispatchLoadMessage(const SceneGraph<T>& scene_graph,
+                                    lcm::DrakeLcmInterface* lcm,
+                                    DrakeVisualizerParams params = {});
 
- private:
-  friend class DrakeVisualizerTester;
+private:
+    friend class DrakeVisualizerTester;
 
-  /* DrakeVisualizer of different scalar types can all access each other's data.
-   */
-  template <typename>
-  friend class DrakeVisualizer;
+    /* DrakeVisualizer of different scalar types can all access each other's data.
+     */
+    template <typename>
+    friend class DrakeVisualizer;
 
-  /* Special constructor that optionally leaves the lcm interface unspecified.
-   For use of the scalar-converting copy constructor. */
-  DrakeVisualizer(lcm::DrakeLcmInterface* lcm, DrakeVisualizerParams params,
-                  bool use_lcm);
+    /* Special constructor that optionally leaves the lcm interface unspecified.
+     For use of the scalar-converting copy constructor. */
+    DrakeVisualizer(lcm::DrakeLcmInterface* lcm, DrakeVisualizerParams params, bool use_lcm);
 
-  /* The periodic event handler. It tests to see if the last scene description
-   is valid (if not, updates it) and then broadcasts poses.  */
-  systems::EventStatus SendGeometryMessage(
-      const systems::Context<T>& context) const;
+    /* The periodic event handler. It tests to see if the last scene description
+     is valid (if not, updates it) and then broadcasts poses.  */
+    systems::EventStatus SendGeometryMessage(const systems::Context<T>& context) const;
 
-  /* Dispatches a "load geometry" message (see lcmt_viewer_load_robot) -- the
-   declaration of all non-deformable geometries in arbitrary poses and their
-   visualizable properties. */
-  static void SendLoadNonDeformableMessage(
-      const SceneGraphInspector<T>& inspector,
-      const DrakeVisualizerParams& params,
-      const std::vector<internal::DynamicFrameData>& dynamic_frames,
-      double time, lcm::DrakeLcmInterface* lcm);
+    /* Dispatches a "load geometry" message (see lcmt_viewer_load_robot) -- the
+     declaration of all non-deformable geometries in arbitrary poses and their
+     visualizable properties. */
+    static void SendLoadNonDeformableMessage(const SceneGraphInspector<T>& inspector,
+                                             const DrakeVisualizerParams& params,
+                                             const std::vector<internal::DynamicFrameData>& dynamic_frames,
+                                             double time,
+                                             lcm::DrakeLcmInterface* lcm);
 
-  /* Dispatches a "draw geometry" message (see lcmt_viewer_draw) -- the
-   definition of the poses of all non-deformable geometries. */
-  static void SendDrawNonDeformableMessage(
-      const QueryObject<T>& query_object, const DrakeVisualizerParams& params,
-      const std::vector<internal::DynamicFrameData>& dynamic_frames,
-      double time, lcm::DrakeLcmInterface* lcm);
+    /* Dispatches a "draw geometry" message (see lcmt_viewer_draw) -- the
+     definition of the poses of all non-deformable geometries. */
+    static void SendDrawNonDeformableMessage(const QueryObject<T>& query_object,
+                                             const DrakeVisualizerParams& params,
+                                             const std::vector<internal::DynamicFrameData>& dynamic_frames,
+                                             double time,
+                                             lcm::DrakeLcmInterface* lcm);
 
-  /* Dispatches a "deformable geometries" message that defines the topology and
-   configuration of all deformable geometries at a given time. */
-  static void SendDeformableGeometriesMessage(
-      const QueryObject<T>& query_object, const DrakeVisualizerParams& params,
-      double time, lcm::DrakeLcmInterface* lcm);
+    /* Dispatches a "deformable geometries" message that defines the topology and
+     configuration of all deformable geometries at a given time. */
+    static void SendDeformableGeometriesMessage(const QueryObject<T>& query_object,
+                                                const DrakeVisualizerParams& params,
+                                                double time,
+                                                lcm::DrakeLcmInterface* lcm);
 
-  /* Identifies all of the frames with dynamic data and stores them (with
-   additional data) in the given vector `frame_data`.
-   @note `frame_data` is cleared before any data is added.
-   @note There are no guarantees on the order of the entries in `frame_data`. */
-  void CalcDynamicFrameData(
-      const systems::Context<T>& context,
-      std::vector<internal::DynamicFrameData>* frame_data) const;
+    /* Identifies all of the frames with dynamic data and stores them (with
+     additional data) in the given vector `frame_data`.
+     @note `frame_data` is cleared before any data is added.
+     @note There are no guarantees on the order of the entries in `frame_data`. */
+    void CalcDynamicFrameData(const systems::Context<T>& context,
+                              std::vector<internal::DynamicFrameData>* frame_data) const;
 
-  /* Refreshes the cached dynamic frame data.  */
-  const std::vector<internal::DynamicFrameData>& RefreshDynamicFrameData(
-      const systems::Context<T>& context) const;
+    /* Refreshes the cached dynamic frame data.  */
+    const std::vector<internal::DynamicFrameData>& RefreshDynamicFrameData(const systems::Context<T>& context) const;
 
-  /* Simple wrapper for evaluating the dynamic frame data cache entry.  */
-  const std::vector<internal::DynamicFrameData>& EvalDynamicFrameData(
-      const systems::Context<T>& context) const;
+    /* Simple wrapper for evaluating the dynamic frame data cache entry.  */
+    const std::vector<internal::DynamicFrameData>& EvalDynamicFrameData(const systems::Context<T>& context) const;
 
-  /* Generic utility for populating the dynamic frames. Available to the ad hoc
-   publishing methods as well as the cache-entry instance method.
-   @note `frame_data` is cleared before any data is added.
-   @note There are no guarantees on the order of the entries in `frame_data`. */
-  static void PopulateDynamicFrameData(
-      const SceneGraphInspector<T>& inspector,
-      const DrakeVisualizerParams& params,
-      std::vector<internal::DynamicFrameData>* frame_data);
+    /* Generic utility for populating the dynamic frames. Available to the ad hoc
+     publishing methods as well as the cache-entry instance method.
+     @note `frame_data` is cleared before any data is added.
+     @note There are no guarantees on the order of the entries in `frame_data`. */
+    static void PopulateDynamicFrameData(const SceneGraphInspector<T>& inspector,
+                                         const DrakeVisualizerParams& params,
+                                         std::vector<internal::DynamicFrameData>* frame_data);
 
-  typename systems::LeafSystem<T>::GraphvizFragment DoGetGraphvizFragment(
-      const typename systems::LeafSystem<T>::GraphvizFragmentParams& params)
-      const final;
+    typename systems::LeafSystem<T>::GraphvizFragment DoGetGraphvizFragment(
+            const typename systems::LeafSystem<T>::GraphvizFragmentParams& params) const final;
 
-  /* DrakeVisualizer stores a "model" of what it thinks is registered in the
-   receiving application. Because that application is not part of the
-   Drake state, this model is likewise not part of the Drake state. It is a
-   property of the system. This allows arbitrary changes to the context but
-   DrakeVisualizer can still make its *best effort* to ensure that
-   the remote state is consistent with the messages it is about to send.
-   Because of the nature of lcm messages, it cannot make guarantees; lcm
-   messages can arrive in a different order than they were broadcast.
+    /* DrakeVisualizer stores a "model" of what it thinks is registered in the
+     receiving application. Because that application is not part of the
+     Drake state, this model is likewise not part of the Drake state. It is a
+     property of the system. This allows arbitrary changes to the context but
+     DrakeVisualizer can still make its *best effort* to ensure that
+     the remote state is consistent with the messages it is about to send.
+     Because of the nature of lcm messages, it cannot make guarantees; lcm
+     messages can arrive in a different order than they were broadcast.
 
-   To this end, DrakeVisualizer has the model (GeometryVersion) and a
-   mutex that will allow updating that model safely. Beyond that, there are
-   no guarantees about order of operations when the publish callback is
-   invoked across multiple threads.  */
+     To this end, DrakeVisualizer has the model (GeometryVersion) and a
+     mutex that will allow updating that model safely. Beyond that, there are
+     no guarantees about order of operations when the publish callback is
+     invoked across multiple threads.  */
 
-  /* The version of the geometry that was last loaded (i.e., had a load message
-   sent). If the version found on the input port differs from this value, a
-   new load message will be sent prior to the "draw" message.  */
-  mutable GeometryVersion version_;
-  mutable std::mutex mutex_;
+    /* The version of the geometry that was last loaded (i.e., had a load message
+     sent). If the version found on the input port differs from this value, a
+     new load message will be sent prior to the "draw" message.  */
+    mutable GeometryVersion version_;
+    mutable std::mutex mutex_;
 
-  /* The index of this System's QueryObject-valued input port.  */
-  int query_object_input_port_{};
+    /* The index of this System's QueryObject-valued input port.  */
+    int query_object_input_port_{};
 
-  /* The LCM interface: the owned (if such exists) and the active interface
-   (whether owned or not). The active interface is mutable because we non-const
-   access to the LCM interface in const System methods.  */
-  std::unique_ptr<lcm::DrakeLcmInterface> owned_lcm_{};
-  mutable lcm::DrakeLcmInterface* lcm_{};
+    /* The LCM interface: the owned (if such exists) and the active interface
+     (whether owned or not). The active interface is mutable because we non-const
+     access to the LCM interface in const System methods.  */
+    std::unique_ptr<lcm::DrakeLcmInterface> owned_lcm_{};
+    mutable lcm::DrakeLcmInterface* lcm_{};
 
-  /* The index of the cache entry that stores the dynamic frame data for
-   non-deformable geometries. */
-  systems::CacheIndex frame_data_cache_index_{};
+    /* The index of the cache entry that stores the dynamic frame data for
+     non-deformable geometries. */
+    systems::CacheIndex frame_data_cache_index_{};
 
-  /* The parameters for the visualizer.  */
-  DrakeVisualizerParams params_;
+    /* The parameters for the visualizer.  */
+    DrakeVisualizerParams params_;
 };
 
 /** A convenient alias for the DrakeVisualizer class when using the `double`
@@ -348,5 +342,4 @@ struct Traits<geometry::DrakeVisualizer> : public NonSymbolicTraits {};
 
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class ::drake::geometry::DrakeVisualizer);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(class ::drake::geometry::DrakeVisualizer);

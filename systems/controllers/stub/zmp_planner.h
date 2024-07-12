@@ -8,8 +8,7 @@ namespace systems {
 namespace controllers {
 
 using ZmpPlanner DRAKE_DEPRECATED("2024-08-01",
-    "Use drake/planning/locomotion/zmp_planner.h instead.")
-    = drake::planning::ZmpPlanner;
+                                  "Use drake/planning/locomotion/zmp_planner.h instead.") = drake::planning::ZmpPlanner;
 
 }  // namespace controllers
 }  // namespace systems

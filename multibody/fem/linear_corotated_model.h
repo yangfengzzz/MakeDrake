@@ -13,9 +13,9 @@ namespace internal {
 /* Traits for LinearCorotatedModel. */
 template <typename T, int num_locations>
 struct LinearCorotatedModelTraits {
-  using Scalar = T;
-  using Data = LinearCorotatedModelData<T, num_locations>;
-  static constexpr bool is_linear = true;
+    using Scalar = T;
+    using Data = LinearCorotatedModelData<T, num_locations>;
+    static constexpr bool is_linear = true;
 };
 
 /* Implements the linear corotated constitutive model as described in
@@ -31,60 +31,55 @@ struct LinearCorotatedModelTraits {
  arXiv preprint arXiv:2303.08912 (2023). */
 template <typename T, int num_locations>
 class LinearCorotatedModel final
-    : public ConstitutiveModel<LinearCorotatedModel<T, num_locations>,
-                               LinearCorotatedModelTraits<T, num_locations>> {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(LinearCorotatedModel);
+    : public ConstitutiveModel<LinearCorotatedModel<T, num_locations>, LinearCorotatedModelTraits<T, num_locations>> {
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(LinearCorotatedModel);
 
-  using Traits = LinearCorotatedModelTraits<T, num_locations>;
-  using Data = typename Traits::Data;
+    using Traits = LinearCorotatedModelTraits<T, num_locations>;
+    using Data = typename Traits::Data;
 
-  /* Constructs a LinearCorotatedModel constitutive model with the
-   prescribed Young's modulus and Poisson's ratio.
-   @param youngs_modulus  Young's modulus of the model, with units of N/m².
-   @param poissons_ratio  Poisson's ratio of the model, unitless.
-   @pre youngs_modulus >= 0.
-   @pre -1 < poissons_ratio < 0.5. */
-  LinearCorotatedModel(const T& youngs_modulus, const T& poissons_ratio);
+    /* Constructs a LinearCorotatedModel constitutive model with the
+     prescribed Young's modulus and Poisson's ratio.
+     @param youngs_modulus  Young's modulus of the model, with units of N/m².
+     @param poissons_ratio  Poisson's ratio of the model, unitless.
+     @pre youngs_modulus >= 0.
+     @pre -1 < poissons_ratio < 0.5. */
+    LinearCorotatedModel(const T& youngs_modulus, const T& poissons_ratio);
 
-  const T& youngs_modulus() const { return E_; }
+    const T& youngs_modulus() const { return E_; }
 
-  const T& poissons_ratio() const { return nu_; }
+    const T& poissons_ratio() const { return nu_; }
 
-  /* Returns the shear modulus (Lamé's second parameter) which is given by
-   `E/(2*(1+nu))` where `E` is the Young's modulus and `nu` is the Poisson's
-   ratio. See `fem::internal::CalcLameParameters()`. */
-  const T& shear_modulus() const { return mu_; }
+    /* Returns the shear modulus (Lamé's second parameter) which is given by
+     `E/(2*(1+nu))` where `E` is the Young's modulus and `nu` is the Poisson's
+     ratio. See `fem::internal::CalcLameParameters()`. */
+    const T& shear_modulus() const { return mu_; }
 
-  /* Returns the Lamé's first parameter which is given by
-   `E*nu/((1+nu)*(1-2*nu))` where `E` is the Young's modulus and `nu` is the
-   Poisson's ratio. See `fem::internal::CalcLameParameters()`. */
-  const T& lame_first_parameter() const { return lambda_; }
+    /* Returns the Lamé's first parameter which is given by
+     `E*nu/((1+nu)*(1-2*nu))` where `E` is the Young's modulus and `nu` is the
+     Poisson's ratio. See `fem::internal::CalcLameParameters()`. */
+    const T& lame_first_parameter() const { return lambda_; }
 
- private:
-  friend ConstitutiveModel<LinearCorotatedModel<T, num_locations>,
-                           LinearCorotatedModelTraits<T, num_locations>>;
+private:
+    friend ConstitutiveModel<LinearCorotatedModel<T, num_locations>, LinearCorotatedModelTraits<T, num_locations>>;
 
-  /* Shadows ConstitutiveModel::CalcElasticEnergyDensityImpl() as required by
-   the CRTP base class. */
-  void CalcElasticEnergyDensityImpl(const Data& data,
-                                    std::array<T, num_locations>* Psi) const;
+    /* Shadows ConstitutiveModel::CalcElasticEnergyDensityImpl() as required by
+     the CRTP base class. */
+    void CalcElasticEnergyDensityImpl(const Data& data, std::array<T, num_locations>* Psi) const;
 
-  /* Shadows ConstitutiveModel::CalcFirstPiolaStressImpl() as required by the
-   CRTP base class. */
-  void CalcFirstPiolaStressImpl(const Data& data,
-                                std::array<Matrix3<T>, num_locations>* P) const;
+    /* Shadows ConstitutiveModel::CalcFirstPiolaStressImpl() as required by the
+     CRTP base class. */
+    void CalcFirstPiolaStressImpl(const Data& data, std::array<Matrix3<T>, num_locations>* P) const;
 
-  /* Shadows ConstitutiveModel::CalcFirstPiolaStressDerivativeImpl() as required
-   by the CRTP base class. */
-  void CalcFirstPiolaStressDerivativeImpl(
-      const Data& data,
-      std::array<Eigen::Matrix<T, 9, 9>, num_locations>* dPdF) const;
+    /* Shadows ConstitutiveModel::CalcFirstPiolaStressDerivativeImpl() as required
+     by the CRTP base class. */
+    void CalcFirstPiolaStressDerivativeImpl(const Data& data,
+                                            std::array<Eigen::Matrix<T, 9, 9>, num_locations>* dPdF) const;
 
-  T E_;       // Young's modulus, N/m².
-  T nu_;      // Poisson's ratio.
-  T mu_;      // Lamé's second parameter/Shear modulus, N/m².
-  T lambda_;  // Lamé's first parameter, N/m².
+    T E_;       // Young's modulus, N/m².
+    T nu_;      // Poisson's ratio.
+    T mu_;      // Lamé's second parameter/Shear modulus, N/m².
+    T lambda_;  // Lamé's first parameter, N/m².
 };
 
 }  // namespace internal

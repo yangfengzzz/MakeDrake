@@ -8,7 +8,7 @@ namespace drake {
 namespace math {
 namespace {
 
-void CheckHopfRange(const Eigen::Vector3d &hopf) {
+void CheckHopfRange(const Eigen::Vector3d& hopf) {
     ASSERT_GE(hopf[0], 0);
     ASSERT_LE(hopf[0], M_PI);
     ASSERT_GE(hopf[1], 0);

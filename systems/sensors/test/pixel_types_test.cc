@@ -8,9 +8,9 @@ namespace sensors {
 namespace {
 
 GTEST_TEST(PixelTypesTest, Formatters) {
-  EXPECT_EQ(fmt::to_string(PixelType::kRgba8U), "Rgba8U");
-  EXPECT_EQ(fmt::to_string(PixelFormat::kRgba), "Rgba");
-  EXPECT_EQ(fmt::to_string(PixelScalar::k8U), "8U");
+    EXPECT_EQ(fmt::to_string(PixelType::kRgba8U), "Rgba8U");
+    EXPECT_EQ(fmt::to_string(PixelFormat::kRgba), "Rgba");
+    EXPECT_EQ(fmt::to_string(PixelScalar::k8U), "8U");
 }
 
 }  // namespace

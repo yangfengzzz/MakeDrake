@@ -29,59 +29,57 @@ namespace geometry {
  */
 template <typename T>
 struct SignedDistancePair {
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SignedDistancePair);
-  SignedDistancePair() = default;
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SignedDistancePair);
+    SignedDistancePair() = default;
 
-  // TODO(DamrongGuoy): When we have a full implementation of computing
-  //  nhat_BA_W in ComputeSignedDistancePairwiseClosestPoints, check a
-  //  condition like this (within epsilon):
-  //      DRAKE_DEMAND(nhat_BA_W.norm() == T(1.));
-  /** Constructor
-   @param a             The id of the first geometry (A).
-   @param b             The id of the second geometry (B).
-   @param p_ACa_in      The witness point on geometry A's surface, in A's frame.
-   @param p_BCb_in      The witness point on geometry B's surface, in B's frame.
-   @param dist          The signed distance between p_A and p_B.
-   @param nhat_BA_W_in  A direction of fastest increasing distance.
-   @pre nhat_BA_W_in is unit-length. */
-  SignedDistancePair(GeometryId a, GeometryId b, const Vector3<T>& p_ACa_in,
-                     const Vector3<T>& p_BCb_in, const T& dist,
-                     const Vector3<T>& nhat_BA_W_in)
-      : id_A(a),
-        id_B(b),
-        p_ACa(p_ACa_in),
-        p_BCb(p_BCb_in),
-        distance(dist),
-        nhat_BA_W(nhat_BA_W_in) {}
+    // TODO(DamrongGuoy): When we have a full implementation of computing
+    //  nhat_BA_W in ComputeSignedDistancePairwiseClosestPoints, check a
+    //  condition like this (within epsilon):
+    //      DRAKE_DEMAND(nhat_BA_W.norm() == T(1.));
+    /** Constructor
+     @param a             The id of the first geometry (A).
+     @param b             The id of the second geometry (B).
+     @param p_ACa_in      The witness point on geometry A's surface, in A's frame.
+     @param p_BCb_in      The witness point on geometry B's surface, in B's frame.
+     @param dist          The signed distance between p_A and p_B.
+     @param nhat_BA_W_in  A direction of fastest increasing distance.
+     @pre nhat_BA_W_in is unit-length. */
+    SignedDistancePair(GeometryId a,
+                       GeometryId b,
+                       const Vector3<T>& p_ACa_in,
+                       const Vector3<T>& p_BCb_in,
+                       const T& dist,
+                       const Vector3<T>& nhat_BA_W_in)
+        : id_A(a), id_B(b), p_ACa(p_ACa_in), p_BCb(p_BCb_in), distance(dist), nhat_BA_W(nhat_BA_W_in) {}
 
-  /** Swaps the interpretation of geometries A and B. */
-  void SwapAAndB() {
-    // Leave distance alone; swapping A and B doesn't change it.
-    std::swap(id_A, id_B);
-    std::swap(p_ACa, p_BCb);
-    nhat_BA_W = -nhat_BA_W;
-  }
+    /** Swaps the interpretation of geometries A and B. */
+    void SwapAAndB() {
+        // Leave distance alone; swapping A and B doesn't change it.
+        std::swap(id_A, id_B);
+        std::swap(p_ACa, p_BCb);
+        nhat_BA_W = -nhat_BA_W;
+    }
 
-  /** The id of the first geometry in the pair. */
-  GeometryId id_A;
-  /** The id of the second geometry in the pair. */
-  GeometryId id_B;
-  // TODO(SeanCurtis-TRI): Determine if this is the *right* API. Should we
-  // really be returning the points in geometry frame and not the world frame?
-  //  1. Penetration as point pair returns the points in world frame.
-  //  2. FCL computes it in world frame.
-  //  3. Generally, MBP would want the points in *body* frame. MBP has access
-  //     to X_WB but does *not* generally have access to X_BG (it would have to
-  //     query QueryObject for that information). Although, such a query can
-  //     easily be provided.
-  /** The witness point on geometry A's surface, expressed in A's frame. */
-  Vector3<T> p_ACa;
-  /** The witness point on geometry B's surface, expressed in B's frame. */
-  Vector3<T> p_BCb;
-  /** The signed distance between p_ACa and p_BCb. */
-  T distance{};
-  /** A direction of fastest increasing distance. */
-  Vector3<T> nhat_BA_W;
+    /** The id of the first geometry in the pair. */
+    GeometryId id_A;
+    /** The id of the second geometry in the pair. */
+    GeometryId id_B;
+    // TODO(SeanCurtis-TRI): Determine if this is the *right* API. Should we
+    // really be returning the points in geometry frame and not the world frame?
+    //  1. Penetration as point pair returns the points in world frame.
+    //  2. FCL computes it in world frame.
+    //  3. Generally, MBP would want the points in *body* frame. MBP has access
+    //     to X_WB but does *not* generally have access to X_BG (it would have to
+    //     query QueryObject for that information). Although, such a query can
+    //     easily be provided.
+    /** The witness point on geometry A's surface, expressed in A's frame. */
+    Vector3<T> p_ACa;
+    /** The witness point on geometry B's surface, expressed in B's frame. */
+    Vector3<T> p_BCb;
+    /** The signed distance between p_ACa and p_BCb. */
+    T distance{};
+    /** A direction of fastest increasing distance. */
+    Vector3<T> nhat_BA_W;
 };
 
 }  // namespace geometry

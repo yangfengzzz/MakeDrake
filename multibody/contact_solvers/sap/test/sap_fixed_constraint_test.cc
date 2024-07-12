@@ -41,161 +41,141 @@ const MatrixXd J66 =
 
 template <typename T = double>
 FixedConstraintKinematics<T> MakeArbitraryKinematics(int num_cliques) {
-  const int objectA = 12;
-  const VectorX<T> p_APs_W =
-      (VectorXd(6) << 4.0, 5.0, 6.0, 4.1, 5.1, 6.1).finished();
-  const int objectB = 5;
-  const VectorX<T> p_BQs_W =
-      (VectorXd(6) << 10.0, 11.0, 12.0, 12.0, 13.0, 15.0).finished();
-  const VectorX<T> p_PQs_W =
-      (VectorXd(6) << 1.0, 2.0, 3.0, 1.1, 2.2, 3.3).finished();
-  const int clique0 = 3;
-  const int clique1 = 12;
-  auto J_PQ_W = (num_cliques == 1)
-                    ? SapConstraintJacobian<T>(clique0, J66)
-                    : SapConstraintJacobian<T>(clique0, J66, clique1, J62);
-  return (num_cliques == 1)
-             ? FixedConstraintKinematics<T>{objectA, p_APs_W, p_PQs_W, J_PQ_W}
-             : FixedConstraintKinematics<T>{objectA, p_APs_W, objectB,
-                                            p_BQs_W, p_PQs_W, J_PQ_W};
+    const int objectA = 12;
+    const VectorX<T> p_APs_W = (VectorXd(6) << 4.0, 5.0, 6.0, 4.1, 5.1, 6.1).finished();
+    const int objectB = 5;
+    const VectorX<T> p_BQs_W = (VectorXd(6) << 10.0, 11.0, 12.0, 12.0, 13.0, 15.0).finished();
+    const VectorX<T> p_PQs_W = (VectorXd(6) << 1.0, 2.0, 3.0, 1.1, 2.2, 3.3).finished();
+    const int clique0 = 3;
+    const int clique1 = 12;
+    auto J_PQ_W = (num_cliques == 1) ? SapConstraintJacobian<T>(clique0, J66)
+                                     : SapConstraintJacobian<T>(clique0, J66, clique1, J62);
+    return (num_cliques == 1) ? FixedConstraintKinematics<T>{objectA, p_APs_W, p_PQs_W, J_PQ_W}
+                              : FixedConstraintKinematics<T>{objectA, p_APs_W, objectB, p_BQs_W, p_PQs_W, J_PQ_W};
 }
 
 GTEST_TEST(SapFixedConstraint, SingleCliqueConstraint) {
-  const int num_cliques = 1;
-  const FixedConstraintKinematics<double> kinematics =
-      MakeArbitraryKinematics(num_cliques);
-  const SapFixedConstraint<double> c(kinematics);
+    const int num_cliques = 1;
+    const FixedConstraintKinematics<double> kinematics = MakeArbitraryKinematics(num_cliques);
+    const SapFixedConstraint<double> c(kinematics);
 
-  EXPECT_EQ(c.num_objects(), 1);
-  EXPECT_EQ(c.num_constraint_equations(), 6);
-  EXPECT_EQ(c.num_constrained_point_pairs(), 2);
-  EXPECT_EQ(c.num_cliques(), 1);
-  EXPECT_EQ(c.first_clique(), kinematics.J.clique(0));
-  EXPECT_THROW(c.second_clique(), std::exception);
-  EXPECT_EQ(c.first_clique_jacobian().MakeDenseMatrix(), J66);
-  EXPECT_THROW(c.second_clique_jacobian(), std::exception);
+    EXPECT_EQ(c.num_objects(), 1);
+    EXPECT_EQ(c.num_constraint_equations(), 6);
+    EXPECT_EQ(c.num_constrained_point_pairs(), 2);
+    EXPECT_EQ(c.num_cliques(), 1);
+    EXPECT_EQ(c.first_clique(), kinematics.J.clique(0));
+    EXPECT_THROW(c.second_clique(), std::exception);
+    EXPECT_EQ(c.first_clique_jacobian().MakeDenseMatrix(), J66);
+    EXPECT_THROW(c.second_clique_jacobian(), std::exception);
 }
 
 GTEST_TEST(SapFixedConstraint, TwoCliquesConstraint) {
-  const int num_cliques = 2;
-  const FixedConstraintKinematics<double> kinematics =
-      MakeArbitraryKinematics(num_cliques);
-  const SapFixedConstraint<double> c(kinematics);
+    const int num_cliques = 2;
+    const FixedConstraintKinematics<double> kinematics = MakeArbitraryKinematics(num_cliques);
+    const SapFixedConstraint<double> c(kinematics);
 
-  EXPECT_EQ(c.num_objects(), 2);
-  EXPECT_EQ(c.num_constraint_equations(), 6);
-  EXPECT_EQ(c.num_constrained_point_pairs(), 2);
-  EXPECT_EQ(c.num_cliques(), 2);
-  EXPECT_EQ(c.first_clique(), kinematics.J.clique(0));
-  EXPECT_EQ(c.second_clique(), kinematics.J.clique(1));
-  EXPECT_EQ(c.first_clique_jacobian().MakeDenseMatrix(), J66);
-  EXPECT_EQ(c.second_clique_jacobian().MakeDenseMatrix(), J62);
+    EXPECT_EQ(c.num_objects(), 2);
+    EXPECT_EQ(c.num_constraint_equations(), 6);
+    EXPECT_EQ(c.num_constrained_point_pairs(), 2);
+    EXPECT_EQ(c.num_cliques(), 2);
+    EXPECT_EQ(c.first_clique(), kinematics.J.clique(0));
+    EXPECT_EQ(c.second_clique(), kinematics.J.clique(1));
+    EXPECT_EQ(c.first_clique_jacobian().MakeDenseMatrix(), J66);
+    EXPECT_EQ(c.second_clique_jacobian().MakeDenseMatrix(), J62);
 }
 
 // This method validates analytical gradients implemented by
 // SapFixedConstraint using automatic differentiation.
 void ValidateProjection(const VectorXd& vc) {
-  // Arbitrary kinematic values.
-  const int num_cliques = 1;
-  FixedConstraintKinematics<AutoDiffXd> kin_ad =
-      MakeArbitraryKinematics<AutoDiffXd>(num_cliques);
+    // Arbitrary kinematic values.
+    const int num_cliques = 1;
+    FixedConstraintKinematics<AutoDiffXd> kin_ad = MakeArbitraryKinematics<AutoDiffXd>(num_cliques);
 
-  // Instantiate constraint on AutoDiffXd for automatic differentiation.
-  SapFixedConstraint<AutoDiffXd> c(std::move(kin_ad));
+    // Instantiate constraint on AutoDiffXd for automatic differentiation.
+    SapFixedConstraint<AutoDiffXd> c(std::move(kin_ad));
 
-  // Verify cost gradients using AutoDiffXd.
-  ValidateConstraintGradients(c, vc);
+    // Verify cost gradients using AutoDiffXd.
+    ValidateConstraintGradients(c, vc);
 }
 
 GTEST_TEST(SapFixedConstraint, Gradients) {
-  // Arbitrary set of vc values.
-  {
-    const VectorXd vc =
-        (VectorXd(6) << 10.0, 11.0, 12.0, 12.0, 13.0, 15.0).finished();
-    ValidateProjection(vc);
-  }
-  {
-    const VectorXd vc =
-        (VectorXd(6) << 2.3, -1.7, 3.4, 9.3, -4.5, 2.3).finished();
-    ValidateProjection(vc);
-  }
-  {
-    const VectorXd vc =
-        (VectorXd(6) << 6.2, 0.5, -4.9, 0.0, 0.0, 0.0).finished();
-    ValidateProjection(vc);
-  }
+    // Arbitrary set of vc values.
+    {
+        const VectorXd vc = (VectorXd(6) << 10.0, 11.0, 12.0, 12.0, 13.0, 15.0).finished();
+        ValidateProjection(vc);
+    }
+    {
+        const VectorXd vc = (VectorXd(6) << 2.3, -1.7, 3.4, 9.3, -4.5, 2.3).finished();
+        ValidateProjection(vc);
+    }
+    {
+        const VectorXd vc = (VectorXd(6) << 6.2, 0.5, -4.9, 0.0, 0.0, 0.0).finished();
+        ValidateProjection(vc);
+    }
 }
 
 GTEST_TEST(SapFixedConstraint, SingleCliqueConstraintClone) {
-  const int num_cliques = 1;
-  const FixedConstraintKinematics<double> kinematics =
-      MakeArbitraryKinematics(num_cliques);
-  SapFixedConstraint<double> c(kinematics);
+    const int num_cliques = 1;
+    const FixedConstraintKinematics<double> kinematics = MakeArbitraryKinematics(num_cliques);
+    SapFixedConstraint<double> c(kinematics);
 
-  // N.B. Here we dynamic cast to the derived type so that we can test that the
-  // clone is a deep-copy of the original constraint.
-  auto clone = dynamic_pointer_cast<SapFixedConstraint<double>>(c.Clone());
-  ASSERT_NE(clone, nullptr);
-  EXPECT_EQ(clone->num_objects(), 1);
-  EXPECT_EQ(clone->num_constraint_equations(), 6);
-  EXPECT_EQ(c.num_constrained_point_pairs(), 2);
-  EXPECT_EQ(clone->num_cliques(), 1);
-  EXPECT_EQ(clone->first_clique(), kinematics.J.clique(0));
-  EXPECT_THROW(clone->second_clique(), std::exception);
-  EXPECT_EQ(clone->first_clique_jacobian().MakeDenseMatrix(), J66);
-  EXPECT_THROW(clone->second_clique_jacobian(), std::exception);
+    // N.B. Here we dynamic cast to the derived type so that we can test that the
+    // clone is a deep-copy of the original constraint.
+    auto clone = dynamic_pointer_cast<SapFixedConstraint<double>>(c.Clone());
+    ASSERT_NE(clone, nullptr);
+    EXPECT_EQ(clone->num_objects(), 1);
+    EXPECT_EQ(clone->num_constraint_equations(), 6);
+    EXPECT_EQ(c.num_constrained_point_pairs(), 2);
+    EXPECT_EQ(clone->num_cliques(), 1);
+    EXPECT_EQ(clone->first_clique(), kinematics.J.clique(0));
+    EXPECT_THROW(clone->second_clique(), std::exception);
+    EXPECT_EQ(clone->first_clique_jacobian().MakeDenseMatrix(), J66);
+    EXPECT_THROW(clone->second_clique_jacobian(), std::exception);
 
-  DRAKE_EXPECT_THROWS_MESSAGE(
-      c.ToDouble(),
-      "SapFixedConstraint: Scalar conversion to double not supported.");
+    DRAKE_EXPECT_THROWS_MESSAGE(c.ToDouble(), "SapFixedConstraint: Scalar conversion to double not supported.");
 }
 
 GTEST_TEST(SapFixedConstraint, TwoCliquesConstraintClone) {
-  const int num_cliques = 2;
-  const FixedConstraintKinematics<double> kinematics =
-      MakeArbitraryKinematics(num_cliques);
-  const SapFixedConstraint<double> c(kinematics);
+    const int num_cliques = 2;
+    const FixedConstraintKinematics<double> kinematics = MakeArbitraryKinematics(num_cliques);
+    const SapFixedConstraint<double> c(kinematics);
 
-  auto clone = dynamic_pointer_cast<SapFixedConstraint<double>>(c.Clone());
-  ASSERT_NE(clone, nullptr);
-  EXPECT_EQ(clone->num_objects(), 2);
-  EXPECT_EQ(clone->num_constraint_equations(), 6);
-  EXPECT_EQ(c.num_constrained_point_pairs(), 2);
-  EXPECT_EQ(clone->num_cliques(), 2);
-  EXPECT_EQ(clone->first_clique(), kinematics.J.clique(0));
-  EXPECT_EQ(clone->second_clique(), kinematics.J.clique(1));
-  EXPECT_EQ(clone->first_clique_jacobian().MakeDenseMatrix(), J66);
-  EXPECT_EQ(clone->second_clique_jacobian().MakeDenseMatrix(), J62);
+    auto clone = dynamic_pointer_cast<SapFixedConstraint<double>>(c.Clone());
+    ASSERT_NE(clone, nullptr);
+    EXPECT_EQ(clone->num_objects(), 2);
+    EXPECT_EQ(clone->num_constraint_equations(), 6);
+    EXPECT_EQ(c.num_constrained_point_pairs(), 2);
+    EXPECT_EQ(clone->num_cliques(), 2);
+    EXPECT_EQ(clone->first_clique(), kinematics.J.clique(0));
+    EXPECT_EQ(clone->second_clique(), kinematics.J.clique(1));
+    EXPECT_EQ(clone->first_clique_jacobian().MakeDenseMatrix(), J66);
+    EXPECT_EQ(clone->second_clique_jacobian().MakeDenseMatrix(), J62);
 
-  DRAKE_EXPECT_THROWS_MESSAGE(
-      c.ToDouble(),
-      "SapFixedConstraint: Scalar conversion to double not supported.");
+    DRAKE_EXPECT_THROWS_MESSAGE(c.ToDouble(), "SapFixedConstraint: Scalar conversion to double not supported.");
 }
 
 GTEST_TEST(SapFixedConstraint, AccumulateGeneralizedImpulses) {
-  const int num_cliques = 2;
-  const FixedConstraintKinematics<double> kinematics =
-      MakeArbitraryKinematics(num_cliques);
-  const SapFixedConstraint<double> c(kinematics);
+    const int num_cliques = 2;
+    const FixedConstraintKinematics<double> kinematics = MakeArbitraryKinematics(num_cliques);
+    const SapFixedConstraint<double> c(kinematics);
 
-  // Arbitrary impulse vector.
-  const VectorXd gamma =
-      (VectorXd(6) << -0.25, 0.01, 0.03, -0.5, 0.04, -0.5).finished();
+    // Arbitrary impulse vector.
+    const VectorXd gamma = (VectorXd(6) << -0.25, 0.01, 0.03, -0.5, 0.04, -0.5).finished();
 
-  // Arbitrary nonzero taus to be accumulated into.
-  VectorXd tau0 = (VectorXd(6) << -0.23, 0.21, 1, 2, 3, 4).finished();
-  VectorXd tau1 = (VectorXd(2) << -0.23, 0.21).finished();
+    // Arbitrary nonzero taus to be accumulated into.
+    VectorXd tau0 = (VectorXd(6) << -0.23, 0.21, 1, 2, 3, 4).finished();
+    VectorXd tau1 = (VectorXd(2) << -0.23, 0.21).finished();
 
-  // We expect AccumulateGeneralizedImpulses to be an no-op -- nothing should be
-  // accumulated.
-  const VectorXd tau0_expected = tau0;
-  const VectorXd tau1_expected = tau1;
+    // We expect AccumulateGeneralizedImpulses to be an no-op -- nothing should be
+    // accumulated.
+    const VectorXd tau0_expected = tau0;
+    const VectorXd tau1_expected = tau1;
 
-  c.AccumulateGeneralizedImpulses(0, gamma, &tau0);
-  c.AccumulateGeneralizedImpulses(1, gamma, &tau1);
+    c.AccumulateGeneralizedImpulses(0, gamma, &tau0);
+    c.AccumulateGeneralizedImpulses(1, gamma, &tau1);
 
-  EXPECT_EQ(tau0, tau0_expected);
-  EXPECT_EQ(tau1, tau1_expected);
+    EXPECT_EQ(tau0, tau0_expected);
+    EXPECT_EQ(tau1, tau1_expected);
 }
 
 /* In this test, we set a special kinematics to verify the applied spatial
@@ -216,57 +196,45 @@ GTEST_TEST(SapFixedConstraint, AccumulateGeneralizedImpulses) {
                   -z
 */
 GTEST_TEST(SapFixedConstraint, AccumulateSpatialImpulses) {
-  const int objectA = 0;
-  const VectorXd p_APs_W =
-      (VectorXd(6) << 0.25, 0.0, 0.0, 0.5, 0.0, 0.5).finished();
-  const int objectB = 1;
-  const VectorXd p_BQs_W =
-      (VectorXd(6) << -0.25, 0.0, 0.0, -0.5, 0.0, -0.5).finished();
-  const VectorXd p_PQs_W =
-      (VectorXd(6) << 0.5, 0.0, 0.0, 0.0, 0.0, -1.0).finished();
-  const int clique0 = 0;
-  const int clique1 = 1;
-  // Compatibly-sized Jacobian with arbitrary values as it doesn't affect the
-  // test result.
-  SapConstraintJacobian<double> J_PQ_W(clique0, J66, clique1, J62);
-  FixedConstraintKinematics<double> kinematics{objectA, p_APs_W, objectB,
-                                               p_BQs_W, p_PQs_W, J_PQ_W};
-  SapFixedConstraint<double> c(kinematics);
+    const int objectA = 0;
+    const VectorXd p_APs_W = (VectorXd(6) << 0.25, 0.0, 0.0, 0.5, 0.0, 0.5).finished();
+    const int objectB = 1;
+    const VectorXd p_BQs_W = (VectorXd(6) << -0.25, 0.0, 0.0, -0.5, 0.0, -0.5).finished();
+    const VectorXd p_PQs_W = (VectorXd(6) << 0.5, 0.0, 0.0, 0.0, 0.0, -1.0).finished();
+    const int clique0 = 0;
+    const int clique1 = 1;
+    // Compatibly-sized Jacobian with arbitrary values as it doesn't affect the
+    // test result.
+    SapConstraintJacobian<double> J_PQ_W(clique0, J66, clique1, J62);
+    FixedConstraintKinematics<double> kinematics{objectA, p_APs_W, objectB, p_BQs_W, p_PQs_W, J_PQ_W};
+    SapFixedConstraint<double> c(kinematics);
 
-  // Impulse pulling P0 and Q0 together.
-  const Vector3d gamma0(-1, 0, 0);
-  // Impulse pulling P1 and Q1 together.
-  const Vector3d gamma1(0, 0, 1);
-  const VectorXd gamma = (VectorXd(6) << gamma0, gamma1).finished();
+    // Impulse pulling P0 and Q0 together.
+    const Vector3d gamma0(-1, 0, 0);
+    // Impulse pulling P1 and Q1 together.
+    const Vector3d gamma1(0, 0, 1);
+    const VectorXd gamma = (VectorXd(6) << gamma0, gamma1).finished();
 
-  // Expected spatial impulse on B.
-  const SpatialForce<double> F_Bo_W =
-      SpatialForce<double>(Vector3d::Zero(), gamma0)
-          .Shift(Vector3d(0.25, 0, 0)) +
-      SpatialForce<double>(Vector3d::Zero(), gamma1)
-          .Shift(Vector3d(0.5, 0, 0.5));
+    // Expected spatial impulse on B.
+    const SpatialForce<double> F_Bo_W = SpatialForce<double>(Vector3d::Zero(), gamma0).Shift(Vector3d(0.25, 0, 0)) +
+                                        SpatialForce<double>(Vector3d::Zero(), gamma1).Shift(Vector3d(0.5, 0, 0.5));
 
-  // Expected spatial impulse on A.
-  const SpatialForce<double> F_Ao_W =
-      SpatialForce<double>(Vector3d::Zero(), -gamma0)
-          .Shift(Vector3d(-0.25, 0, 0)) +
-      SpatialForce<double>(Vector3d::Zero(), -gamma1)
-          .Shift(Vector3d(-0.5, 0, -0.5));
+    // Expected spatial impulse on A.
+    const SpatialForce<double> F_Ao_W = SpatialForce<double>(Vector3d::Zero(), -gamma0).Shift(Vector3d(-0.25, 0, 0)) +
+                                        SpatialForce<double>(Vector3d::Zero(), -gamma1).Shift(Vector3d(-0.5, 0, -0.5));
 
-  const SpatialForce<double> F0(Vector3d(1, 2, 3), Vector3d(4, 5, 6));
-  SpatialForce<double> Faccumulated = F0;  // Initialize to non-zero value.
-  SpatialForce<double> F_Bo_W_expected = F0 + F_Bo_W;
-  c.AccumulateSpatialImpulses(1, gamma, &Faccumulated);
-  EXPECT_TRUE(CompareMatrices(
-      Faccumulated.get_coeffs(), F_Bo_W_expected.get_coeffs(),
-      std::numeric_limits<double>::epsilon(), MatrixCompareType::relative));
+    const SpatialForce<double> F0(Vector3d(1, 2, 3), Vector3d(4, 5, 6));
+    SpatialForce<double> Faccumulated = F0;  // Initialize to non-zero value.
+    SpatialForce<double> F_Bo_W_expected = F0 + F_Bo_W;
+    c.AccumulateSpatialImpulses(1, gamma, &Faccumulated);
+    EXPECT_TRUE(CompareMatrices(Faccumulated.get_coeffs(), F_Bo_W_expected.get_coeffs(),
+                                std::numeric_limits<double>::epsilon(), MatrixCompareType::relative));
 
-  Faccumulated = F0;  // Initialize to non-zero value.
-  SpatialForce<double> F_Ao_W_expected = F0 + F_Ao_W;
-  c.AccumulateSpatialImpulses(0, gamma, &Faccumulated);
-  EXPECT_TRUE(CompareMatrices(
-      Faccumulated.get_coeffs(), F_Ao_W_expected.get_coeffs(),
-      std::numeric_limits<double>::epsilon(), MatrixCompareType::relative));
+    Faccumulated = F0;  // Initialize to non-zero value.
+    SpatialForce<double> F_Ao_W_expected = F0 + F_Ao_W;
+    c.AccumulateSpatialImpulses(0, gamma, &Faccumulated);
+    EXPECT_TRUE(CompareMatrices(Faccumulated.get_coeffs(), F_Ao_W_expected.get_coeffs(),
+                                std::numeric_limits<double>::epsilon(), MatrixCompareType::relative));
 }
 
 }  // namespace

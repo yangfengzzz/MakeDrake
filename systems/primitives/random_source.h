@@ -72,52 +72,50 @@ namespace systems {
 /// @ingroup primitive_systems
 template <typename T>
 class RandomSource final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(RandomSource);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(RandomSource);
 
-  /// An integer type for a random seed.
-  using Seed = RandomGenerator::result_type;
+    /// An integer type for a random seed.
+    using Seed = RandomGenerator::result_type;
 
-  /// Constructs the RandomSource system.
-  /// @param distribution The RandomDistribution used for each of the outputs.
-  /// @param num_outputs The dimension of the (single) vector output port.
-  /// @param sampling_interval_sec The sampling interval in seconds.
-  RandomSource(RandomDistribution distribution, int num_outputs,
-               double sampling_interval_sec);
+    /// Constructs the RandomSource system.
+    /// @param distribution The RandomDistribution used for each of the outputs.
+    /// @param num_outputs The dimension of the (single) vector output port.
+    /// @param sampling_interval_sec The sampling interval in seconds.
+    RandomSource(RandomDistribution distribution, int num_outputs, double sampling_interval_sec);
 
-  template <typename U>
-  explicit RandomSource(const RandomSource<U>&);
+    template <typename U>
+    explicit RandomSource(const RandomSource<U>&);
 
-  ~RandomSource() override;
+    ~RandomSource() override;
 
-  /// Returns the `distribution` given at construction.
-  RandomDistribution get_distribution() const { return distribution_; }
+    /// Returns the `distribution` given at construction.
+    RandomDistribution get_distribution() const { return distribution_; }
 
-  /// Returns the value of the `seed` parameter in the given context.
-  Seed get_seed(const Context<double>& context) const;
+    /// Returns the value of the `seed` parameter in the given context.
+    Seed get_seed(const Context<double>& context) const;
 
-  /// Gets this system's fixed random seed (or else nullopt when the seed is
-  /// not fixed).  Refer to the class overview documentation for details.
-  std::optional<Seed> get_fixed_seed() const { return fixed_seed_; }
+    /// Gets this system's fixed random seed (or else nullopt when the seed is
+    /// not fixed).  Refer to the class overview documentation for details.
+    std::optional<Seed> get_fixed_seed() const { return fixed_seed_; }
 
-  /// Sets (or clears) this system's fixed random seed.  Refer to the class
-  /// overview documentation for details.
-  void set_fixed_seed(const std::optional<Seed>& seed) { fixed_seed_ = seed; }
+    /// Sets (or clears) this system's fixed random seed.  Refer to the class
+    /// overview documentation for details.
+    void set_fixed_seed(const std::optional<Seed>& seed) { fixed_seed_ = seed; }
 
- private:
-  // Allow different specializations to access each other's private data.
-  template <typename>
-  friend class RandomSource;
-  void SetDefaultState(const Context<T>&, State<T>*) const final;
-  void SetRandomState(const Context<T>&, State<T>*,
-                      RandomGenerator*) const final;
-  void SetSeed(Seed, const Context<T>&, State<T>*) const;
-  void UpdateSamples(const Context<T>&, State<T>*) const;
+private:
+    // Allow different specializations to access each other's private data.
+    template <typename>
+    friend class RandomSource;
+    void SetDefaultState(const Context<T>&, State<T>*) const final;
+    void SetRandomState(const Context<T>&, State<T>*, RandomGenerator*) const final;
+    void SetSeed(Seed, const Context<T>&, State<T>*) const;
+    void UpdateSamples(const Context<T>&, State<T>*) const;
 
-  const RandomDistribution distribution_;
-  const double sampling_interval_sec_;
-  const Seed instance_seed_;
-  std::optional<Seed> fixed_seed_;
+    const RandomDistribution distribution_;
+    const double sampling_interval_sec_;
+    const Seed instance_seed_;
+    std::optional<Seed> fixed_seed_;
 };
 
 /// For each subsystem input port in @p builder that is (a) not yet connected

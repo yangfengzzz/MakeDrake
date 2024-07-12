@@ -37,14 +37,14 @@ namespace internal {
  @param[in, out] deformable_contact
      The deformable contact data to be appended to.
  @pre deformable_contact != nullptr. */
-void AddDeformableRigidContactSurface(
-    const VolumeMeshFieldLinear<double, double>& deformable_sdf,
-    const DeformableVolumeMeshWithBvh<double>& deformable_mesh,
-    GeometryId deformable_id, GeometryId rigid_id,
-    const TriangleSurfaceMesh<double>& rigid_mesh_R,
-    const Bvh<Obb, TriangleSurfaceMesh<double>>& rigid_bvh_R,
-    const math::RigidTransform<double>& X_DR,
-    DeformableContact<double>* deformable_contact);
+void AddDeformableRigidContactSurface(const VolumeMeshFieldLinear<double, double>& deformable_sdf,
+                                      const DeformableVolumeMeshWithBvh<double>& deformable_mesh,
+                                      GeometryId deformable_id,
+                                      GeometryId rigid_id,
+                                      const TriangleSurfaceMesh<double>& rigid_mesh_R,
+                                      const Bvh<Obb, TriangleSurfaceMesh<double>>& rigid_bvh_R,
+                                      const math::RigidTransform<double>& X_DR,
+                                      DeformableContact<double>* deformable_contact);
 
 }  // namespace internal
 }  // namespace geometry

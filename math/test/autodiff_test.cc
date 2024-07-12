@@ -55,7 +55,7 @@ protected:
 
     // Do a calculation involving real functions of two real variables. These
     // functions were chosen due to ease of differentiation.
-    static VectorX<Scalar> DoMath(const VectorX<Scalar> &v) {
+    static VectorX<Scalar> DoMath(const VectorX<Scalar>& v) {
         VectorX<Scalar> output(3);
         // Shorthand notation: Denote v0 = v[0], v1 = v[1].
         // Function 0: y0 = cos(v0) + sin(v0) * cos(v0) / v1
@@ -426,7 +426,7 @@ GTEST_TEST(AdditionalAutodiffTest, InitializeAutoDiffTuple) {
               1);
 
     // This is the expected type of the derivatives vector (in every element).
-    const Eigen::Matrix<double, 12, 1> &deriv_12 = std::get<1>(tuple).coeffRef(2).derivatives();
+    const Eigen::Matrix<double, 12, 1>& deriv_12 = std::get<1>(tuple).coeffRef(2).derivatives();
     // Check that we didn't create a new copy (i.e. we got the right type).
     EXPECT_EQ(&deriv_12, &std::get<1>(tuple).coeffRef(2).
 
@@ -479,7 +479,7 @@ GTEST_TEST(AdditionalAutodiffTest, InitializeAutoDiffTuple) {
               1);
 
     // This is the expected type of the derivatives vector (in every element).
-    const Eigen::Matrix<double, Eigen::Dynamic, 1> &deriv_12d = std::get<1>(tupled).coeffRef(2).derivatives();
+    const Eigen::Matrix<double, Eigen::Dynamic, 1>& deriv_12d = std::get<1>(tupled).coeffRef(2).derivatives();
     // Check that we didn't create a new copy (i.e. we got the right type).
     EXPECT_EQ(&deriv_12d, &std::get<1>(tupled).coeffRef(2).
 

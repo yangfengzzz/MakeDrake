@@ -39,15 +39,13 @@ namespace internal {
 // y[rotated_lorentz_cone_y_start_indices[i]:
 //   rotated_lorentz_cone_y_start_indices[i] + second_order_cone_length[i]]
 // are the dual variables for prog.rotated_lorentz_cone_constraints()[i].
-void SetDualSolution(
-    const MathematicalProgram& prog,
-    const Eigen::Ref<const Eigen::VectorXd>& dual,
-    const std::vector<std::vector<std::pair<int, int>>>&
-        linear_constraint_dual_indices,
-    const std::vector<int>& linear_eq_y_start_indices,
-    const std::vector<int>& lorentz_cone_y_start_indices,
-    const std::vector<int>& rotated_lorentz_cone_y_start_indices,
-    MathematicalProgramResult* result);
+void SetDualSolution(const MathematicalProgram& prog,
+                     const Eigen::Ref<const Eigen::VectorXd>& dual,
+                     const std::vector<std::vector<std::pair<int, int>>>& linear_constraint_dual_indices,
+                     const std::vector<int>& linear_eq_y_start_indices,
+                     const std::vector<int>& lorentz_cone_y_start_indices,
+                     const std::vector<int>& rotated_lorentz_cone_y_start_indices,
+                     MathematicalProgramResult* result);
 }  // namespace internal
 }  // namespace solvers
 }  // namespace drake

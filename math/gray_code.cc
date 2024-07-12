@@ -2,7 +2,7 @@
 
 namespace drake {
 namespace math {
-int GrayCodeToInteger(const Eigen::Ref<const Eigen::VectorXi> &gray_code) {
+int GrayCodeToInteger(const Eigen::Ref<const Eigen::VectorXi>& gray_code) {
     // This implementation is based on
     // https://testbook.com/blog/conversion-from-gray-code-to-binary-code-and-vice-versa/
     int digit = gray_code(0);

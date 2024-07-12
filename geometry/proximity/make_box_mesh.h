@@ -214,12 +214,10 @@ VolumeMesh<T> MakeBoxVolumeMesh(const Box& box, double resolution_hint);
            AutoDiffXd.
  */
 template <typename T>
-TriangleSurfaceMesh<T> MakeBoxSurfaceMesh(const Box& box,
-                                          double resolution_hint) {
-  DRAKE_DEMAND(resolution_hint > 0.);
-  // TODO(SeanCurtis-TRI): Consider putting an upper limit - as with the sphere.
-  return ConvertVolumeToSurfaceMesh<T>(
-      MakeBoxVolumeMesh<T>(box, resolution_hint));
+TriangleSurfaceMesh<T> MakeBoxSurfaceMesh(const Box& box, double resolution_hint) {
+    DRAKE_DEMAND(resolution_hint > 0.);
+    // TODO(SeanCurtis-TRI): Consider putting an upper limit - as with the sphere.
+    return ConvertVolumeToSurfaceMesh<T>(MakeBoxVolumeMesh<T>(box, resolution_hint));
 }
 
 /* The functions below are only support functions for the main API above. They
@@ -251,8 +249,7 @@ int CalcSequentialIndex(int i, int j, int k, const Vector3<int>& num_vertices);
      The linear sequence of vertices consistent with CalcSequentialIndex.
  */
 template <typename T>
-std::vector<Vector3<T>> GenerateVertices(const Box& box,
-                                         const Vector3<int>& num_vertices);
+std::vector<Vector3<T>> GenerateVertices(const Box& box, const Vector3<int>& num_vertices);
 
 /*
  Adds six tetrahedra of a given rectangular cell to the list of tetrahedral

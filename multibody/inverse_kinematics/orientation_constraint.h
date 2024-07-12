@@ -31,82 +31,79 @@ namespace multibody {
  * @ingroup solver_evaluators
  */
 class OrientationConstraint : public solvers::Constraint {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(OrientationConstraint);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(OrientationConstraint);
 
-  /**
-   * Constructs an OrientationConstraint object.
-   * The frame A is fixed to a frame A̅, with orientatation `R_AbarA` measured
-   * in frame A̅. The frame B is fixed to a frame B̅, with orientation `R_BbarB`
-   * measured in frame B. We constrain the angle between frame A and B to be
-   * less than `theta_bound`.
-   * @param plant The MultibodyPlant on which the constraint is imposed. `plant`
-   *   should be alive during the lifetime of this constraint.
-   * @param frameAbar The frame A̅ in the model to which frame A is fixed.
-   * @param R_AbarA The orientation of frame A measured in frame A̅.
-   * @param frameBbar The frame B̅ in the model to which frame B is fixed.
-   * @param R_BbarB The orientation of frame B measured in frame B̅.
-   * @param theta_bound The bound on the angle difference between frame A's
-   *   orientation and frame B's orientation. It is denoted as θ_bound in the
-   *   class documentation. `theta_bound` is in radians.
-   * @param plant_context The Context that has been allocated for this
-   *   `plant`. We will update the context when evaluating the constraint.
-   *   `plant_context` should be alive during the lifetime of this constraint.
-   * @throws std::exception if `plant` is nullptr.
-   * @throws std::exception if `frameAbar` or `frameBbar` does not belong to
-   *   `plant`.
-   * @throws std::exception if angle_bound < 0.
-   * @throws std::exception if `plant_context` is nullptr.
-   * @pydrake_mkdoc_identifier{double}
-   */
-  OrientationConstraint(
-      const MultibodyPlant<double>* const plant,
-      const Frame<double>& frameAbar,
-      const math::RotationMatrix<double>& R_AbarA,
-      const Frame<double>& frameBbar,
-      const math::RotationMatrix<double>& R_BbarB, double theta_bound,
-      systems::Context<double>* plant_context);
+    /**
+     * Constructs an OrientationConstraint object.
+     * The frame A is fixed to a frame A̅, with orientatation `R_AbarA` measured
+     * in frame A̅. The frame B is fixed to a frame B̅, with orientation `R_BbarB`
+     * measured in frame B. We constrain the angle between frame A and B to be
+     * less than `theta_bound`.
+     * @param plant The MultibodyPlant on which the constraint is imposed. `plant`
+     *   should be alive during the lifetime of this constraint.
+     * @param frameAbar The frame A̅ in the model to which frame A is fixed.
+     * @param R_AbarA The orientation of frame A measured in frame A̅.
+     * @param frameBbar The frame B̅ in the model to which frame B is fixed.
+     * @param R_BbarB The orientation of frame B measured in frame B̅.
+     * @param theta_bound The bound on the angle difference between frame A's
+     *   orientation and frame B's orientation. It is denoted as θ_bound in the
+     *   class documentation. `theta_bound` is in radians.
+     * @param plant_context The Context that has been allocated for this
+     *   `plant`. We will update the context when evaluating the constraint.
+     *   `plant_context` should be alive during the lifetime of this constraint.
+     * @throws std::exception if `plant` is nullptr.
+     * @throws std::exception if `frameAbar` or `frameBbar` does not belong to
+     *   `plant`.
+     * @throws std::exception if angle_bound < 0.
+     * @throws std::exception if `plant_context` is nullptr.
+     * @pydrake_mkdoc_identifier{double}
+     */
+    OrientationConstraint(const MultibodyPlant<double>* const plant,
+                          const Frame<double>& frameAbar,
+                          const math::RotationMatrix<double>& R_AbarA,
+                          const Frame<double>& frameBbar,
+                          const math::RotationMatrix<double>& R_BbarB,
+                          double theta_bound,
+                          systems::Context<double>* plant_context);
 
-  /**
-   * Overloaded constructor.
-   * Constructs the constraint using MultibodyPlant<AutoDiffXd>
-   * @pydrake_mkdoc_identifier{autodiff}
-   */
-  OrientationConstraint(const MultibodyPlant<AutoDiffXd>* const plant,
-                        const Frame<AutoDiffXd>& frameAbar,
-                        const math::RotationMatrix<double>& R_AbarA,
-                        const Frame<AutoDiffXd>& frameBbar,
-                        const math::RotationMatrix<double>& R_BbarB,
-                        double theta_bound,
-                        systems::Context<AutoDiffXd>* plant_context);
+    /**
+     * Overloaded constructor.
+     * Constructs the constraint using MultibodyPlant<AutoDiffXd>
+     * @pydrake_mkdoc_identifier{autodiff}
+     */
+    OrientationConstraint(const MultibodyPlant<AutoDiffXd>* const plant,
+                          const Frame<AutoDiffXd>& frameAbar,
+                          const math::RotationMatrix<double>& R_AbarA,
+                          const Frame<AutoDiffXd>& frameBbar,
+                          const math::RotationMatrix<double>& R_BbarB,
+                          double theta_bound,
+                          systems::Context<AutoDiffXd>* plant_context);
 
-  ~OrientationConstraint() override {}
+    ~OrientationConstraint() override {}
 
- private:
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override;
+private:
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>&,
-              VectorX<symbolic::Expression>*) const override {
-    throw std::logic_error(
-        "OrientationConstraint::DoEval() does not work for symbolic "
-        "variables.");
-  }
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>&, VectorX<symbolic::Expression>*) const override {
+        throw std::logic_error(
+                "OrientationConstraint::DoEval() does not work for symbolic "
+                "variables.");
+    }
 
-  bool use_autodiff() const { return plant_autodiff_; }
+    bool use_autodiff() const { return plant_autodiff_; }
 
-  const MultibodyPlant<double>* const plant_double_;
-  const FrameIndex frameAbar_index_;
-  const FrameIndex frameBbar_index_;
-  const math::RotationMatrix<double> R_AAbar_;
-  const math::RotationMatrix<double> R_BbarB_;
-  systems::Context<double>* const context_double_;
+    const MultibodyPlant<double>* const plant_double_;
+    const FrameIndex frameAbar_index_;
+    const FrameIndex frameBbar_index_;
+    const math::RotationMatrix<double> R_AAbar_;
+    const math::RotationMatrix<double> R_BbarB_;
+    systems::Context<double>* const context_double_;
 
-  const MultibodyPlant<AutoDiffXd>* const plant_autodiff_;
-  systems::Context<AutoDiffXd>* context_autodiff_;
+    const MultibodyPlant<AutoDiffXd>* const plant_autodiff_;
+    systems::Context<AutoDiffXd>* context_autodiff_;
 };
 }  // namespace multibody
 }  // namespace drake

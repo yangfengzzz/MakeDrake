@@ -23,8 +23,7 @@ invalid. The valid static resource URLs are:
 - `/meshcat.html`
 - `/meshcat.js`
 - `/stats.min.js` */
-std::optional<std::string_view> GetMeshcatStaticResource(
-    std::string_view url_path);
+std::optional<std::string_view> GetMeshcatStaticResource(std::string_view url_path);
 
 /* UuidGenerator generates random UUIDs:
 https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random)
@@ -36,18 +35,18 @@ the process.
 Note that the UUIDs are *deterministically* random -- the i'th random UUID will
 be the same from one run to the next. There is no re-seeding. */
 class UuidGenerator final {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UuidGenerator);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UuidGenerator);
 
-  UuidGenerator();
-  ~UuidGenerator();
+    UuidGenerator();
+    ~UuidGenerator();
 
-  /* Returns a newly-generated random UUID. */
-  std::string GenerateRandom();
+    /* Returns a newly-generated random UUID. */
+    std::string GenerateRandom();
 
- private:
-  struct Impl;
-  std::unique_ptr<Impl> impl_;
+private:
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
 };
 
 /* Rewrites a glTF file in memory so that all of its URIs refer to assets in
@@ -70,9 +69,8 @@ original file has disappeared in the meantime.
 @param[in,out] storage The database where assets should be stored.
 
 @returns The handles for all assets cited by `gltf_contents`. */
-[[nodiscard]] std::vector<std::shared_ptr<const FileStorage::Handle>>
-UnbundleGltfAssets(const std::filesystem::path& gltf_filename,
-                   std::string* gltf_contents, FileStorage* storage);
+[[nodiscard]] std::vector<std::shared_ptr<const FileStorage::Handle>> UnbundleGltfAssets(
+        const std::filesystem::path& gltf_filename, std::string* gltf_contents, FileStorage* storage);
 
 /* Converts a geometry name into a meshcat path. So, a geometry named
 `my_scope::Mesh` becomes my_scope/Mesh.
@@ -93,8 +91,7 @@ not problematic for the following reasons:
 (Examples of the slash elision can be seen in meshcat_manual_test.cc -- the
 sphere and cylinder shapes.) */
 template <typename T>
-std::string TransformGeometryName(GeometryId geom_id,
-                                  const SceneGraphInspector<T>& inspector);
+std::string TransformGeometryName(GeometryId geom_id, const SceneGraphInspector<T>& inspector);
 
 }  // namespace internal
 }  // namespace geometry

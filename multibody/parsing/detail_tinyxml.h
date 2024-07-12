@@ -24,8 +24,7 @@ std::vector<T> ConvertToVector(const std::string& str);
 // If the attribute is not present, @p val will be cleared.
 //
 // @returns false if the attribute is not present
-bool ParseStringAttribute(const tinyxml2::XMLElement* node,
-                          const char* attribute_name, std::string* val);
+bool ParseStringAttribute(const tinyxml2::XMLElement* node, const char* attribute_name, std::string* val);
 
 // Parses a scalar attribute of @p node named @p attribute_name into @p val.
 //
@@ -41,9 +40,9 @@ bool ParseStringAttribute(const tinyxml2::XMLElement* node,
 // The template parameter T must be double or int.
 template <typename T>
 bool ParseScalarAttribute(const tinyxml2::XMLElement* node,
-                          const char* attribute_name, T* val,
-                          std::optional<const drake::internal::DiagnosticPolicy>
-                              policy = std::nullopt);
+                          const char* attribute_name,
+                          T* val,
+                          std::optional<const drake::internal::DiagnosticPolicy> policy = std::nullopt);
 
 // Parses an attribute of @p node named @p attribute_name consisting of scalar
 // values into @p val.
@@ -58,18 +57,17 @@ template <int rows>
 bool ParseVectorAttribute(const tinyxml2::XMLElement* node,
                           const char* attribute_name,
                           Eigen::Matrix<double, rows, 1>* val) {
-  const char* attr = node->Attribute(attribute_name);
-  if (attr) {
-    std::vector<double> vals = ConvertToVector<double>(attr);
-    if (vals.size() != rows) {
-      throw std::invalid_argument(
-          fmt::format("Expected {} values for attribute {} got {}", rows,
-                      attribute_name, attr));
+    const char* attr = node->Attribute(attribute_name);
+    if (attr) {
+        std::vector<double> vals = ConvertToVector<double>(attr);
+        if (vals.size() != rows) {
+            throw std::invalid_argument(
+                    fmt::format("Expected {} values for attribute {} got {}", rows, attribute_name, attr));
+        }
+        *val = Eigen::Matrix<double, rows, 1>(vals.data());
+        return true;
     }
-    *val = Eigen::Matrix<double, rows, 1>(vals.data());
-    return true;
-  }
-  return false;
+    return false;
 }
 
 // Parses "xyz" and "rpy" attributes from @p node and returns a
@@ -78,8 +76,7 @@ bool ParseVectorAttribute(const tinyxml2::XMLElement* node,
 //
 // @throws std::exception if the "xyz" or "rpy" attributes are
 // malformed.
-math::RigidTransformd OriginAttributesToTransform(
-    const tinyxml2::XMLElement* node);
+math::RigidTransformd OriginAttributesToTransform(const tinyxml2::XMLElement* node);
 
 // Parses a three vector value from parameter @p node, which is an
 // XML node. The value is specified by an attribute within the XML
@@ -98,9 +95,7 @@ math::RigidTransformd OriginAttributesToTransform(
 //
 // @throws std::exception If any problem is encountered parsing the
 // three vector value.
-bool ParseThreeVectorAttribute(const tinyxml2::XMLElement* node,
-                               const char* attribute_name,
-                               Eigen::Vector3d* val);
+bool ParseThreeVectorAttribute(const tinyxml2::XMLElement* node, const char* attribute_name, Eigen::Vector3d* val);
 
 }  // namespace internal
 }  // namespace multibody

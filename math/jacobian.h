@@ -53,7 +53,7 @@ namespace math {
    at x.
  */
 template <int MaxChunkSize = 10, class F, class Arg>
-decltype(auto) jacobian(F &&f, Arg &&x) {
+decltype(auto) jacobian(F&& f, Arg&& x) {
     using Eigen::AutoDiffScalar;
     using Eigen::Index;
     using Eigen::Matrix;
@@ -153,8 +153,10 @@ decltype(auto) jacobian(F &&f, Arg &&x) {
    x
  */
 template <int MaxChunkSizeOuter = 10, int MaxChunkSizeInner = 10, class F, class Arg>
-decltype(auto) hessian(F &&f, Arg &&x) {
-    auto jac_fun = [&](const auto &x_inner) { return jacobian<MaxChunkSizeInner>(f, x_inner); };
+decltype(auto) hessian(F&& f, Arg&& x) {
+    auto jac_fun = [&](const auto& x_inner) {
+        return jacobian<MaxChunkSizeInner>(f, x_inner);
+    };
     return jacobian<MaxChunkSizeOuter>(jac_fun, x);
 }
 

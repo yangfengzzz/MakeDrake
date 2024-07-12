@@ -49,122 +49,113 @@ namespace solvers {
  * repeatedly.
  */
 class MixedIntegerRotationConstraintGenerator {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(
-      MixedIntegerRotationConstraintGenerator);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MixedIntegerRotationConstraintGenerator);
 
-  enum class Approach {
-    kBoxSphereIntersection,  ///< Relax SO(3) constraint by considering the
-                             ///< intersection between boxes and the unit sphere
-                             ///< surface.
-    kBilinearMcCormick,      ///< Relax SO(3) constraint by considering the
-                             ///< McCormick envelope on the bilinear product.
-    kBoth,                   ///< Relax SO(3) constraint by considering both the
-                             ///< intersection between boxes and the unit sphere
-                             ///< surface, and the McCormick envelope on the
-                             ///< bilinear product.
-  };
+    enum class Approach {
+        kBoxSphereIntersection,  ///< Relax SO(3) constraint by considering the
+                                 ///< intersection between boxes and the unit sphere
+                                 ///< surface.
+        kBilinearMcCormick,      ///< Relax SO(3) constraint by considering the
+                                 ///< McCormick envelope on the bilinear product.
+        kBoth,                   ///< Relax SO(3) constraint by considering both the
+                                 ///< intersection between boxes and the unit sphere
+                                 ///< surface, and the McCormick envelope on the
+                                 ///< bilinear product.
+    };
 
-  struct ReturnType {
+    struct ReturnType {
+        /**
+         * B_ contains the new binary variables added to the program.
+         * B_[i][j] represents in which interval R(i, j) lies. If we use linear
+         * binning, then B_[i][j] is of length 2 * num_intervals_per_half_axis_.
+         * B_[i][j](k) = 1 => φ(k) ≤ R(i, j) ≤ φ(k + 1)
+         * B_[i][j](k) = 0 => R(i, j) ≥ φ(k + 1) or R(i, j) ≤ φ(k)
+         * If we use logarithmic binning, then B_[i][j] is of length
+         * 1 + log₂(num_intervals_per_half_axis_). If B_[i][j] represents integer
+         * k in reflected Gray code, then R(i, j) is in the interval [φ(k), φ(k+1)].
+         */
+        std::array<std::array<VectorXDecisionVariable, 3>, 3> B_;
+        /**
+         * λ contains part of the new continuous variables added to the program.
+         * λ_[i][j] is of length 2 * num_intervals_per_half_axis_ + 1, such that
+         * R(i, j) = φᵀ * λ_[i][j]. Notice that λ_[i][j] satisfies the special
+         * ordered set of type 2 (SOS2) constraint. Namely at most two entries in
+         * λ_[i][j] can be strictly positive, and these two entries have to
+         * be consecutive. Mathematically
+         * ```
+         * ∑ₖ λ_[i][j](k) = 1
+         * λ_[i][j](k) ≥ 0 ∀ k
+         * ∃ m s.t λ_[i][j](n) = 0 if n ≠ m and n ≠ m+1
+         * ```
+         */
+        std::array<std::array<VectorXDecisionVariable, 3>, 3> lambda_;
+    };
+
     /**
-     * B_ contains the new binary variables added to the program.
-     * B_[i][j] represents in which interval R(i, j) lies. If we use linear
-     * binning, then B_[i][j] is of length 2 * num_intervals_per_half_axis_.
-     * B_[i][j](k) = 1 => φ(k) ≤ R(i, j) ≤ φ(k + 1)
-     * B_[i][j](k) = 0 => R(i, j) ≥ φ(k + 1) or R(i, j) ≤ φ(k)
-     * If we use logarithmic binning, then B_[i][j] is of length
-     * 1 + log₂(num_intervals_per_half_axis_). If B_[i][j] represents integer
-     * k in reflected Gray code, then R(i, j) is in the interval [φ(k), φ(k+1)].
+     * Constructor
+     * @param approach Refer to MixedIntegerRotationConstraintGenerator::Approach
+     * for the details.
+     * @param num_intervals_per_half_axis We will cut the range [-1, 1] evenly
+     * to 2 * `num_intervals_per_half_axis` small intervals. The number of binary
+     * variables will depend on the number of intervals.
+     * @param interval_binning The binning scheme we use to add SOS2 constraint
+     * with binary variables. If interval_binning = kLinear, then we will add
+     * 9 * 2 * `num_intervals_per_half_axis binary` variables;
+     * if interval_binning = kLogarithmic, then we will add
+     * 9 * (1 + log₂(num_intervals_per_half_axis)) binary variables. Refer to
+     * AddLogarithmicSos2Constraint and AddSos2Constraint for more details.
      */
-    std::array<std::array<VectorXDecisionVariable, 3>, 3> B_;
+    MixedIntegerRotationConstraintGenerator(Approach approach,
+                                            int num_intervals_per_half_axis,
+                                            IntervalBinning interval_binning);
+
     /**
-     * λ contains part of the new continuous variables added to the program.
-     * λ_[i][j] is of length 2 * num_intervals_per_half_axis_ + 1, such that
-     * R(i, j) = φᵀ * λ_[i][j]. Notice that λ_[i][j] satisfies the special
-     * ordered set of type 2 (SOS2) constraint. Namely at most two entries in
-     * λ_[i][j] can be strictly positive, and these two entries have to
-     * be consecutive. Mathematically
-     * ```
-     * ∑ₖ λ_[i][j](k) = 1
-     * λ_[i][j](k) ≥ 0 ∀ k
-     * ∃ m s.t λ_[i][j](n) = 0 if n ≠ m and n ≠ m+1
-     * ```
+     * Add the mixed-integer linear constraints to the optimization program, as
+     * a relaxation of SO(3) constraint on the rotation matrix `R`.
+     * @param R The rotation matrix on which the SO(3) constraint is imposed.
+     * @param prog The optimization program to which the mixed-integer constraints
+     * (and additional variables) are added.
      */
-    std::array<std::array<VectorXDecisionVariable, 3>, 3> lambda_;
-  };
+    ReturnType AddToProgram(const Eigen::Ref<const MatrixDecisionVariable<3, 3>>& R, MathematicalProgram* prog) const;
 
-  /**
-   * Constructor
-   * @param approach Refer to MixedIntegerRotationConstraintGenerator::Approach
-   * for the details.
-   * @param num_intervals_per_half_axis We will cut the range [-1, 1] evenly
-   * to 2 * `num_intervals_per_half_axis` small intervals. The number of binary
-   * variables will depend on the number of intervals.
-   * @param interval_binning The binning scheme we use to add SOS2 constraint
-   * with binary variables. If interval_binning = kLinear, then we will add
-   * 9 * 2 * `num_intervals_per_half_axis binary` variables;
-   * if interval_binning = kLogarithmic, then we will add
-   * 9 * (1 + log₂(num_intervals_per_half_axis)) binary variables. Refer to
-   * AddLogarithmicSos2Constraint and AddSos2Constraint for more details.
-   */
-  MixedIntegerRotationConstraintGenerator(Approach approach,
-                                          int num_intervals_per_half_axis,
-                                          IntervalBinning interval_binning);
+    /** Getter for φ. */
+    const Eigen::VectorXd& phi() const { return phi_; }
 
-  /**
-   * Add the mixed-integer linear constraints to the optimization program, as
-   * a relaxation of SO(3) constraint on the rotation matrix `R`.
-   * @param R The rotation matrix on which the SO(3) constraint is imposed.
-   * @param prog The optimization program to which the mixed-integer constraints
-   * (and additional variables) are added.
-   */
-  ReturnType AddToProgram(
-      const Eigen::Ref<const MatrixDecisionVariable<3, 3>>& R,
-      MathematicalProgram* prog) const;
+    /** Getter for φ₊, the non-negative part of φ. */
+    const Eigen::VectorXd phi_nonnegative() const { return phi_nonnegative_; }
 
-  /** Getter for φ. */
-  const Eigen::VectorXd& phi() const { return phi_; }
+    Approach approach() const { return approach_; }
 
-  /** Getter for φ₊, the non-negative part of φ. */
-  const Eigen::VectorXd phi_nonnegative() const { return phi_nonnegative_; }
+    int num_intervals_per_half_axis() const { return num_intervals_per_half_axis_; }
 
-  Approach approach() const { return approach_; }
+    IntervalBinning interval_binning() const { return interval_binning_; }
 
-  int num_intervals_per_half_axis() const {
-    return num_intervals_per_half_axis_;
-  }
+private:
+    Approach approach_;
+    int num_intervals_per_half_axis_;
+    IntervalBinning interval_binning_;
+    // φ(i) = -1 + 1 / num_intervals_per_half_axis_ * i
+    Eigen::VectorXd phi_;
+    // φ₊(i) = 1 / num_intervals_per_half_axis_ * i
+    Eigen::VectorXd phi_nonnegative_;
 
-  IntervalBinning interval_binning() const { return interval_binning_; }
-
- private:
-  Approach approach_;
-  int num_intervals_per_half_axis_;
-  IntervalBinning interval_binning_;
-  // φ(i) = -1 + 1 / num_intervals_per_half_axis_ * i
-  Eigen::VectorXd phi_;
-  // φ₊(i) = 1 / num_intervals_per_half_axis_ * i
-  Eigen::VectorXd phi_nonnegative_;
-
-  // When considering the intersection between the box and the sphere surface,
-  // we will compute the vertices of the intersection region, and find one tight
-  // halfspace nᵀx ≥ d, such that all points on the intersection surface satisfy
-  // this halfspace constraint. For intersection region between the box
-  // [φ₊(xi), φ₊(xi+1)] x [φ₊(yi), φ₊(yi+1)] x [φ₊(zi), φ₊(zi+1)] and the sphere
-  // surface, the vertices of the intersection region is in
-  // box_sphere_intersection_vertices_[xi][yi][zi], and the halfspace is
-  // (box_sphere_intersection_halfspace_[xi][yi][zi].first)ᵀ x ≥
-  // box_sphere_intersection_halfspace[xi][yi][zi].second
-  std::vector<std::vector<std::vector<std::vector<Eigen::Vector3d>>>>
-      box_sphere_intersection_vertices_;
-  std::vector<std::vector<std::vector<std::pair<Eigen::Vector3d, double>>>>
-      box_sphere_intersection_halfspace_;
+    // When considering the intersection between the box and the sphere surface,
+    // we will compute the vertices of the intersection region, and find one tight
+    // halfspace nᵀx ≥ d, such that all points on the intersection surface satisfy
+    // this halfspace constraint. For intersection region between the box
+    // [φ₊(xi), φ₊(xi+1)] x [φ₊(yi), φ₊(yi+1)] x [φ₊(zi), φ₊(zi+1)] and the sphere
+    // surface, the vertices of the intersection region is in
+    // box_sphere_intersection_vertices_[xi][yi][zi], and the halfspace is
+    // (box_sphere_intersection_halfspace_[xi][yi][zi].first)ᵀ x ≥
+    // box_sphere_intersection_halfspace[xi][yi][zi].second
+    std::vector<std::vector<std::vector<std::vector<Eigen::Vector3d>>>> box_sphere_intersection_vertices_;
+    std::vector<std::vector<std::vector<std::pair<Eigen::Vector3d, double>>>> box_sphere_intersection_halfspace_;
 };
 
 std::string to_string(MixedIntegerRotationConstraintGenerator::Approach type);
 
-std::ostream& operator<<(
-    std::ostream& os,
-    const MixedIntegerRotationConstraintGenerator::Approach& type);
+std::ostream& operator<<(std::ostream& os, const MixedIntegerRotationConstraintGenerator::Approach& type);
 
 /**
  * Some of the newly added variables in function
@@ -182,10 +173,10 @@ std::ostream& operator<<(
  * AddRotationMatrixBoxSphereIntersectionMilpConstraints.
  */
 struct AddRotationMatrixBoxSphereIntersectionReturn {
-  std::vector<Matrix3<symbolic::Expression>> CRpos;
-  std::vector<Matrix3<symbolic::Expression>> CRneg;
-  std::vector<Matrix3<symbolic::Variable>> BRpos;
-  std::vector<Matrix3<symbolic::Variable>> BRneg;
+    std::vector<Matrix3<symbolic::Expression>> CRpos;
+    std::vector<Matrix3<symbolic::Expression>> CRneg;
+    std::vector<Matrix3<symbolic::Variable>> BRpos;
+    std::vector<Matrix3<symbolic::Variable>> BRneg;
 };
 
 /**
@@ -225,10 +216,10 @@ struct AddRotationMatrixBoxSphereIntersectionReturn {
  * inside optimization solvers.
  */
 
-AddRotationMatrixBoxSphereIntersectionReturn
-AddRotationMatrixBoxSphereIntersectionMilpConstraints(
-    const Eigen::Ref<const MatrixDecisionVariable<3, 3>>& R,
-    int num_intervals_per_half_axis, MathematicalProgram* prog);
+AddRotationMatrixBoxSphereIntersectionReturn AddRotationMatrixBoxSphereIntersectionMilpConstraints(
+        const Eigen::Ref<const MatrixDecisionVariable<3, 3>>& R,
+        int num_intervals_per_half_axis,
+        MathematicalProgram* prog);
 
 }  // namespace solvers
 }  // namespace drake
@@ -236,7 +227,5 @@ AddRotationMatrixBoxSphereIntersectionMilpConstraints(
 // TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
 namespace fmt {
 template <>
-struct formatter<
-    drake::solvers::MixedIntegerRotationConstraintGenerator::Approach>
-    : drake::ostream_formatter {};
+struct formatter<drake::solvers::MixedIntegerRotationConstraintGenerator::Approach> : drake::ostream_formatter {};
 }  // namespace fmt

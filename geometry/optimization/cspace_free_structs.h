@@ -23,46 +23,43 @@ namespace optimization {
 // TODO(Alexandre.Amice) consider moving to internal since this is never
 // accessed publically by cspace_free_polytope
 struct PlaneSeparatesGeometries {
-  PlaneSeparatesGeometries(
-      std::vector<symbolic::RationalFunction> m_positive_side_rationals,
-      std::vector<symbolic::RationalFunction> m_negative_side_rationals,
-      int m_plane_index)
-      : positive_side_rationals{std::move(m_positive_side_rationals)},
-        negative_side_rationals{std::move(m_negative_side_rationals)},
-        plane_index{m_plane_index} {}
+    PlaneSeparatesGeometries(std::vector<symbolic::RationalFunction> m_positive_side_rationals,
+                             std::vector<symbolic::RationalFunction> m_negative_side_rationals,
+                             int m_plane_index)
+        : positive_side_rationals{std::move(m_positive_side_rationals)},
+          negative_side_rationals{std::move(m_negative_side_rationals)},
+          plane_index{m_plane_index} {}
 
-  const std::vector<symbolic::RationalFunction>& rationals(
-      PlaneSide plane_side) const {
-    return plane_side == PlaneSide::kPositive ? positive_side_rationals
-                                              : negative_side_rationals;
-  }
-  const std::vector<symbolic::RationalFunction> positive_side_rationals;
-  const std::vector<symbolic::RationalFunction> negative_side_rationals;
-  int plane_index{-1};
+    const std::vector<symbolic::RationalFunction>& rationals(PlaneSide plane_side) const {
+        return plane_side == PlaneSide::kPositive ? positive_side_rationals : negative_side_rationals;
+    }
+    const std::vector<symbolic::RationalFunction> positive_side_rationals;
+    const std::vector<symbolic::RationalFunction> negative_side_rationals;
+    int plane_index{-1};
 };
 
 struct FindSeparationCertificateOptions {
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(FindSeparationCertificateOptions);
-  FindSeparationCertificateOptions() = default;
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(FindSeparationCertificateOptions);
+    FindSeparationCertificateOptions() = default;
 
-  virtual ~FindSeparationCertificateOptions() = default;
+    virtual ~FindSeparationCertificateOptions() = default;
 
-  // We can find the certificate for each pair of geometries in parallel.
-  // This allows limiting how many threads will be used for that operation.
-  Parallelism parallelism{Parallelism::Max()};
+    // We can find the certificate for each pair of geometries in parallel.
+    // This allows limiting how many threads will be used for that operation.
+    Parallelism parallelism{Parallelism::Max()};
 
-  // If verbose set to true, then we will print some information to the
-  // terminal.
-  bool verbose{false};
+    // If verbose set to true, then we will print some information to the
+    // terminal.
+    bool verbose{false};
 
-  // The solver invoked for the sos program.
-  solvers::SolverId solver_id{solvers::MosekSolver::id()};
+    // The solver invoked for the sos program.
+    solvers::SolverId solver_id{solvers::MosekSolver::id()};
 
-  // If the SOS in one thread fails, then don't launch any more threads.
-  bool terminate_at_failure{true};
+    // If the SOS in one thread fails, then don't launch any more threads.
+    bool terminate_at_failure{true};
 
-  // The solver options used for the SOS program.
-  std::optional<solvers::SolverOptions> solver_options{std::nullopt};
+    // The solver options used for the SOS program.
+    std::optional<solvers::SolverOptions> solver_options{std::nullopt};
 };
 
 /**
@@ -74,42 +71,41 @@ struct FindSeparationCertificateOptions {
  separating_planes()[plane_index] in the C-space region.
  */
 struct SeparationCertificateResultBase {
-  SeparationCertificateResultBase() {}
-  virtual ~SeparationCertificateResultBase() = default;
+    SeparationCertificateResultBase() {}
+    virtual ~SeparationCertificateResultBase() = default;
 
-  int plane_index{-1};
-  /** The separating plane is { x | aᵀx+b=0 } */
-  Vector3<symbolic::Polynomial> a;
-  symbolic::Polynomial b;
-  // The value of the plane.decision_variables at solution. This field is used
-  // for debugging.
-  Eigen::VectorXd plane_decision_var_vals;
+    int plane_index{-1};
+    /** The separating plane is { x | aᵀx+b=0 } */
+    Vector3<symbolic::Polynomial> a;
+    symbolic::Polynomial b;
+    // The value of the plane.decision_variables at solution. This field is used
+    // for debugging.
+    Eigen::VectorXd plane_decision_var_vals;
 
-  // The result of solving a SeparationCertificateProgramBase
-  solvers::MathematicalProgramResult result;
+    // The result of solving a SeparationCertificateProgramBase
+    solvers::MathematicalProgramResult result;
 
- protected:
-  // We put the copy/move/assignment constructors as protected to avoid copy
-  // slicing. The inherited final subclasses should put them in public
-  // functions.
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SeparationCertificateResultBase);
+protected:
+    // We put the copy/move/assignment constructors as protected to avoid copy
+    // slicing. The inherited final subclasses should put them in public
+    // functions.
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SeparationCertificateResultBase);
 };
 
 struct SeparationCertificateProgramBase {
-  SeparationCertificateProgramBase()
-      : prog{new solvers::MathematicalProgram()} {}
+    SeparationCertificateProgramBase() : prog{new solvers::MathematicalProgram()} {}
 
-  virtual ~SeparationCertificateProgramBase() = default;
-  /// The program that stores all the constraints to search for the separating
-  /// plane and Lagrangian multipliers as certificate.
-  copyable_unique_ptr<solvers::MathematicalProgram> prog;
-  int plane_index{-1};
+    virtual ~SeparationCertificateProgramBase() = default;
+    /// The program that stores all the constraints to search for the separating
+    /// plane and Lagrangian multipliers as certificate.
+    copyable_unique_ptr<solvers::MathematicalProgram> prog;
+    int plane_index{-1};
 
- protected:
-  // We put the copy/move/assignment constructors as protected to avoid copy
-  // slicing. The inherited final subclasses should put them in public
-  // functions.
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SeparationCertificateProgramBase);
+protected:
+    // We put the copy/move/assignment constructors as protected to avoid copy
+    // slicing. The inherited final subclasses should put them in public
+    // functions.
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SeparationCertificateProgramBase);
 };
 
 }  // namespace optimization

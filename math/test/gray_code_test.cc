@@ -62,7 +62,7 @@ GTEST_TEST(TestGrayCode, TestCalculateGrayCodes) {
 }
 
 template <int NumDigits, int NumCodes>
-void TestGrayCode(const Eigen::Ref<const Eigen::MatrixXi> &gray_codes) {
+void TestGrayCode(const Eigen::Ref<const Eigen::MatrixXi>& gray_codes) {
     auto gray_codes_dynamic = CalculateReflectedGrayCodes(NumDigits);
     auto gray_codes_static = CalculateReflectedGrayCodes<NumDigits>();
     static_assert(std::is_same_v<decltype(gray_codes_dynamic), Eigen::MatrixXi>, "Should be a dynamic sized matrix");

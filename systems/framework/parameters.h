@@ -25,153 +25,127 @@ namespace systems {
 /// @tparam_default_scalar
 template <typename T>
 class Parameters {
- public:
-  // Parameters are not copyable or moveable.
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Parameters);
+public:
+    // Parameters are not copyable or moveable.
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Parameters);
 
-  /// Constructs an empty Parameters.
-  Parameters() : Parameters({}, {}) {}
+    /// Constructs an empty Parameters.
+    Parameters() : Parameters({}, {}) {}
 
-  /// Constructs Parameters both @p numeric and @p abstract.
-  Parameters(std::vector<std::unique_ptr<BasicVector<T>>>&& numeric,
-             std::vector<std::unique_ptr<AbstractValue>>&& abstract)
-      : numeric_parameters_(
-            std::make_unique<DiscreteValues<T>>(std::move(numeric))),
-        abstract_parameters_(
-            std::make_unique<AbstractValues>(std::move(abstract))) {}
+    /// Constructs Parameters both @p numeric and @p abstract.
+    Parameters(std::vector<std::unique_ptr<BasicVector<T>>>&& numeric,
+               std::vector<std::unique_ptr<AbstractValue>>&& abstract)
+        : numeric_parameters_(std::make_unique<DiscreteValues<T>>(std::move(numeric))),
+          abstract_parameters_(std::make_unique<AbstractValues>(std::move(abstract))) {}
 
-  /// Constructs Parameters that are purely @p numeric.
-  explicit Parameters(std::vector<std::unique_ptr<BasicVector<T>>>&& numeric)
-      : Parameters(std::move(numeric), {}) {}
+    /// Constructs Parameters that are purely @p numeric.
+    explicit Parameters(std::vector<std::unique_ptr<BasicVector<T>>>&& numeric) : Parameters(std::move(numeric), {}) {}
 
-  /// Constructs Parameters that are purely @p abstract.
-  explicit Parameters(std::vector<std::unique_ptr<AbstractValue>>&& abstract)
-      : Parameters({}, std::move(abstract)) {}
+    /// Constructs Parameters that are purely @p abstract.
+    explicit Parameters(std::vector<std::unique_ptr<AbstractValue>>&& abstract) : Parameters({}, std::move(abstract)) {}
 
-  /// Constructs Parameters in the common case where the parameters consist of
-  /// exactly one numeric vector.
-  explicit Parameters(std::unique_ptr<BasicVector<T>> vec)
-      : numeric_parameters_(
-            std::make_unique<DiscreteValues<T>>(std::move(vec))),
-        abstract_parameters_(std::make_unique<AbstractValues>()) {}
+    /// Constructs Parameters in the common case where the parameters consist of
+    /// exactly one numeric vector.
+    explicit Parameters(std::unique_ptr<BasicVector<T>> vec)
+        : numeric_parameters_(std::make_unique<DiscreteValues<T>>(std::move(vec))),
+          abstract_parameters_(std::make_unique<AbstractValues>()) {}
 
-  /// Constructs Parameters in the common case where the parameters consist of
-  /// exactly one abstract value.
-  explicit Parameters(std::unique_ptr<AbstractValue> value)
-      : numeric_parameters_(std::make_unique<DiscreteValues<T>>()),
-        abstract_parameters_(
-            std::make_unique<AbstractValues>(std::move(value))) {}
+    /// Constructs Parameters in the common case where the parameters consist of
+    /// exactly one abstract value.
+    explicit Parameters(std::unique_ptr<AbstractValue> value)
+        : numeric_parameters_(std::make_unique<DiscreteValues<T>>()),
+          abstract_parameters_(std::make_unique<AbstractValues>(std::move(value))) {}
 
-  virtual ~Parameters() {}
+    virtual ~Parameters() {}
 
-  int num_numeric_parameter_groups() const {
-    return numeric_parameters_->num_groups();
-  }
+    int num_numeric_parameter_groups() const { return numeric_parameters_->num_groups(); }
 
-  int num_abstract_parameters() const {
-    return abstract_parameters_->size();
-  }
+    int num_abstract_parameters() const { return abstract_parameters_->size(); }
 
-  /// Returns the vector-valued parameter at @p index. Asserts if the index
-  /// is out of bounds.
-  const BasicVector<T>& get_numeric_parameter(int index) const {
-    return numeric_parameters_->get_vector(index);
-  }
+    /// Returns the vector-valued parameter at @p index. Asserts if the index
+    /// is out of bounds.
+    const BasicVector<T>& get_numeric_parameter(int index) const { return numeric_parameters_->get_vector(index); }
 
-  /// Returns the vector-valued parameter at @p index. Asserts if the index
-  /// is out of bounds.
-  BasicVector<T>& get_mutable_numeric_parameter(int index) {
-    return numeric_parameters_->get_mutable_vector(index);
-  }
+    /// Returns the vector-valued parameter at @p index. Asserts if the index
+    /// is out of bounds.
+    BasicVector<T>& get_mutable_numeric_parameter(int index) { return numeric_parameters_->get_mutable_vector(index); }
 
-  const DiscreteValues<T>& get_numeric_parameters() const {
-    return *numeric_parameters_;
-  }
+    const DiscreteValues<T>& get_numeric_parameters() const { return *numeric_parameters_; }
 
-  void set_numeric_parameters(
-      std::unique_ptr<DiscreteValues<T>> numeric_params) {
-    DRAKE_DEMAND(numeric_params != nullptr);
-    numeric_parameters_ = std::move(numeric_params);
-  }
+    void set_numeric_parameters(std::unique_ptr<DiscreteValues<T>> numeric_params) {
+        DRAKE_DEMAND(numeric_params != nullptr);
+        numeric_parameters_ = std::move(numeric_params);
+    }
 
-  /// Returns the abstract-valued parameter at @p index. Asserts if the index
-  /// is out of bounds.
-  const AbstractValue& get_abstract_parameter(int index) const {
-    return abstract_parameters_->get_value(index);
-  }
+    /// Returns the abstract-valued parameter at @p index. Asserts if the index
+    /// is out of bounds.
+    const AbstractValue& get_abstract_parameter(int index) const { return abstract_parameters_->get_value(index); }
 
-  /// Returns the abstract-valued parameter at @p index. Asserts if the index
-  /// is out of bounds.
-  AbstractValue& get_mutable_abstract_parameter(int index) {
-    return abstract_parameters_->get_mutable_value(index);
-  }
+    /// Returns the abstract-valued parameter at @p index. Asserts if the index
+    /// is out of bounds.
+    AbstractValue& get_mutable_abstract_parameter(int index) { return abstract_parameters_->get_mutable_value(index); }
 
-  /// Returns the abstract-valued parameter at @p index. Asserts if the index
-  /// is out of bounds, and throws if the parameter is not of type V.
-  template <typename V>
-  const V& get_abstract_parameter(int index) const {
-    return get_abstract_parameter(index).template get_value<V>();
-  }
+    /// Returns the abstract-valued parameter at @p index. Asserts if the index
+    /// is out of bounds, and throws if the parameter is not of type V.
+    template <typename V>
+    const V& get_abstract_parameter(int index) const {
+        return get_abstract_parameter(index).template get_value<V>();
+    }
 
-  /// Returns the abstract-valued parameter at @p index. Asserts if the index
-  /// is out of bounds, and throws if the parameter is not of type V.
-  template <typename V>
-  V& get_mutable_abstract_parameter(int index) {
-    return get_mutable_abstract_parameter(index).
-        template get_mutable_value<V>();
-  }
+    /// Returns the abstract-valued parameter at @p index. Asserts if the index
+    /// is out of bounds, and throws if the parameter is not of type V.
+    template <typename V>
+    V& get_mutable_abstract_parameter(int index) {
+        return get_mutable_abstract_parameter(index).template get_mutable_value<V>();
+    }
 
-  const AbstractValues& get_abstract_parameters() const {
-    return *abstract_parameters_;
-  }
+    const AbstractValues& get_abstract_parameters() const { return *abstract_parameters_; }
 
-  void set_abstract_parameters(
-      std::unique_ptr<AbstractValues> abstract_params) {
-    DRAKE_DEMAND(abstract_params != nullptr);
-    abstract_parameters_ = std::move(abstract_params);
-  }
+    void set_abstract_parameters(std::unique_ptr<AbstractValues> abstract_params) {
+        DRAKE_DEMAND(abstract_params != nullptr);
+        abstract_parameters_ = std::move(abstract_params);
+    }
 
-  /// Returns a deep copy of the Parameters.
-  std::unique_ptr<Parameters<T>> Clone() const {
-    auto clone = std::make_unique<Parameters<T>>();
-    clone->set_numeric_parameters(numeric_parameters_->Clone());
-    clone->set_abstract_parameters(abstract_parameters_->Clone());
-    clone->set_system_id(get_system_id());
-    return clone;
-  }
+    /// Returns a deep copy of the Parameters.
+    std::unique_ptr<Parameters<T>> Clone() const {
+        auto clone = std::make_unique<Parameters<T>>();
+        clone->set_numeric_parameters(numeric_parameters_->Clone());
+        clone->set_abstract_parameters(abstract_parameters_->Clone());
+        clone->set_system_id(get_system_id());
+        return clone;
+    }
 
-  /// Initializes this object from `other`.
-  template <typename U>
-  void SetFrom(const Parameters<U>& other) {
-    numeric_parameters_->SetFrom(other.get_numeric_parameters());
-    abstract_parameters_->SetFrom(other.get_abstract_parameters());
-  }
+    /// Initializes this object from `other`.
+    template <typename U>
+    void SetFrom(const Parameters<U>& other) {
+        numeric_parameters_->SetFrom(other.get_numeric_parameters());
+        abstract_parameters_->SetFrom(other.get_abstract_parameters());
+    }
 
-  /// @name System compatibility
-  /// See @ref system_compatibility.
-  //@{
-  /// (Internal use only) Gets the id of the subsystem that created this
-  /// object.
-  internal::SystemId get_system_id() const { return system_id_; }
+    /// @name System compatibility
+    /// See @ref system_compatibility.
+    //@{
+    /// (Internal use only) Gets the id of the subsystem that created this
+    /// object.
+    internal::SystemId get_system_id() const { return system_id_; }
 
-  /// (Internal use only) Records the id of the subsystem that created this
-  /// object.
-  void set_system_id(internal::SystemId id) {
-    system_id_ = id;
-    numeric_parameters_->set_system_id(id);
-  }
-  //@}
+    /// (Internal use only) Records the id of the subsystem that created this
+    /// object.
+    void set_system_id(internal::SystemId id) {
+        system_id_ = id;
+        numeric_parameters_->set_system_id(id);
+    }
+    //@}
 
- private:
-  std::unique_ptr<DiscreteValues<T>> numeric_parameters_;
-  std::unique_ptr<AbstractValues> abstract_parameters_;
+private:
+    std::unique_ptr<DiscreteValues<T>> numeric_parameters_;
+    std::unique_ptr<AbstractValues> abstract_parameters_;
 
-  // Unique id of the subsystem that created this object.
-  internal::SystemId system_id_;
+    // Unique id of the subsystem that created this object.
+    internal::SystemId system_id_;
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::Parameters);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::systems::Parameters);

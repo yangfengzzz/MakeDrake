@@ -12,14 +12,13 @@ namespace planning {
 namespace test {
 
 /* Creates a RobotDiagram from the given directives. */
-std::unique_ptr<RobotDiagram<double>> MakePlanningTestModel(
-    const multibody::parsing::ModelDirectives& directives);
+std::unique_ptr<RobotDiagram<double>> MakePlanningTestModel(const multibody::parsing::ModelDirectives& directives);
 
 /* Creates a RobotDiagram from the given model data string.
 The model_ext is the file format extension (e.g., "dmd.yaml").
 The model_data is the model file contents. */
-std::unique_ptr<RobotDiagram<double>> MakePlanningTestModel(
-    const std::string& model_ext, const std::string& model_contents);
+std::unique_ptr<RobotDiagram<double>> MakePlanningTestModel(const std::string& model_ext,
+                                                            const std::string& model_contents);
 
 /* Returns a vector of non-uniform distance weights for a 7-dof iiwa. */
 Eigen::VectorXd GetIiwaDistanceWeights();
@@ -33,8 +32,7 @@ ConfigurationDistanceFunction MakeWeightedIiwaConfigurationDistanceFunction();
 revolute joints. The geometry for each body consists of @p num_geo small
 spheres.  @note: the model name is based on @p n, so adding chains of the
 same length will fail. */
-multibody::ModelInstanceIndex AddChain(multibody::MultibodyPlant<double>* plant,
-                                       int n, int num_geo = 1);
+multibody::ModelInstanceIndex AddChain(multibody::MultibodyPlant<double>* plant, int n, int num_geo = 1);
 
 }  // namespace test
 }  // namespace planning

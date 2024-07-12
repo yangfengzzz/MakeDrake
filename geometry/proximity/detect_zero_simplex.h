@@ -35,8 +35,7 @@ namespace internal {
  @return a list of indices of the problematic tetrahedra in the tetrahedral
          mesh.
  */
-std::vector<int> DetectTetrahedronWithAllBoundaryVertices(
-    const VolumeMesh<double>& mesh_M);
+std::vector<int> DetectTetrahedronWithAllBoundaryVertices(const VolumeMesh<double>& mesh_M);
 
 /* Detects problematic triangles.
 
@@ -47,8 +46,7 @@ std::vector<int> DetectTetrahedronWithAllBoundaryVertices(
  @return a list of triple indices of vertices of problematic triangles in the
          tetrahedral mesh.
  */
-std::vector<SortedTriplet<int>> DetectInteriorTriangleWithAllBoundaryVertices(
-    const VolumeMesh<double>& mesh_M);
+std::vector<SortedTriplet<int>> DetectInteriorTriangleWithAllBoundaryVertices(const VolumeMesh<double>& mesh_M);
 
 /* Detects problematic edges.
 
@@ -59,8 +57,7 @@ std::vector<SortedTriplet<int>> DetectInteriorTriangleWithAllBoundaryVertices(
  @return a list of double indices of vertices of problematic edges in the
          tetrahedral mesh.
  */
-std::vector<SortedPair<int>> DetectInteriorEdgeWithAllBoundaryVertices(
-    const VolumeMesh<double>& mesh_M);
+std::vector<SortedPair<int>> DetectInteriorEdgeWithAllBoundaryVertices(const VolumeMesh<double>& mesh_M);
 
 }  // namespace internal
 }  // namespace geometry

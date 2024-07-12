@@ -17,8 +17,8 @@ namespace internal {
  * @param bmin  The vertex of the box closest to the origin.
  * @param bmax  The vertex of the box farthest from the origin.
  */
-std::vector<Eigen::Vector3d> ComputeBoxEdgesAndSphereIntersection(
-    const Eigen::Vector3d& bmin, const Eigen::Vector3d& bmax);
+std::vector<Eigen::Vector3d> ComputeBoxEdgesAndSphereIntersection(const Eigen::Vector3d& bmin,
+                                                                  const Eigen::Vector3d& bmax);
 
 /*
  * For the intersection region between the surface of the unit sphere, and the
@@ -30,8 +30,9 @@ std::vector<Eigen::Vector3d> ComputeBoxEdgesAndSphereIntersection(
  * outward.
  * @param[out] d. The intercept of the halfspace.
  */
-void ComputeHalfSpaceRelaxationForBoxSphereIntersection(
-    const std::vector<Eigen::Vector3d>& pts, Eigen::Vector3d* n, double* d);
+void ComputeHalfSpaceRelaxationForBoxSphereIntersection(const std::vector<Eigen::Vector3d>& pts,
+                                                        Eigen::Vector3d* n,
+                                                        double* d);
 
 /**
  * For the vertices in `pts`, determine if these vertices are co-planar. If they
@@ -44,8 +45,7 @@ void ComputeHalfSpaceRelaxationForBoxSphereIntersection(
  * @return If the vertices are co-planar, set this to true. Otherwise set to
  * false.
  */
-bool AreAllVerticesCoPlanar(const std::vector<Eigen::Vector3d>& pts,
-                            Eigen::Vector3d* n, double* d);
+bool AreAllVerticesCoPlanar(const std::vector<Eigen::Vector3d>& pts, Eigen::Vector3d* n, double* d);
 
 /**
  * For the intersection region between the surface of the unit sphere, and the
@@ -62,9 +62,9 @@ bool AreAllVerticesCoPlanar(const std::vector<Eigen::Vector3d>& pts,
  * @pre pts[i] are all in the first orthant, namely (pts[i].array() >=0).all()
  * should be true.
  */
-void ComputeInnerFacetsForBoxSphereIntersection(
-    const std::vector<Eigen::Vector3d>& pts,
-    Eigen::Matrix<double, Eigen::Dynamic, 3>* A, Eigen::VectorXd* b);
+void ComputeInnerFacetsForBoxSphereIntersection(const std::vector<Eigen::Vector3d>& pts,
+                                                Eigen::Matrix<double, Eigen::Dynamic, 3>* A,
+                                                Eigen::VectorXd* b);
 }  // namespace internal
 }  // namespace solvers
 }  // namespace drake

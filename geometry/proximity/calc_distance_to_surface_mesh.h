@@ -13,9 +13,9 @@ namespace internal {
  The algorithm is accelerated with the bounding volume hierarchy `bvh_W` of
  the surface mesh.
  @pre Each element in `mesh_W` has non-zero area. */
-double CalcDistanceToSurfaceMesh(
-    const Vector3<double>& p_WQ, const TriangleSurfaceMesh<double>& mesh_W,
-    const Bvh<Obb, TriangleSurfaceMesh<double>>& bvh_W);
+double CalcDistanceToSurfaceMesh(const Vector3<double>& p_WQ,
+                                 const TriangleSurfaceMesh<double>& mesh_W,
+                                 const Bvh<Obb, TriangleSurfaceMesh<double>>& bvh_W);
 
 }  // namespace internal
 }  // namespace geometry

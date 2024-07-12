@@ -21,140 +21,121 @@ namespace fs = std::filesystem;
 
 /* Confirms the expected diagnostic warnings in the presence of material
  properties. */
-class MaybeWarnForRedundantMaterialTest
-    : public test::DiagnosticPolicyTestBase {};
+class MaybeWarnForRedundantMaterialTest : public test::DiagnosticPolicyTestBase {};
 
 /* Confirm the presence of a diffuse color dispatches a warning. */
 TEST_F(MaybeWarnForRedundantMaterialTest, WarningsDispatchedDiffuseColor) {
-  PerceptionProperties props;
-  props.AddProperty("phong", "diffuse", Rgba(0.1, 0.2, 0.3, 0.4));
-  MaybeWarnForRedundantMaterial(props, "dummy_file_name", diagnostic_policy_);
-  EXPECT_THAT(TakeWarning(), testing::ContainsRegex(
-                                 "has its own materials.*'phong', 'diffuse'"));
+    PerceptionProperties props;
+    props.AddProperty("phong", "diffuse", Rgba(0.1, 0.2, 0.3, 0.4));
+    MaybeWarnForRedundantMaterial(props, "dummy_file_name", diagnostic_policy_);
+    EXPECT_THAT(TakeWarning(), testing::ContainsRegex("has its own materials.*'phong', 'diffuse'"));
 }
 
 /* Confirm the presence of a diffuse map dispatches a warning. */
 TEST_F(MaybeWarnForRedundantMaterialTest, WarningsDispatchedDiffuseMap) {
-  PerceptionProperties props;
-  props.AddProperty("phong", "diffuse_map", "no_such.png");
-  MaybeWarnForRedundantMaterial(props, "dummy_file_name", diagnostic_policy_);
-  EXPECT_THAT(TakeWarning(),
-              testing::MatchesRegex(
-                  ".*has its own materials.*'phong', 'diffuse_map'.*"));
+    PerceptionProperties props;
+    props.AddProperty("phong", "diffuse_map", "no_such.png");
+    MaybeWarnForRedundantMaterial(props, "dummy_file_name", diagnostic_policy_);
+    EXPECT_THAT(TakeWarning(), testing::MatchesRegex(".*has its own materials.*'phong', 'diffuse_map'.*"));
 }
 
 /* Tests the DefineMaterial() function (with the potential to dispatch warnings
  to a diagnostic policy). */
 class DefineMaterialTest : public test::DiagnosticPolicyTestBase {
- protected:
-  int WarningCount() const { return ssize(warning_records_); }
-  Rgba default_diffuse() const { return Rgba(0.25, 0.5, 0.75, 0.5); }
-  PerceptionProperties props_;
+protected:
+    int WarningCount() const { return ssize(warning_records_); }
+    Rgba default_diffuse() const { return Rgba(0.25, 0.5, 0.75, 0.5); }
+    PerceptionProperties props_;
 };
 
 /* When the properties provide no material properties, the default color is
  used. */
 TEST_F(DefineMaterialTest, DefaultFallback) {
-  const RenderMaterial mat =
-      DefineMaterial(props_, default_diffuse(), diagnostic_policy_);
+    const RenderMaterial mat = DefineMaterial(props_, default_diffuse(), diagnostic_policy_);
 
-  EXPECT_TRUE(mat.diffuse_map.empty());
-  EXPECT_EQ(mat.diffuse, default_diffuse());
+    EXPECT_TRUE(mat.diffuse_map.empty());
+    EXPECT_EQ(mat.diffuse, default_diffuse());
 }
 
 /* When only the (phong, diffuse) is defined, it is used. */
 TEST_F(DefineMaterialTest, PhongDiffuseOnly) {
-  const Rgba diffuse(0.75, 0.75, 0.25, 0.25);
-  ASSERT_NE(diffuse, default_diffuse());
-  props_.AddProperty("phong", "diffuse", diffuse);
+    const Rgba diffuse(0.75, 0.75, 0.25, 0.25);
+    ASSERT_NE(diffuse, default_diffuse());
+    props_.AddProperty("phong", "diffuse", diffuse);
 
-  const RenderMaterial mat =
-      DefineMaterial(props_, default_diffuse(), diagnostic_policy_);
+    const RenderMaterial mat = DefineMaterial(props_, default_diffuse(), diagnostic_policy_);
 
-  EXPECT_TRUE(mat.diffuse_map.empty());
-  EXPECT_EQ(mat.diffuse, diffuse);
+    EXPECT_TRUE(mat.diffuse_map.empty());
+    EXPECT_EQ(mat.diffuse, diffuse);
 }
 
 /* When only the (phong, diffuse_map) is defined, it is used with a white
  diffuse color. */
 TEST_F(DefineMaterialTest, PhongDiffuseMapOnly) {
-  const std::string tex_name =
-      FindResourceOrThrow("drake/geometry/render/test/diag_gradient.png");
-  props_.AddProperty("phong", "diffuse_map", tex_name);
+    const std::string tex_name = FindResourceOrThrow("drake/geometry/render/test/diag_gradient.png");
+    props_.AddProperty("phong", "diffuse_map", tex_name);
 
-  const RenderMaterial mat =
-      DefineMaterial(props_, default_diffuse(), diagnostic_policy_);
+    const RenderMaterial mat = DefineMaterial(props_, default_diffuse(), diagnostic_policy_);
 
-  EXPECT_EQ(mat.diffuse_map, tex_name);
-  EXPECT_EQ(mat.diffuse, Rgba(1, 1, 1));
+    EXPECT_EQ(mat.diffuse_map, tex_name);
+    EXPECT_EQ(mat.diffuse, Rgba(1, 1, 1));
 }
 
 /* When diffuse and diffuse_map are defined, both get used exactly. */
 TEST_F(DefineMaterialTest, PhongDiffuseAll) {
-  const Rgba diffuse(0.75, 0.75, 0.25, 0.25);
-  ASSERT_NE(diffuse, default_diffuse());
-  const std::string tex_name =
-      FindResourceOrThrow("drake/geometry/render/test/diag_gradient.png");
-  props_.AddProperty("phong", "diffuse_map", tex_name);
-  props_.AddProperty("phong", "diffuse", diffuse);
+    const Rgba diffuse(0.75, 0.75, 0.25, 0.25);
+    ASSERT_NE(diffuse, default_diffuse());
+    const std::string tex_name = FindResourceOrThrow("drake/geometry/render/test/diag_gradient.png");
+    props_.AddProperty("phong", "diffuse_map", tex_name);
+    props_.AddProperty("phong", "diffuse", diffuse);
 
-  const RenderMaterial mat =
-      DefineMaterial(props_, default_diffuse(), diagnostic_policy_);
+    const RenderMaterial mat = DefineMaterial(props_, default_diffuse(), diagnostic_policy_);
 
-  EXPECT_EQ(mat.diffuse_map, tex_name);
-  EXPECT_EQ(mat.diffuse, diffuse);
+    EXPECT_EQ(mat.diffuse_map, tex_name);
+    EXPECT_EQ(mat.diffuse, diffuse);
 }
 
 /* When (phong, diffuse_map) references a "bad" image, the image is omitted and
  a warning is dispatched. The resulting material is simply white. */
 TEST_F(DefineMaterialTest, DiffuseMapError) {
-  props_.AddProperty("phong", "diffuse_map", "not_an_image.png");
+    props_.AddProperty("phong", "diffuse_map", "not_an_image.png");
 
-  /* Note: we also indicate a non-full set of UVs to show that we don't complain
-   about the UVs if the image itself isn't accessible. */
-  const RenderMaterial mat = DefineMaterial(props_, default_diffuse(),
-                                            diagnostic_policy_, UvState::kNone);
+    /* Note: we also indicate a non-full set of UVs to show that we don't complain
+     about the UVs if the image itself isn't accessible. */
+    const RenderMaterial mat = DefineMaterial(props_, default_diffuse(), diagnostic_policy_, UvState::kNone);
 
-  EXPECT_TRUE(mat.diffuse_map.empty());
-  EXPECT_EQ(mat.diffuse, Rgba(1, 1, 1));
-  EXPECT_THAT(
-      TakeWarning(),
-      testing::MatchesRegex(".*referenced a map that could not be found.*"));
-  /* No further warnings. */
-  EXPECT_EQ(WarningCount(), 0);
+    EXPECT_TRUE(mat.diffuse_map.empty());
+    EXPECT_EQ(mat.diffuse, Rgba(1, 1, 1));
+    EXPECT_THAT(TakeWarning(), testing::MatchesRegex(".*referenced a map that could not be found.*"));
+    /* No further warnings. */
+    EXPECT_EQ(WarningCount(), 0);
 }
 
 /* When (phong, diffuse_map) references an image, but the uv state isn't "full",
  the image is omitted and a warning is dispatched. The resulting material is
  simply white. */
 TEST_F(DefineMaterialTest, DiffuseMapUvCoverageError) {
-  const std::string tex_name =
-      FindResourceOrThrow("drake/geometry/render/test/diag_gradient.png");
-  props_.AddProperty("phong", "diffuse_map", tex_name);
+    const std::string tex_name = FindResourceOrThrow("drake/geometry/render/test/diag_gradient.png");
+    props_.AddProperty("phong", "diffuse_map", tex_name);
 
-  /* No Uvs assigned. */
-  {
-    const RenderMaterial mat = DefineMaterial(
-        props_, default_diffuse(), diagnostic_policy_, UvState::kNone);
+    /* No Uvs assigned. */
+    {
+        const RenderMaterial mat = DefineMaterial(props_, default_diffuse(), diagnostic_policy_, UvState::kNone);
 
-    EXPECT_TRUE(mat.diffuse_map.empty());
-    EXPECT_EQ(mat.diffuse, Rgba(1, 1, 1));
-    EXPECT_THAT(TakeWarning(),
-                testing::MatchesRegex(
-                    ".*referenced a map, .* doesn't define any texture.*"));
-  }
+        EXPECT_TRUE(mat.diffuse_map.empty());
+        EXPECT_EQ(mat.diffuse, Rgba(1, 1, 1));
+        EXPECT_THAT(TakeWarning(), testing::MatchesRegex(".*referenced a map, .* doesn't define any texture.*"));
+    }
 
-  /* Partial UVs assigned. */
-  {
-    const RenderMaterial mat = DefineMaterial(
-        props_, default_diffuse(), diagnostic_policy_, UvState::kPartial);
+    /* Partial UVs assigned. */
+    {
+        const RenderMaterial mat = DefineMaterial(props_, default_diffuse(), diagnostic_policy_, UvState::kPartial);
 
-    EXPECT_TRUE(mat.diffuse_map.empty());
-    EXPECT_EQ(mat.diffuse, Rgba(1, 1, 1));
-    EXPECT_THAT(TakeWarning(),
-                testing::MatchesRegex(".*referenced a map, .* doesn't define a "
-                                      "complete set of texture.*"));
-  }
+        EXPECT_TRUE(mat.diffuse_map.empty());
+        EXPECT_EQ(mat.diffuse, Rgba(1, 1, 1));
+        EXPECT_THAT(TakeWarning(), testing::MatchesRegex(".*referenced a map, .* doesn't define a "
+                                                         "complete set of texture.*"));
+    }
 }
 
 /* Tests the MaybeMakeMeshFallbackMaterial() function. This function should only
@@ -171,10 +152,9 @@ TEST_F(DefineMaterialTest, DiffuseMapUvCoverageError) {
 
  Note: the only diagnostic policy messages that get sent are attributable to
  DefineMaterial(), so they are not directly accounted for in this test. */
-class MaybeMakeMeshFallbackMaterialTest
-    : public test::DiagnosticPolicyTestBase {
- protected:
-  static Rgba default_diffuse() { return Rgba(0.125, 0.25, 0.375, 0.5); }
+class MaybeMakeMeshFallbackMaterialTest : public test::DiagnosticPolicyTestBase {
+protected:
+    static Rgba default_diffuse() { return Rgba(0.125, 0.25, 0.375, 0.5); }
 };
 
 /* No material defined in the properties and no foo.png --> default-colored
@@ -182,69 +162,59 @@ class MaybeMakeMeshFallbackMaterialTest
  available. We're not testing the "unaccessible foo.png" case. Not worth it
  in light of its imminent death.  */
 TEST_F(MaybeMakeMeshFallbackMaterialTest, DefaultDiffuseMaterial) {
-  PerceptionProperties props;
+    PerceptionProperties props;
 
-  const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(
-      props, "no_png_for_this.obj", default_diffuse(), diagnostic_policy_,
-      UvState::kFull);
-  ASSERT_TRUE(mat.has_value());
-  EXPECT_TRUE(mat->diffuse_map.empty());
-  EXPECT_EQ(mat->diffuse, default_diffuse());
+    const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(
+            props, "no_png_for_this.obj", default_diffuse(), diagnostic_policy_, UvState::kFull);
+    ASSERT_TRUE(mat.has_value());
+    EXPECT_TRUE(mat->diffuse_map.empty());
+    EXPECT_EQ(mat->diffuse, default_diffuse());
 }
 
 /* No material defined in the properties and no foo.png --> default-colored
  material. The default diffuse color is not provided either. No
  material-generating condition is met and std::nullopt is expected.  */
 TEST_F(MaybeMakeMeshFallbackMaterialTest, NoMaterial) {
-  PerceptionProperties props;
+    PerceptionProperties props;
 
-  const std::optional<RenderMaterial> mat =
-      MaybeMakeMeshFallbackMaterial(props, "no_png_for_this.obj", std::nullopt,
-                                    diagnostic_policy_, UvState::kFull);
-  EXPECT_FALSE(mat.has_value());
+    const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(props, "no_png_for_this.obj", std::nullopt,
+                                                                            diagnostic_policy_, UvState::kFull);
+    EXPECT_FALSE(mat.has_value());
 }
 
 /* No material defined in the properties, but foo.png exists and is available.*/
 TEST_F(MaybeMakeMeshFallbackMaterialTest, ValidFooPngMaterial) {
-  PerceptionProperties props;
-  const std::string tex_name =
-      FindResourceOrThrow("drake/geometry/render/test/meshes/box.png");
-  const fs::path tex_path(tex_name);
-  /* N.B. The obj doesn't actually have to exist for this test to work. */
-  fs::path obj_path = tex_path.parent_path() / "box.obj";
+    PerceptionProperties props;
+    const std::string tex_name = FindResourceOrThrow("drake/geometry/render/test/meshes/box.png");
+    const fs::path tex_path(tex_name);
+    /* N.B. The obj doesn't actually have to exist for this test to work. */
+    fs::path obj_path = tex_path.parent_path() / "box.obj";
 
-  struct TestCase {
-    UvState uv_state;
-    std::string expected_texture;
-    std::string error;
-    std::string description;
-  };
+    struct TestCase {
+        UvState uv_state;
+        std::string expected_texture;
+        std::string error;
+        std::string description;
+    };
 
-  const std::vector<TestCase> cases{
-      {.uv_state = UvState::kFull,
-       .expected_texture = tex_name,
-       .description = "Full UVs"},
-      {.uv_state = UvState::kPartial,
-       .error = "a complete set of",
-       .description = "Partial UVs"},
-      {.uv_state = UvState::kNone, .error = "any", .description = "No UVs"}};
-  for (const TestCase& test_case : cases) {
-    SCOPED_TRACE(test_case.description);
+    const std::vector<TestCase> cases{
+            {.uv_state = UvState::kFull, .expected_texture = tex_name, .description = "Full UVs"},
+            {.uv_state = UvState::kPartial, .error = "a complete set of", .description = "Partial UVs"},
+            {.uv_state = UvState::kNone, .error = "any", .description = "No UVs"}};
+    for (const TestCase& test_case : cases) {
+        SCOPED_TRACE(test_case.description);
 
-    const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(
-        props, obj_path.string(), default_diffuse(), diagnostic_policy_,
-        test_case.uv_state);
-    ASSERT_TRUE(mat.has_value());
-    EXPECT_EQ(mat->diffuse_map, test_case.expected_texture);
-    EXPECT_EQ(mat->diffuse, Rgba(1, 1, 1));
-    if (!test_case.error.empty()) {
-      EXPECT_THAT(
-          TakeWarning(),
-          testing::MatchesRegex(fmt::format(
-              ".*png file of the same name .* doesn't define {} texture.*",
-              test_case.error)));
+        const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(
+                props, obj_path.string(), default_diffuse(), diagnostic_policy_, test_case.uv_state);
+        ASSERT_TRUE(mat.has_value());
+        EXPECT_EQ(mat->diffuse_map, test_case.expected_texture);
+        EXPECT_EQ(mat->diffuse, Rgba(1, 1, 1));
+        if (!test_case.error.empty()) {
+            EXPECT_THAT(TakeWarning(),
+                        testing::MatchesRegex(fmt::format(".*png file of the same name .* doesn't define {} texture.*",
+                                                          test_case.error)));
+        }
     }
-  }
 }
 
 /* The presence of any material property should create a material.
@@ -261,44 +231,39 @@ TEST_F(MaybeMakeMeshFallbackMaterialTest, ValidFooPngMaterial) {
  an independent test for each one, and each should likewise be added into the
  PropertiesHaveEverything test. */
 TEST_F(MaybeMakeMeshFallbackMaterialTest, PropertiesHaveDiffuseColor) {
-  PerceptionProperties props;
-  props.AddProperty("phong", "diffuse", Rgba(0.25, 0.5, 0.75, 0.5));
-  const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(
-      props, "doesn't_matter.obj", default_diffuse(), diagnostic_policy_,
-      UvState::kFull);
+    PerceptionProperties props;
+    props.AddProperty("phong", "diffuse", Rgba(0.25, 0.5, 0.75, 0.5));
+    const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(
+            props, "doesn't_matter.obj", default_diffuse(), diagnostic_policy_, UvState::kFull);
 
-  ASSERT_TRUE(mat.has_value());
-  EXPECT_TRUE(mat->diffuse_map.empty());
-  EXPECT_EQ(mat->diffuse, props.GetProperty<Rgba>("phong", "diffuse"));
+    ASSERT_TRUE(mat.has_value());
+    EXPECT_TRUE(mat->diffuse_map.empty());
+    EXPECT_EQ(mat->diffuse, props.GetProperty<Rgba>("phong", "diffuse"));
 }
 
 TEST_F(MaybeMakeMeshFallbackMaterialTest, PropertiesHaveDiffuseMap) {
-  PerceptionProperties props;
-  const std::string tex_name =
-      FindResourceOrThrow("drake/geometry/render/test/diag_gradient.png");
-  props.AddProperty("phong", "diffuse_map", tex_name);
-  const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(
-      props, "doesn't_matter.obj", default_diffuse(), diagnostic_policy_,
-      UvState::kFull);
+    PerceptionProperties props;
+    const std::string tex_name = FindResourceOrThrow("drake/geometry/render/test/diag_gradient.png");
+    props.AddProperty("phong", "diffuse_map", tex_name);
+    const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(
+            props, "doesn't_matter.obj", default_diffuse(), diagnostic_policy_, UvState::kFull);
 
-  ASSERT_TRUE(mat.has_value());
-  EXPECT_EQ(mat->diffuse_map, tex_name);
-  EXPECT_EQ(mat->diffuse, Rgba(1, 1, 1));
+    ASSERT_TRUE(mat.has_value());
+    EXPECT_EQ(mat->diffuse_map, tex_name);
+    EXPECT_EQ(mat->diffuse, Rgba(1, 1, 1));
 }
 
 TEST_F(MaybeMakeMeshFallbackMaterialTest, PropertiesHaveEverything) {
-  PerceptionProperties props;
-  const std::string tex_name =
-      FindResourceOrThrow("drake/geometry/render/test/diag_gradient.png");
-  props.AddProperty("phong", "diffuse_map", tex_name);
-  props.AddProperty("phong", "diffuse", Rgba(0.25, 0.5, 0.75, 0.5));
-  const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(
-      props, "doesn't_matter.obj", default_diffuse(), diagnostic_policy_,
-      UvState::kFull);
+    PerceptionProperties props;
+    const std::string tex_name = FindResourceOrThrow("drake/geometry/render/test/diag_gradient.png");
+    props.AddProperty("phong", "diffuse_map", tex_name);
+    props.AddProperty("phong", "diffuse", Rgba(0.25, 0.5, 0.75, 0.5));
+    const std::optional<RenderMaterial> mat = MaybeMakeMeshFallbackMaterial(
+            props, "doesn't_matter.obj", default_diffuse(), diagnostic_policy_, UvState::kFull);
 
-  ASSERT_TRUE(mat.has_value());
-  EXPECT_EQ(mat->diffuse_map, tex_name);
-  EXPECT_EQ(mat->diffuse, props.GetProperty<Rgba>("phong", "diffuse"));
+    ASSERT_TRUE(mat.has_value());
+    EXPECT_EQ(mat->diffuse_map, tex_name);
+    EXPECT_EQ(mat->diffuse, props.GetProperty<Rgba>("phong", "diffuse"));
 }
 
 }  // namespace

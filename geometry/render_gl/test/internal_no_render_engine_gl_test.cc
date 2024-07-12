@@ -9,9 +9,9 @@ namespace {
 
 // Tests that attempting to use the unsupported RenderEngineGl throws.
 GTEST_TEST(RenderEngineGl, NoRenderEngineGlSupport) {
-  DRAKE_EXPECT_THROWS_MESSAGE(MakeRenderEngineGl(),
-                              "RenderEngineGl was not compiled. You'll need to "
-                              "use a different render engine.");
+    DRAKE_EXPECT_THROWS_MESSAGE(MakeRenderEngineGl(),
+                                "RenderEngineGl was not compiled. You'll need to "
+                                "use a different render engine.");
 }
 
 }  // namespace

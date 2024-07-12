@@ -8,7 +8,7 @@ namespace sensors {
 
 // Checks for fmt capability. A spot-check of just one enum value is sufficient.
 GTEST_TEST(ImageFileFormatTest, ToString) {
-  EXPECT_EQ(fmt::to_string(ImageFileFormat::kPng), "png");
+    EXPECT_EQ(fmt::to_string(ImageFileFormat::kPng), "png");
 }
 
 }  // namespace sensors

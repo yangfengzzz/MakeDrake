@@ -37,23 +37,18 @@ std::unique_ptr<MultibodyPlant<T>> ConstructTwoFreeBodiesPlant();
 /**
  * Constructs a MultibodyPlant consisting of an Iiwa robot.
  */
-std::unique_ptr<MultibodyPlant<double>> ConstructIiwaPlant(
-    const std::string& url, double time_step, int num_iiwa = 1);
+std::unique_ptr<MultibodyPlant<double>> ConstructIiwaPlant(const std::string& url, double time_step, int num_iiwa = 1);
 
 /**
  * Compares if two eigen matrices of AutoDiff have the same values and
  * gradients.
  */
 template <typename DerivedA, typename DerivedB>
-typename std::enable_if_t<
-    std::is_same_v<typename DerivedA::Scalar, typename DerivedB::Scalar> &&
-    std::is_same_v<typename DerivedA::Scalar, AutoDiffXd>>
-CompareAutoDiffVectors(const Eigen::MatrixBase<DerivedA>& a,
-                       const Eigen::MatrixBase<DerivedB>& b, double tol) {
-  EXPECT_TRUE(
-      CompareMatrices(math::ExtractValue(a), math::ExtractValue(b), tol));
-  EXPECT_TRUE(
-      CompareMatrices(math::ExtractGradient(a), math::ExtractGradient(b), tol));
+typename std::enable_if_t<std::is_same_v<typename DerivedA::Scalar, typename DerivedB::Scalar> &&
+                          std::is_same_v<typename DerivedA::Scalar, AutoDiffXd>>
+CompareAutoDiffVectors(const Eigen::MatrixBase<DerivedA>& a, const Eigen::MatrixBase<DerivedB>& b, double tol) {
+    EXPECT_TRUE(CompareMatrices(math::ExtractValue(a), math::ExtractValue(b), tol));
+    EXPECT_TRUE(CompareMatrices(math::ExtractGradient(a), math::ExtractGradient(b), tol));
 }
 
 /**
@@ -67,94 +62,92 @@ Eigen::Vector4d QuaternionToVectorWxyz(const Eigen::Quaterniond& q);
 // that the equations in Eval function semantically makes the two free bodies to
 // satisfy the kinematic constraints.
 class IiwaKinematicConstraintTest : public ::testing::Test {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(IiwaKinematicConstraintTest);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(IiwaKinematicConstraintTest);
 
-  IiwaKinematicConstraintTest();
+    IiwaKinematicConstraintTest();
 
- protected:
-  std::unique_ptr<systems::Diagram<double>> diagram_{};
-  MultibodyPlant<double>* plant_{};
-  geometry::SceneGraph<double>* scene_graph_{};
-  std::unique_ptr<systems::Context<double>> diagram_context_;
-  systems::Context<double>* plant_context_;
-  // Autodiff, without scene graph.
-  std::unique_ptr<MultibodyPlant<AutoDiffXd>> plant_autodiff_;
-  std::unique_ptr<systems::Context<AutoDiffXd>> plant_context_autodiff_;
+protected:
+    std::unique_ptr<systems::Diagram<double>> diagram_{};
+    MultibodyPlant<double>* plant_{};
+    geometry::SceneGraph<double>* scene_graph_{};
+    std::unique_ptr<systems::Context<double>> diagram_context_;
+    systems::Context<double>* plant_context_;
+    // Autodiff, without scene graph.
+    std::unique_ptr<MultibodyPlant<AutoDiffXd>> plant_autodiff_;
+    std::unique_ptr<systems::Context<AutoDiffXd>> plant_context_autodiff_;
 };
 
 // Test kinematic constraints on two free floating bodies.
 class TwoFreeBodiesConstraintTest : public ::testing::Test {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(TwoFreeBodiesConstraintTest);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(TwoFreeBodiesConstraintTest);
 
-  TwoFreeBodiesConstraintTest();
+    TwoFreeBodiesConstraintTest();
 
-  ~TwoFreeBodiesConstraintTest() override {}
+    ~TwoFreeBodiesConstraintTest() override {}
 
- protected:
-  std::unique_ptr<systems::Diagram<double>> diagram_;
-  MultibodyPlant<double>* plant_{};
-  std::unique_ptr<systems::Context<double>> diagram_context_;
-  systems::Context<double>* plant_context_;
-  FrameIndex body1_index_;
-  FrameIndex body2_index_;
-  // Autodiff, without scene graph.
-  std::unique_ptr<MultibodyPlant<AutoDiffXd>> plant_autodiff_;
-  std::unique_ptr<systems::Context<AutoDiffXd>> plant_context_autodiff_;
+protected:
+    std::unique_ptr<systems::Diagram<double>> diagram_;
+    MultibodyPlant<double>* plant_{};
+    std::unique_ptr<systems::Context<double>> diagram_context_;
+    systems::Context<double>* plant_context_;
+    FrameIndex body1_index_;
+    FrameIndex body2_index_;
+    // Autodiff, without scene graph.
+    std::unique_ptr<MultibodyPlant<AutoDiffXd>> plant_autodiff_;
+    std::unique_ptr<systems::Context<AutoDiffXd>> plant_context_autodiff_;
 };
 
 class TwoFreeSpheresTest : public ::testing::Test {
- public:
-  TwoFreeSpheresTest();
+public:
+    TwoFreeSpheresTest();
 
-  template <typename T>
-  geometry::GeometryId GetSphereGeometryId(const MultibodyPlant<T>& plant,
-                                           FrameIndex sphere_index) const {
-    return plant.GetCollisionGeometriesForBody(
-        plant.get_frame(sphere_index).body())[0];
-  }
+    template <typename T>
+    geometry::GeometryId GetSphereGeometryId(const MultibodyPlant<T>& plant, FrameIndex sphere_index) const {
+        return plant.GetCollisionGeometriesForBody(plant.get_frame(sphere_index).body())[0];
+    }
 
- protected:
-  double radius1_{0.1};
-  double radius2_{0.2};
-  std::unique_ptr<systems::Diagram<double>> diagram_double_;
-  std::unique_ptr<systems::Diagram<AutoDiffXd>> diagram_autodiff_;
-  MultibodyPlant<double>* plant_double_{nullptr};
-  MultibodyPlant<AutoDiffXd>* plant_autodiff_{nullptr};
-  geometry::SceneGraph<double>* scene_graph_double_{nullptr};
-  geometry::SceneGraph<AutoDiffXd>* scene_graph_autodiff_{nullptr};
+protected:
+    double radius1_{0.1};
+    double radius2_{0.2};
+    std::unique_ptr<systems::Diagram<double>> diagram_double_;
+    std::unique_ptr<systems::Diagram<AutoDiffXd>> diagram_autodiff_;
+    MultibodyPlant<double>* plant_double_{nullptr};
+    MultibodyPlant<AutoDiffXd>* plant_autodiff_{nullptr};
+    geometry::SceneGraph<double>* scene_graph_double_{nullptr};
+    geometry::SceneGraph<AutoDiffXd>* scene_graph_autodiff_{nullptr};
 
-  FrameIndex sphere1_index_;
-  FrameIndex sphere2_index_;
+    FrameIndex sphere1_index_;
+    FrameIndex sphere2_index_;
 
-  // The pose of sphere 1's collision geometry in sphere 1's body frame.
-  math::RigidTransformd X_B1S1_;
-  // The pose of sphere 2's collision geometry in sphere 2's body frame.
-  math::RigidTransformd X_B2S2_;
+    // The pose of sphere 1's collision geometry in sphere 1's body frame.
+    math::RigidTransformd X_B1S1_;
+    // The pose of sphere 2's collision geometry in sphere 2's body frame.
+    math::RigidTransformd X_B2S2_;
 
-  std::unique_ptr<systems::Context<double>> diagram_context_double_;
-  std::unique_ptr<systems::Context<AutoDiffXd>> diagram_context_autodiff_;
-  systems::Context<double>* plant_context_double_{nullptr};
-  systems::Context<AutoDiffXd>* plant_context_autodiff_{nullptr};
+    std::unique_ptr<systems::Context<double>> diagram_context_double_;
+    std::unique_ptr<systems::Context<AutoDiffXd>> diagram_context_autodiff_;
+    systems::Context<double>* plant_context_double_{nullptr};
+    systems::Context<AutoDiffXd>* plant_context_autodiff_{nullptr};
 };
 
 // We put 4 walls (each with length 1 meter) to form a square around the origin.
 // We put spheres in this environment.
 class SpheresAndWallsTest : public ::testing::Test {
- public:
-  SpheresAndWallsTest();
+public:
+    SpheresAndWallsTest();
 
- protected:
-  double radius_{0.05};
-  double wall_length_{1};
-  planning::RobotDiagramBuilder<double> builder_;
-  std::array<multibody::BodyIndex, 2> body_indices_;
-  geometry::GeometryId left_wall_;
-  geometry::GeometryId right_wall_;
-  geometry::GeometryId top_wall_;
-  geometry::GeometryId bottom_wall_;
-  std::array<geometry::GeometryId, 2> spheres_;
+protected:
+    double radius_{0.05};
+    double wall_length_{1};
+    planning::RobotDiagramBuilder<double> builder_;
+    std::array<multibody::BodyIndex, 2> body_indices_;
+    geometry::GeometryId left_wall_;
+    geometry::GeometryId right_wall_;
+    geometry::GeometryId top_wall_;
+    geometry::GeometryId bottom_wall_;
+    std::array<geometry::GeometryId, 2> spheres_;
 };
 
 /**
@@ -167,33 +160,34 @@ class SpheresAndWallsTest : public ::testing::Test {
  */
 template <typename T>
 T BoxSphereSignedDistance(const Eigen::Ref<const Eigen::Vector3d>& box_size,
-                          double radius, const math::RigidTransform<T>& X_WB,
+                          double radius,
+                          const math::RigidTransform<T>& X_WB,
                           const math::RigidTransform<T>& X_WS);
 
 class BoxSphereTest : public ::testing::Test {
- public:
-  BoxSphereTest();
+public:
+    BoxSphereTest();
 
- protected:
-  Eigen::Vector3d box_size_;
-  double radius_{0};
-  // The pose of the box collision geometry frame Gb in the box body frame B.
-  math::RigidTransformd X_BGb_{};
-  std::unique_ptr<systems::Diagram<double>> diagram_double_;
-  std::unique_ptr<systems::System<AutoDiffXd>> owned_diagram_autodiff_;
-  systems::Diagram<AutoDiffXd>* diagram_autodiff_;
-  MultibodyPlant<double>* plant_double_{nullptr};
-  const MultibodyPlant<AutoDiffXd>* plant_autodiff_{nullptr};
-  geometry::SceneGraph<double>* scene_graph_double_{nullptr};
-  const geometry::SceneGraph<AutoDiffXd>* scene_graph_autodiff_{nullptr};
-  std::unique_ptr<systems::Context<double>> diagram_context_double_;
-  std::unique_ptr<systems::Context<AutoDiffXd>> diagram_context_autodiff_;
-  systems::Context<double>* plant_context_double_{nullptr};
-  systems::Context<AutoDiffXd>* plant_context_autodiff_{nullptr};
-  FrameIndex sphere_frame_index_{};
-  FrameIndex box_frame_index_{};
-  geometry::GeometryId sphere_geometry_id_{};
-  geometry::GeometryId box_geometry_id_{};
+protected:
+    Eigen::Vector3d box_size_;
+    double radius_{0};
+    // The pose of the box collision geometry frame Gb in the box body frame B.
+    math::RigidTransformd X_BGb_{};
+    std::unique_ptr<systems::Diagram<double>> diagram_double_;
+    std::unique_ptr<systems::System<AutoDiffXd>> owned_diagram_autodiff_;
+    systems::Diagram<AutoDiffXd>* diagram_autodiff_;
+    MultibodyPlant<double>* plant_double_{nullptr};
+    const MultibodyPlant<AutoDiffXd>* plant_autodiff_{nullptr};
+    geometry::SceneGraph<double>* scene_graph_double_{nullptr};
+    const geometry::SceneGraph<AutoDiffXd>* scene_graph_autodiff_{nullptr};
+    std::unique_ptr<systems::Context<double>> diagram_context_double_;
+    std::unique_ptr<systems::Context<AutoDiffXd>> diagram_context_autodiff_;
+    systems::Context<double>* plant_context_double_{nullptr};
+    systems::Context<AutoDiffXd>* plant_context_autodiff_{nullptr};
+    FrameIndex sphere_frame_index_{};
+    FrameIndex box_frame_index_{};
+    geometry::GeometryId sphere_geometry_id_{};
+    geometry::GeometryId box_geometry_id_{};
 };
 
 /**
@@ -221,47 +215,41 @@ class BoxSphereTest : public ::testing::Test {
  * the numerical gradient should be close to the analytical gradient.
  */
 template <typename ConstraintType>
-void TestKinematicConstraintEval(
-    const ConstraintType& constraint_from_double,
-    const ConstraintType& constraint_from_autodiff,
-    const Eigen::Ref<const Eigen::VectorXd>& x_double,
-    const Eigen::Ref<const Eigen::MatrixXd>& dx, double gradient_tol,
-    double tol = 1000 * std::numeric_limits<double>::epsilon()) {
-  // condition 1.
-  Eigen::VectorXd y1_left, y1_right;
-  constraint_from_double.Eval(x_double, &y1_left);
-  constraint_from_autodiff.Eval(x_double, &y1_right);
-  EXPECT_TRUE(CompareMatrices(y1_left, y1_right, tol));
+void TestKinematicConstraintEval(const ConstraintType& constraint_from_double,
+                                 const ConstraintType& constraint_from_autodiff,
+                                 const Eigen::Ref<const Eigen::VectorXd>& x_double,
+                                 const Eigen::Ref<const Eigen::MatrixXd>& dx,
+                                 double gradient_tol,
+                                 double tol = 1000 * std::numeric_limits<double>::epsilon()) {
+    // condition 1.
+    Eigen::VectorXd y1_left, y1_right;
+    constraint_from_double.Eval(x_double, &y1_left);
+    constraint_from_autodiff.Eval(x_double, &y1_right);
+    EXPECT_TRUE(CompareMatrices(y1_left, y1_right, tol));
 
-  // condition 2
-  const auto x_autodiff = math::InitializeAutoDiff(x_double, dx);
-  AutoDiffVecXd y2_left, y2_right;
-  constraint_from_double.Eval(x_autodiff, &y2_left);
-  constraint_from_autodiff.Eval(x_autodiff, &y2_right);
-  EXPECT_TRUE(CompareMatrices(math::ExtractValue(y2_left),
-                              math::ExtractValue(y2_right), tol));
-  EXPECT_TRUE(CompareMatrices(math::ExtractGradient(y2_left),
-                              math::ExtractGradient(y2_right), tol));
+    // condition 2
+    const auto x_autodiff = math::InitializeAutoDiff(x_double, dx);
+    AutoDiffVecXd y2_left, y2_right;
+    constraint_from_double.Eval(x_autodiff, &y2_left);
+    constraint_from_autodiff.Eval(x_autodiff, &y2_right);
+    EXPECT_TRUE(CompareMatrices(math::ExtractValue(y2_left), math::ExtractValue(y2_right), tol));
+    EXPECT_TRUE(CompareMatrices(math::ExtractGradient(y2_left), math::ExtractGradient(y2_right), tol));
 
-  // condition 3
-  Eigen::VectorXd y3_left;
-  AutoDiffVecXd y3_right;
-  constraint_from_double.Eval(x_double, &y3_left);
-  constraint_from_double.Eval(x_autodiff, &y3_right);
-  EXPECT_TRUE(CompareMatrices(y3_left, math::ExtractValue(y3_right), tol));
+    // condition 3
+    Eigen::VectorXd y3_left;
+    AutoDiffVecXd y3_right;
+    constraint_from_double.Eval(x_double, &y3_left);
+    constraint_from_double.Eval(x_autodiff, &y3_right);
+    EXPECT_TRUE(CompareMatrices(y3_left, math::ExtractValue(y3_right), tol));
 
-  // condition 4
-  std::function<void(const Eigen::Ref<const Eigen::VectorXd>&,
-                     Eigen::VectorXd*)>
-      eval_fun =
-          [&constraint_from_double](const Eigen::Ref<const Eigen::VectorXd>& x,
-                                    Eigen::VectorXd* y) {
-            constraint_from_double.Eval(x, y);
-          };
-  const auto dy_dx_numeric = math::ComputeNumericalGradient(eval_fun, x_double);
-  const Eigen::MatrixXd y_grad_numeric = dy_dx_numeric * dx;
-  EXPECT_TRUE(CompareMatrices(y_grad_numeric, math::ExtractGradient(y2_right),
-                              gradient_tol));
+    // condition 4
+    std::function<void(const Eigen::Ref<const Eigen::VectorXd>&, Eigen::VectorXd*)> eval_fun =
+            [&constraint_from_double](const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) {
+                constraint_from_double.Eval(x, y);
+            };
+    const auto dy_dx_numeric = math::ComputeNumericalGradient(eval_fun, x_double);
+    const Eigen::MatrixXd y_grad_numeric = dy_dx_numeric * dx;
+    EXPECT_TRUE(CompareMatrices(y_grad_numeric, math::ExtractGradient(y2_right), gradient_tol));
 }
 
 }  // namespace multibody

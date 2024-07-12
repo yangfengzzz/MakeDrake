@@ -16,10 +16,10 @@ namespace {
 // http://webpages.iust.ac.ir/b_moaveni/courses/paper_Riccati.pdf for the
 // condition on whether the solution X is positive definite or positive
 // semidefinite.
-void SolveCAREandVerify(const Eigen::Ref<const MatrixXd> &A,
-                        const Eigen::Ref<const MatrixXd> &B,
-                        const Eigen::Ref<const MatrixXd> &Q,
-                        const Eigen::Ref<const MatrixXd> &R,
+void SolveCAREandVerify(const Eigen::Ref<const MatrixXd>& A,
+                        const Eigen::Ref<const MatrixXd>& B,
+                        const Eigen::Ref<const MatrixXd>& Q,
+                        const Eigen::Ref<const MatrixXd>& R,
                         bool is_X_pd) {
     MatrixXd X = ContinuousAlgebraicRiccatiEquation(A, B, Q, R);
 

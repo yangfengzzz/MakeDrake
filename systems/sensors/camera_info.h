@@ -135,103 +135,102 @@ namespace sensors {
    parallel with Cz.
 */
 class CameraInfo final {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(CameraInfo);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(CameraInfo);
 
-  /**
-   Constructor that directly sets the image size, principal point, and focal
-   lengths.
+    /**
+     Constructor that directly sets the image size, principal point, and focal
+     lengths.
 
-   @param width      The image width in pixels, must be positive.
-   @param height     The image height in pixels, must be positive.
-   @param focal_x    The _model_ "focal length" x in pixels (see above), must be
-                     positive and finite.
-   @param focal_y    The _model_ "focal length" y in pixels (see above), must be
-                     positive and finite.
-   @param center_x   The x coordinate of the principal point in pixels (see
-                     above), must lie in the range 0 < center_x < width.
-   @param center_y   The y coordinate of the principal point in pixels (see
-                     above), must lie in the range 0 < center_y < height.
+     @param width      The image width in pixels, must be positive.
+     @param height     The image height in pixels, must be positive.
+     @param focal_x    The _model_ "focal length" x in pixels (see above), must be
+                       positive and finite.
+     @param focal_y    The _model_ "focal length" y in pixels (see above), must be
+                       positive and finite.
+     @param center_x   The x coordinate of the principal point in pixels (see
+                       above), must lie in the range 0 < center_x < width.
+     @param center_y   The y coordinate of the principal point in pixels (see
+                       above), must lie in the range 0 < center_y < height.
 
-   @throws std::exception if the provided values don't satisfy the listed
-   requirements.
-  */
-  CameraInfo(int width, int height, double focal_x, double focal_y,
-             double center_x, double center_y);
+     @throws std::exception if the provided values don't satisfy the listed
+     requirements.
+    */
+    CameraInfo(int width, int height, double focal_x, double focal_y, double center_x, double center_y);
 
-  /**
-   Constructs this instance by extracting focal_x, focal_y, center_x, and
-   center_y from the provided intrinsic_matrix.
+    /**
+     Constructs this instance by extracting focal_x, focal_y, center_x, and
+     center_y from the provided intrinsic_matrix.
 
-   @param width             The image width in pixels, must be positive.
-   @param height            The image height in pixels, must be positive.
-   @param intrinsic_matrix  The intrinsic matrix (K) as documented above. Where
-                            K is defined to be non-zero, the values must be
-                            finite and the focal length values must be positive.
+     @param width             The image width in pixels, must be positive.
+     @param height            The image height in pixels, must be positive.
+     @param intrinsic_matrix  The intrinsic matrix (K) as documented above. Where
+                              K is defined to be non-zero, the values must be
+                              finite and the focal length values must be positive.
 
-   @throws std::exception if intrinsic_matrix is not of the form indicated
-   above for the pinhole camera model (representing an affine / homogeneous
-   transform) or the non-zero values don't meet the documented requirements.
-  */
-  CameraInfo(int width, int height, const Eigen::Matrix3d& intrinsic_matrix);
+     @throws std::exception if intrinsic_matrix is not of the form indicated
+     above for the pinhole camera model (representing an affine / homogeneous
+     transform) or the non-zero values don't meet the documented requirements.
+    */
+    CameraInfo(int width, int height, const Eigen::Matrix3d& intrinsic_matrix);
 
-  /**
-   Constructs this instance from image size and vertical field of view. We
-   assume the principal point is in the center of the image;
-   `(center x, center_y)` is equal to `(width / 2.0 - 0.5, height / 2.0 - 0.5)`.
-   We also assume the focal lengths `focal_x` and `focal_y` are identical
-   (modeling a radially symmetric lens). The value is derived from field of
-   view and image size as:
+    /**
+     Constructs this instance from image size and vertical field of view. We
+     assume the principal point is in the center of the image;
+     `(center x, center_y)` is equal to `(width / 2.0 - 0.5, height / 2.0 - 0.5)`.
+     We also assume the focal lengths `focal_x` and `focal_y` are identical
+     (modeling a radially symmetric lens). The value is derived from field of
+     view and image size as:
 
-        focal_x = focal_y = height * 0.5 / tan(0.5 * fov_y)
+          focal_x = focal_y = height * 0.5 / tan(0.5 * fov_y)
 
-   @param width    The image width in pixels, must be positive.
-   @param height   The image height in pixels, must be positive.
-   @param fov_y    The vertical field of view in radians, must be positive and
-                   finite.
+     @param width    The image width in pixels, must be positive.
+     @param height   The image height in pixels, must be positive.
+     @param fov_y    The vertical field of view in radians, must be positive and
+                     finite.
 
-   @throws std::exception if the provided values don't satisfy the listed
-   requirements.
-  */
-  CameraInfo(int width, int height, double fov_y);
+     @throws std::exception if the provided values don't satisfy the listed
+     requirements.
+    */
+    CameraInfo(int width, int height, double fov_y);
 
-  /** Returns the width of the image in pixels. */
-  int width() const { return width_; }
+    /** Returns the width of the image in pixels. */
+    int width() const { return width_; }
 
-  /** Returns the height of the image in pixels. */
-  int height() const { return height_; }
+    /** Returns the height of the image in pixels. */
+    int height() const { return height_; }
 
-  /** Returns the focal length x in pixels. */
-  double focal_x() const { return intrinsic_matrix_(0, 0); }
+    /** Returns the focal length x in pixels. */
+    double focal_x() const { return intrinsic_matrix_(0, 0); }
 
-  /** Returns the focal length y in pixels. */
-  double focal_y() const { return intrinsic_matrix_(1, 1); }
+    /** Returns the focal length y in pixels. */
+    double focal_y() const { return intrinsic_matrix_(1, 1); }
 
-  /** Returns the field of view in the x-direction (in radians).  */
-  double fov_x() const { return 2 * std::atan(width_ / (2 * focal_x())); }
+    /** Returns the field of view in the x-direction (in radians).  */
+    double fov_x() const { return 2 * std::atan(width_ / (2 * focal_x())); }
 
-  /** Returns the field of view in the y-direction (in radians).  */
-  double fov_y() const { return 2 * std::atan(height_ / (2 * focal_y())); }
+    /** Returns the field of view in the y-direction (in radians).  */
+    double fov_y() const { return 2 * std::atan(height_ / (2 * focal_y())); }
 
-  // TODO(eric.cousineau): Deprecate "center_{x,y}" and use
-  // "principal_point_{x,y}" or "pp{x,y}".
+    // TODO(eric.cousineau): Deprecate "center_{x,y}" and use
+    // "principal_point_{x,y}" or "pp{x,y}".
 
-  /** Returns the principal point's x coordinate in pixels. */
-  double center_x() const { return intrinsic_matrix_(0, 2); }
+    /** Returns the principal point's x coordinate in pixels. */
+    double center_x() const { return intrinsic_matrix_(0, 2); }
 
-  /** Returns the principal point's y coordinate in pixels. */
-  double center_y() const { return intrinsic_matrix_(1, 2); }
+    /** Returns the principal point's y coordinate in pixels. */
+    double center_y() const { return intrinsic_matrix_(1, 2); }
 
-  /** Returns the camera intrinsic matrix, K. */
-  const Eigen::Matrix3d& intrinsic_matrix() const { return intrinsic_matrix_; }
+    /** Returns the camera intrinsic matrix, K. */
+    const Eigen::Matrix3d& intrinsic_matrix() const { return intrinsic_matrix_; }
 
- private:
-  int width_{};
-  int height_{};
-  // Camera intrinsic parameter matrix. For the detail, see
-  // http://docs.opencv.org/2.4/modules/calib3d/doc/
-  // camera_calibration_and_3d_reconstruction.html
-  Eigen::Matrix3d intrinsic_matrix_;
+private:
+    int width_{};
+    int height_{};
+    // Camera intrinsic parameter matrix. For the detail, see
+    // http://docs.opencv.org/2.4/modules/calib3d/doc/
+    // camera_calibration_and_3d_reconstruction.html
+    Eigen::Matrix3d intrinsic_matrix_;
 };
 
 }  // namespace sensors

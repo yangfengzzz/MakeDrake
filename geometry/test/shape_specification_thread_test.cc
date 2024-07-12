@@ -31,56 +31,52 @@ namespace {
 constexpr int kNumThreads = 4;
 
 void EvaluateConvexHullInParallel(const Mesh& mesh) {
-  auto get_convex_hull = [&mesh]() {
-    return &mesh.GetConvexHull();
-  };
+    auto get_convex_hull = [&mesh]() {
+        return &mesh.GetConvexHull();
+    };
 
-  std::vector<std::future<const PolygonSurfaceMesh<double>*>> futures;
-  for (int i = 0; i < kNumThreads; ++i) {
-    futures.push_back(std::async(std::launch::async, get_convex_hull));
-  }
+    std::vector<std::future<const PolygonSurfaceMesh<double>*>> futures;
+    for (int i = 0; i < kNumThreads; ++i) {
+        futures.push_back(std::async(std::launch::async, get_convex_hull));
+    }
 
-  // Do the work and collect the results.
-  std::vector<const PolygonSurfaceMesh<double>*> pointers;
-  for (auto& future : futures) {
-    pointers.push_back(future.get());
-  }
+    // Do the work and collect the results.
+    std::vector<const PolygonSurfaceMesh<double>*> pointers;
+    for (auto& future : futures) {
+        pointers.push_back(future.get());
+    }
 
-  // All pointers match.
-  ASSERT_EQ(ssize(pointers), kNumThreads);
-  ASSERT_NE(pointers[0], nullptr);
-  for (int i = 1; i < kNumThreads; ++i) {
-    ASSERT_EQ(pointers[0], pointers[i]);
-  }
+    // All pointers match.
+    ASSERT_EQ(ssize(pointers), kNumThreads);
+    ASSERT_NE(pointers[0], nullptr);
+    for (int i = 1; i < kNumThreads; ++i) {
+        ASSERT_EQ(pointers[0], pointers[i]);
+    }
 }
 
 GTEST_TEST(ShapeSpecificationThreadTest, Obj) {
-  // We want to use a heavyweight mesh file to extend the time to compute the
-  // convex hull.
-  const Mesh mesh(FindRunfile(
-      "drake_models/dishes/assets/plate_8in_col.obj").abspath);
+    // We want to use a heavyweight mesh file to extend the time to compute the
+    // convex hull.
+    const Mesh mesh(FindRunfile("drake_models/dishes/assets/plate_8in_col.obj").abspath);
 
-  EvaluateConvexHullInParallel(mesh);
+    EvaluateConvexHullInParallel(mesh);
 }
 
 GTEST_TEST(ShapeSpecificationThreadTest, VolumeVtk) {
-  // We want to use a heavyweight mesh file to extend the time to compute the
-  // convex hull.
-  const Mesh mesh(FindResourceOrThrow(
-      "drake/examples/multibody/deformable/models/torus.vtk"));
+    // We want to use a heavyweight mesh file to extend the time to compute the
+    // convex hull.
+    const Mesh mesh(FindResourceOrThrow("drake/examples/multibody/deformable/models/torus.vtk"));
 
-  EvaluateConvexHullInParallel(mesh);
+    EvaluateConvexHullInParallel(mesh);
 }
 
 GTEST_TEST(ShapeSpecificationThreadTest, Gltf) {
-  // We want to use a heavyweight mesh file to extend the time to compute the
-  // convex hull.
-  const std::string full_name =
-      FindRunfile("drake_models/tri_homecart/assets/homecart_basecart.gltf")
-          .abspath;
-  const Mesh mesh(full_name);
+    // We want to use a heavyweight mesh file to extend the time to compute the
+    // convex hull.
+    const std::string full_name = FindRunfile("drake_models/tri_homecart/assets/homecart_basecart.gltf").abspath;
+    const Mesh mesh(full_name);
 
-  EvaluateConvexHullInParallel(mesh);
+    EvaluateConvexHullInParallel(mesh);
 }
 
 }  // namespace

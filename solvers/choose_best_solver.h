@@ -33,8 +33,7 @@ namespace solvers {
  * Makes the first available and enabled solver. If no solvers are available,
  * throws a std::exception.
  */
-[[nodiscard]] std::unique_ptr<SolverInterface> MakeFirstAvailableSolver(
-    const std::vector<SolverId>& solver_ids);
+[[nodiscard]] std::unique_ptr<SolverInterface> MakeFirstAvailableSolver(const std::vector<SolverId>& solver_ids);
 
 /**
  * Returns the list of available and enabled solvers that definitely accept all

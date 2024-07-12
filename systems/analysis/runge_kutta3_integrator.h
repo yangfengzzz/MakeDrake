@@ -52,46 +52,44 @@ namespace systems {
  */
 template <class T>
 class RungeKutta3Integrator final : public IntegratorBase<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(RungeKutta3Integrator);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(RungeKutta3Integrator);
 
-  ~RungeKutta3Integrator() override = default;
+    ~RungeKutta3Integrator() override = default;
 
-  explicit RungeKutta3Integrator(const System<T>& system,
-                                 Context<T>* context = nullptr)
-      : IntegratorBase<T>(system, context) {
-    derivs0_ = system.AllocateTimeDerivatives();
-    derivs1_ = system.AllocateTimeDerivatives();
-    err_est_vec_.resize(derivs0_->size());
-    save_xc0_.resize(derivs0_->size());
-  }
+    explicit RungeKutta3Integrator(const System<T>& system, Context<T>* context = nullptr)
+        : IntegratorBase<T>(system, context) {
+        derivs0_ = system.AllocateTimeDerivatives();
+        derivs1_ = system.AllocateTimeDerivatives();
+        err_est_vec_.resize(derivs0_->size());
+        save_xc0_.resize(derivs0_->size());
+    }
 
-  /**
-   * The integrator supports error estimation.
-   */
-  bool supports_error_estimation() const override { return true; }
+    /**
+     * The integrator supports error estimation.
+     */
+    bool supports_error_estimation() const override { return true; }
 
-  /// This integrator provides third order error estimates.
-  int get_error_estimate_order() const override { return 3; }
+    /// This integrator provides third order error estimates.
+    int get_error_estimate_order() const override { return 3; }
 
- private:
-  void DoInitialize() override;
-  bool DoStep(const T& h) override;
+private:
+    void DoInitialize() override;
+    bool DoStep(const T& h) override;
 
-  // Vector used in error estimate calculations.
-  VectorX<T> err_est_vec_;
+    // Vector used in error estimate calculations.
+    VectorX<T> err_est_vec_;
 
-  // Vector used to save initial value of xc.
-  VectorX<T> save_xc0_;
+    // Vector used to save initial value of xc.
+    VectorX<T> save_xc0_;
 
-  // These are pre-allocated temporaries for use by integration. They store
-  // the derivatives computed at various points within the integration
-  // interval.
-  std::unique_ptr<ContinuousState<T>> derivs0_, derivs1_;
+    // These are pre-allocated temporaries for use by integration. They store
+    // the derivatives computed at various points within the integration
+    // interval.
+    std::unique_ptr<ContinuousState<T>> derivs0_, derivs1_;
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class drake::systems::RungeKutta3Integrator);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(class drake::systems::RungeKutta3Integrator);

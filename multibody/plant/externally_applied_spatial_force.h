@@ -9,16 +9,16 @@ namespace multibody {
 
 template <class T>
 struct ExternallyAppliedSpatialForce {
-  /// The index of the body that the force is to be applied to.
-  BodyIndex body_index;
+    /// The index of the body that the force is to be applied to.
+    BodyIndex body_index;
 
-  /// A position vector from Body B's origin (Bo) to a point Bq (a point of B),
-  /// expressed in B's frame.
-  Vector3<T> p_BoBq_B;
+    /// A position vector from Body B's origin (Bo) to a point Bq (a point of B),
+    /// expressed in B's frame.
+    Vector3<T> p_BoBq_B;
 
-  /// A spatial force applied to Body B at point Bq, expressed in the
-  /// world frame.
-  SpatialForce<T> F_Bq_W;
+    /// A spatial force applied to Body B at point Bq, expressed in the
+    /// world frame.
+    SpatialForce<T> F_Bq_W;
 };
 
 }  // namespace multibody

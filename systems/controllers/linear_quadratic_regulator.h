@@ -9,8 +9,8 @@ namespace systems {
 namespace controllers {
 
 struct LinearQuadraticRegulatorResult {
-  Eigen::MatrixXd K;
-  Eigen::MatrixXd S;
+    Eigen::MatrixXd K;
+    Eigen::MatrixXd S;
 };
 
 /// Computes the optimal feedback controller, u=-Kx, and the optimal
@@ -41,14 +41,12 @@ struct LinearQuadraticRegulatorResult {
 /// @pydrake_mkdoc_identifier{AB}
 ///
 LinearQuadraticRegulatorResult LinearQuadraticRegulator(
-    const Eigen::Ref<const Eigen::MatrixXd>& A,
-    const Eigen::Ref<const Eigen::MatrixXd>& B,
-    const Eigen::Ref<const Eigen::MatrixXd>& Q,
-    const Eigen::Ref<const Eigen::MatrixXd>& R,
-    const Eigen::Ref<const Eigen::MatrixXd>& N =
-        Eigen::Matrix<double, 0, 0>::Zero(),
-    const Eigen::Ref<const Eigen::MatrixXd>& F =
-        Eigen::Matrix<double, 0, 0>::Zero());
+        const Eigen::Ref<const Eigen::MatrixXd>& A,
+        const Eigen::Ref<const Eigen::MatrixXd>& B,
+        const Eigen::Ref<const Eigen::MatrixXd>& Q,
+        const Eigen::Ref<const Eigen::MatrixXd>& R,
+        const Eigen::Ref<const Eigen::MatrixXd>& N = Eigen::Matrix<double, 0, 0>::Zero(),
+        const Eigen::Ref<const Eigen::MatrixXd>& F = Eigen::Matrix<double, 0, 0>::Zero());
 
 // TODO(russt): Consider implementing the optional N argument as in the
 // continuous-time formulation.
@@ -69,11 +67,10 @@ LinearQuadraticRegulatorResult LinearQuadraticRegulator(
 ///
 /// @throws std::exception if R is not positive definite.
 /// @ingroup control
-LinearQuadraticRegulatorResult DiscreteTimeLinearQuadraticRegulator(
-    const Eigen::Ref<const Eigen::MatrixXd>& A,
-    const Eigen::Ref<const Eigen::MatrixXd>& B,
-    const Eigen::Ref<const Eigen::MatrixXd>& Q,
-    const Eigen::Ref<const Eigen::MatrixXd>& R);
+LinearQuadraticRegulatorResult DiscreteTimeLinearQuadraticRegulator(const Eigen::Ref<const Eigen::MatrixXd>& A,
+                                                                    const Eigen::Ref<const Eigen::MatrixXd>& B,
+                                                                    const Eigen::Ref<const Eigen::MatrixXd>& Q,
+                                                                    const Eigen::Ref<const Eigen::MatrixXd>& R);
 
 /// Creates a system that implements the optimal time-invariant linear quadratic
 /// regulator (LQR).  If @p system is a continuous-time system, then solves
@@ -101,11 +98,10 @@ LinearQuadraticRegulatorResult DiscreteTimeLinearQuadraticRegulator(
 /// @pydrake_mkdoc_identifier{system}
 ///
 std::unique_ptr<LinearSystem<double>> LinearQuadraticRegulator(
-    const LinearSystem<double>& system,
-    const Eigen::Ref<const Eigen::MatrixXd>& Q,
-    const Eigen::Ref<const Eigen::MatrixXd>& R,
-    const Eigen::Ref<const Eigen::MatrixXd>& N =
-        Eigen::Matrix<double, 0, 0>::Zero());
+        const LinearSystem<double>& system,
+        const Eigen::Ref<const Eigen::MatrixXd>& Q,
+        const Eigen::Ref<const Eigen::MatrixXd>& R,
+        const Eigen::Ref<const Eigen::MatrixXd>& N = Eigen::Matrix<double, 0, 0>::Zero());
 
 /// Linearizes the System around the specified Context, computes the optimal
 /// time-invariant linear quadratic regulator (LQR), and returns a System which
@@ -146,12 +142,12 @@ std::unique_ptr<LinearSystem<double>> LinearQuadraticRegulator(
 /// @pydrake_mkdoc_identifier{linearize_at_context}
 ///
 std::unique_ptr<AffineSystem<double>> LinearQuadraticRegulator(
-    const System<double>& system, const Context<double>& context,
-    const Eigen::Ref<const Eigen::MatrixXd>& Q,
-    const Eigen::Ref<const Eigen::MatrixXd>& R,
-    const Eigen::Ref<const Eigen::MatrixXd>& N =
-        Eigen::Matrix<double, 0, 0>::Zero(),
-    int input_port_index = 0);
+        const System<double>& system,
+        const Context<double>& context,
+        const Eigen::Ref<const Eigen::MatrixXd>& Q,
+        const Eigen::Ref<const Eigen::MatrixXd>& R,
+        const Eigen::Ref<const Eigen::MatrixXd>& N = Eigen::Matrix<double, 0, 0>::Zero(),
+        int input_port_index = 0);
 
 }  // namespace controllers
 }  // namespace systems

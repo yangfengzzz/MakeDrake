@@ -35,11 +35,10 @@ namespace estimators {
 /// @ingroup estimator_systems
 /// @pydrake_mkdoc_identifier{ACWV}
 ///
-Eigen::MatrixXd SteadyStateKalmanFilter(
-    const Eigen::Ref<const Eigen::MatrixXd>& A,
-    const Eigen::Ref<const Eigen::MatrixXd>& C,
-    const Eigen::Ref<const Eigen::MatrixXd>& W,
-    const Eigen::Ref<const Eigen::MatrixXd>& V);
+Eigen::MatrixXd SteadyStateKalmanFilter(const Eigen::Ref<const Eigen::MatrixXd>& A,
+                                        const Eigen::Ref<const Eigen::MatrixXd>& C,
+                                        const Eigen::Ref<const Eigen::MatrixXd>& W,
+                                        const Eigen::Ref<const Eigen::MatrixXd>& V);
 
 /// Creates a Luenberger observer system using the optimal steady-state Kalman
 /// filter gain matrix, L, as described above.
@@ -55,10 +54,9 @@ Eigen::MatrixXd SteadyStateKalmanFilter(
 /// @throws std::exception if V is not positive definite.
 /// @ingroup estimator_systems
 /// @pydrake_mkdoc_identifier{linear_system}
-std::unique_ptr<LuenbergerObserver<double>> SteadyStateKalmanFilter(
-    std::unique_ptr<LinearSystem<double>> system,
-    const Eigen::Ref<const Eigen::MatrixXd>& W,
-    const Eigen::Ref<const Eigen::MatrixXd>& V);
+std::unique_ptr<LuenbergerObserver<double>> SteadyStateKalmanFilter(std::unique_ptr<LinearSystem<double>> system,
+                                                                    const Eigen::Ref<const Eigen::MatrixXd>& W,
+                                                                    const Eigen::Ref<const Eigen::MatrixXd>& V);
 
 /// Creates a Luenberger observer system using the steady-state Kalman filter
 /// observer gain.
@@ -88,11 +86,10 @@ std::unique_ptr<LuenbergerObserver<double>> SteadyStateKalmanFilter(
 /// @throws std::exception if V is not positive definite.
 /// @ingroup estimator_systems
 /// @pydrake_mkdoc_identifier{system}
-std::unique_ptr<LuenbergerObserver<double>> SteadyStateKalmanFilter(
-    std::unique_ptr<System<double>> system,
-    std::unique_ptr<Context<double>> context,
-    const Eigen::Ref<const Eigen::MatrixXd>& W,
-    const Eigen::Ref<const Eigen::MatrixXd>& V);
+std::unique_ptr<LuenbergerObserver<double>> SteadyStateKalmanFilter(std::unique_ptr<System<double>> system,
+                                                                    std::unique_ptr<Context<double>> context,
+                                                                    const Eigen::Ref<const Eigen::MatrixXd>& W,
+                                                                    const Eigen::Ref<const Eigen::MatrixXd>& V);
 
 }  // namespace estimators
 }  // namespace systems

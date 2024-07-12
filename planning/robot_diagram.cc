@@ -26,26 +26,21 @@ constexpr size_t kSceneGraphIndex = 1;
 // @tparam_default_scalar
 // @tparam ChildSystem the subsystem class to extract, e.g., MultibodyPlant.
 // @tparam DiagramOrDiagramBuilder duck type for either a diagram or a builder.
-template <typename T, template <typename> class ChildSystem,
-          template <typename> class DiagramOrDiagramBuilder>
-ChildSystem<T>& DowncastSubsystem(DiagramOrDiagramBuilder<T>* diagram,
-                                  size_t index) {
-  DRAKE_DEMAND(diagram != nullptr);
-  const std::vector<const System<T>*>& items = diagram->GetSystems();
-  const auto* child = dynamic_cast<const ChildSystem<T>*>(items.at(index));
-  DRAKE_DEMAND(child != nullptr);
-  return const_cast<ChildSystem<T>&>(*child);
+template <typename T, template <typename> class ChildSystem, template <typename> class DiagramOrDiagramBuilder>
+ChildSystem<T>& DowncastSubsystem(DiagramOrDiagramBuilder<T>* diagram, size_t index) {
+    DRAKE_DEMAND(diagram != nullptr);
+    const std::vector<const System<T>*>& items = diagram->GetSystems();
+    const auto* child = dynamic_cast<const ChildSystem<T>*>(items.at(index));
+    DRAKE_DEMAND(child != nullptr);
+    return const_cast<ChildSystem<T>&>(*child);
 }
 
 template <typename T>
-RobotDiagram<T>::RobotDiagram(
-    std::unique_ptr<DiagramBuilder<T>> diagram_builder)
+RobotDiagram<T>::RobotDiagram(std::unique_ptr<DiagramBuilder<T>> diagram_builder)
     : Diagram<T>(SystemTypeTag<RobotDiagram>{}),
-      plant_(DowncastSubsystem<T, MultibodyPlant>(diagram_builder.get(),
-                                                  kPlantIndex)),
-      scene_graph_(DowncastSubsystem<T, SceneGraph>(diagram_builder.get(),
-                                                    kSceneGraphIndex)) {
-  diagram_builder->BuildInto(this);
+      plant_(DowncastSubsystem<T, MultibodyPlant>(diagram_builder.get(), kPlantIndex)),
+      scene_graph_(DowncastSubsystem<T, SceneGraph>(diagram_builder.get(), kSceneGraphIndex)) {
+    diagram_builder->BuildInto(this);
 }
 
 template <typename T>
@@ -61,5 +56,4 @@ RobotDiagram<T>::RobotDiagram(const RobotDiagram<U>& other)
 }  // namespace planning
 }  // namespace drake
 
-DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::planning::RobotDiagram);
+DRAKE_DEFINE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::planning::RobotDiagram);

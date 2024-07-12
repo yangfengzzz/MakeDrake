@@ -21,73 +21,72 @@ using ::testing::AssertionSuccess;
 
 template <PixelType kPixelType>
 void PrintTo(const Image<kPixelType>& image, std::ostream* os) {
-  const int width = image.width();
-  const int height = image.height();
-  fmt::print(*os, "Image<k{}>(width={}, height={})", kPixelType, width, height);
-  const int size = width * height;
-  // When there are no pixels, don't bother printing the "Channel ..." titles.
-  // If there are way too many pixels (more than fit on one screen), omit all
-  // pixel data, leaving only the summary of the size.
-  if (size == 0 || size > 1000) {
-    return;
-  }
-  using T = typename Image<kPixelType>::T;
-  using Promoted = std::conditional_t<std::is_integral_v<T>, int, T>;
-  constexpr int num_channels = Image<kPixelType>::kNumChannels;
-  for (int c = 0; c < num_channels; ++c) {
-    *os << "\n";
-    const T* const base = image.at(0, 0) + c;
-    using Stride = Eigen::Stride<Eigen::Dynamic, Eigen::Dynamic>;
-    Eigen::Map<const MatrixX<T>, 0, Stride> eigen(
-        base, height, width, Stride(num_channels, width * num_channels));
-    if (num_channels > 1) {
-      fmt::print(*os, "Channel {}:\n", c);
+    const int width = image.width();
+    const int height = image.height();
+    fmt::print(*os, "Image<k{}>(width={}, height={})", kPixelType, width, height);
+    const int size = width * height;
+    // When there are no pixels, don't bother printing the "Channel ..." titles.
+    // If there are way too many pixels (more than fit on one screen), omit all
+    // pixel data, leaving only the summary of the size.
+    if (size == 0 || size > 1000) {
+        return;
     }
-    fmt::print(*os, "{}", fmt_eigen(eigen.template cast<Promoted>()));
-  }
+    using T = typename Image<kPixelType>::T;
+    using Promoted = std::conditional_t<std::is_integral_v<T>, int, T>;
+    constexpr int num_channels = Image<kPixelType>::kNumChannels;
+    for (int c = 0; c < num_channels; ++c) {
+        *os << "\n";
+        const T* const base = image.at(0, 0) + c;
+        using Stride = Eigen::Stride<Eigen::Dynamic, Eigen::Dynamic>;
+        Eigen::Map<const MatrixX<T>, 0, Stride> eigen(base, height, width, Stride(num_channels, width * num_channels));
+        if (num_channels > 1) {
+            fmt::print(*os, "Channel {}:\n", c);
+        }
+        fmt::print(*os, "{}", fmt_eigen(eigen.template cast<Promoted>()));
+    }
 }
 
 template <PixelType kPixelType>
 AssertionResult LoadImage(const fs::path& filename, Image<kPixelType>* image) {
-  if (!fs::exists(filename)) {
-    return AssertionFailure() << "File not found: " << filename;
-  }
-  vtkSmartPointer<vtkImageReader2> reader;
-  switch (kPixelType) {
-    case PixelType::kRgba8U:
-    case PixelType::kGrey8U:
-    case PixelType::kDepth16U:
-    case PixelType::kLabel16I:
-      reader = vtkSmartPointer<vtkPNGReader>::New();
-      break;
-    case PixelType::kDepth32F:
-      reader = vtkSmartPointer<vtkTIFFReader>::New();
-      break;
-    default:
-      // TODO(jwnimmer-tri) Add support for more pixel types.
-      return AssertionFailure() << "Called with unsupported PixelType";
-  }
-  reader->SetFileName(filename.string().c_str());
-  vtkNew<vtkImageExport> exporter;
-  exporter->ImageLowerLeftOff();
-  exporter->SetInputConnection(reader->GetOutputPort());
-  exporter->Update();
-  const int* const dims = exporter->GetDataDimensions();
-  const int width = dims[0];
-  const int height = dims[1];
-  const int depth = dims[2];
-  const int channels = exporter->GetDataNumberOfScalarComponents();
-  if (depth != 1) {
-    // Drake's Image<> class only supports a shape of (width, height). It can't
-    // denote a 3D image (width, height, depth).
-    return AssertionFailure() << "Found wrong depth=" << depth;
-  }
-  if (channels != ImageTraits<kPixelType>::kNumChannels) {
-    return AssertionFailure() << "Found wrong channels=" << channels;
-  }
-  image->resize(width, height);
-  exporter->Export(image->at(0, 0));
-  return AssertionSuccess();
+    if (!fs::exists(filename)) {
+        return AssertionFailure() << "File not found: " << filename;
+    }
+    vtkSmartPointer<vtkImageReader2> reader;
+    switch (kPixelType) {
+        case PixelType::kRgba8U:
+        case PixelType::kGrey8U:
+        case PixelType::kDepth16U:
+        case PixelType::kLabel16I:
+            reader = vtkSmartPointer<vtkPNGReader>::New();
+            break;
+        case PixelType::kDepth32F:
+            reader = vtkSmartPointer<vtkTIFFReader>::New();
+            break;
+        default:
+            // TODO(jwnimmer-tri) Add support for more pixel types.
+            return AssertionFailure() << "Called with unsupported PixelType";
+    }
+    reader->SetFileName(filename.string().c_str());
+    vtkNew<vtkImageExport> exporter;
+    exporter->ImageLowerLeftOff();
+    exporter->SetInputConnection(reader->GetOutputPort());
+    exporter->Update();
+    const int* const dims = exporter->GetDataDimensions();
+    const int width = dims[0];
+    const int height = dims[1];
+    const int depth = dims[2];
+    const int channels = exporter->GetDataNumberOfScalarComponents();
+    if (depth != 1) {
+        // Drake's Image<> class only supports a shape of (width, height). It can't
+        // denote a 3D image (width, height, depth).
+        return AssertionFailure() << "Found wrong depth=" << depth;
+    }
+    if (channels != ImageTraits<kPixelType>::kNumChannels) {
+        return AssertionFailure() << "Found wrong channels=" << channels;
+    }
+    image->resize(width, height);
+    exporter->Export(image->at(0, 0));
+    return AssertionSuccess();
 }
 
 // Explicit template instantiations.

@@ -42,21 +42,20 @@ namespace solvers {
 /// Allocates a 3x3 matrix of decision variables with the trivial bounding
 /// box constraint ensuring all elements are [-1,1], and the linear constraint
 /// imposing -1 <= trace(R) <= 3.
-MatrixDecisionVariable<3, 3> NewRotationMatrixVars(
-    MathematicalProgram* prog, const std::string& name = "R");
+MatrixDecisionVariable<3, 3> NewRotationMatrixVars(MathematicalProgram* prog, const std::string& name = "R");
 
 enum RollPitchYawLimitOptions {
-  kNoLimits = 0,
-  kRPYError = 1 << 0,  ///< Do not use, to avoid & vs. && typos.
-  kRoll_NegPI_2_to_PI_2 = 1 << 1,
-  kRoll_0_to_PI = 1 << 2,
-  kPitch_NegPI_2_to_PI_2 = 1 << 3,
-  kPitch_0_to_PI = 1 << 4,
-  kYaw_NegPI_2_to_PI_2 = 1 << 5,
-  kYaw_0_to_PI = 1 << 6,
-  kRoll_0_to_PI_2 = (1 << 1) | (1 << 2),
-  kPitch_0_to_PI_2 = (1 << 3) | (1 << 4),
-  kYaw_0_to_PI_2 = (1 << 5) | (1 << 6)
+    kNoLimits = 0,
+    kRPYError = 1 << 0,  ///< Do not use, to avoid & vs. && typos.
+    kRoll_NegPI_2_to_PI_2 = 1 << 1,
+    kRoll_0_to_PI = 1 << 2,
+    kPitch_NegPI_2_to_PI_2 = 1 << 3,
+    kPitch_0_to_PI = 1 << 4,
+    kYaw_NegPI_2_to_PI_2 = 1 << 5,
+    kYaw_0_to_PI = 1 << 6,
+    kRoll_0_to_PI_2 = (1 << 1) | (1 << 2),
+    kPitch_0_to_PI_2 = (1 << 3) | (1 << 4),
+    kYaw_0_to_PI_2 = (1 << 5) | (1 << 6)
 };
 typedef uint32_t RollPitchYawLimits;
 
@@ -71,16 +70,14 @@ typedef uint32_t RollPitchYawLimits;
 /// and yaw).
 /// Note: The Roll-Pitch-Yaw angles follow the convention in RollPitchYaw,
 /// namely extrinsic rotations about Space-fixed x-y-z axes, respectively.
-void AddBoundingBoxConstraintsImpliedByRollPitchYawLimits(
-    MathematicalProgram* prog,
-    const Eigen::Ref<const MatrixDecisionVariable<3, 3>>& R,
-    RollPitchYawLimits limits = kNoLimits);
+void AddBoundingBoxConstraintsImpliedByRollPitchYawLimits(MathematicalProgram* prog,
+                                                          const Eigen::Ref<const MatrixDecisionVariable<3, 3>>& R,
+                                                          RollPitchYawLimits limits = kNoLimits);
 
 /// Adds constraint (10) from https://arxiv.org/pdf/1403.4914.pdf ,
 /// which exactly represents the convex hull of all rotation matrices in 3D.
-void AddRotationMatrixSpectrahedralSdpConstraint(
-    MathematicalProgram* prog,
-    const Eigen::Ref<const MatrixDecisionVariable<3, 3>>& R);
+void AddRotationMatrixSpectrahedralSdpConstraint(MathematicalProgram* prog,
+                                                 const Eigen::Ref<const MatrixDecisionVariable<3, 3>>& R);
 
 /// Adds a set of convex constraints which approximate the set of orthogonal
 /// matrices, O(3).  Adds the bilinear constraints that the each column Ri has
@@ -88,9 +85,8 @@ void AddRotationMatrixSpectrahedralSdpConstraint(
 ///    -2 + |Ri|^2 + |Rj|^2 <= 2Ri'Rj <= 2 - |Ri|^2 - |Rj|^2 (for all i!=j),
 /// using a second-order-cone relaxation.  Additionally, the same constraints
 /// are applied to all of the rows.
-void AddRotationMatrixOrthonormalSocpConstraint(
-    MathematicalProgram* prog,
-    const Eigen::Ref<const MatrixDecisionVariable<3, 3>>& R);
+void AddRotationMatrixOrthonormalSocpConstraint(MathematicalProgram* prog,
+                                                const Eigen::Ref<const MatrixDecisionVariable<3, 3>>& R);
 
 }  // namespace solvers
 }  // namespace drake

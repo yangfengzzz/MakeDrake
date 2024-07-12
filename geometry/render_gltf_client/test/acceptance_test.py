@@ -58,7 +58,7 @@ class TestGltfRenderBinary(unittest.TestCase):
 
         # Render each image type and ensure the return code is zero.
         for image_type, ext in zip(
-            ["color", "depth", "label"], ["png", "tiff", "png"]
+                ["color", "depth", "label"], ["png", "tiff", "png"]
         ):
             image_output_path = os.path.join(tmp_dir, f"{image_type}.{ext}")
             proc_args = [
@@ -114,9 +114,9 @@ class TestGltfRenderBinary(unittest.TestCase):
         # `client_demo` program defaults to instantiate RenderEngineGltfClient
         # for rendering.
         proc_args = [
-          client_demo,
-          "--simulation_time",
-          "0.1",
+            client_demo,
+            "--simulation_time",
+            "0.1",
         ]
         subprocess.run(proc_args)
 
@@ -128,10 +128,10 @@ class TestGltfRenderBinary(unittest.TestCase):
         )
 
         proc_args = [
-          client_demo,
-          "--render_engine",
-          "vtk",
-          "--simulation_time",
-          "0.1",
+            client_demo,
+            "--render_engine",
+            "vtk",
+            "--simulation_time",
+            "0.1",
         ]
         subprocess.run(proc_args)

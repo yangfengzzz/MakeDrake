@@ -61,108 +61,103 @@ namespace controllers {
  */
 template <typename T>
 class JointStiffnessController final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(JointStiffnessController);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(JointStiffnessController);
 
-  /**
-   * Constructs the JointStiffnessController system.
-   *
-   * @param plant Reference to the multibody plant model. The life span of @p
-   * plant must be at least as long as that of this instance.
-   * @pre The plant must be finalized (i.e., plant.is_finalized() must return
-   * `true`).
-   * @pre plant.num_positions() == plant.num_velocities() ==
-   * plant.num_actuated_dofs() == kp.size() == kd.size()
-   * @pre plant.IsVelocityEqualToQDot() is true.
-   */
-  JointStiffnessController(const multibody::MultibodyPlant<T>& plant,
-                           const Eigen::Ref<const Eigen::VectorXd>& kp,
-                           const Eigen::Ref<const Eigen::VectorXd>& kd);
+    /**
+     * Constructs the JointStiffnessController system.
+     *
+     * @param plant Reference to the multibody plant model. The life span of @p
+     * plant must be at least as long as that of this instance.
+     * @pre The plant must be finalized (i.e., plant.is_finalized() must return
+     * `true`).
+     * @pre plant.num_positions() == plant.num_velocities() ==
+     * plant.num_actuated_dofs() == kp.size() == kd.size()
+     * @pre plant.IsVelocityEqualToQDot() is true.
+     */
+    JointStiffnessController(const multibody::MultibodyPlant<T>& plant,
+                             const Eigen::Ref<const Eigen::VectorXd>& kp,
+                             const Eigen::Ref<const Eigen::VectorXd>& kd);
 
-  /**
-   * Constructs the JointStiffnessController system and takes the ownership of
-   * the input `plant`.
-   * @pre The plant must be finalized (i.e., plant.is_finalized() must return
-   * `true`).
-   * @pre plant.num_positions() == plant.num_velocities() ==
-   * plant.num_actuated_dofs() == kp.size() == kd.size()
-   * @pre plant.IsVelocityEqualToQDot() is true.
-   *
-   * @exclude_from_pydrake_mkdoc{This overload is not bound.}
-   */
-  explicit JointStiffnessController(
-      std::unique_ptr<multibody::MultibodyPlant<T>> plant,
-      const Eigen::Ref<const Eigen::VectorXd>& kp,
-      const Eigen::Ref<const Eigen::VectorXd>& kd);
+    /**
+     * Constructs the JointStiffnessController system and takes the ownership of
+     * the input `plant`.
+     * @pre The plant must be finalized (i.e., plant.is_finalized() must return
+     * `true`).
+     * @pre plant.num_positions() == plant.num_velocities() ==
+     * plant.num_actuated_dofs() == kp.size() == kd.size()
+     * @pre plant.IsVelocityEqualToQDot() is true.
+     *
+     * @exclude_from_pydrake_mkdoc{This overload is not bound.}
+     */
+    explicit JointStiffnessController(std::unique_ptr<multibody::MultibodyPlant<T>> plant,
+                                      const Eigen::Ref<const Eigen::VectorXd>& kp,
+                                      const Eigen::Ref<const Eigen::VectorXd>& kd);
 
-  // Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  template <typename U>
-  explicit JointStiffnessController(const JointStiffnessController<U>& other);
+    // Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    template <typename U>
+    explicit JointStiffnessController(const JointStiffnessController<U>& other);
 
-  ~JointStiffnessController() override;
+    ~JointStiffnessController() override;
 
-  // TODO(russt): Add support for safety limits. The iiwa driver will fault if
-  // the desired state and the estimated state are too far apart. We should
-  // support that (optional) feature here -- it's not very iiwa-specific.
+    // TODO(russt): Add support for safety limits. The iiwa driver will fault if
+    // the desired state and the estimated state are too far apart. We should
+    // support that (optional) feature here -- it's not very iiwa-specific.
 
-  /**
-   * Returns the input port for the estimated state.
-   */
-  const InputPort<T>& get_input_port_estimated_state() const {
-    return this->get_input_port(input_port_index_estimated_state_);
-  }
+    /**
+     * Returns the input port for the estimated state.
+     */
+    const InputPort<T>& get_input_port_estimated_state() const {
+        return this->get_input_port(input_port_index_estimated_state_);
+    }
 
-  /**
-   * Returns the input port for the desired state.
-   */
-  const InputPort<T>& get_input_port_desired_state() const {
-    return this->get_input_port(input_port_index_desired_state_);
-  }
+    /**
+     * Returns the input port for the desired state.
+     */
+    const InputPort<T>& get_input_port_desired_state() const {
+        return this->get_input_port(input_port_index_desired_state_);
+    }
 
-  /**
-   * Returns the output port for the generalized forces implementing the
-   * control. */
-  const OutputPort<T>& get_output_port_generalized_force() const {
-    return this->get_output_port(output_port_index_force_);
-  }
+    /**
+     * Returns the output port for the generalized forces implementing the
+     * control. */
+    const OutputPort<T>& get_output_port_generalized_force() const {
+        return this->get_output_port(output_port_index_force_);
+    }
 
-  /**
-   * Returns a constant pointer to the MultibodyPlant used for control.
-   */
-  const multibody::MultibodyPlant<T>& get_multibody_plant() const {
-    return *plant_;
-  }
+    /**
+     * Returns a constant pointer to the MultibodyPlant used for control.
+     */
+    const multibody::MultibodyPlant<T>& get_multibody_plant() const { return *plant_; }
 
- private:
-  // Other constructors delegate to this private constructor.
-  JointStiffnessController(
-      std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant,
-      const multibody::MultibodyPlant<T>* plant,
-      const Eigen::Ref<const Eigen::VectorXd>& kp,
-      const Eigen::Ref<const Eigen::VectorXd>& kd);
+private:
+    // Other constructors delegate to this private constructor.
+    JointStiffnessController(std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant,
+                             const multibody::MultibodyPlant<T>* plant,
+                             const Eigen::Ref<const Eigen::VectorXd>& kp,
+                             const Eigen::Ref<const Eigen::VectorXd>& kd);
 
-  template <typename> friend class JointStiffnessController;
+    template <typename>
+    friend class JointStiffnessController;
 
-  // This is the calculator method for the output port.
-  void CalcOutputForce(const Context<T>& context,
-                       BasicVector<T>* force) const;
+    // This is the calculator method for the output port.
+    void CalcOutputForce(const Context<T>& context, BasicVector<T>* force) const;
 
-  // Methods for updating cache entries.
-  void SetMultibodyContext(const Context<T>&, Context<T>*) const;
-  void CalcMultibodyForces(const Context<T>&,
-                           multibody::MultibodyForces<T>*) const;
+    // Methods for updating cache entries.
+    void SetMultibodyContext(const Context<T>&, Context<T>*) const;
+    void CalcMultibodyForces(const Context<T>&, multibody::MultibodyForces<T>*) const;
 
-  const std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant_{};
-  const multibody::MultibodyPlant<T>* const plant_;
+    const std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant_{};
+    const multibody::MultibodyPlant<T>* const plant_;
 
-  int input_port_index_estimated_state_{0};
-  int input_port_index_desired_state_{0};
-  int output_port_index_force_{0};
+    int input_port_index_estimated_state_{0};
+    int input_port_index_desired_state_{0};
+    int output_port_index_force_{0};
 
-  Eigen::VectorXd kp_, kd_;
+    Eigen::VectorXd kp_, kd_;
 
-  drake::systems::CacheIndex applied_forces_cache_index_;
-  drake::systems::CacheIndex plant_context_cache_index_;
+    drake::systems::CacheIndex applied_forces_cache_index_;
+    drake::systems::CacheIndex plant_context_cache_index_;
 };
 
 #ifdef DRAKE_DOXYGEN_CXX
@@ -187,4 +182,4 @@ class JointImpedanceController {};
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::controllers::JointStiffnessController);
+        class ::drake::systems::controllers::JointStiffnessController);

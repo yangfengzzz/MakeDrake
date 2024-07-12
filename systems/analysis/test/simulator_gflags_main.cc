@@ -9,18 +9,18 @@ namespace drake {
 namespace systems {
 template <typename T>
 void ResetIntegratorFromGflagsTest() {
-  ConstantVectorSource<T> source(2);
-  auto simulator = internal::MakeSimulatorFromGflags(source);
-  internal::ResetIntegratorFromGflags(simulator.get());
-  const auto simulator_config = ExtractSimulatorConfig(*simulator);
-  drake::log()->info(drake::yaml::SaveYamlString(simulator_config));
+    ConstantVectorSource<T> source(2);
+    auto simulator = internal::MakeSimulatorFromGflags(source);
+    internal::ResetIntegratorFromGflags(simulator.get());
+    const auto simulator_config = ExtractSimulatorConfig(*simulator);
+    drake::log()->info(drake::yaml::SaveYamlString(simulator_config));
 }
 }  // namespace systems
 }  // namespace drake
 
 int main(int argc, char* argv[]) {
-  gflags::SetUsageMessage("A stub main() program to test simulator_gflags.h");
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
-  drake::systems::ResetIntegratorFromGflagsTest<double>();
-  drake::systems::ResetIntegratorFromGflagsTest<drake::AutoDiffXd>();
+    gflags::SetUsageMessage("A stub main() program to test simulator_gflags.h");
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+    drake::systems::ResetIntegratorFromGflagsTest<double>();
+    drake::systems::ResetIntegratorFromGflagsTest<drake::AutoDiffXd>();
 }

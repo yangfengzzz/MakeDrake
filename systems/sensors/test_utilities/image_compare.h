@@ -18,8 +18,7 @@ void PrintTo(const Image<kPixelType>& image, std::ostream* os);
 
 /** Loads the PNG or TIFF image from `filename` into the `image` output. */
 template <PixelType kPixelType>
-::testing::AssertionResult LoadImage(const std::filesystem::path& filename,
-                                     Image<kPixelType>* image);
+::testing::AssertionResult LoadImage(const std::filesystem::path& filename, Image<kPixelType>* image);
 
 // TODO(jwnimmer-tri) Add a helper function to stash an image into the
 // $TEST_UNDECLARED_OUTPUTS_DIR for offline inspection.

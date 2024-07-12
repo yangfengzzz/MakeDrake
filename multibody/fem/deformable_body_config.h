@@ -11,21 +11,21 @@ namespace fem {
 
 /** Types of material models for the deformable body. */
 enum class MaterialModel {
-  /** Linear corotational model as described in [Han et al., 2023]. It provides
-   a combination of accuracy, robustness, and speed. Recommended in most
-   scenarios.
-   [Han et al., 2023] Han, Xuchen, Joseph Masterjohn, and Alejandro Castro. "A
-   Convex Formulation of Frictional Contact between Rigid and Deformable
-   Bodies." arXiv preprint arXiv:2303.08912 (2023). */
-  kLinearCorotated,
-  /** Corotational model. More computationally expensive and less robust than
-   the linear corotational model. May require smaller time steps. Recommended
-   when capturing large rotation velocity is important. */
-  kCorotated,
-  /** Linear elasticity model (rarely used).
-   Less computationally expensive than other models but leads to artifacts
-   when large rotational deformations occur. */
-  kLinear,
+    /** Linear corotational model as described in [Han et al., 2023]. It provides
+     a combination of accuracy, robustness, and speed. Recommended in most
+     scenarios.
+     [Han et al., 2023] Han, Xuchen, Joseph Masterjohn, and Alejandro Castro. "A
+     Convex Formulation of Frictional Contact between Rigid and Deformable
+     Bodies." arXiv preprint arXiv:2303.08912 (2023). */
+    kLinearCorotated,
+    /** Corotational model. More computationally expensive and less robust than
+     the linear corotational model. May require smaller time steps. Recommended
+     when capturing large rotation velocity is important. */
+    kCorotated,
+    /** Linear elasticity model (rarely used).
+     Less computationally expensive than other models but leads to artifacts
+     when large rotational deformations occur. */
+    kLinear,
 };
 
 /** %DeformableBodyConfig stores the physical parameters for a deformable body.
@@ -54,69 +54,63 @@ enum class MaterialModel {
  @tparam_nonsymbolic_scalar */
 template <typename T>
 class DeformableBodyConfig {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DeformableBodyConfig);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DeformableBodyConfig);
 
-  DeformableBodyConfig() = default;
+    DeformableBodyConfig() = default;
 
-  /** @pre youngs_modulus > 0. */
-  void set_youngs_modulus(T youngs_modulus) {
-    DRAKE_DEMAND(youngs_modulus > 0);
-    youngs_modulus_ = std::move(youngs_modulus);
-  }
+    /** @pre youngs_modulus > 0. */
+    void set_youngs_modulus(T youngs_modulus) {
+        DRAKE_DEMAND(youngs_modulus > 0);
+        youngs_modulus_ = std::move(youngs_modulus);
+    }
 
-  /** @pre -1 < poissons_ratio < 0.5. */
-  void set_poissons_ratio(T poissons_ratio) {
-    DRAKE_DEMAND(-1 < poissons_ratio && poissons_ratio < 0.5);
-    poissons_ratio_ = std::move(poissons_ratio);
-  }
+    /** @pre -1 < poissons_ratio < 0.5. */
+    void set_poissons_ratio(T poissons_ratio) {
+        DRAKE_DEMAND(-1 < poissons_ratio && poissons_ratio < 0.5);
+        poissons_ratio_ = std::move(poissons_ratio);
+    }
 
-  /** @pre mass_damping_coefficient >= 0. */
-  void set_mass_damping_coefficient(T mass_damping_coefficient) {
-    DRAKE_DEMAND(mass_damping_coefficient_ >= 0);
-    mass_damping_coefficient_ = std::move(mass_damping_coefficient);
-  }
+    /** @pre mass_damping_coefficient >= 0. */
+    void set_mass_damping_coefficient(T mass_damping_coefficient) {
+        DRAKE_DEMAND(mass_damping_coefficient_ >= 0);
+        mass_damping_coefficient_ = std::move(mass_damping_coefficient);
+    }
 
-  /**  @pre stiffness_damping_coefficient >= 0. */
-  void set_stiffness_damping_coefficient(T stiffness_damping_coefficient) {
-    DRAKE_DEMAND(stiffness_damping_coefficient_ >= 0);
-    stiffness_damping_coefficient_ = std::move(stiffness_damping_coefficient);
-  }
+    /**  @pre stiffness_damping_coefficient >= 0. */
+    void set_stiffness_damping_coefficient(T stiffness_damping_coefficient) {
+        DRAKE_DEMAND(stiffness_damping_coefficient_ >= 0);
+        stiffness_damping_coefficient_ = std::move(stiffness_damping_coefficient);
+    }
 
-  /**  @pre mass_density > 0. */
-  void set_mass_density(T mass_density) {
-    DRAKE_DEMAND(mass_density > 0);
-    mass_density_ = std::move(mass_density);
-  }
+    /**  @pre mass_density > 0. */
+    void set_mass_density(T mass_density) {
+        DRAKE_DEMAND(mass_density > 0);
+        mass_density_ = std::move(mass_density);
+    }
 
-  void set_material_model(MaterialModel material_model) {
-    material_model_ = material_model;
-  }
+    void set_material_model(MaterialModel material_model) { material_model_ = material_model; }
 
-  /** Returns the Young's modulus, with unit of N/m². */
-  const T& youngs_modulus() const { return youngs_modulus_; }
-  /** Returns the Poisson's ratio, unitless. */
-  const T& poissons_ratio() const { return poissons_ratio_; }
-  /** Returns the mass damping coefficient. See DampingModel. */
-  const T& mass_damping_coefficient() const {
-    return mass_damping_coefficient_;
-  }
-  /** Returns the stiffness damping coefficient. See DampingModel. */
-  const T& stiffness_damping_coefficient() const {
-    return stiffness_damping_coefficient_;
-  }
-  /** Returns the mass density, with unit of kg/m³. */
-  const T& mass_density() const { return mass_density_; }
-  /** Returns the constitutive model of the material. */
-  MaterialModel material_model() const { return material_model_; }
+    /** Returns the Young's modulus, with unit of N/m². */
+    const T& youngs_modulus() const { return youngs_modulus_; }
+    /** Returns the Poisson's ratio, unitless. */
+    const T& poissons_ratio() const { return poissons_ratio_; }
+    /** Returns the mass damping coefficient. See DampingModel. */
+    const T& mass_damping_coefficient() const { return mass_damping_coefficient_; }
+    /** Returns the stiffness damping coefficient. See DampingModel. */
+    const T& stiffness_damping_coefficient() const { return stiffness_damping_coefficient_; }
+    /** Returns the mass density, with unit of kg/m³. */
+    const T& mass_density() const { return mass_density_; }
+    /** Returns the constitutive model of the material. */
+    MaterialModel material_model() const { return material_model_; }
 
- private:
-  T youngs_modulus_{1e8};
-  T poissons_ratio_{0.49};
-  T mass_damping_coefficient_{0};
-  T stiffness_damping_coefficient_{0};
-  T mass_density_{1.5e3};
-  MaterialModel material_model_{MaterialModel::kLinearCorotated};
+private:
+    T youngs_modulus_{1e8};
+    T poissons_ratio_{0.49};
+    T mass_damping_coefficient_{0};
+    T stiffness_damping_coefficient_{0};
+    T mass_density_{1.5e3};
+    MaterialModel material_model_{MaterialModel::kLinearCorotated};
 };
 
 }  // namespace fem

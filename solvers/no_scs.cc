@@ -8,15 +8,16 @@ namespace drake {
 namespace solvers {
 
 bool ScsSolver::is_available() {
-  return false;
+    return false;
 }
 
-void ScsSolver::DoSolve(const MathematicalProgram&, const Eigen::VectorXd&,
+void ScsSolver::DoSolve(const MathematicalProgram&,
+                        const Eigen::VectorXd&,
                         const SolverOptions&,
                         MathematicalProgramResult*) const {
-  throw std::runtime_error(
-      "The SCS bindings were not compiled.  You'll need to use a different "
-      "solver.");
+    throw std::runtime_error(
+            "The SCS bindings were not compiled.  You'll need to use a different "
+            "solver.");
 }
 
 }  // namespace solvers

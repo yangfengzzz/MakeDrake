@@ -70,8 +70,7 @@ namespace geometry {
  [libcurl_init]: https://curl.se/libcurl/c/curl_global_init.html
  [libcurl_cleanup]: https://curl.se/libcurl/c/curl_global_cleanup.html
  */
-std::unique_ptr<render::RenderEngine> MakeRenderEngineGltfClient(
-    const RenderEngineGltfClientParams& params);
+std::unique_ptr<render::RenderEngine> MakeRenderEngineGltfClient(const RenderEngineGltfClientParams& params);
 
 }  // namespace geometry
 }  // namespace drake

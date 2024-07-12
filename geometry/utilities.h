@@ -24,52 +24,48 @@ std::string CanonicalizeStringName(const std::string& name);
 // A const range iterator through the keys of an unordered map.
 template <typename K, typename V>
 class MapKeyRange {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MapKeyRange);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MapKeyRange);
 
-  class ConstIterator {
-   public:
-    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ConstIterator);
+    class ConstIterator {
+    public:
+        DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ConstIterator);
 
-    /* In order to be able to instantiate an std::vector from a MapKeyRange,
-     e.g.,
+        /* In order to be able to instantiate an std::vector from a MapKeyRange,
+         e.g.,
 
-        std::vector<K> values(range.begin(), range.end());
+            std::vector<K> values(range.begin(), range.end());
 
-     we need to define the following member types to enable
-     std::iterator_traits. Curiously, it isn't required for doing the same for
-     e.g., std::set. */
-    using difference_type = int;
-    using value_type = K;
-    using pointer = const K*;
-    using reference = const K&;
-    using iterator_category = std::input_iterator_tag;
+         we need to define the following member types to enable
+         std::iterator_traits. Curiously, it isn't required for doing the same for
+         e.g., std::set. */
+        using difference_type = int;
+        using value_type = K;
+        using pointer = const K*;
+        using reference = const K&;
+        using iterator_category = std::input_iterator_tag;
 
-    const K& operator*() const { return itr_->first; }
-    const ConstIterator& operator++() {
-      ++itr_;
-      return *this;
-    }
-    bool operator!=(const ConstIterator& other) { return itr_ != other.itr_; }
+        const K& operator*() const { return itr_->first; }
+        const ConstIterator& operator++() {
+            ++itr_;
+            return *this;
+        }
+        bool operator!=(const ConstIterator& other) { return itr_ != other.itr_; }
 
-   private:
-    explicit ConstIterator(
-        typename std::unordered_map<K, V>::const_iterator itr)
-        : itr_(itr) {}
+    private:
+        explicit ConstIterator(typename std::unordered_map<K, V>::const_iterator itr) : itr_(itr) {}
 
-   private:
-    typename std::unordered_map<K, V>::const_iterator itr_;
-    friend class MapKeyRange;
-  };
+    private:
+        typename std::unordered_map<K, V>::const_iterator itr_;
+        friend class MapKeyRange;
+    };
 
-  explicit MapKeyRange(const std::unordered_map<K, V>* map) : map_(map) {
-    DRAKE_DEMAND(map != nullptr);
-  }
-  ConstIterator begin() const { return ConstIterator(map_->cbegin()); }
-  ConstIterator end() const { return ConstIterator(map_->cend()); }
+    explicit MapKeyRange(const std::unordered_map<K, V>* map) : map_(map) { DRAKE_DEMAND(map != nullptr); }
+    ConstIterator begin() const { return ConstIterator(map_->cbegin()); }
+    ConstIterator end() const { return ConstIterator(map_->cend()); }
 
- private:
-  const std::unordered_map<K, V>* map_;
+private:
+    const std::unordered_map<K, V>* map_;
 };
 
 /* @name Isometry scalar conversion
@@ -82,54 +78,50 @@ class MapKeyRange {
 //@{
 
 inline const Vector3<double>& convert_to_double(const Vector3<double>& vec) {
-  return vec;
+    return vec;
 }
 
 template <class T>
 Vector3<double> convert_to_double(const Vector3<T>& vec) {
-  Vector3<double> result;
-  for (int r = 0; r < 3; ++r) {
-    result(r) = ExtractDoubleOrThrow(vec(r));
-  }
-  return result;
+    Vector3<double> result;
+    for (int r = 0; r < 3; ++r) {
+        result(r) = ExtractDoubleOrThrow(vec(r));
+    }
+    return result;
 }
 
 inline const VectorX<double>& convert_to_double(const VectorX<double>& vec) {
-  return vec;
+    return vec;
 }
 
 template <class T>
 VectorX<double> convert_to_double(const VectorX<T>& vec) {
-  VectorX<double> result(vec.size());
-  for (int r = 0; r < vec.size(); ++r) {
-    result(r) = ExtractDoubleOrThrow(vec(r));
-  }
-  return result;
+    VectorX<double> result(vec.size());
+    for (int r = 0; r < vec.size(); ++r) {
+        result(r) = ExtractDoubleOrThrow(vec(r));
+    }
+    return result;
 }
 
 // Don't needlessly copy transforms that are already scalar-valued.
-inline const math::RigidTransformd& convert_to_double(
-    const math::RigidTransformd& X_AB) {
-  return X_AB;
+inline const math::RigidTransformd& convert_to_double(const math::RigidTransformd& X_AB) {
+    return X_AB;
 }
 
-inline math::RigidTransformd convert_to_double(
-    const math::RigidTransform<AutoDiffXd>& X_AB) {
-  Matrix3<double> R_converted;
-  Vector3<double> p_converted;
-  for (int r = 0; r < 3; ++r) {
-    p_converted(r) = ExtractDoubleOrThrow(X_AB.translation()(r));
-    for (int c = 0; c < 3; ++c) {
-      R_converted(r, c) = ExtractDoubleOrThrow(X_AB.rotation().matrix()(r, c));
+inline math::RigidTransformd convert_to_double(const math::RigidTransform<AutoDiffXd>& X_AB) {
+    Matrix3<double> R_converted;
+    Vector3<double> p_converted;
+    for (int r = 0; r < 3; ++r) {
+        p_converted(r) = ExtractDoubleOrThrow(X_AB.translation()(r));
+        for (int c = 0; c < 3; ++c) {
+            R_converted(r, c) = ExtractDoubleOrThrow(X_AB.rotation().matrix()(r, c));
+        }
     }
-  }
-  return math::RigidTransformd(math::RotationMatrixd(R_converted), p_converted);
+    return math::RigidTransformd(math::RotationMatrixd(R_converted), p_converted);
 }
 
-inline math::RigidTransformd convert_to_double(
-    const math::RigidTransform<symbolic::Expression>& X_AB) {
-  return math::RigidTransform<double>(
-      ExtractDoubleOrThrow(X_AB.GetAsMatrix34()));
+inline math::RigidTransformd convert_to_double(const math::RigidTransform<symbolic::Expression>& X_AB) {
+    return math::RigidTransform<double>(ExtractDoubleOrThrow(X_AB.GetAsMatrix34()));
 }
 
 //@}

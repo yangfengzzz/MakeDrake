@@ -13,23 +13,23 @@ namespace test {
 constexpr int kNumLocations = 1;
 
 GTEST_TEST(LinearConstitutiveModelTest, Parameters) {
-  TestParameters<LinearConstitutiveModel<double, kNumLocations>>();
-  TestParameters<LinearConstitutiveModel<AutoDiffXd, kNumLocations>>();
-  LinearConstitutiveModel<double, kNumLocations> model(100, 0.4);
-  EXPECT_TRUE(model.is_linear);
+    TestParameters<LinearConstitutiveModel<double, kNumLocations>>();
+    TestParameters<LinearConstitutiveModel<AutoDiffXd, kNumLocations>>();
+    LinearConstitutiveModel<double, kNumLocations> model(100, 0.4);
+    EXPECT_TRUE(model.is_linear);
 }
 
 GTEST_TEST(LinearConstitutiveModelTest, UndeformedState) {
-  TestUndeformedState<LinearConstitutiveModel<double, kNumLocations>>();
-  TestUndeformedState<LinearConstitutiveModel<AutoDiffXd, kNumLocations>>();
+    TestUndeformedState<LinearConstitutiveModel<double, kNumLocations>>();
+    TestUndeformedState<LinearConstitutiveModel<AutoDiffXd, kNumLocations>>();
 }
 
 GTEST_TEST(LinearConstitutiveModelTest, PIsDerivativeOfPsi) {
-  TestPIsDerivativeOfPsi<LinearConstitutiveModel<AutoDiffXd, kNumLocations>>();
+    TestPIsDerivativeOfPsi<LinearConstitutiveModel<AutoDiffXd, kNumLocations>>();
 }
 
 GTEST_TEST(LinearConstitutiveModelTest, dPdFIsDerivativeOfP) {
-  TestdPdFIsDerivativeOfP<LinearConstitutiveModel<AutoDiffXd, kNumLocations>>();
+    TestdPdFIsDerivativeOfP<LinearConstitutiveModel<AutoDiffXd, kNumLocations>>();
 }
 
 }  // namespace test

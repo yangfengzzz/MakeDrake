@@ -94,8 +94,7 @@ namespace internal {
  @tparam_nonsymbolic_scalar
  */
 template <typename T>
-VolumeMesh<T> MakeCapsuleVolumeMesh(const Capsule& capsule,
-                                    double resolution_hint);
+VolumeMesh<T> MakeCapsuleVolumeMesh(const Capsule& capsule, double resolution_hint);
 
 // Creates a surface mesh for the given `capsule`; the level of
 // tessellation is guided by the `resolution_hint` parameter in the same way
@@ -115,11 +114,9 @@ VolumeMesh<T> MakeCapsuleVolumeMesh(const Capsule& capsule,
 // @tparam T
 //    The Eigen-compatible scalar for representing the mesh vertex positions.
 template <typename T>
-TriangleSurfaceMesh<T> MakeCapsuleSurfaceMesh(const Capsule& capsule,
-                                              double resolution_hint) {
-  DRAKE_DEMAND(resolution_hint > 0.0);
-  return ConvertVolumeToSurfaceMesh<T>(
-      MakeCapsuleVolumeMesh<T>(capsule, resolution_hint));
+TriangleSurfaceMesh<T> MakeCapsuleSurfaceMesh(const Capsule& capsule, double resolution_hint) {
+    DRAKE_DEMAND(resolution_hint > 0.0);
+    return ConvertVolumeToSurfaceMesh<T>(MakeCapsuleVolumeMesh<T>(capsule, resolution_hint));
 }
 }  // namespace internal
 }  // namespace geometry

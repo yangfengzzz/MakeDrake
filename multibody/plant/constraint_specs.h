@@ -22,16 +22,16 @@ namespace internal {
 // gear ratio and Δq a fixed offset. Per equation above, ρ has units of q₀/q₁
 // and Δq has units of q₀.
 struct CouplerConstraintSpec {
-  // First joint with position q₀.
-  JointIndex joint0_index;
-  // Second joint with position q₁.
-  JointIndex joint1_index;
-  // Gear ratio ρ.
-  double gear_ratio{1.0};
-  // Offset Δq.
-  double offset{0.0};
-  // Id of this constraint in the plant.
-  MultibodyConstraintId id;
+    // First joint with position q₀.
+    JointIndex joint0_index;
+    // Second joint with position q₁.
+    JointIndex joint1_index;
+    // Gear ratio ρ.
+    double gear_ratio{1.0};
+    // Offset Δq.
+    double offset{0.0};
+    // Id of this constraint in the plant.
+    MultibodyConstraintId id;
 };
 
 // Struct to store the specification for a distance constraint. A distance
@@ -53,24 +53,20 @@ struct CouplerConstraintSpec {
 //
 // @pre body_A != body_B, d₀ > 0, k >= 0, c >= 0. @see IsValid().
 struct DistanceConstraintSpec {
-  // Returns `true` iff `this` specification is valid to define a distance
-  // constraint. A distance constraint specification is considered to be valid
-  // iff body_A != body_B, distance > 0, stiffness >= 0 and damping >= 0.
-  bool IsValid() const {
-    return body_A != body_B && distance > 0.0 && stiffness >= 0.0 &&
-           damping >= 0.0;
-  }
+    // Returns `true` iff `this` specification is valid to define a distance
+    // constraint. A distance constraint specification is considered to be valid
+    // iff body_A != body_B, distance > 0, stiffness >= 0 and damping >= 0.
+    bool IsValid() const { return body_A != body_B && distance > 0.0 && stiffness >= 0.0 && damping >= 0.0; }
 
-  BodyIndex body_A;      // Index of body A.
-  Vector3<double> p_AP;  // Position of point P in body frame A.
-  BodyIndex body_B;      // Index of body B.
-  Vector3<double> p_BQ;  // Position of point Q in body frame B.
-  double distance{0.0};  // Free length d₀.
-  double stiffness{
-      std::numeric_limits<double>::infinity()};  // Constraint stiffness
-                                                 // k in N/m.
-  double damping{0.0};       // Constraint damping c in N⋅s/m.
-  MultibodyConstraintId id;  // Id of this constraint in the plant.
+    BodyIndex body_A;                                           // Index of body A.
+    Vector3<double> p_AP;                                       // Position of point P in body frame A.
+    BodyIndex body_B;                                           // Index of body B.
+    Vector3<double> p_BQ;                                       // Position of point Q in body frame B.
+    double distance{0.0};                                       // Free length d₀.
+    double stiffness{std::numeric_limits<double>::infinity()};  // Constraint stiffness
+                                                                // k in N/m.
+    double damping{0.0};                                        // Constraint damping c in N⋅s/m.
+    MultibodyConstraintId id;                                   // Id of this constraint in the plant.
 };
 
 // Struct to store the specification for a ball constraint. A ball
@@ -84,16 +80,16 @@ struct DistanceConstraintSpec {
 //
 // @pre body_A != body_B. @see IsValid().
 struct BallConstraintSpec {
-  // Returns `true` iff `this` specification is valid to define a ball
-  // constraint. A ball constraint specification is considered to be valid iff:
-  //   body_A != body_B.
-  bool IsValid() const { return body_A != body_B; }
+    // Returns `true` iff `this` specification is valid to define a ball
+    // constraint. A ball constraint specification is considered to be valid iff:
+    //   body_A != body_B.
+    bool IsValid() const { return body_A != body_B; }
 
-  BodyIndex body_A;          // Index of body A.
-  Vector3<double> p_AP;      // Position of point P in body frame A.
-  BodyIndex body_B;          // Index of body B.
-  Vector3<double> p_BQ;      // Position of point Q in body frame B.
-  MultibodyConstraintId id;  // Id of this constraint in the plant.
+    BodyIndex body_A;          // Index of body A.
+    Vector3<double> p_AP;      // Position of point P in body frame A.
+    BodyIndex body_B;          // Index of body B.
+    Vector3<double> p_BQ;      // Position of point Q in body frame B.
+    MultibodyConstraintId id;  // Id of this constraint in the plant.
 };
 
 // Struct to store the specification for a weld constraint. A weld constraint is
@@ -106,16 +102,16 @@ struct BallConstraintSpec {
 //
 // @pre body_A != bodyB. @see IsValid().
 struct WeldConstraintSpec {
-  // Returns `true` iff `this` specification is valid to define a weld
-  // constraint. A weld constraint specification is considered to be valid iff:
-  //   body_A != body_B.
-  bool IsValid() { return body_A != body_B; }
+    // Returns `true` iff `this` specification is valid to define a weld
+    // constraint. A weld constraint specification is considered to be valid iff:
+    //   body_A != body_B.
+    bool IsValid() { return body_A != body_B; }
 
-  BodyIndex body_A;                   // Index of body A.
-  math::RigidTransform<double> X_AP;  // Pose of frame P in A's body frame
-  BodyIndex body_B;                   // Index of body B.
-  math::RigidTransform<double> X_BQ;  // Pose of frame Q in B's body frame.
-  MultibodyConstraintId id;           // Id of this constraint in the plant.
+    BodyIndex body_A;                   // Index of body A.
+    math::RigidTransform<double> X_AP;  // Pose of frame P in A's body frame
+    BodyIndex body_B;                   // Index of body B.
+    math::RigidTransform<double> X_BQ;  // Pose of frame Q in B's body frame.
+    MultibodyConstraintId id;           // Id of this constraint in the plant.
 };
 
 // Struct to store the specification for a fixed constraint between vertices of
@@ -133,13 +129,12 @@ struct WeldConstraintSpec {
 // @pre each entry in `vertices` refers to a valid vertex index in deformable
 // body A.
 struct DeformableRigidFixedConstraintSpec {
-  bool operator==(const DeformableRigidFixedConstraintSpec&) const = default;
-  DeformableBodyId body_A;    // Index of the deformable body A.
-  BodyIndex body_B;           // Index of the rigid body B.
-  std::vector<int> vertices;  // Indices of the Pᵢ in the deformable body A.
-  std::vector<Vector3<double>>
-      p_BQs;                 // Positions of points Qᵢ in body frame B.
-  MultibodyConstraintId id;  // Id of this constraint in the plant.
+    bool operator==(const DeformableRigidFixedConstraintSpec&) const = default;
+    DeformableBodyId body_A;             // Index of the deformable body A.
+    BodyIndex body_B;                    // Index of the rigid body B.
+    std::vector<int> vertices;           // Indices of the Pᵢ in the deformable body A.
+    std::vector<Vector3<double>> p_BQs;  // Positions of points Qᵢ in body frame B.
+    MultibodyConstraintId id;            // Id of this constraint in the plant.
 };
 
 }  // namespace internal

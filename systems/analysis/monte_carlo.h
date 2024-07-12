@@ -26,9 +26,7 @@ namespace analysis {
  * Having the Simulator own the System (by calling the unique_ptr version of
  * the constructor) is one convenient solution.
  */
-typedef std::function<std::unique_ptr<Simulator<double>>(
-    RandomGenerator* generator)>
-    SimulatorFactory;
+typedef std::function<std::unique_ptr<Simulator<double>>(RandomGenerator* generator)> SimulatorFactory;
 
 /***
  * Defines an arbitrary scalar function of the Context.  This is used in the
@@ -40,9 +38,7 @@ typedef std::function<std::unique_ptr<Simulator<double>>(
  * the final Context will be random, so functions of that context will also be
  * random).
  */
-typedef std::function<double(const System<double>& system,
-                             const Context<double>& context)>
-    ScalarSystemFunction;
+typedef std::function<double(const System<double>& system, const Context<double>& context)> ScalarSystemFunction;
 
 /**
  * Run a deterministic simulation of a (stochastic) System using the @p
@@ -84,7 +80,8 @@ typedef std::function<double(const System<double>& system,
  * @ingroup analysis
  */
 double RandomSimulation(const SimulatorFactory& make_simulator,
-                        const ScalarSystemFunction& output, double final_time,
+                        const ScalarSystemFunction& output,
+                        double final_time,
                         RandomGenerator* generator);
 
 /**
@@ -101,14 +98,13 @@ double RandomSimulation(const SimulatorFactory& make_simulator,
  * reproducing the simulation.
  */
 struct RandomSimulationResult {
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(RandomSimulationResult);
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(RandomSimulationResult);
 
-  explicit RandomSimulationResult(const RandomGenerator& generator,
-                                  double value = 0.0)
-      : generator_snapshot(generator), output(value) {}
+    explicit RandomSimulationResult(const RandomGenerator& generator, double value = 0.0)
+        : generator_snapshot(generator), output(value) {}
 
-  RandomGenerator generator_snapshot;
-  double output{};
+    RandomGenerator generator_snapshot;
+    double output{};
 };
 
 /**
@@ -162,10 +158,12 @@ struct RandomSimulationResult {
  */
 // TODO(russt): Consider generalizing this with options (e.g. setting the
 // number of simulators, number of samples per simulator, ...).
-std::vector<RandomSimulationResult> MonteCarloSimulation(
-    const SimulatorFactory& make_simulator, const ScalarSystemFunction& output,
-    double final_time, int num_samples, RandomGenerator* generator = nullptr,
-    Parallelism parallelism = false);
+std::vector<RandomSimulationResult> MonteCarloSimulation(const SimulatorFactory& make_simulator,
+                                                         const ScalarSystemFunction& output,
+                                                         double final_time,
+                                                         int num_samples,
+                                                         RandomGenerator* generator = nullptr,
+                                                         Parallelism parallelism = false);
 
 // The below functions are exposed for unit testing only.
 namespace internal {

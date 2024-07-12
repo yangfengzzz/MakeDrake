@@ -20,11 +20,11 @@ namespace internal {
 // The result from ContactSolver::SolveWithGuess() used to report the
 // success or failure of the solver.
 enum class ContactSolverStatus {
-  // Successful computation.
-  kSuccess = 0,
+    // Successful computation.
+    kSuccess = 0,
 
-  // The solver could not find a solution at the specified tolerances.
-  kFailure = 1,
+    // The solver could not find a solution at the specified tolerances.
+    kFailure = 1,
 };
 
 // This class defines a general interface for all of our contact solvers. By
@@ -248,89 +248,90 @@ enum class ContactSolverStatus {
 // @tparam_nonsymbolic_scalar
 template <typename T>
 class ContactSolver {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ContactSolver);
-  ContactSolver() = default;
-  virtual ~ContactSolver() = default;
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ContactSolver);
+    ContactSolver() = default;
+    virtual ~ContactSolver() = default;
 
-  // Generic interface to invoke the contact solver given an initial guess
-  // `v_guess`.
-  // @param time_step Length of the time interval in which impulses act.
-  // @param dynamics_data Provides pointers to the dynamics data of the system.
-  // @param contact_data Provides pointers to the discrete contact set.
-  // @param v_guess Initial guess for the solver.  Some solvers might decide to
-  // ignore this guess, refer to each solver specific documentation to find out
-  // how this gets used.
-  // @param results On output it must store the solution to the contact problem.
-  virtual ContactSolverStatus SolveWithGuess(
-      const T& time_step, const SystemDynamicsData<T>& dynamics_data,
-      const PointContactData<T>& contact_data, const VectorX<T>& v_guess,
-      ContactSolverResults<T>* result) = 0;
+    // Generic interface to invoke the contact solver given an initial guess
+    // `v_guess`.
+    // @param time_step Length of the time interval in which impulses act.
+    // @param dynamics_data Provides pointers to the dynamics data of the system.
+    // @param contact_data Provides pointers to the discrete contact set.
+    // @param v_guess Initial guess for the solver.  Some solvers might decide to
+    // ignore this guess, refer to each solver specific documentation to find out
+    // how this gets used.
+    // @param results On output it must store the solution to the contact problem.
+    virtual ContactSolverStatus SolveWithGuess(const T& time_step,
+                                               const SystemDynamicsData<T>& dynamics_data,
+                                               const PointContactData<T>& contact_data,
+                                               const VectorX<T>& v_guess,
+                                               ContactSolverResults<T>* result) = 0;
 
- protected:
-  // Helper method to form the Delassus operator. Most solvers will need to
-  // form it whether if used directly, as part of a pre-processing stage or to
-  // just determine scaling factors.
-  //
-  // Computes W = G * Ainv * Jᵀ each j-th column at a time by multiplying with
-  // basis vector ej (zero vector with a "1" at the j-th element).
-  //
-  // Typically Ainv will be the linear operator corresponding to the inverse of
-  // the dynamics matrix A as described in this class's documentation.
-  // J and G will usually correspond to the contact constraints Jacobian Jc as
-  // described in the class's documentation, though some schemes might build a
-  // different approximation of W in which J and G are different.
-  //
-  // @pre G must have size 3nc x nv.
-  // @pre Ainv must have size nv x nv.
-  // @pre J must have size 3nc x nv.
-  // @pre J must provide an implementation to MultiplyByTranspose().
-  // @pre W is not nullptr and is of size 3nc x 3nc.
-  void FormDelassusOperatorMatrix(const LinearOperator<T>& G,
-                                  const LinearOperator<T>& Ainv,
-                                  const LinearOperator<T>& J,
-                                  Eigen::SparseMatrix<T>* W) const {
-    const int num_velocities = Ainv.rows();
-    const int num_impulses = J.rows();
-    DRAKE_DEMAND(G.rows() == num_impulses);
-    DRAKE_DEMAND(G.cols() == num_velocities);
-    DRAKE_DEMAND(Ainv.rows() == num_velocities);
-    DRAKE_DEMAND(Ainv.cols() == num_velocities);
-    DRAKE_DEMAND(J.rows() == num_impulses);
-    DRAKE_DEMAND(J.cols() == num_velocities);
-    DRAKE_DEMAND(W->rows() == num_impulses);
-    DRAKE_DEMAND(W->cols() == num_impulses);
+protected:
+    // Helper method to form the Delassus operator. Most solvers will need to
+    // form it whether if used directly, as part of a pre-processing stage or to
+    // just determine scaling factors.
+    //
+    // Computes W = G * Ainv * Jᵀ each j-th column at a time by multiplying with
+    // basis vector ej (zero vector with a "1" at the j-th element).
+    //
+    // Typically Ainv will be the linear operator corresponding to the inverse of
+    // the dynamics matrix A as described in this class's documentation.
+    // J and G will usually correspond to the contact constraints Jacobian Jc as
+    // described in the class's documentation, though some schemes might build a
+    // different approximation of W in which J and G are different.
+    //
+    // @pre G must have size 3nc x nv.
+    // @pre Ainv must have size nv x nv.
+    // @pre J must have size 3nc x nv.
+    // @pre J must provide an implementation to MultiplyByTranspose().
+    // @pre W is not nullptr and is of size 3nc x 3nc.
+    void FormDelassusOperatorMatrix(const LinearOperator<T>& G,
+                                    const LinearOperator<T>& Ainv,
+                                    const LinearOperator<T>& J,
+                                    Eigen::SparseMatrix<T>* W) const {
+        const int num_velocities = Ainv.rows();
+        const int num_impulses = J.rows();
+        DRAKE_DEMAND(G.rows() == num_impulses);
+        DRAKE_DEMAND(G.cols() == num_velocities);
+        DRAKE_DEMAND(Ainv.rows() == num_velocities);
+        DRAKE_DEMAND(Ainv.cols() == num_velocities);
+        DRAKE_DEMAND(J.rows() == num_impulses);
+        DRAKE_DEMAND(J.cols() == num_velocities);
+        DRAKE_DEMAND(W->rows() == num_impulses);
+        DRAKE_DEMAND(W->cols() == num_impulses);
 
-    Eigen::SparseVector<T> ej(num_impulses);
-    // N.B. ej.makeCompressed() is not available for SparseVector.
-    ej.coeffRef(0) = 1.0;  // Effectively allocate one non-zero entry.
+        Eigen::SparseVector<T> ej(num_impulses);
+        // N.B. ej.makeCompressed() is not available for SparseVector.
+        ej.coeffRef(0) = 1.0;  // Effectively allocate one non-zero entry.
 
-    Eigen::SparseVector<T> JTcolj(num_velocities);
-    Eigen::SparseVector<T> AinvJTcolj(num_velocities);
-    Eigen::SparseVector<T> Wcolj(num_impulses);
-    // Reserve maximum number of non-zeros.
-    JTcolj.reserve(num_velocities);
-    AinvJTcolj.reserve(num_velocities);
-    Wcolj.reserve(num_impulses);
+        Eigen::SparseVector<T> JTcolj(num_velocities);
+        Eigen::SparseVector<T> AinvJTcolj(num_velocities);
+        Eigen::SparseVector<T> Wcolj(num_impulses);
+        // Reserve maximum number of non-zeros.
+        JTcolj.reserve(num_velocities);
+        AinvJTcolj.reserve(num_velocities);
+        Wcolj.reserve(num_impulses);
 
-    // Loop over the j-th column.
-    for (int j = 0; j < W->cols(); ++j) {
-      // By changing the inner index, we change what entry is the non-zero with
-      // value 1.0.
-      *ej.innerIndexPtr() = j;
+        // Loop over the j-th column.
+        for (int j = 0; j < W->cols(); ++j) {
+            // By changing the inner index, we change what entry is the non-zero with
+            // value 1.0.
+            *ej.innerIndexPtr() = j;
 
-      // Reset to nnz = 0. Memory is not freed.
-      JTcolj.setZero();
-      AinvJTcolj.setZero();
-      Wcolj.setZero();
+            // Reset to nnz = 0. Memory is not freed.
+            JTcolj.setZero();
+            AinvJTcolj.setZero();
+            Wcolj.setZero();
 
-      // Apply each operator in sequence.
-      J.MultiplyByTranspose(ej, &JTcolj);  // JTcolj = Jᵀ * ej
-      Ainv.Multiply(JTcolj, &AinvJTcolj);
-      G.Multiply(AinvJTcolj, &Wcolj);
-      W->col(j) = Wcolj;
+            // Apply each operator in sequence.
+            J.MultiplyByTranspose(ej, &JTcolj);  // JTcolj = Jᵀ * ej
+            Ainv.Multiply(JTcolj, &AinvJTcolj);
+            G.Multiply(AinvJTcolj, &Wcolj);
+            W->col(j) = Wcolj;
+        }
     }
-  }
 };
 }  // namespace internal
 }  // namespace contact_solvers
@@ -338,4 +339,4 @@ class ContactSolver {
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class ::drake::multibody::contact_solvers::internal::ContactSolver);
+        class ::drake::multibody::contact_solvers::internal::ContactSolver);

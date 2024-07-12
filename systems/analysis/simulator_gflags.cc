@@ -48,7 +48,8 @@ DEFINE_double(simulator_max_time_step,
               "[Integrator flag] Maximum simulation time step used for "
               "integration. [s].");
 
-DEFINE_double(simulator_accuracy, drake::systems::SimulatorConfig{}.accuracy,
+DEFINE_double(simulator_accuracy,
+              drake::systems::SimulatorConfig{}.accuracy,
               "[Integrator flag] Sets the simulation accuracy for variable "
               "step size integrators with error control.");
 
@@ -64,52 +65,45 @@ namespace internal {
 
 template <typename T>
 IntegratorBase<T>& ResetIntegratorFromGflags(Simulator<T>* simulator) {
-  DRAKE_THROW_UNLESS(simulator != nullptr);
-  IntegratorBase<T>& integrator =
-      ResetIntegratorFromFlags(
-          simulator, FLAGS_simulator_integration_scheme,
-          T(FLAGS_simulator_max_time_step));
-  // For integrators that support error control, turn on or off error control
-  // based on the simulator_use_error_control flag.
-  if (integrator.supports_error_estimation()) {
-    integrator.set_fixed_step_mode(!FLAGS_simulator_use_error_control);
-  }
-  if (!integrator.get_fixed_step_mode()) {
-    integrator.set_target_accuracy(FLAGS_simulator_accuracy);
-  } else {
-    // Integrator is running in fixed step mode, therefore we warn the user if
-    // the accuracy flag was changed from the command line.
-    if (FLAGS_simulator_accuracy != drake::systems::SimulatorConfig{}.accuracy)
-      log()->warn(
-          "Integrator accuracy provided, however the integrator is running in "
-          "fixed step mode. The 'simulator_accuracy' flag will be ignored. "
-          "Switch to an error controlled scheme if you want accuracy control.");
-  }
-  return integrator;
+    DRAKE_THROW_UNLESS(simulator != nullptr);
+    IntegratorBase<T>& integrator =
+            ResetIntegratorFromFlags(simulator, FLAGS_simulator_integration_scheme, T(FLAGS_simulator_max_time_step));
+    // For integrators that support error control, turn on or off error control
+    // based on the simulator_use_error_control flag.
+    if (integrator.supports_error_estimation()) {
+        integrator.set_fixed_step_mode(!FLAGS_simulator_use_error_control);
+    }
+    if (!integrator.get_fixed_step_mode()) {
+        integrator.set_target_accuracy(FLAGS_simulator_accuracy);
+    } else {
+        // Integrator is running in fixed step mode, therefore we warn the user if
+        // the accuracy flag was changed from the command line.
+        if (FLAGS_simulator_accuracy != drake::systems::SimulatorConfig{}.accuracy)
+            log()->warn(
+                    "Integrator accuracy provided, however the integrator is running in "
+                    "fixed step mode. The 'simulator_accuracy' flag will be ignored. "
+                    "Switch to an error controlled scheme if you want accuracy control.");
+    }
+    return integrator;
 }
 
 template <typename T>
-std::unique_ptr<Simulator<T>> MakeSimulatorFromGflags(
-    const System<T>& system, std::unique_ptr<Context<T>> context) {
-  auto simulator = std::make_unique<Simulator<T>>(system, std::move(context));
+std::unique_ptr<Simulator<T>> MakeSimulatorFromGflags(const System<T>& system, std::unique_ptr<Context<T>> context) {
+    auto simulator = std::make_unique<Simulator<T>>(system, std::move(context));
 
-  const SimulatorConfig config {
-    FLAGS_simulator_integration_scheme,
-    FLAGS_simulator_max_time_step,
-    FLAGS_simulator_accuracy,
-    FLAGS_simulator_use_error_control,
-    FLAGS_simulator_target_realtime_rate,
-    FLAGS_simulator_publish_every_time_step
-  };
-  ApplySimulatorConfig(config, simulator.get());
+    const SimulatorConfig config{FLAGS_simulator_integration_scheme,
+                                 FLAGS_simulator_max_time_step,
+                                 FLAGS_simulator_accuracy,
+                                 FLAGS_simulator_use_error_control,
+                                 FLAGS_simulator_target_realtime_rate,
+                                 FLAGS_simulator_publish_every_time_step};
+    ApplySimulatorConfig(config, simulator.get());
 
-  return simulator;
+    return simulator;
 }
 
-DRAKE_DEFINE_FUNCTION_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS((
-      &ResetIntegratorFromGflags<T>,
-      &MakeSimulatorFromGflags<T>
-));
+DRAKE_DEFINE_FUNCTION_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS((&ResetIntegratorFromGflags<T>,
+                                                                              &MakeSimulatorFromGflags<T>));
 
 }  // namespace internal
 }  // namespace systems

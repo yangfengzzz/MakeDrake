@@ -50,73 +50,69 @@ namespace systems {
 /// @ingroup primitive_systems
 template <typename T>
 class DiscreteTimeDelay final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiscreteTimeDelay);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiscreteTimeDelay);
 
-  /// Constructs a DiscreteTimeDelay system updating every `update_sec` and
-  /// delaying a vector-valued input of size `vector_size` for
-  /// `delay_time_steps` number of updates.
-  DiscreteTimeDelay(double update_sec, int delay_time_steps, int vector_size)
-      : DiscreteTimeDelay(update_sec, delay_time_steps, vector_size, nullptr) {}
+    /// Constructs a DiscreteTimeDelay system updating every `update_sec` and
+    /// delaying a vector-valued input of size `vector_size` for
+    /// `delay_time_steps` number of updates.
+    DiscreteTimeDelay(double update_sec, int delay_time_steps, int vector_size)
+        : DiscreteTimeDelay(update_sec, delay_time_steps, vector_size, nullptr) {}
 
-  /// Constructs a DiscreteTimeDelay system updating every `update_sec` and
-  /// delaying an abstract-valued input of type `abstract_model_value` for
-  /// `delay_time_steps` number of updates.
-  DiscreteTimeDelay(double update_sec, int delay_time_steps,
-                    const AbstractValue& abstract_model_value)
-      : DiscreteTimeDelay(update_sec, delay_time_steps, -1,
-                          abstract_model_value.Clone()) {}
+    /// Constructs a DiscreteTimeDelay system updating every `update_sec` and
+    /// delaying an abstract-valued input of type `abstract_model_value` for
+    /// `delay_time_steps` number of updates.
+    DiscreteTimeDelay(double update_sec, int delay_time_steps, const AbstractValue& abstract_model_value)
+        : DiscreteTimeDelay(update_sec, delay_time_steps, -1, abstract_model_value.Clone()) {}
 
-  /// Scalar-type converting copy constructor.
-  /// See @ref system_scalar_conversion.
-  template <typename U>
-  explicit DiscreteTimeDelay(const DiscreteTimeDelay<U>& other);
+    /// Scalar-type converting copy constructor.
+    /// See @ref system_scalar_conversion.
+    template <typename U>
+    explicit DiscreteTimeDelay(const DiscreteTimeDelay<U>& other);
 
-  ~DiscreteTimeDelay() final = default;
+    ~DiscreteTimeDelay() final = default;
 
-  /// (Advanced) Manually samples the input port and updates the state of the
-  /// block, sliding the delay buffer forward and placing the sampled input at
-  /// the end. This emulates an update event and is mostly useful for testing.
-  void SaveInputToBuffer(Context<T>* context) const {
-    this->ValidateContext(context);
-    if (is_abstract()) {
-      SaveInputAbstractValueToBuffer(*context, &context->get_mutable_state());
-    } else {
-      SaveInputVectorToBuffer(*context, &context->get_mutable_discrete_state());
+    /// (Advanced) Manually samples the input port and updates the state of the
+    /// block, sliding the delay buffer forward and placing the sampled input at
+    /// the end. This emulates an update event and is mostly useful for testing.
+    void SaveInputToBuffer(Context<T>* context) const {
+        this->ValidateContext(context);
+        if (is_abstract()) {
+            SaveInputAbstractValueToBuffer(*context, &context->get_mutable_state());
+        } else {
+            SaveInputVectorToBuffer(*context, &context->get_mutable_discrete_state());
+        }
     }
-  }
 
- private:
-  // Allow different specializations to access each other's private data.
-  template <typename U>
-  friend class DiscreteTimeDelay;
+private:
+    // Allow different specializations to access each other's private data.
+    template <typename U>
+    friend class DiscreteTimeDelay;
 
-  // All of the other constructors delegate here.
-  DiscreteTimeDelay(double update_sec, int delay_time_steps, int vector_size,
-                    std::unique_ptr<const AbstractValue> model_value);
+    // All of the other constructors delegate here.
+    DiscreteTimeDelay(double update_sec,
+                      int delay_time_steps,
+                      int vector_size,
+                      std::unique_ptr<const AbstractValue> model_value);
 
-  // Sets the output port value to the properly delayed vector value.
-  void CopyDelayedVector(const Context<T>& context,
-                         BasicVector<T>* output) const;
+    // Sets the output port value to the properly delayed vector value.
+    void CopyDelayedVector(const Context<T>& context, BasicVector<T>* output) const;
 
-  // Saves the input port into the discrete vector-valued state,
-  void SaveInputVectorToBuffer(const Context<T>& context,
-                               DiscreteValues<T>* discrete_state) const;
+    // Saves the input port into the discrete vector-valued state,
+    void SaveInputVectorToBuffer(const Context<T>& context, DiscreteValues<T>* discrete_state) const;
 
-  // Sets the output port value to the properly delayed abstract value.
-  void CopyDelayedAbstractValue(const Context<T>& context,
-                                AbstractValue* output) const;
+    // Sets the output port value to the properly delayed abstract value.
+    void CopyDelayedAbstractValue(const Context<T>& context, AbstractValue* output) const;
 
-  // Saves the input port into the abstract-valued state,
-  void SaveInputAbstractValueToBuffer(const Context<T>& context,
-                                      State<T>* state) const;
+    // Saves the input port into the abstract-valued state,
+    void SaveInputAbstractValueToBuffer(const Context<T>& context, State<T>* state) const;
 
-  bool is_abstract() const { return abstract_model_value_ != nullptr; }
+    bool is_abstract() const { return abstract_model_value_ != nullptr; }
 
-  const double update_sec_{};
-  const int delay_buffer_size_{};
-  const int vector_size_{};
-  const std::unique_ptr<const AbstractValue> abstract_model_value_;
+    const double update_sec_{};
+    const int delay_buffer_size_{};
+    const int vector_size_{};
+    const std::unique_ptr<const AbstractValue> abstract_model_value_;
 };
 
 }  // namespace systems

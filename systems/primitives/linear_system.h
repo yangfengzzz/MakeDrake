@@ -42,57 +42,57 @@ namespace systems {
 /// @see MatrixGain
 template <typename T>
 class LinearSystem : public AffineSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearSystem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LinearSystem);
 
-  /// Constructs a %LinearSystem with a fixed set of coefficient matrices `A`,
-  /// `B`,`C`, and `D`.
-  /// The coefficient matrices must obey the following dimensions:
-  /// | Matrix  | Num Rows    | Num Columns |
-  /// |:-------:|:-----------:|:-----------:|
-  /// | A       | num states  | num states  |
-  /// | B       | num states  | num inputs  |
-  /// | C       | num outputs | num states  |
-  /// | D       | num outputs | num inputs  |
-  ///
-  /// Empty matrices are treated as zero matrices with the appropriate number
-  /// of rows and columns.
-  ///
-  /// Subclasses must use the protected constructor, not this one.
-  explicit LinearSystem(
-      const Eigen::Ref<const Eigen::MatrixXd>& A = Eigen::MatrixXd(),
-      const Eigen::Ref<const Eigen::MatrixXd>& B = Eigen::MatrixXd(),
-      const Eigen::Ref<const Eigen::MatrixXd>& C = Eigen::MatrixXd(),
-      const Eigen::Ref<const Eigen::MatrixXd>& D = Eigen::MatrixXd(),
-      double time_period = 0.0);
+    /// Constructs a %LinearSystem with a fixed set of coefficient matrices `A`,
+    /// `B`,`C`, and `D`.
+    /// The coefficient matrices must obey the following dimensions:
+    /// | Matrix  | Num Rows    | Num Columns |
+    /// |:-------:|:-----------:|:-----------:|
+    /// | A       | num states  | num states  |
+    /// | B       | num states  | num inputs  |
+    /// | C       | num outputs | num states  |
+    /// | D       | num outputs | num inputs  |
+    ///
+    /// Empty matrices are treated as zero matrices with the appropriate number
+    /// of rows and columns.
+    ///
+    /// Subclasses must use the protected constructor, not this one.
+    explicit LinearSystem(const Eigen::Ref<const Eigen::MatrixXd>& A = Eigen::MatrixXd(),
+                          const Eigen::Ref<const Eigen::MatrixXd>& B = Eigen::MatrixXd(),
+                          const Eigen::Ref<const Eigen::MatrixXd>& C = Eigen::MatrixXd(),
+                          const Eigen::Ref<const Eigen::MatrixXd>& D = Eigen::MatrixXd(),
+                          double time_period = 0.0);
 
-  /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  template <typename U>
-  explicit LinearSystem(const LinearSystem<U>&);
+    /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    template <typename U>
+    explicit LinearSystem(const LinearSystem<U>&);
 
-  /// Creates a unique pointer to LinearSystem<T> by decomposing @p dynamics and
-  /// @p outputs using @p state_vars and @p input_vars.
-  ///
-  /// @throws std::exception if either @p dynamics or @p outputs is not
-  /// linear in @p state_vars and @p input_vars.
-  static std::unique_ptr<LinearSystem<T>> MakeLinearSystem(
-      const Eigen::Ref<const VectorX<symbolic::Expression>>& dynamics,
-      const Eigen::Ref<const VectorX<symbolic::Expression>>& output,
-      const Eigen::Ref<const VectorX<symbolic::Variable>>& state_vars,
-      const Eigen::Ref<const VectorX<symbolic::Variable>>& input_vars,
-      double time_period = 0.0);
+    /// Creates a unique pointer to LinearSystem<T> by decomposing @p dynamics and
+    /// @p outputs using @p state_vars and @p input_vars.
+    ///
+    /// @throws std::exception if either @p dynamics or @p outputs is not
+    /// linear in @p state_vars and @p input_vars.
+    static std::unique_ptr<LinearSystem<T>> MakeLinearSystem(
+            const Eigen::Ref<const VectorX<symbolic::Expression>>& dynamics,
+            const Eigen::Ref<const VectorX<symbolic::Expression>>& output,
+            const Eigen::Ref<const VectorX<symbolic::Variable>>& state_vars,
+            const Eigen::Ref<const VectorX<symbolic::Variable>>& input_vars,
+            double time_period = 0.0);
 
- protected:
-  /// Constructor that specifies scalar-type conversion support.
-  /// @param converter scalar-type conversion support helper (i.e., AutoDiff,
-  /// etc.); pass a default-constructed object if such support is not desired.
-  /// See @ref system_scalar_conversion for detailed background and examples
-  /// related to scalar-type conversion support.
-  LinearSystem(SystemScalarConverter converter,
-               const Eigen::Ref<const Eigen::MatrixXd>& A,
-               const Eigen::Ref<const Eigen::MatrixXd>& B,
-               const Eigen::Ref<const Eigen::MatrixXd>& C,
-               const Eigen::Ref<const Eigen::MatrixXd>& D, double time_period);
+protected:
+    /// Constructor that specifies scalar-type conversion support.
+    /// @param converter scalar-type conversion support helper (i.e., AutoDiff,
+    /// etc.); pass a default-constructed object if such support is not desired.
+    /// See @ref system_scalar_conversion for detailed background and examples
+    /// related to scalar-type conversion support.
+    LinearSystem(SystemScalarConverter converter,
+                 const Eigen::Ref<const Eigen::MatrixXd>& A,
+                 const Eigen::Ref<const Eigen::MatrixXd>& B,
+                 const Eigen::Ref<const Eigen::MatrixXd>& C,
+                 const Eigen::Ref<const Eigen::MatrixXd>& D,
+                 double time_period);
 };
 
 /// Base class for a discrete or continuous linear time-varying (LTV) system.
@@ -119,34 +119,29 @@ class LinearSystem : public AffineSystem<T> {
 /// @ingroup primitive_systems
 template <typename T>
 class TimeVaryingLinearSystem : public TimeVaryingAffineSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(TimeVaryingLinearSystem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(TimeVaryingLinearSystem);
 
- protected:
-  /// Constructor.
-  ///
-  /// @param converter scalar-type conversion support helper (i.e., AutoDiff,
-  /// etc.); pass a default-constructed object if such support is not desired.
-  /// See @ref system_scalar_conversion for detailed background and examples
-  /// related to scalar-type conversion support.
-  /// @param num_states size of the system's state vector
-  /// @param num_inputs size of the system's input vector
-  /// @param num_outputs size of the system's output vector
-  /// @param time_period discrete update period, or 0.0 to use continuous time
-  TimeVaryingLinearSystem(SystemScalarConverter converter, int num_states,
-                          int num_inputs, int num_outputs, double time_period)
-      : TimeVaryingAffineSystem<T>(std::move(converter), num_states, num_inputs,
-                                   num_outputs, time_period) {}
+protected:
+    /// Constructor.
+    ///
+    /// @param converter scalar-type conversion support helper (i.e., AutoDiff,
+    /// etc.); pass a default-constructed object if such support is not desired.
+    /// See @ref system_scalar_conversion for detailed background and examples
+    /// related to scalar-type conversion support.
+    /// @param num_states size of the system's state vector
+    /// @param num_inputs size of the system's input vector
+    /// @param num_outputs size of the system's output vector
+    /// @param time_period discrete update period, or 0.0 to use continuous time
+    TimeVaryingLinearSystem(
+            SystemScalarConverter converter, int num_states, int num_inputs, int num_outputs, double time_period)
+        : TimeVaryingAffineSystem<T>(std::move(converter), num_states, num_inputs, num_outputs, time_period) {}
 
- private:
-  // N.B. A linear system is simply a restricted form of an affine system with
-  // the affine terms set to zero.  The following adds this restriction.
-  VectorX<T> f0(const T&) const final {
-    return VectorX<T>::Zero(this->num_states());
-  }
-  VectorX<T> y0(const T&) const final {
-    return VectorX<T>::Zero(this->num_outputs());
-  }
+private:
+    // N.B. A linear system is simply a restricted form of an affine system with
+    // the affine terms set to zero.  The following adds this restriction.
+    VectorX<T> f0(const T&) const final { return VectorX<T>::Zero(this->num_states()); }
+    VectorX<T> y0(const T&) const final { return VectorX<T>::Zero(this->num_outputs()); }
 };
 
 /// Takes the first-order Taylor expansion of a System around a nominal
@@ -194,13 +189,13 @@ class TimeVaryingLinearSystem : public TimeVaryingAffineSystem<T> {
 ///
 /// @ingroup primitive_systems
 ///
-std::unique_ptr<LinearSystem<double>> Linearize(
-    const System<double>& system, const Context<double>& context,
-    std::variant<InputPortSelection, InputPortIndex> input_port_index =
-        InputPortSelection::kUseFirstInputIfItExists,
-    std::variant<OutputPortSelection, OutputPortIndex> output_port_index =
-        OutputPortSelection::kUseFirstOutputIfItExists,
-    double equilibrium_check_tolerance = 1e-6);
+std::unique_ptr<LinearSystem<double>> Linearize(const System<double>& system,
+                                                const Context<double>& context,
+                                                std::variant<InputPortSelection, InputPortIndex> input_port_index =
+                                                        InputPortSelection::kUseFirstInputIfItExists,
+                                                std::variant<OutputPortSelection, OutputPortIndex> output_port_index =
+                                                        OutputPortSelection::kUseFirstOutputIfItExists,
+                                                double equilibrium_check_tolerance = 1e-6);
 
 /// A first-order Taylor series approximation to a @p system in the neighborhood
 /// of an arbitrary point.  When Taylor-expanding a system at a non-equilibrium
@@ -251,11 +246,12 @@ std::unique_ptr<LinearSystem<double>> Linearize(
 // Note: The TypeSafeIndices (InputPortIndex and OutputPortIndex) didn't let
 // me handle the additional options without a lot of boilerplate.
 std::unique_ptr<AffineSystem<double>> FirstOrderTaylorApproximation(
-    const System<double>& system, const Context<double>& context,
-    std::variant<InputPortSelection, InputPortIndex> input_port_index =
-        InputPortSelection::kUseFirstInputIfItExists,
-    std::variant<OutputPortSelection, OutputPortIndex> output_port_index =
-        OutputPortSelection::kUseFirstOutputIfItExists);
+        const System<double>& system,
+        const Context<double>& context,
+        std::variant<InputPortSelection, InputPortIndex> input_port_index =
+                InputPortSelection::kUseFirstInputIfItExists,
+        std::variant<OutputPortSelection, OutputPortIndex> output_port_index =
+                OutputPortSelection::kUseFirstOutputIfItExists);
 
 /// Returns the controllability matrix:  R = [B, AB, ..., A^{n-1}B].
 /// @ingroup control_systems
@@ -263,8 +259,7 @@ Eigen::MatrixXd ControllabilityMatrix(const LinearSystem<double>& sys);
 
 /// Returns true iff the controllability matrix is full row rank.
 /// @ingroup control_systems
-bool IsControllable(const LinearSystem<double>& sys,
-                    std::optional<double> threshold = std::nullopt);
+bool IsControllable(const LinearSystem<double>& sys, std::optional<double> threshold = std::nullopt);
 
 /// Returns the observability matrix: O = [ C; CA; ...; CA^{n-1} ].
 /// @ingroup estimator_systems
@@ -272,18 +267,15 @@ Eigen::MatrixXd ObservabilityMatrix(const LinearSystem<double>& sys);
 
 /// Returns true iff the observability matrix is full column rank.
 /// @ingroup estimator_systems
-bool IsObservable(const LinearSystem<double>& sys,
-                  std::optional<double> threshold = std::nullopt);
+bool IsObservable(const LinearSystem<double>& sys, std::optional<double> threshold = std::nullopt);
 
 /// Returns true iff the system is stabilizable.
 /// @ingroup control_systems
-bool IsStabilizable(const LinearSystem<double>& sys,
-                    std::optional<double> threshold = std::nullopt);
+bool IsStabilizable(const LinearSystem<double>& sys, std::optional<double> threshold = std::nullopt);
 
 /// Returns true iff the system is detectable.
 /// @ingroup estimator_systems
-bool IsDetectable(const LinearSystem<double>& sys,
-                  std::optional<double> threshold = std::nullopt);
+bool IsDetectable(const LinearSystem<double>& sys, std::optional<double> threshold = std::nullopt);
 
 }  // namespace systems
 }  // namespace drake

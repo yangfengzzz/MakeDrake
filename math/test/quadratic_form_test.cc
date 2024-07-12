@@ -13,7 +13,7 @@ namespace {
 
 const double kDefaultZeroTol = 2E-15;
 
-void CheckDecomposePSDmatrixIntoXtransposeTimesX(const Eigen::Ref<const Eigen::MatrixXd> &Y,
+void CheckDecomposePSDmatrixIntoXtransposeTimesX(const Eigen::Ref<const Eigen::MatrixXd>& Y,
                                                  double zero_tol,
                                                  double check_tol = 1E-14) {
     const Eigen::MatrixXd X = DecomposePSDmatrixIntoXtransposeTimesX(Y, zero_tol);
@@ -158,8 +158,8 @@ GTEST_TEST(TestDecomposePSDmatrixIntoXtransposeTimesX, negative_tol) {
     EXPECT_THROW(DecomposePSDmatrixIntoXtransposeTimesX(Eigen::Matrix3d::Identity(), -1E-10), std::runtime_error);
 }
 
-void CheckDecomposePositiveQuadraticForm(const Eigen::Ref<const Eigen::MatrixXd> &Q,
-                                         const Eigen::Ref<const Eigen::VectorXd> &b,
+void CheckDecomposePositiveQuadraticForm(const Eigen::Ref<const Eigen::MatrixXd>& Q,
+                                         const Eigen::Ref<const Eigen::VectorXd>& b,
                                          double c,
                                          double tol_psd = 0) {
     Eigen::MatrixXd R;
@@ -280,7 +280,7 @@ GTEST_TEST(TestDecomposePositiveQuadraticForm, Test7) {
               2);
 }
 
-void CheckBalancing(const Eigen::Matrix3d &S, const Eigen::Matrix3d &P, const Eigen::MatrixXd &T) {
+void CheckBalancing(const Eigen::Matrix3d& S, const Eigen::Matrix3d& P, const Eigen::MatrixXd& T) {
     const Eigen::MatrixXd D = T.transpose() * S * T;
     const Eigen::MatrixXd Dinv = (T.transpose() * P * T).cwiseAbs();
 

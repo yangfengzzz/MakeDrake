@@ -5,7 +5,8 @@
 namespace drake {
 namespace systems {
 
-template <typename T> class System;
+template <typename T>
+class System;
 
 /// A tag object that denotes a System subclass `S` in function signatures.
 ///
@@ -27,10 +28,10 @@ template <typename T> class System;
 /// there is no other mechanism for the caller to specify the template type.
 template <template <typename> class S>
 struct SystemTypeTag {
-  SystemTypeTag() {
-    static_assert(std::is_base_of_v<System<double>, S<double>>,
-                  "The type argument to SystemTypeTag must be a System");
-  }
+    SystemTypeTag() {
+        static_assert(std::is_base_of_v<System<double>, S<double>>,
+                      "The type argument to SystemTypeTag must be a System");
+    }
 };
 
 }  // namespace systems

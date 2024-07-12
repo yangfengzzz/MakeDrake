@@ -29,7 +29,6 @@ from flask import Flask, request, send_file
 """The main flask application."""
 app = Flask(__name__)
 
-
 """Where the client must upload files to and wait for an image response from.
 If the drake client transmits files to an alternative endpoint, make sure to
 update this value accordingly.
@@ -40,13 +39,11 @@ Warning:
 """
 RENDER_ENDPOINT = "/render"
 
-
 """Whether or not the server should cleanup its local cache. For debugging
 purposes, set this to `False` to prevent the deletion of scene files / rendered
 images.  See also: `delete_server_cache()`.
 """
 CLEANUP = True
-
 
 """Where to store data files during the execution of the program."""
 TMP_DIR = Path(os.environ.get("TEST_TMPDIR", "/tmp")) / "server_demo"
@@ -97,7 +94,7 @@ class RenderError(Exception):
         super().__init__(message)
         # Do not allow successful HTTP codes to be used, this is an Error.
         assert (
-            error_code >= 400
+                error_code >= 400
         ), f"RenderError: provided error code {error_code} is less than 400"
         self.message = message
         self.error_code = error_code
@@ -269,7 +266,7 @@ class RenderRequest:
             )
 
     def _parse_numeric(
-        self, field_name: str, field_type: FieldType
+            self, field_name: str, field_type: FieldType
     ) -> Union[int, float]:
         """Checks if the raw string value can be converted to the expected type
         and the numeric value is greater than 0 (as an indication of being
@@ -615,7 +612,7 @@ def render_endpoint():
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__,)
+    parser = argparse.ArgumentParser(description=__doc__, )
     parser.add_argument(
         "--host",
         type=str,
@@ -635,14 +632,14 @@ def main():
         action="store_true",
         default=False,
         help="Whether to run in debug mode in which flask reloads the server "
-        "automatically when file changes.",
+             "automatically when file changes.",
     )
     parser.add_argument(
         "--acceptance_test",
         action="store_true",
         default=False,
         help="Whether to run as an acceptance test that constructs a Flask app"
-        " but doesn't run it.",
+             " but doesn't run it.",
     )
 
     args = parser.parse_args()

@@ -24,14 +24,14 @@ namespace internal {
  * the path doesn't exists, and move this function out to
  * `MultibodyTreeTopology`.
  */
-std::vector<BodyIndex> FindPath(const MultibodyPlant<double>& plant,
-                                BodyIndex start, BodyIndex end);
+std::vector<BodyIndex> FindPath(const MultibodyPlant<double>& plant, BodyIndex start, BodyIndex end);
 
 /*
  * Finds all the mobilizer on the path from start to the end.
  */
-std::vector<internal::MobilizerIndex> FindMobilizersOnPath(
-    const MultibodyPlant<double>& plant, BodyIndex start, BodyIndex end);
+std::vector<internal::MobilizerIndex> FindMobilizersOnPath(const MultibodyPlant<double>& plant,
+                                                           BodyIndex start,
+                                                           BodyIndex end);
 
 /*
  * Finds the body in the middle of the kinematic chain that goes from the start
@@ -39,8 +39,7 @@ std::vector<internal::MobilizerIndex> FindMobilizersOnPath(
  * joint as one step along the chain, we throw an error when hitting
  * non-revolute weld mobilizers.
  */
-BodyIndex FindBodyInTheMiddleOfChain(const MultibodyPlant<double>& plant,
-                                     BodyIndex start, BodyIndex end);
+BodyIndex FindBodyInTheMiddleOfChain(const MultibodyPlant<double>& plant, BodyIndex start, BodyIndex end);
 }  // namespace internal
 }  // namespace multibody
 }  // namespace drake

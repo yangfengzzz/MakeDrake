@@ -32,8 +32,7 @@ using VectorIndeterminate = MatrixIndeterminate<rows, 1>;
  * Eigen::Matrix<symbolic::Variable, Eigen::Dynamic, Eigen::Dynamic>.
  * @see MatrixIndeterminate<int, int>
  */
-using MatrixXIndeterminate =
-    MatrixIndeterminate<Eigen::Dynamic, Eigen::Dynamic>;
+using MatrixXIndeterminate = MatrixIndeterminate<Eigen::Dynamic, Eigen::Dynamic>;
 
 /** VectorXIndeterminate is used as an alias for
  * Eigen::Matrix<symbolic::Variable, Eigen::Dynamic, 1>.
@@ -47,8 +46,7 @@ using IndeterminatesRefList = std::list<Eigen::Ref<const VectorXIndeterminate>>;
  * Concatenates each element in \p var_list into a single Eigen vector of
  * indeterminates, returns this concatenated vector.
  */
-[[nodiscard]] VectorXIndeterminate ConcatenateIndeterminatesRefList(
-    const IndeterminatesRefList& var_list);
+[[nodiscard]] VectorXIndeterminate ConcatenateIndeterminatesRefList(const IndeterminatesRefList& var_list);
 
 }  // namespace solvers
 }  // namespace drake

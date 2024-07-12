@@ -11,20 +11,20 @@ namespace solvers {
  * = x⁴+4x³+6x²+4x+5 is sum-of-squares (sos).
  */
 class UnivariateQuarticSos {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnivariateQuarticSos);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnivariateQuarticSos);
 
-  UnivariateQuarticSos();
+    UnivariateQuarticSos();
 
-  const MathematicalProgram& prog() const { return prog_; }
+    const MathematicalProgram& prog() const { return prog_; }
 
-  void CheckResult(const MathematicalProgramResult& result, double tol) const;
+    void CheckResult(const MathematicalProgramResult& result, double tol) const;
 
- private:
-  MathematicalProgram prog_;
-  symbolic::Polynomial p_;
-  MatrixXDecisionVariable gram_;
-  VectorX<symbolic::Monomial> monomial_basis_;
+private:
+    MathematicalProgram prog_;
+    symbolic::Polynomial p_;
+    MatrixXDecisionVariable gram_;
+    VectorX<symbolic::Monomial> monomial_basis_;
 };
 
 /**
@@ -34,20 +34,20 @@ class UnivariateQuarticSos {
  * 2x⁴+5y⁴−2x²y²+2x³y+2x+2 is sum-of-squares (sos).
  */
 class BivariateQuarticSos {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(BivariateQuarticSos);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(BivariateQuarticSos);
 
-  BivariateQuarticSos();
+    BivariateQuarticSos();
 
-  const MathematicalProgram& prog() const { return prog_; }
+    const MathematicalProgram& prog() const { return prog_; }
 
-  void CheckResult(const MathematicalProgramResult& result, double tol) const;
+    void CheckResult(const MathematicalProgramResult& result, double tol) const;
 
- private:
-  MathematicalProgram prog_;
-  symbolic::Polynomial p_;
-  MatrixXDecisionVariable gram_;
-  VectorX<symbolic::Monomial> monomial_basis_;
+private:
+    MathematicalProgram prog_;
+    symbolic::Polynomial p_;
+    MatrixXDecisionVariable gram_;
+    VectorX<symbolic::Monomial> monomial_basis_;
 };
 
 /**
@@ -59,26 +59,26 @@ class BivariateQuarticSos {
  *     (a-b+1)x² + bx + 1 is sos
  */
 class SimpleSos1 {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(SimpleSos1);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(SimpleSos1);
 
-  SimpleSos1();
+    SimpleSos1();
 
-  const MathematicalProgram& prog() const { return prog_; }
+    const MathematicalProgram& prog() const { return prog_; }
 
-  void CheckResult(const MathematicalProgramResult& result, double tol) const;
+    void CheckResult(const MathematicalProgramResult& result, double tol) const;
 
- private:
-  MathematicalProgram prog_;
-  symbolic::Variable a_;
-  symbolic::Variable b_;
-  symbolic::Variable x_;
-  symbolic::Polynomial p1_;
-  symbolic::Polynomial p2_;
-  MatrixXDecisionVariable gram1_;
-  MatrixXDecisionVariable gram2_;
-  VectorX<symbolic::Monomial> monomial_basis1_;
-  VectorX<symbolic::Monomial> monomial_basis2_;
+private:
+    MathematicalProgram prog_;
+    symbolic::Variable a_;
+    symbolic::Variable b_;
+    symbolic::Variable x_;
+    symbolic::Polynomial p1_;
+    symbolic::Polynomial p2_;
+    MatrixXDecisionVariable gram1_;
+    MatrixXDecisionVariable gram2_;
+    VectorX<symbolic::Monomial> monomial_basis1_;
+    VectorX<symbolic::Monomial> monomial_basis2_;
 };
 
 /**
@@ -93,25 +93,25 @@ class SimpleSos1 {
  *     r(x, y) * m(x, y) is sos
  */
 class MotzkinPolynomial {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MotzkinPolynomial);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MotzkinPolynomial);
 
-  MotzkinPolynomial();
+    MotzkinPolynomial();
 
-  const MathematicalProgram& prog() const { return prog_; }
+    const MathematicalProgram& prog() const { return prog_; }
 
-  void CheckResult(const MathematicalProgramResult& result, double tol) const;
+    void CheckResult(const MathematicalProgramResult& result, double tol) const;
 
- private:
-  MathematicalProgram prog_;
-  symbolic::Variable x_;
-  symbolic::Variable y_;
-  symbolic::Polynomial m_;
-  symbolic::Polynomial r_;
-  MatrixXDecisionVariable gram1_;
-  MatrixXDecisionVariable gram2_;
-  VectorX<symbolic::Monomial> monomial_basis1_;
-  VectorX<symbolic::Monomial> monomial_basis2_;
+private:
+    MathematicalProgram prog_;
+    symbolic::Variable x_;
+    symbolic::Variable y_;
+    symbolic::Polynomial m_;
+    symbolic::Polynomial r_;
+    MatrixXDecisionVariable gram1_;
+    MatrixXDecisionVariable gram2_;
+    VectorX<symbolic::Monomial> monomial_basis1_;
+    VectorX<symbolic::Monomial> monomial_basis2_;
 };
 
 /**
@@ -129,26 +129,26 @@ class MotzkinPolynomial {
  *     t(x) is sos
  */
 class UnivariateNonnegative1 {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnivariateNonnegative1);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnivariateNonnegative1);
 
-  UnivariateNonnegative1();
+    UnivariateNonnegative1();
 
-  const MathematicalProgram& prog() const { return prog_; }
+    const MathematicalProgram& prog() const { return prog_; }
 
-  void CheckResult(const MathematicalProgramResult& result, double tol) const;
+    void CheckResult(const MathematicalProgramResult& result, double tol) const;
 
- private:
-  MathematicalProgram prog_;
-  symbolic::Variable a_;
-  symbolic::Variable b_;
-  symbolic::Variable c_;
-  symbolic::Variable x_;
-  symbolic::Polynomial p_;
-  symbolic::Polynomial s_;
-  symbolic::Polynomial t_;
-  MatrixXDecisionVariable gram_s_;
-  MatrixXDecisionVariable gram_t_;
+private:
+    MathematicalProgram prog_;
+    symbolic::Variable a_;
+    symbolic::Variable b_;
+    symbolic::Variable c_;
+    symbolic::Variable x_;
+    symbolic::Polynomial p_;
+    symbolic::Polynomial s_;
+    symbolic::Polynomial t_;
+    MatrixXDecisionVariable gram_s_;
+    MatrixXDecisionVariable gram_t_;
 };
 }  // namespace solvers
 }  // namespace drake

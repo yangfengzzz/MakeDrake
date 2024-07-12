@@ -19,22 +19,22 @@ template <class T>
 class System;
 
 enum class WitnessFunctionDirection {
-  /// This witness function will never be triggered.
-  kNone,
+    /// This witness function will never be triggered.
+    kNone,
 
-  /// Witness function triggers when the function crosses or touches zero
-  /// after an initial positive evaluation.
-  kPositiveThenNonPositive,
+    /// Witness function triggers when the function crosses or touches zero
+    /// after an initial positive evaluation.
+    kPositiveThenNonPositive,
 
-  /// Witness function triggers when the function crosses or touches zero
-  /// after an initial negative evaluation.
-  kNegativeThenNonNegative,
+    /// Witness function triggers when the function crosses or touches zero
+    /// after an initial negative evaluation.
+    kNegativeThenNonNegative,
 
-  /// Witness function triggers *any time* the function crosses/touches zero,
-  /// *except* when the witness function evaluates to zero at the beginning
-  /// of the interval. Conceptually equivalent to kPositiveThenNonNegative OR
-  /// kNegativeThenNonNegative.
-  kCrossesZero,
+    /// Witness function triggers *any time* the function crosses/touches zero,
+    /// *except* when the witness function evaluates to zero at the beginning
+    /// of the interval. Conceptually equivalent to kPositiveThenNonNegative OR
+    /// kNegativeThenNonNegative.
+    kCrossesZero,
 };
 
 /// Class that stores a function that is able to help determine the time and
@@ -92,145 +92,148 @@ enum class WitnessFunctionDirection {
 /// converges linearly.
 template <class T>
 class WitnessFunction final {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(WitnessFunction);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(WitnessFunction);
 
-  /** Signature of a function suitable for calculating a value of a particular
-  witness function. */
-  using CalcCallback = std::function<T(const Context<T>&)>;
+    /** Signature of a function suitable for calculating a value of a particular
+    witness function. */
+    using CalcCallback = std::function<T(const Context<T>&)>;
 
-  // The only permitted method to construct a witness function is through
-  // LeafSystem::MakeWitnessFunction(), so we hide the constructors from
-  // Doxygen.
+    // The only permitted method to construct a witness function is through
+    // LeafSystem::MakeWitnessFunction(), so we hide the constructors from
+    // Doxygen.
 #ifndef DRAKE_DOXYGEN_CXX
-  // Constructs the witness function using the given non-null System and its
-  // upcast SystemBase pointer, description (used primarily for debugging and
-  // logging), direction type, calculator function, and Event that is to be
-  // dispatched when this witness function triggers. Example events are
-  // publish, discrete variable update, unrestricted update, or nullptr to
-  // indicate no event type (i.e., no event will be called when this witness
-  // function triggers).
-  //
-  // @note Constructing a witness function with no corresponding event forces
-  //       Simulator's integration of an ODE to end a step at the witness
-  //       isolation time, as it would if there were an event, but then take no
-  //       other action. For example, isolating a function's minimum or
-  //       maximum values can be realized with a witness that triggers on a sign
-  //       change of the function's time derivative, ensuring that the actual
-  //       extreme value is present in the discretized trajectory.
-  // @warning the pointer to the System must be valid as long or longer than
-  // the lifetime of the witness function.
-  template <class MySystem>
-  WitnessFunction(const System<T>* system,
-                  const SystemBase* system_base,
-                  std::string description,
-                  const WitnessFunctionDirection& direction,
-                  T (MySystem::*calc)(const Context<T>&) const,
-                  std::unique_ptr<Event<T>> event = nullptr)
-    : WitnessFunction(
-          system, system_base, std::move(description), direction,
-          [system, calc](const Context<T>& context) {
-            auto calc_system = static_cast<const MySystem*>(system);
-            return (calc_system->*calc)(context);
-          },
-          std::move(event)) {
-    DRAKE_DEMAND(dynamic_cast<const MySystem*>(system) != nullptr);
-  }
-
-  // See documentation for above constructor, which applies here without
-  // reservations.
-  WitnessFunction(const System<T>* system,
-                  const SystemBase* system_base,
-                  std::string description,
-                  const WitnessFunctionDirection& direction,
-                  std::function<T(const Context<T>&)> calc,
-                  std::unique_ptr<Event<T>> event = nullptr)
-      : system_(system), system_base_(system_base),
-        description_(std::move(description)),
-        direction_type_(direction), event_(std::move(event)),
-        calc_function_(std::move(calc)) {
-    DRAKE_DEMAND(system != nullptr);
-    DRAKE_DEMAND(system_base != nullptr);
-    // Check the precondition on identical parameters; note that comparing as
-    // void* is only valid because we have single inheritance.
-    DRAKE_DEMAND(static_cast<const void*>(system) == system_base);
-    const bool has_calc = static_cast<bool>(calc_function_);
-    DRAKE_THROW_UNLESS(has_calc);
-    if (event_) {
-      event_->set_trigger_type(TriggerType::kWitness);
+    // Constructs the witness function using the given non-null System and its
+    // upcast SystemBase pointer, description (used primarily for debugging and
+    // logging), direction type, calculator function, and Event that is to be
+    // dispatched when this witness function triggers. Example events are
+    // publish, discrete variable update, unrestricted update, or nullptr to
+    // indicate no event type (i.e., no event will be called when this witness
+    // function triggers).
+    //
+    // @note Constructing a witness function with no corresponding event forces
+    //       Simulator's integration of an ODE to end a step at the witness
+    //       isolation time, as it would if there were an event, but then take no
+    //       other action. For example, isolating a function's minimum or
+    //       maximum values can be realized with a witness that triggers on a sign
+    //       change of the function's time derivative, ensuring that the actual
+    //       extreme value is present in the discretized trajectory.
+    // @warning the pointer to the System must be valid as long or longer than
+    // the lifetime of the witness function.
+    template <class MySystem>
+    WitnessFunction(const System<T>* system,
+                    const SystemBase* system_base,
+                    std::string description,
+                    const WitnessFunctionDirection& direction,
+                    T (MySystem::*calc)(const Context<T>&) const,
+                    std::unique_ptr<Event<T>> event = nullptr)
+        : WitnessFunction(
+                  system,
+                  system_base,
+                  std::move(description),
+                  direction,
+                  [system, calc](const Context<T>& context) {
+                      auto calc_system = static_cast<const MySystem*>(system);
+                      return (calc_system->*calc)(context);
+                  },
+                  std::move(event)) {
+        DRAKE_DEMAND(dynamic_cast<const MySystem*>(system) != nullptr);
     }
-  }
+
+    // See documentation for above constructor, which applies here without
+    // reservations.
+    WitnessFunction(const System<T>* system,
+                    const SystemBase* system_base,
+                    std::string description,
+                    const WitnessFunctionDirection& direction,
+                    std::function<T(const Context<T>&)> calc,
+                    std::unique_ptr<Event<T>> event = nullptr)
+        : system_(system),
+          system_base_(system_base),
+          description_(std::move(description)),
+          direction_type_(direction),
+          event_(std::move(event)),
+          calc_function_(std::move(calc)) {
+        DRAKE_DEMAND(system != nullptr);
+        DRAKE_DEMAND(system_base != nullptr);
+        // Check the precondition on identical parameters; note that comparing as
+        // void* is only valid because we have single inheritance.
+        DRAKE_DEMAND(static_cast<const void*>(system) == system_base);
+        const bool has_calc = static_cast<bool>(calc_function_);
+        DRAKE_THROW_UNLESS(has_calc);
+        if (event_) {
+            event_->set_trigger_type(TriggerType::kWitness);
+        }
+    }
 #endif
 
-  /// Gets the description of this witness function (used primarily for logging
-  /// and debugging).
-  const std::string& description() const { return description_; }
+    /// Gets the description of this witness function (used primarily for logging
+    /// and debugging).
+    const std::string& description() const { return description_; }
 
-  /// Gets the direction(s) under which this witness function triggers.
-  WitnessFunctionDirection direction_type() const { return direction_type_; }
+    /// Gets the direction(s) under which this witness function triggers.
+    WitnessFunctionDirection direction_type() const { return direction_type_; }
 
-  /// Evaluates the witness function at the given context.
-  T CalcWitnessValue(const Context<T>& context) const {
-    system_base_->ValidateContext(context);
-    return calc_function_(context);
-  }
-
-  /// Gets a reference to the System used by this witness function.
-  const System<T>& get_system() const { return *system_; }
-
-  /// Checks whether the witness function should trigger using given
-  /// values at w0 and wf. Note that this function is not specific to a
-  /// particular witness function.
-  boolean<T> should_trigger(const T& w0, const T& wf) const {
-    WitnessFunctionDirection type = direction_type();
-
-    const T zero(0);
-    switch (type) {
-      case WitnessFunctionDirection::kNone:
-        return (T(0) > T(0));
-
-      case WitnessFunctionDirection::kPositiveThenNonPositive:
-        return (w0 > zero && wf <= zero);
-
-      case WitnessFunctionDirection::kNegativeThenNonNegative:
-        return (w0 < zero && wf >= zero);
-
-      case WitnessFunctionDirection::kCrossesZero:
-        return ((w0 > zero && wf <= zero) ||
-                (w0 < zero && wf >= zero));
+    /// Evaluates the witness function at the given context.
+    T CalcWitnessValue(const Context<T>& context) const {
+        system_base_->ValidateContext(context);
+        return calc_function_(context);
     }
-    DRAKE_UNREACHABLE();
-  }
 
-  /// Gets the event that will be dispatched when the witness function
-  /// triggers. A null pointer indicates that no event will be dispatched.
-  const Event<T>* get_event() const { return event_.get(); }
+    /// Gets a reference to the System used by this witness function.
+    const System<T>& get_system() const { return *system_; }
 
-  /// Gets a mutable pointer to the event that will occur when the witness
-  /// function triggers.
-  Event<T>* get_mutable_event() { return event_.get(); }
+    /// Checks whether the witness function should trigger using given
+    /// values at w0 and wf. Note that this function is not specific to a
+    /// particular witness function.
+    boolean<T> should_trigger(const T& w0, const T& wf) const {
+        WitnessFunctionDirection type = direction_type();
 
- private:
-  // A pointer to the system and its base class.
-  const System<T>* const system_;
-  const SystemBase* const system_base_;
+        const T zero(0);
+        switch (type) {
+            case WitnessFunctionDirection::kNone:
+                return (T(0) > T(0));
 
-  // The description of this witness function (used primarily for debugging and
-  // logging).
-  const std::string description_;
+            case WitnessFunctionDirection::kPositiveThenNonPositive:
+                return (w0 > zero && wf <= zero);
 
-  // Direction(s) under which this witness function triggers.
-  const WitnessFunctionDirection direction_type_;
+            case WitnessFunctionDirection::kNegativeThenNonNegative:
+                return (w0 < zero && wf >= zero);
 
-  // Unique pointer to the event.
-  const std::unique_ptr<Event<T>> event_;
+            case WitnessFunctionDirection::kCrossesZero:
+                return ((w0 > zero && wf <= zero) || (w0 < zero && wf >= zero));
+        }
+        DRAKE_UNREACHABLE();
+    }
 
-  // The witness function calculator function pointer.
-  const CalcCallback calc_function_;
+    /// Gets the event that will be dispatched when the witness function
+    /// triggers. A null pointer indicates that no event will be dispatched.
+    const Event<T>* get_event() const { return event_.get(); }
+
+    /// Gets a mutable pointer to the event that will occur when the witness
+    /// function triggers.
+    Event<T>* get_mutable_event() { return event_.get(); }
+
+private:
+    // A pointer to the system and its base class.
+    const System<T>* const system_;
+    const SystemBase* const system_base_;
+
+    // The description of this witness function (used primarily for debugging and
+    // logging).
+    const std::string description_;
+
+    // Direction(s) under which this witness function triggers.
+    const WitnessFunctionDirection direction_type_;
+
+    // Unique pointer to the event.
+    const std::unique_ptr<Event<T>> event_;
+
+    // The witness function calculator function pointer.
+    const CalcCallback calc_function_;
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::WitnessFunction);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::systems::WitnessFunction);

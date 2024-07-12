@@ -37,10 +37,10 @@ namespace scalar_conversion {
 /// @tparam S is the scalar-templated type to copy
 template <template <typename> class S>
 struct Traits {
-  /// @tparam T is the resulting scalar type (to convert into)
-  /// @tparam U is the donor scalar type (to convert from)
-  template <typename T, typename U>
-  using supported = std::true_type;
+    /// @tparam T is the resulting scalar type (to convert into)
+    /// @tparam U is the donor scalar type (to convert from)
+    template <typename T, typename U>
+    using supported = std::true_type;
 };
 
 /// A concrete traits class providing sugar to disable support for symbolic
@@ -59,10 +59,9 @@ struct Traits {
 /// }  // namespace drake
 /// @endcode
 struct NonSymbolicTraits {
-  template <typename T, typename U>
-  using supported = typename std::bool_constant<
-    !std::is_same_v<T, symbolic::Expression> &&
-    !std::is_same_v<U, symbolic::Expression>>;
+    template <typename T, typename U>
+    using supported = typename std::bool_constant<!std::is_same_v<T, symbolic::Expression> &&
+                                                  !std::is_same_v<U, symbolic::Expression>>;
 };
 
 /// A concrete traits class providing sugar to support for converting only from
@@ -80,8 +79,8 @@ struct NonSymbolicTraits {
 /// }  // namespace drake
 /// @endcode
 struct FromDoubleTraits {
-  template <typename T, typename U>
-  using supported = typename std::bool_constant<std::is_same_v<U, double>>;
+    template <typename T, typename U>
+    using supported = typename std::bool_constant<std::is_same_v<U, double>>;
 };
 
 /// Converts a scalar `U u` to its corresponding scalar `T t`.  When U == T,
@@ -90,16 +89,12 @@ struct FromDoubleTraits {
 /// beyond the double value (e.g., possible derivatives) might be discarded.
 template <typename T, typename U>
 struct ValueConverter {
-  T operator()(const U& u) const {
-    return ExtractDoubleOrThrow(u);
-  }
+    T operator()(const U& u) const { return ExtractDoubleOrThrow(u); }
 };
 template <typename T>
 struct ValueConverter<T, T> {
-  using U = T;
-  T operator()(const U& u) const {
-    return u;
-  }
+    using U = T;
+    T operator()(const U& u) const { return u; }
 };
 
 }  // namespace scalar_conversion

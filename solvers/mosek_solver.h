@@ -17,18 +17,18 @@ namespace solvers {
  * details.
  */
 struct MosekSolverDetails {
-  /// The MOSEK™ optimization time. Please refer to MSK_DINF_OPTIMIZER_TIME in
-  /// https://docs.mosek.com/10.1/capi/constants.html?highlight=msk_dinf_optimizer_time
-  double optimizer_time{};
-  /// The response code returned from MOSEK™ solver. Check
-  /// https://docs.mosek.com/10.1/capi/response-codes.html for the meaning on
-  /// the response code.
-  int rescode{};
-  /// The solution status after solving the problem. Check
-  /// https://docs.mosek.com/10.1/capi/accessing-solution.html and
-  /// https://docs.mosek.com/10.1/capi/constants.html#mosek.solsta for the
-  /// meaning on the solution status.
-  int solution_status{};
+    /// The MOSEK™ optimization time. Please refer to MSK_DINF_OPTIMIZER_TIME in
+    /// https://docs.mosek.com/10.1/capi/constants.html?highlight=msk_dinf_optimizer_time
+    double optimizer_time{};
+    /// The response code returned from MOSEK™ solver. Check
+    /// https://docs.mosek.com/10.1/capi/response-codes.html for the meaning on
+    /// the response code.
+    int rescode{};
+    /// The solution status after solving the problem. Check
+    /// https://docs.mosek.com/10.1/capi/accessing-solution.html and
+    /// https://docs.mosek.com/10.1/capi/constants.html#mosek.solsta for the
+    /// meaning on the solution status.
+    int solution_status{};
 };
 
 // Note: we use ascii (TM) instead of the unicode symbol ™ in the first line
@@ -71,58 +71,60 @@ struct MosekSolverDetails {
  *    not to write to a file.
  */
 class MosekSolver final : public SolverBase {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MosekSolver);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MosekSolver);
 
-  /// Type of details stored in MathematicalProgramResult.
-  using Details = MosekSolverDetails;
+    /// Type of details stored in MathematicalProgramResult.
+    using Details = MosekSolverDetails;
 
-  MosekSolver();
-  ~MosekSolver() final;
+    MosekSolver();
+    ~MosekSolver() final;
 
-  /**
-   * This type contains a valid MOSEK license environment, and is only to be
-   * used from AcquireLicense().
-   */
-  class License;
+    /**
+     * This type contains a valid MOSEK license environment, and is only to be
+     * used from AcquireLicense().
+     */
+    class License;
 
-  /**
-   * This acquires a MOSEK™ license environment shared among all MosekSolver
-   * instances; the environment will stay valid as long as at least one
-   * shared_ptr returned by this function is alive.
-   * Call this ONLY if you must use different MathematicalProgram
-   * instances at different instances in time, and repeatedly acquiring the
-   * license is costly (e.g., requires contacting a license server).
-   * @return A shared pointer to a license environment that will stay valid
-   * as long as any shared_ptr returned by this function is alive. If MOSEK™ is
-   * not available in your build, this will return a null (empty) shared_ptr.
-   * @throws std::exception if MOSEK™ is available but a license cannot be
-   * obtained.
-   */
-  static std::shared_ptr<License> AcquireLicense();
+    /**
+     * This acquires a MOSEK™ license environment shared among all MosekSolver
+     * instances; the environment will stay valid as long as at least one
+     * shared_ptr returned by this function is alive.
+     * Call this ONLY if you must use different MathematicalProgram
+     * instances at different instances in time, and repeatedly acquiring the
+     * license is costly (e.g., requires contacting a license server).
+     * @return A shared pointer to a license environment that will stay valid
+     * as long as any shared_ptr returned by this function is alive. If MOSEK™ is
+     * not available in your build, this will return a null (empty) shared_ptr.
+     * @throws std::exception if MOSEK™ is available but a license cannot be
+     * obtained.
+     */
+    static std::shared_ptr<License> AcquireLicense();
 
-  /// @name Static versions of the instance methods with similar names.
-  //@{
-  static SolverId id();
-  static bool is_available();
-  /// Returns true iff the environment variable MOSEKLM_LICENSE_FILE has been
-  /// set to a non-empty value.
-  static bool is_enabled();
-  static bool ProgramAttributesSatisfied(const MathematicalProgram&);
-  static std::string UnsatisfiedProgramAttributes(const MathematicalProgram&);
-  //@}
+    /// @name Static versions of the instance methods with similar names.
+    //@{
+    static SolverId id();
+    static bool is_available();
+    /// Returns true iff the environment variable MOSEKLM_LICENSE_FILE has been
+    /// set to a non-empty value.
+    static bool is_enabled();
+    static bool ProgramAttributesSatisfied(const MathematicalProgram&);
+    static std::string UnsatisfiedProgramAttributes(const MathematicalProgram&);
+    //@}
 
-  // A using-declaration adds these methods into our class's Doxygen.
-  using SolverBase::Solve;
+    // A using-declaration adds these methods into our class's Doxygen.
+    using SolverBase::Solve;
 
- private:
-  void DoSolve(const MathematicalProgram&, const Eigen::VectorXd&,
-               const SolverOptions&, MathematicalProgramResult*) const final;
+private:
+    void DoSolve(const MathematicalProgram&,
+                 const Eigen::VectorXd&,
+                 const SolverOptions&,
+                 MathematicalProgramResult*) const final;
 
-  // Note that this is mutable to allow latching the allocation of mosek_env_
-  // during the first call of Solve() (which avoids grabbing a MOSEK™ license
-  // before we know that we actually want one).
-  mutable std::shared_ptr<License> license_;
+    // Note that this is mutable to allow latching the allocation of mosek_env_
+    // during the first call of Solve() (which avoids grabbing a MOSEK™ license
+    // before we know that we actually want one).
+    mutable std::shared_ptr<License> license_;
 };
 
 }  // namespace solvers

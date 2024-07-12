@@ -23,35 +23,35 @@ namespace multibody {
 // TODO(joemasterjohn) Consider adding a test param or user functor to specify
 // the model/remodeling to be done.
 class MultibodyPlantRemodeling : public ::testing::Test {
- public:
-  // This fixture sets up a plant with a serial chain of 3 bodies connected by
-  // joints of the type specified by the type parameter `JointType`. An actuator
-  // is added to each joint.
-  template <template <typename> class JointType = RevoluteJoint>
-  void BuildModel();
+public:
+    // This fixture sets up a plant with a serial chain of 3 bodies connected by
+    // joints of the type specified by the type parameter `JointType`. An actuator
+    // is added to each joint.
+    template <template <typename> class JointType = RevoluteJoint>
+    void BuildModel();
 
-  // Must be called afer BuildModel. Removes elements from the plant.
-  // If `remove_actuator` is true, actuator1 will be removed.
-  // If `remove_joint` is true, joint1 will be removed.
-  void DoRemoval(bool remove_actuator, bool remove_joint);
+    // Must be called afer BuildModel. Removes elements from the plant.
+    // If `remove_actuator` is true, actuator1 will be removed.
+    // If `remove_joint` is true, joint1 will be removed.
+    void DoRemoval(bool remove_actuator, bool remove_joint);
 
-  // Must be called after BuildModel.
-  // Finalize the plant, build the diagram and initialize `simulator_`
-  void FinalizeAndBuild();
+    // Must be called after BuildModel.
+    // Finalize the plant, build the diagram and initialize `simulator_`
+    void FinalizeAndBuild();
 
- protected:
-  // These members are only valid after SetUp().
-  // `builder_` is invalid after calling FinalizeAndBuild().
-  std::unique_ptr<systems::DiagramBuilder<double>> builder_;
-  MultibodyPlant<double>* plant_{nullptr};
-  geometry::SceneGraph<double>* scene_graph_{nullptr};
+protected:
+    // These members are only valid after SetUp().
+    // `builder_` is invalid after calling FinalizeAndBuild().
+    std::unique_ptr<systems::DiagramBuilder<double>> builder_;
+    MultibodyPlant<double>* plant_{nullptr};
+    geometry::SceneGraph<double>* scene_graph_{nullptr};
 
-  // These members are only valid after FinalizeAndBuild().
-  std::unique_ptr<systems::Diagram<double>> diagram_;
-  std::unique_ptr<systems::Simulator<double>> simulator_;
-  systems::Context<double>* plant_context_{nullptr};
+    // These members are only valid after FinalizeAndBuild().
+    std::unique_ptr<systems::Diagram<double>> diagram_;
+    std::unique_ptr<systems::Simulator<double>> simulator_;
+    systems::Context<double>* plant_context_{nullptr};
 
-  const double kTimeStep{0.1};  // Discrete time step of plant_
+    const double kTimeStep{0.1};  // Discrete time step of plant_
 };
 }  // namespace multibody
 }  // namespace drake

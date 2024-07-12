@@ -18,70 +18,70 @@ A structure to facilitate passing the myriad of optional arguments to the
 FiniteHorizonLinearQuadraticRegulator algorithms.
 */
 struct FiniteHorizonLinearQuadraticRegulatorOptions {
-  FiniteHorizonLinearQuadraticRegulatorOptions() = default;
+    FiniteHorizonLinearQuadraticRegulatorOptions() = default;
 
-  /**
-  A num_states x num_states positive semi-definite matrix which specified the
-  cost at the final time. If unset, then Qf will be set to the zero matrix.
-  */
-  std::optional<Eigen::MatrixXd> Qf;
+    /**
+    A num_states x num_states positive semi-definite matrix which specified the
+    cost at the final time. If unset, then Qf will be set to the zero matrix.
+    */
+    std::optional<Eigen::MatrixXd> Qf;
 
-  /**
-  A num_states x num_inputs matrix that describes the running cost
-  2(x-xd(t))'N(u-ud(t)).  If unset, then N will be set to the zero matrix.
-  */
-  std::optional<Eigen::MatrixXd> N;
+    /**
+    A num_states x num_inputs matrix that describes the running cost
+    2(x-xd(t))'N(u-ud(t)).  If unset, then N will be set to the zero matrix.
+    */
+    std::optional<Eigen::MatrixXd> N;
 
-  /**
-  A nominal state trajectory.  The system is linearized about this trajectory.
-  x0 must be defined over the entire interval [t0, tf].  If null, then x0 is
-  taken to be a constant trajectory (whose value is specified by the context
-  passed into the LQR method).
-  */
-  const trajectories::Trajectory<double>* x0{nullptr};
+    /**
+    A nominal state trajectory.  The system is linearized about this trajectory.
+    x0 must be defined over the entire interval [t0, tf].  If null, then x0 is
+    taken to be a constant trajectory (whose value is specified by the context
+    passed into the LQR method).
+    */
+    const trajectories::Trajectory<double>* x0{nullptr};
 
-  /**
-  A nominal input trajectory.  The system is linearized about this trajectory.
-  u0 must be defined over the entire interval, [t0, tf].  If null, then u0 is
-  taken to be a constant trajectory (whose value is specified by the context
-  passed into the LQR method).
-  */
-  const trajectories::Trajectory<double>* u0{nullptr};
+    /**
+    A nominal input trajectory.  The system is linearized about this trajectory.
+    u0 must be defined over the entire interval, [t0, tf].  If null, then u0 is
+    taken to be a constant trajectory (whose value is specified by the context
+    passed into the LQR method).
+    */
+    const trajectories::Trajectory<double>* u0{nullptr};
 
-  /**
-  A desired state trajectory.  The objective is to regulate to this trajectory
-  -- the state component of the quadratic running cost is (x-xd(t))'*Q*(x-xd(t))
-  and the final cost is (x-xd(t))'Qf(x-xd(t)).  If null, then xd(t) = x0(t).
-  */
-  const trajectories::Trajectory<double>* xd{nullptr};
+    /**
+    A desired state trajectory.  The objective is to regulate to this trajectory
+    -- the state component of the quadratic running cost is (x-xd(t))'*Q*(x-xd(t))
+    and the final cost is (x-xd(t))'Qf(x-xd(t)).  If null, then xd(t) = x0(t).
+    */
+    const trajectories::Trajectory<double>* xd{nullptr};
 
-  /**
-  A desired input trajectory.  The objective is to regulate to this trajectory
-  -- the input component of the quadratic running cost is
-  (u-ud(t))'*R*(u-ud(t)).  If null, then ud(t) = u0(t).
-  */
-  const trajectories::Trajectory<double>* ud{nullptr};
+    /**
+    A desired input trajectory.  The objective is to regulate to this trajectory
+    -- the input component of the quadratic running cost is
+    (u-ud(t))'*R*(u-ud(t)).  If null, then ud(t) = u0(t).
+    */
+    const trajectories::Trajectory<double>* ud{nullptr};
 
-  /**
-  For systems with multiple input ports, we must specify which input port is
-  being used in the control design.  @see systems::InputPortSelection.
-  */
-  std::variant<systems::InputPortSelection, InputPortIndex> input_port_index{
-      systems::InputPortSelection::kUseFirstInputIfItExists};
+    /**
+    For systems with multiple input ports, we must specify which input port is
+    being used in the control design.  @see systems::InputPortSelection.
+    */
+    std::variant<systems::InputPortSelection, InputPortIndex> input_port_index{
+            systems::InputPortSelection::kUseFirstInputIfItExists};
 
-  /**
-  Enables the "square-root" method solution to the Riccati equation. This is
-  slightly more expensive and potentially less numerically accurate (errors are
-  bounded on the square root), but is more numerically robust. When `true`,
-  then you must also set a (positive definite and symmetric) Qf in this options
-  struct. */
-  bool use_square_root_method{false};
+    /**
+    Enables the "square-root" method solution to the Riccati equation. This is
+    slightly more expensive and potentially less numerically accurate (errors are
+    bounded on the square root), but is more numerically robust. When `true`,
+    then you must also set a (positive definite and symmetric) Qf in this options
+    struct. */
+    bool use_square_root_method{false};
 
-  /**
-  For continuous-time dynamical systems, the Riccati equation is solved by the
-  Simulator (running backwards in time). Use this parameter to configure the
-  simulator (e.g. choose non-default integrator or integrator parameters). */
-  SimulatorConfig simulator_config{};
+    /**
+    For continuous-time dynamical systems, the Riccati equation is solved by the
+    Simulator (running backwards in time). Use this parameter to configure the
+    simulator (e.g. choose non-default integrator or integrator parameters). */
+    SimulatorConfig simulator_config{};
 };
 
 /**
@@ -92,18 +92,18 @@ results. The finite-horizon cost-to-go is given by (x-x0(t))'*S(t)*(x-x0(t)) +
 sₓ(t) term.
 */
 struct FiniteHorizonLinearQuadraticRegulatorResult {
-  copyable_unique_ptr<trajectories::Trajectory<double>> x0;
-  copyable_unique_ptr<trajectories::Trajectory<double>> u0;
+    copyable_unique_ptr<trajectories::Trajectory<double>> x0;
+    copyable_unique_ptr<trajectories::Trajectory<double>> u0;
 
-  /// Note: This K is the K_x term in the derivation notes.
-  copyable_unique_ptr<trajectories::Trajectory<double>> K;
+    /// Note: This K is the K_x term in the derivation notes.
+    copyable_unique_ptr<trajectories::Trajectory<double>> K;
 
-  // Note: This S is the S_xx term in the derivation notes.
-  copyable_unique_ptr<trajectories::Trajectory<double>> S;
+    // Note: This S is the S_xx term in the derivation notes.
+    copyable_unique_ptr<trajectories::Trajectory<double>> S;
 
-  copyable_unique_ptr<trajectories::Trajectory<double>> k0;
-  copyable_unique_ptr<trajectories::Trajectory<double>> sx;
-  copyable_unique_ptr<trajectories::Trajectory<double>> s0;
+    copyable_unique_ptr<trajectories::Trajectory<double>> k0;
+    copyable_unique_ptr<trajectories::Trajectory<double>> sx;
+    copyable_unique_ptr<trajectories::Trajectory<double>> s0;
 };
 
 // TODO(russt): Add support for difference-equation systems.
@@ -151,13 +151,14 @@ listed in the code as TODOs).
 
 @ingroup control
 */
-FiniteHorizonLinearQuadraticRegulatorResult
-FiniteHorizonLinearQuadraticRegulator(
-    const System<double>& system, const Context<double>& context, double t0,
-    double tf, const Eigen::Ref<const Eigen::MatrixXd>& Q,
-    const Eigen::Ref<const Eigen::MatrixXd>& R,
-    const FiniteHorizonLinearQuadraticRegulatorOptions& options =
-        FiniteHorizonLinearQuadraticRegulatorOptions());
+FiniteHorizonLinearQuadraticRegulatorResult FiniteHorizonLinearQuadraticRegulator(
+        const System<double>& system,
+        const Context<double>& context,
+        double t0,
+        double tf,
+        const Eigen::Ref<const Eigen::MatrixXd>& Q,
+        const Eigen::Ref<const Eigen::MatrixXd>& R,
+        const FiniteHorizonLinearQuadraticRegulatorOptions& options = FiniteHorizonLinearQuadraticRegulatorOptions());
 
 /** Variant of FiniteHorizonLinearQuadraticRegulator that returns a System
 implementing the regulator (controller) as a System, with a single
@@ -168,11 +169,13 @@ output for the regulator control output.
 @ingroup control_systems
 */
 std::unique_ptr<System<double>> MakeFiniteHorizonLinearQuadraticRegulator(
-    const System<double>& system, const Context<double>& context, double t0,
-    double tf, const Eigen::Ref<const Eigen::MatrixXd>& Q,
-    const Eigen::Ref<const Eigen::MatrixXd>& R,
-    const FiniteHorizonLinearQuadraticRegulatorOptions& options =
-        FiniteHorizonLinearQuadraticRegulatorOptions());
+        const System<double>& system,
+        const Context<double>& context,
+        double t0,
+        double tf,
+        const Eigen::Ref<const Eigen::MatrixXd>& Q,
+        const Eigen::Ref<const Eigen::MatrixXd>& R,
+        const FiniteHorizonLinearQuadraticRegulatorOptions& options = FiniteHorizonLinearQuadraticRegulatorOptions());
 
 }  // namespace controllers
 }  // namespace systems

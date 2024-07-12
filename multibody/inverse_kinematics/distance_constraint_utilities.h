@@ -28,7 +28,8 @@ void CalcDistanceDerivatives(const MultibodyPlant<double>& plant,
                              const systems::Context<double>& context,
                              const Frame<double>& frameA,
                              const Frame<double>& frameB,
-                             const Eigen::Vector3d& p_ACa, double distance,
+                             const Eigen::Vector3d& p_ACa,
+                             double distance,
                              const Eigen::Vector3d& nhat_BA_W,
                              const Eigen::Ref<const AutoDiffVecXd>& q,
                              AutoDiffXd* distance_autodiff);
@@ -53,37 +54,39 @@ void CalcDistanceDerivatives(const MultibodyPlant<AutoDiffXd>& plant,
  */
 template <typename T>
 void CalcDistanceDerivatives(const MultibodyPlant<T>&,
-                             const systems::Context<T>&, const Frame<T>&,
-                             const Frame<T>&, const Vector3<T>&, T distance_in,
+                             const systems::Context<T>&,
+                             const Frame<T>&,
+                             const Frame<T>&,
+                             const Vector3<T>&,
+                             T distance_in,
                              const Vector3<T>&,
                              const Eigen::Ref<const VectorX<T>>&,
                              T* distance_out) {
-  *distance_out = distance_in;
+    *distance_out = distance_in;
 }
 
 /*
  * Check if the plant has registered its geometry with the SceneGraph.
  */
 template <typename T>
-void CheckPlantIsConnectedToSceneGraph(
-    const MultibodyPlant<T>& plant, const systems::Context<T>& plant_context) {
-  if (!plant.geometry_source_is_registered()) {
-    throw std::invalid_argument(
-        "Kinematic constraint: MultibodyPlant has not registered "
-        "with a SceneGraph yet. Please refer to "
-        "AddMultibodyPlantSceneGraph on how to connect MultibodyPlant to "
-        "SceneGraph.");
-  }
-  const auto& query_port = plant.get_geometry_query_input_port();
-  if (!query_port.HasValue(plant_context)) {
-    throw std::invalid_argument(
-        "Kinematic constraint: Cannot get a valid "
-        "geometry::QueryObject. Either the plant's geometry query input port "
-        "is not properly connected to the SceneGraph's geometry query output "
-        "port, or the plant_context_ is incorrect. Please refer to "
-        "AddMultibodyPlantSceneGraph on connecting MultibodyPlant to "
-        "SceneGraph.");
-  }
+void CheckPlantIsConnectedToSceneGraph(const MultibodyPlant<T>& plant, const systems::Context<T>& plant_context) {
+    if (!plant.geometry_source_is_registered()) {
+        throw std::invalid_argument(
+                "Kinematic constraint: MultibodyPlant has not registered "
+                "with a SceneGraph yet. Please refer to "
+                "AddMultibodyPlantSceneGraph on how to connect MultibodyPlant to "
+                "SceneGraph.");
+    }
+    const auto& query_port = plant.get_geometry_query_input_port();
+    if (!query_port.HasValue(plant_context)) {
+        throw std::invalid_argument(
+                "Kinematic constraint: Cannot get a valid "
+                "geometry::QueryObject. Either the plant's geometry query input port "
+                "is not properly connected to the SceneGraph's geometry query output "
+                "port, or the plant_context_ is incorrect. Please refer to "
+                "AddMultibodyPlantSceneGraph on connecting MultibodyPlant to "
+                "SceneGraph.");
+    }
 }
 
 // Compute all the distance of a plant for a given configuration q and the
@@ -94,15 +97,15 @@ VectorX<S> Distances(const MultibodyPlant<T>& plant,
                      const Eigen::Ref<const VectorX<S>>& q,
                      double influence_distance);
 
-Eigen::VectorXd Distances(
-    const planning::CollisionChecker& collision_checker,
-    planning::CollisionCheckerContext* collision_checker_context,
-    const Eigen::Ref<const Eigen::VectorXd>& x, double influence_distance_val);
+Eigen::VectorXd Distances(const planning::CollisionChecker& collision_checker,
+                          planning::CollisionCheckerContext* collision_checker_context,
+                          const Eigen::Ref<const Eigen::VectorXd>& x,
+                          double influence_distance_val);
 
-AutoDiffVecXd Distances(
-    const planning::CollisionChecker& collision_checker,
-    planning::CollisionCheckerContext* collision_checker_context,
-    const Eigen::Ref<const AutoDiffVecXd>& x, double influence_distance_val);
+AutoDiffVecXd Distances(const planning::CollisionChecker& collision_checker,
+                        planning::CollisionCheckerContext* collision_checker_context,
+                        const Eigen::Ref<const AutoDiffVecXd>& x,
+                        double influence_distance_val);
 }  // namespace internal
 }  // namespace multibody
 }  // namespace drake

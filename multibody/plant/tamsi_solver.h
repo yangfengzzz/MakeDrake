@@ -121,151 +121,153 @@ namespace internal {
 // scalar types T.
 template <typename T>
 struct TalsLimiter {
-  // Implements the limiting algorithm described in the documentation above.
-  // @param[in] v the k-th iteration tangential velocity vₜᵏ, in m/s.
-  // @param[in] dv the k-th iteration tangential velocity update Δvₜᵏ, in m/s.
-  // @param[in] cos_theta_max precomputed value of cos(θₘₐₓ).
-  // @param[in] v_stiction the stiction tolerance vₛ, in m/s.
-  // @param[in] relative_tolerance a value << 1 used to determine when
-  // ‖vₜ‖ ≈ 0. Typical values lie within the 10⁻³ - 10⁻² range. This allows
-  // us to compute `εᵥ = tolerance⋅vₛ` (in m/s) which defines a "small
-  // tangential velocity scale". This value is used to compute "soft norms"
-  // (see class's documentation) and to detect values close to
-  // zero, ‖vₜ‖ < εᵥ. A value close to one could cause the solver to miss
-  // transitions from/to stiction.
-  // @retval α the limit in [0, 1] so that vₜᵏ⁺¹ = vₜᵏ + αΔvₜᵏ, or nullopt in
-  // case no solution was found.
-  static std::optional<T> CalcAlpha(const Eigen::Ref<const Vector2<T>>& v,
-                                    const Eigen::Ref<const Vector2<T>>& dv,
-                                    double cos_theta_max, double v_stiction,
-                                    double relative_tolerance);
+    // Implements the limiting algorithm described in the documentation above.
+    // @param[in] v the k-th iteration tangential velocity vₜᵏ, in m/s.
+    // @param[in] dv the k-th iteration tangential velocity update Δvₜᵏ, in m/s.
+    // @param[in] cos_theta_max precomputed value of cos(θₘₐₓ).
+    // @param[in] v_stiction the stiction tolerance vₛ, in m/s.
+    // @param[in] relative_tolerance a value << 1 used to determine when
+    // ‖vₜ‖ ≈ 0. Typical values lie within the 10⁻³ - 10⁻² range. This allows
+    // us to compute `εᵥ = tolerance⋅vₛ` (in m/s) which defines a "small
+    // tangential velocity scale". This value is used to compute "soft norms"
+    // (see class's documentation) and to detect values close to
+    // zero, ‖vₜ‖ < εᵥ. A value close to one could cause the solver to miss
+    // transitions from/to stiction.
+    // @retval α the limit in [0, 1] so that vₜᵏ⁺¹ = vₜᵏ + αΔvₜᵏ, or nullopt in
+    // case no solution was found.
+    static std::optional<T> CalcAlpha(const Eigen::Ref<const Vector2<T>>& v,
+                                      const Eigen::Ref<const Vector2<T>>& dv,
+                                      double cos_theta_max,
+                                      double v_stiction,
+                                      double relative_tolerance);
 
-  // Helper method for detecting when the line connecting v with v1 = v + dv
-  // crosses the stiction region, a circle of radius `v_stiction`.
-  // All other input arguments are quantities already precomputed by
-  // CalcAlpha() and thus we reuse them.
-  // @param alpha when this method returns `true` (zero crossing), a
-  // coefficient in `(0, 1]` so that `v_alpha = v + alpha * dv` is the closest
-  // vector to the origin. It is not set when the method returns `false`.
-  // @returns `true` if the line connecting v with v1 = v + dv crosses the
-  // stiction region.
-  static bool CrossesTheStictionRegion(const Eigen::Ref<const Vector2<T>>& v,
-                                       const Eigen::Ref<const Vector2<T>>& dv,
-                                       const T& v_dot_dv, const T& dv_norm,
-                                       const T& dv_norm2, double epsilon_v,
-                                       double v_stiction, T* alpha);
+    // Helper method for detecting when the line connecting v with v1 = v + dv
+    // crosses the stiction region, a circle of radius `v_stiction`.
+    // All other input arguments are quantities already precomputed by
+    // CalcAlpha() and thus we reuse them.
+    // @param alpha when this method returns `true` (zero crossing), a
+    // coefficient in `(0, 1]` so that `v_alpha = v + alpha * dv` is the closest
+    // vector to the origin. It is not set when the method returns `false`.
+    // @returns `true` if the line connecting v with v1 = v + dv crosses the
+    // stiction region.
+    static bool CrossesTheStictionRegion(const Eigen::Ref<const Vector2<T>>& v,
+                                         const Eigen::Ref<const Vector2<T>>& dv,
+                                         const T& v_dot_dv,
+                                         const T& dv_norm,
+                                         const T& dv_norm2,
+                                         double epsilon_v,
+                                         double v_stiction,
+                                         T* alpha);
 
-  // Helper method to solve the quadratic equation aα² + bα + c = 0 for the
-  // very particular case we know we have real roots (Δ = b² - 4ac > 0) and we
-  // are interested in the smallest positive root. Returns nullopt when Δ is not
-  // positive.
-  static std::optional<T> SolveQuadraticForTheSmallestPositiveRoot(const T& a,
-                                                                   const T& b,
-                                                                   const T& c);
+    // Helper method to solve the quadratic equation aα² + bα + c = 0 for the
+    // very particular case we know we have real roots (Δ = b² - 4ac > 0) and we
+    // are interested in the smallest positive root. Returns nullopt when Δ is not
+    // positive.
+    static std::optional<T> SolveQuadraticForTheSmallestPositiveRoot(const T& a, const T& b, const T& c);
 };
 }  // namespace internal
 
 /// The result from TamsiSolver::SolveWithGuess() used to report the
 /// success or failure of the solver.
 enum class TamsiSolverResult {
-  /// Successful computation.
-  kSuccess = 0,
+    /// Successful computation.
+    kSuccess = 0,
 
-  /// The maximum number of iterations was reached.
-  kMaxIterationsReached = 1,
+    /// The maximum number of iterations was reached.
+    kMaxIterationsReached = 1,
 
-  /// The linear solver used within the Newton-Raphson loop failed.
-  /// This might be caused by a divergent iteration that led to an invalid
-  /// Jacobian matrix.
-  kLinearSolverFailed = 2,
+    /// The linear solver used within the Newton-Raphson loop failed.
+    /// This might be caused by a divergent iteration that led to an invalid
+    /// Jacobian matrix.
+    kLinearSolverFailed = 2,
 
-  /// Could not solve for the α coefficient for per-iteration angle change.
-  kAlphaSolverFailed = 3,
+    /// Could not solve for the α coefficient for per-iteration angle change.
+    kAlphaSolverFailed = 3,
 };
 
 /// These are the parameters controlling the iteration process of the
 /// TamsiSolver solver.
 struct TamsiSolverParameters {
-  /// The stiction tolerance vₛ for the slip velocity in the regularized
-  /// friction function, in m/s. Roughly, for an externally applied tangential
-  /// forcing fₜ and normal force fₙ, under "stiction", the slip velocity will
-  /// be approximately vₜ ≈ vₛ fₜ/(μfₙ). In other words, the maximum slip
-  /// error of the regularized friction approximation occurs at the edge of the
-  /// friction cone when fₜ = μfₙ and vₜ = vₛ. The default of 0.1 mm/s is
-  /// a very tight value that for most problems of interest in robotics will
-  /// result in simulation results with negligible slip velocities introduced by
-  /// regularizing friction when in stiction.
-  double stiction_tolerance{1.0e-4};  // 0.1 mm/s
+    /// The stiction tolerance vₛ for the slip velocity in the regularized
+    /// friction function, in m/s. Roughly, for an externally applied tangential
+    /// forcing fₜ and normal force fₙ, under "stiction", the slip velocity will
+    /// be approximately vₜ ≈ vₛ fₜ/(μfₙ). In other words, the maximum slip
+    /// error of the regularized friction approximation occurs at the edge of the
+    /// friction cone when fₜ = μfₙ and vₜ = vₛ. The default of 0.1 mm/s is
+    /// a very tight value that for most problems of interest in robotics will
+    /// result in simulation results with negligible slip velocities introduced by
+    /// regularizing friction when in stiction.
+    double stiction_tolerance{1.0e-4};  // 0.1 mm/s
 
-  /// The maximum number of iterations allowed for the Newton-Raphson
-  /// iterative solver.
-  int max_iterations{100};
+    /// The maximum number of iterations allowed for the Newton-Raphson
+    /// iterative solver.
+    int max_iterations{100};
 
-  /// The tolerance to monitor the convergence of the tangential velocities.
-  /// This number specifies a tolerance relative to the value of the
-  /// stiction_tolerance and thus it is dimensionless. Using a tolerance
-  /// relative to the value of the stiction_tolerance is necessary in order
-  /// to capture transitions to stiction that would require an accuracy in the
-  /// value of the tangential velocities smaller than that of the
-  /// "stiction region" (the circle around the origin with radius
-  /// stiction_tolerance).
-  /// A value close to one could cause the solver to miss transitions from/to
-  /// stiction. Small values approaching zero will result in a higher number of
-  /// iterations needed to attain the desired level of convergence.
-  /// Typical values lie within the 10⁻³ - 10⁻² range.
-  double relative_tolerance{1.0e-2};
+    /// The tolerance to monitor the convergence of the tangential velocities.
+    /// This number specifies a tolerance relative to the value of the
+    /// stiction_tolerance and thus it is dimensionless. Using a tolerance
+    /// relative to the value of the stiction_tolerance is necessary in order
+    /// to capture transitions to stiction that would require an accuracy in the
+    /// value of the tangential velocities smaller than that of the
+    /// "stiction region" (the circle around the origin with radius
+    /// stiction_tolerance).
+    /// A value close to one could cause the solver to miss transitions from/to
+    /// stiction. Small values approaching zero will result in a higher number of
+    /// iterations needed to attain the desired level of convergence.
+    /// Typical values lie within the 10⁻³ - 10⁻² range.
+    double relative_tolerance{1.0e-2};
 
-  /// (Advanced) TamsiSolver limits large angular changes between
-  /// tangential velocities at two successive iterations vₜᵏ⁺¹ and vₜᵏ. This
-  /// change is measured by the angle θ = acos(vₜᵏ⁺¹⋅vₜᵏ/(‖vₜᵏ⁺¹‖‖vₜᵏ‖)).
-  /// To aid convergence, TamsiSolver, limits this angular change to
-  /// `theta_max`. Please refer to the documentation for TamsiSolver
-  /// for further details.
-  ///
-  /// Small values of `theta_max` will result in a larger number of iterations
-  /// of the solver for situations in which large angular changes occur (sudden
-  /// transients or impacts). Values of `theta_max` close to π/2 allow for a
-  /// faster convergence for problems with sudden transitions to/from stiction.
-  /// Large values of `theta_max` however might lead to non-convergence of the
-  /// solver. We choose a conservative number by default that we found to work
-  /// well in most practical problems of interest.
-  double theta_max{M_PI / 3.0};
+    /// (Advanced) TamsiSolver limits large angular changes between
+    /// tangential velocities at two successive iterations vₜᵏ⁺¹ and vₜᵏ. This
+    /// change is measured by the angle θ = acos(vₜᵏ⁺¹⋅vₜᵏ/(‖vₜᵏ⁺¹‖‖vₜᵏ‖)).
+    /// To aid convergence, TamsiSolver, limits this angular change to
+    /// `theta_max`. Please refer to the documentation for TamsiSolver
+    /// for further details.
+    ///
+    /// Small values of `theta_max` will result in a larger number of iterations
+    /// of the solver for situations in which large angular changes occur (sudden
+    /// transients or impacts). Values of `theta_max` close to π/2 allow for a
+    /// faster convergence for problems with sudden transitions to/from stiction.
+    /// Large values of `theta_max` however might lead to non-convergence of the
+    /// solver. We choose a conservative number by default that we found to work
+    /// well in most practical problems of interest.
+    double theta_max{M_PI / 3.0};
 };
 
 /// Struct used to store information about the iteration process performed by
 /// TamsiSolver.
 struct TamsiSolverIterationStats {
-  /// (Internal) Used by TamsiSolver to reset statistics.
-  void Reset() {
-    num_iterations = 0;
-    // Clear does not change a std::vector "capacity", and therefore there's
-    // no reallocation (or deallocation) that could affect performance.
-    residuals.clear();
-  }
+    /// (Internal) Used by TamsiSolver to reset statistics.
+    void Reset() {
+        num_iterations = 0;
+        // Clear does not change a std::vector "capacity", and therefore there's
+        // no reallocation (or deallocation) that could affect performance.
+        residuals.clear();
+    }
 
-  /// (Internal) Used by TamsiSolver to update statistics.
-  void Update(double iteration_residual) {
-    ++num_iterations;
-    residuals.push_back(iteration_residual);
-  }
+    /// (Internal) Used by TamsiSolver to update statistics.
+    void Update(double iteration_residual) {
+        ++num_iterations;
+        residuals.push_back(iteration_residual);
+    }
 
-  /// The number of iterations performed by the last TamsiSolver
-  /// solve.
-  int num_iterations{0};
+    /// The number of iterations performed by the last TamsiSolver
+    /// solve.
+    int num_iterations{0};
 
-  /// Returns the residual in the tangential velocities, in m/s. Upon
-  /// convergence of the solver this value should be smaller than
-  /// Parameters::tolerance times Parameters::stiction_tolerance.
-  double vt_residual() const { return residuals.back(); }
+    /// Returns the residual in the tangential velocities, in m/s. Upon
+    /// convergence of the solver this value should be smaller than
+    /// Parameters::tolerance times Parameters::stiction_tolerance.
+    double vt_residual() const { return residuals.back(); }
 
-  /// (Advanced) Residual in the tangential velocities, in m/s. The k-th entry
-  /// in this vector corresponds to the residual for the k-th Newton-Raphson
-  /// iteration performed by the solver.
-  /// After TamsiSolver solved a problem, this vector will have size
-  /// num_iterations.
-  /// The last entry in this vector, `residuals[num_iterations-1]`, corresponds
-  /// to the residual upon completion of the solver, i.e. vt_residual.
-  std::vector<double> residuals;
+    /// (Advanced) Residual in the tangential velocities, in m/s. The k-th entry
+    /// in this vector corresponds to the residual for the k-th Newton-Raphson
+    /// iteration performed by the solver.
+    /// After TamsiSolver solved a problem, this vector will have size
+    /// num_iterations.
+    /// The last entry in this vector, `residuals[num_iterations-1]`, corresponds
+    /// to the residual upon completion of the solver, i.e. vt_residual.
+    std::vector<double> residuals;
 };
 
 /** @anchor tamsi_class_intro
@@ -511,700 +513,654 @@ term exactly as needed in Eq. (16).
 */
 template <typename T>
 class TamsiSolver {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(TamsiSolver);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(TamsiSolver);
 
-  /// Instantiates a solver for a problem with `nv` generalized velocities.
-  /// @throws std::exception if nv is non-positive.
-  explicit TamsiSolver(int nv);
+    /// Instantiates a solver for a problem with `nv` generalized velocities.
+    /// @throws std::exception if nv is non-positive.
+    explicit TamsiSolver(int nv);
 
-  ~TamsiSolver();
+    ~TamsiSolver();
 
-  /// Change the working size of the solver to use `nv` generalized
-  /// velocities. This can be used to either shrink or grow the workspaces.
-  /// @throws std::exception if nv is non-positive.
-  void ResizeIfNeeded(int nv) const {
-    DRAKE_THROW_UNLESS(nv > 0);
-    if (nv != nv_) {
-      nv_ = nv;
-      fixed_size_workspace_ = FixedSizeWorkspace(nv);
-      variable_size_workspace_ = VariableSizeWorkspace(128, nv);
-    }
-  }
-
-  /// @returns a deep copy of this, with the problem data invalidated, i.e., one
-  /// of the Set*ProblemData() methods must be called on the clone before it
-  /// can be used to solve.
-  std::unique_ptr<TamsiSolver<T>> Clone() const {
-    auto result = std::make_unique<TamsiSolver<T>>(nv_);
-    // Don't copy the aliases; just wipe them.
-    result->problem_data_aliases_.Invalidate();
-    result->nc_ = nc_;
-    result->parameters_ = parameters_;
-    result->fixed_size_workspace_ = fixed_size_workspace_;
-    result->variable_size_workspace_ = variable_size_workspace_;
-    result->cos_theta_max_ = cos_theta_max_;
-    result->statistics_ = statistics_;
-    return result;
-  }
-
-  // TODO(amcastro-tri): submit a separate reformat PR changing /// by /**.
-  /// Sets data for the problem to be solved as outlined by Eq. (3) in this
-  /// class's documentation: <pre>
-  ///   (3)  M v = p* + δt Jₙᵀ fₙ +  δt Jₜᵀ fₜ(v)
-  /// </pre>
-  /// Refer to this class's documentation for further details on the structure
-  /// of the problem and the solution strategy.
-  /// In the documented parameters below, `nv` is the number of generalized
-  /// velocities and `nc` is the number of contact points.
-  ///
-  /// @param[in] M
-  ///   The mass matrix of the system, of size `nv x nv`.
-  /// @param[in] Jn
-  ///   The normal separation velocities Jacobian, of size `nc x nv`.
-  /// @param[in] Jt
-  ///   The tangential velocities Jacobian, of size `2nc x nv`.
-  /// @param[in] p_star
-  ///   The generalized momentum the system would have at `s + 1` if contact
-  ///   forces were zero.
-  /// @param[in] fn
-  ///   A vector of size `nc` containing the normal force at each contact point.
-  /// @param[in] mu
-  ///   A vector of size `nc` containing the friction coefficient at each
-  ///   contact point. The solver makes no distinction between static and
-  ///   dynamic coefficients of friction or, similarly, the solver assumes the
-  ///   static and dynamic coefficients of friction are the same.
-  ///
-  /// @warning This method stores constant references to the matrices and
-  /// vectors passed as arguments. Therefore
-  ///   1. they must outlive this class and,
-  ///   2. changes to the problem data invalidate any solution performed by this
-  ///      solver. In such a case, SetOneWayCoupledProblemData() and
-  ///      SolveWithGuess() must be invoked again.
-  ///
-  /// @throws std::exception if any of the data pointers are nullptr.
-  /// @throws std::exception if the problem data sizes are not consistent as
-  /// described above.
-  /// @throws std::exception if SetTwoWayCoupledProblemData() was ever called on
-  /// `this` solver.
-  void SetOneWayCoupledProblemData(EigenPtr<const MatrixX<T>> M,
-                                   EigenPtr<const MatrixX<T>> Jn,
-                                   EigenPtr<const MatrixX<T>> Jt,
-                                   EigenPtr<const VectorX<T>> p_star,
-                                   EigenPtr<const VectorX<T>> fn,
-                                   EigenPtr<const VectorX<T>> mu);
-
-  /// Sets the problem data to solve the problem outlined in Eq. (10) in this
-  /// class's documentation using a two-way coupled approach: <pre>
-  ///   (10)  M(qˢ) vˢ⁺¹ = p* + δt [Jₙᵀ(qˢ) fₙ(vˢ⁺¹) + Jₜᵀ(qˢ) fₜ(vˢ⁺¹)]
-  /// </pre>
-  /// Refer to this class's documentation for further details on the structure
-  /// of the problem and the solution strategy.
-  /// In the documented parameters below, `nv` is the number of generalized
-  /// velocities and `nc` is the number of contact points.
-  ///
-  /// @param[in] M
-  ///   The mass matrix of the system, of size `nv x nv`.
-  /// @param[in] Jn
-  ///   The normal separation velocities Jacobian, of size `nc x nv`.
-  /// @param[in] Jt
-  ///   The tangential velocities Jacobian, of size `2nc x nv`.
-  /// @param[in] p_star
-  ///   The generalized momentum the system would have at `n + 1` if contact
-  ///   forces were zero.
-  /// @param[in] fn0
-  ///   Normal force at the previous time step. Always positive since bodies
-  ///   cannot attract each other.
-  /// @param[in] stiffness
-  ///   A vector of size `nc` storing at each ith entry the stiffness
-  ///   coefficient for the ith contact pair.
-  /// @param[in] dissipation
-  ///   A vector of size `nc` storing at each ith entry the dissipation
-  ///   coefficient for the ith contact pair.
-  /// @param[in] mu
-  ///   A vector of size `nc` containing the friction coefficient at each
-  ///   contact point. The solver makes no distinction between static and
-  ///   dynamic coefficients of friction or, similarly, the solver assumes the
-  ///   static and dynamic coefficients of friction are the same.
-  ///
-  /// @warning This method stores constant references to the matrices and
-  /// vectors passed as arguments. Therefore
-  ///   1. they must outlive this class and,
-  ///   2. changes to the problem data invalidate any solution performed by this
-  ///      solver. In such a case, SetOneWayCoupledProblemData() and
-  ///      SolveWithGuess() must be invoked again.
-  ///
-  /// @throws std::exception if any of the data pointers are nullptr.
-  /// @throws std::exception if the problem data sizes are not consistent as
-  /// described above.
-  /// @throws std::exception if SetOneWayCoupledProblemData() was ever called on
-  /// `this` solver.
-  // TODO(amcastro-tri): rework the entire math again to make phi to actually be
-  // the signed distance function (instead of the signed penetration distance).
-  void SetTwoWayCoupledProblemData(
-      EigenPtr<const MatrixX<T>> M, EigenPtr<const MatrixX<T>> Jn,
-      EigenPtr<const MatrixX<T>> Jt, EigenPtr<const VectorX<T>> p_star,
-      EigenPtr<const VectorX<T>> fn0, EigenPtr<const VectorX<T>> stiffness,
-      EigenPtr<const VectorX<T>> dissipation, EigenPtr<const VectorX<T>> mu);
-
-  /// Given an initial guess `v_guess`, this method uses a Newton-Raphson
-  /// iteration to find a solution for the generalized velocities satisfying
-  /// either Eq. (3) when one-way coupling is used or Eq. (10) when two-way
-  /// coupling is used. See this class's documentation for further details.
-  /// To retrieve the solution, please refer to @ref retrieving_the_solution.
-  /// @returns kSuccess if the iteration converges. All other values of
-  /// TamsiSolverResult report different failure modes.
-  /// Uses `this` solver accessors to retrieve the last computed solution.
-  /// @warning Always verify that the return value indicates success before
-  /// retrieving the computed solution.
-  ///
-  /// @param[in] dt The time step used advance the solution in time.
-  /// @param[in] v_guess The initial guess used in by the Newton-Raphson
-  /// iteration. Typically, the previous time step velocities.
-  ///
-  /// @throws std::exception if `v_guess` is not of size `nv`, the number of
-  /// generalized velocities specified at construction.
-  TamsiSolverResult SolveWithGuess(double dt, const VectorX<T>& v_guess) const;
-
-  /// @anchor retrieving_the_solution
-  /// @name Retrieving the solution
-  /// This methods allow to retrieve the solution stored in the solver after
-  /// the last call to SolveWithGuess().
-  /// @{
-
-  /// Returns a constant reference to the most recent  vector of generalized
-  /// friction forces.
-  const VectorX<T>& get_generalized_friction_forces() const {
-    return fixed_size_workspace_.mutable_tau_f();
-  }
-
-  /// Returns a constant reference to the most recent solution vector for normal
-  /// separation velocities. This method returns an `Eigen::VectorBlock`
-  /// referencing a vector of size `nc`.
-  Eigen::VectorBlock<const VectorX<T>> get_normal_velocities() const {
-    return variable_size_workspace_.vn();
-  }
-
-  /// Returns a constant reference to the most recent vector of generalized
-  /// contact forces, including both friction and normal forces.
-  const VectorX<T>& get_generalized_contact_forces() const {
-    return fixed_size_workspace_.mutable_tau();
-  }
-
-  /// Returns a constant reference to the most recent vector of tangential
-  /// forces. This method returns an `Eigen::VectorBlock` referencing a vector
-  /// of size `nc`.
-  Eigen::VectorBlock<const VectorX<T>> get_tangential_velocities() const {
-    return variable_size_workspace_.vt();
-  }
-
-  /// Returns a constant reference to the most recent vector of generalized
-  /// velocities.
-  const VectorX<T>& get_generalized_velocities() const {
-    return fixed_size_workspace_.mutable_v();
-  }
-
-  /// Returns a constant reference to the most recent vector of (repulsive)
-  /// forces in the normal direction. That is, the normal force is positive when
-  /// the bodies push each other apart. Otherwise the normal force is zero,
-  /// since contact forces can only be repulsive.
-  Eigen::VectorBlock<const VectorX<T>> get_normal_forces() const {
-    return variable_size_workspace_.fn();
-  }
-
-  /// Returns a constant reference to the most recent vector of friction forces.
-  /// These friction forces are defined in accordance to the tangential
-  /// velocities Jacobian Jₜ as documented in
-  /// @ref tamsi_class_intro "this class's documentation".
-  Eigen::VectorBlock<const VectorX<T>> get_friction_forces() const {
-    return variable_size_workspace_.ft();
-  }
-
-  /// @}
-
-  /// Returns statistics recorded during the last call to SolveWithGuess().
-  /// See IterationStats for details.
-  const TamsiSolverIterationStats& get_iteration_statistics() const {
-    return statistics_;
-  }
-
-  /// Returns the current set of parameters controlling the iteration process.
-  /// See Parameters for details.
-  const TamsiSolverParameters& get_solver_parameters() const {
-    return parameters_;
-  }
-
-  /// Sets the parameters to be used by the solver.
-  /// See Parameters for details.
-  void set_solver_parameters(const TamsiSolverParameters& parameters) {
-    // cos_theta_max must be updated consistently with the new value of
-    // theta_max.
-    cos_theta_max_ = std::cos(parameters.theta_max);
-    parameters_ = parameters;
-  }
-
- private:
-  // Helper class for unit testing.
-  friend class TamsiSolverTester;
-
-  // Contains all the references that define the problem to be solved.
-  // These references must remain valid at least from the time they are set with
-  // SetOneWayCoupledProblemData() and until SolveWithGuess() returns.
-  class ProblemDataAliases {
-   public:
-    // Sets the references to the data defining a one-way coupled problem.
-    // This method throws an exception if SetTwoWayCoupledData() was previously
-    // called on this object.
-    void SetOneWayCoupledData(EigenPtr<const MatrixX<T>> M,
-                              EigenPtr<const MatrixX<T>> Jn,
-                              EigenPtr<const MatrixX<T>> Jt,
-                              EigenPtr<const VectorX<T>> p_star,
-                              EigenPtr<const VectorX<T>> fn,
-                              EigenPtr<const VectorX<T>> mu) {
-      DRAKE_DEMAND(M != nullptr);
-      DRAKE_DEMAND(Jn != nullptr);
-      DRAKE_DEMAND(Jt != nullptr);
-      DRAKE_DEMAND(p_star != nullptr);
-      DRAKE_DEMAND(fn != nullptr);
-      DRAKE_DEMAND(mu != nullptr);
-      DRAKE_THROW_UNLESS(coupling_scheme_ == kInvalidScheme ||
-                         coupling_scheme_ == kOneWayCoupled);
-      coupling_scheme_ = kOneWayCoupled;
-      M_ptr_ = M;
-      Jn_ptr_ = Jn;
-      Jt_ptr_ = Jt;
-      p_star_ptr_ = p_star;
-      fn_ptr_ = fn;
-      mu_ptr_ = mu;
+    /// Change the working size of the solver to use `nv` generalized
+    /// velocities. This can be used to either shrink or grow the workspaces.
+    /// @throws std::exception if nv is non-positive.
+    void ResizeIfNeeded(int nv) const {
+        DRAKE_THROW_UNLESS(nv > 0);
+        if (nv != nv_) {
+            nv_ = nv;
+            fixed_size_workspace_ = FixedSizeWorkspace(nv);
+            variable_size_workspace_ = VariableSizeWorkspace(128, nv);
+        }
     }
 
-    // Sets the references to the data defining a two-way coupled problem.
-    // This method throws an exception if SetOneWayCoupledData() was previously
-    // called on this object.
-    void SetTwoWayCoupledData(
-        EigenPtr<const MatrixX<T>> M, EigenPtr<const MatrixX<T>> Jn,
-        EigenPtr<const MatrixX<T>> Jt, EigenPtr<const VectorX<T>> p_star,
-        EigenPtr<const VectorX<T>> fn0, EigenPtr<const VectorX<T>> stiffness,
-        EigenPtr<const VectorX<T>> dissipation, EigenPtr<const VectorX<T>> mu) {
-      DRAKE_DEMAND(M != nullptr);
-      DRAKE_DEMAND(Jn != nullptr);
-      DRAKE_DEMAND(Jt != nullptr);
-      DRAKE_DEMAND(p_star != nullptr);
-      DRAKE_DEMAND(fn0 != nullptr);
-      DRAKE_DEMAND(stiffness != nullptr);
-      DRAKE_DEMAND(dissipation != nullptr);
-      DRAKE_DEMAND(mu != nullptr);
-      DRAKE_THROW_UNLESS(coupling_scheme_ == kInvalidScheme ||
-                         coupling_scheme_ == kTwoWayCoupled);
-      coupling_scheme_ = kTwoWayCoupled;
-      M_ptr_ = M;
-      Jn_ptr_ = Jn;
-      Jt_ptr_ = Jt;
-      p_star_ptr_ = p_star;
-      fn0_ptr_ = fn0;
-      stiffness_ptr_ = stiffness;
-      dissipation_ptr_ = dissipation;
-      mu_ptr_ = mu;
+    /// @returns a deep copy of this, with the problem data invalidated, i.e., one
+    /// of the Set*ProblemData() methods must be called on the clone before it
+    /// can be used to solve.
+    std::unique_ptr<TamsiSolver<T>> Clone() const {
+        auto result = std::make_unique<TamsiSolver<T>>(nv_);
+        // Don't copy the aliases; just wipe them.
+        result->problem_data_aliases_.Invalidate();
+        result->nc_ = nc_;
+        result->parameters_ = parameters_;
+        result->fixed_size_workspace_ = fixed_size_workspace_;
+        result->variable_size_workspace_ = variable_size_workspace_;
+        result->cos_theta_max_ = cos_theta_max_;
+        result->statistics_ = statistics_;
+        return result;
     }
 
-    // Clears references to any problem-defining data. One of the Set*Data()
-    // methods must be called to provide new references before any of the
-    // problem data accessors can be used again.
-    void Invalidate() {
-      coupling_scheme_ = kInvalidScheme;
-      M_ptr_ = nullptr;
-      Jn_ptr_ = nullptr;
-      Jt_ptr_ = nullptr;
-      p_star_ptr_ = nullptr;
-      fn_ptr_ = nullptr;
-      fn0_ptr_ = nullptr;
-      stiffness_ptr_ = nullptr;
-      dissipation_ptr_ = nullptr;
-      mu_ptr_ = nullptr;
+    // TODO(amcastro-tri): submit a separate reformat PR changing /// by /**.
+    /// Sets data for the problem to be solved as outlined by Eq. (3) in this
+    /// class's documentation: <pre>
+    ///   (3)  M v = p* + δt Jₙᵀ fₙ +  δt Jₜᵀ fₜ(v)
+    /// </pre>
+    /// Refer to this class's documentation for further details on the structure
+    /// of the problem and the solution strategy.
+    /// In the documented parameters below, `nv` is the number of generalized
+    /// velocities and `nc` is the number of contact points.
+    ///
+    /// @param[in] M
+    ///   The mass matrix of the system, of size `nv x nv`.
+    /// @param[in] Jn
+    ///   The normal separation velocities Jacobian, of size `nc x nv`.
+    /// @param[in] Jt
+    ///   The tangential velocities Jacobian, of size `2nc x nv`.
+    /// @param[in] p_star
+    ///   The generalized momentum the system would have at `s + 1` if contact
+    ///   forces were zero.
+    /// @param[in] fn
+    ///   A vector of size `nc` containing the normal force at each contact point.
+    /// @param[in] mu
+    ///   A vector of size `nc` containing the friction coefficient at each
+    ///   contact point. The solver makes no distinction between static and
+    ///   dynamic coefficients of friction or, similarly, the solver assumes the
+    ///   static and dynamic coefficients of friction are the same.
+    ///
+    /// @warning This method stores constant references to the matrices and
+    /// vectors passed as arguments. Therefore
+    ///   1. they must outlive this class and,
+    ///   2. changes to the problem data invalidate any solution performed by this
+    ///      solver. In such a case, SetOneWayCoupledProblemData() and
+    ///      SolveWithGuess() must be invoked again.
+    ///
+    /// @throws std::exception if any of the data pointers are nullptr.
+    /// @throws std::exception if the problem data sizes are not consistent as
+    /// described above.
+    /// @throws std::exception if SetTwoWayCoupledProblemData() was ever called on
+    /// `this` solver.
+    void SetOneWayCoupledProblemData(EigenPtr<const MatrixX<T>> M,
+                                     EigenPtr<const MatrixX<T>> Jn,
+                                     EigenPtr<const MatrixX<T>> Jt,
+                                     EigenPtr<const VectorX<T>> p_star,
+                                     EigenPtr<const VectorX<T>> fn,
+                                     EigenPtr<const VectorX<T>> mu);
+
+    /// Sets the problem data to solve the problem outlined in Eq. (10) in this
+    /// class's documentation using a two-way coupled approach: <pre>
+    ///   (10)  M(qˢ) vˢ⁺¹ = p* + δt [Jₙᵀ(qˢ) fₙ(vˢ⁺¹) + Jₜᵀ(qˢ) fₜ(vˢ⁺¹)]
+    /// </pre>
+    /// Refer to this class's documentation for further details on the structure
+    /// of the problem and the solution strategy.
+    /// In the documented parameters below, `nv` is the number of generalized
+    /// velocities and `nc` is the number of contact points.
+    ///
+    /// @param[in] M
+    ///   The mass matrix of the system, of size `nv x nv`.
+    /// @param[in] Jn
+    ///   The normal separation velocities Jacobian, of size `nc x nv`.
+    /// @param[in] Jt
+    ///   The tangential velocities Jacobian, of size `2nc x nv`.
+    /// @param[in] p_star
+    ///   The generalized momentum the system would have at `n + 1` if contact
+    ///   forces were zero.
+    /// @param[in] fn0
+    ///   Normal force at the previous time step. Always positive since bodies
+    ///   cannot attract each other.
+    /// @param[in] stiffness
+    ///   A vector of size `nc` storing at each ith entry the stiffness
+    ///   coefficient for the ith contact pair.
+    /// @param[in] dissipation
+    ///   A vector of size `nc` storing at each ith entry the dissipation
+    ///   coefficient for the ith contact pair.
+    /// @param[in] mu
+    ///   A vector of size `nc` containing the friction coefficient at each
+    ///   contact point. The solver makes no distinction between static and
+    ///   dynamic coefficients of friction or, similarly, the solver assumes the
+    ///   static and dynamic coefficients of friction are the same.
+    ///
+    /// @warning This method stores constant references to the matrices and
+    /// vectors passed as arguments. Therefore
+    ///   1. they must outlive this class and,
+    ///   2. changes to the problem data invalidate any solution performed by this
+    ///      solver. In such a case, SetOneWayCoupledProblemData() and
+    ///      SolveWithGuess() must be invoked again.
+    ///
+    /// @throws std::exception if any of the data pointers are nullptr.
+    /// @throws std::exception if the problem data sizes are not consistent as
+    /// described above.
+    /// @throws std::exception if SetOneWayCoupledProblemData() was ever called on
+    /// `this` solver.
+    // TODO(amcastro-tri): rework the entire math again to make phi to actually be
+    // the signed distance function (instead of the signed penetration distance).
+    void SetTwoWayCoupledProblemData(EigenPtr<const MatrixX<T>> M,
+                                     EigenPtr<const MatrixX<T>> Jn,
+                                     EigenPtr<const MatrixX<T>> Jt,
+                                     EigenPtr<const VectorX<T>> p_star,
+                                     EigenPtr<const VectorX<T>> fn0,
+                                     EigenPtr<const VectorX<T>> stiffness,
+                                     EigenPtr<const VectorX<T>> dissipation,
+                                     EigenPtr<const VectorX<T>> mu);
+
+    /// Given an initial guess `v_guess`, this method uses a Newton-Raphson
+    /// iteration to find a solution for the generalized velocities satisfying
+    /// either Eq. (3) when one-way coupling is used or Eq. (10) when two-way
+    /// coupling is used. See this class's documentation for further details.
+    /// To retrieve the solution, please refer to @ref retrieving_the_solution.
+    /// @returns kSuccess if the iteration converges. All other values of
+    /// TamsiSolverResult report different failure modes.
+    /// Uses `this` solver accessors to retrieve the last computed solution.
+    /// @warning Always verify that the return value indicates success before
+    /// retrieving the computed solution.
+    ///
+    /// @param[in] dt The time step used advance the solution in time.
+    /// @param[in] v_guess The initial guess used in by the Newton-Raphson
+    /// iteration. Typically, the previous time step velocities.
+    ///
+    /// @throws std::exception if `v_guess` is not of size `nv`, the number of
+    /// generalized velocities specified at construction.
+    TamsiSolverResult SolveWithGuess(double dt, const VectorX<T>& v_guess) const;
+
+    /// @anchor retrieving_the_solution
+    /// @name Retrieving the solution
+    /// This methods allow to retrieve the solution stored in the solver after
+    /// the last call to SolveWithGuess().
+    /// @{
+
+    /// Returns a constant reference to the most recent  vector of generalized
+    /// friction forces.
+    const VectorX<T>& get_generalized_friction_forces() const { return fixed_size_workspace_.mutable_tau_f(); }
+
+    /// Returns a constant reference to the most recent solution vector for normal
+    /// separation velocities. This method returns an `Eigen::VectorBlock`
+    /// referencing a vector of size `nc`.
+    Eigen::VectorBlock<const VectorX<T>> get_normal_velocities() const { return variable_size_workspace_.vn(); }
+
+    /// Returns a constant reference to the most recent vector of generalized
+    /// contact forces, including both friction and normal forces.
+    const VectorX<T>& get_generalized_contact_forces() const { return fixed_size_workspace_.mutable_tau(); }
+
+    /// Returns a constant reference to the most recent vector of tangential
+    /// forces. This method returns an `Eigen::VectorBlock` referencing a vector
+    /// of size `nc`.
+    Eigen::VectorBlock<const VectorX<T>> get_tangential_velocities() const { return variable_size_workspace_.vt(); }
+
+    /// Returns a constant reference to the most recent vector of generalized
+    /// velocities.
+    const VectorX<T>& get_generalized_velocities() const { return fixed_size_workspace_.mutable_v(); }
+
+    /// Returns a constant reference to the most recent vector of (repulsive)
+    /// forces in the normal direction. That is, the normal force is positive when
+    /// the bodies push each other apart. Otherwise the normal force is zero,
+    /// since contact forces can only be repulsive.
+    Eigen::VectorBlock<const VectorX<T>> get_normal_forces() const { return variable_size_workspace_.fn(); }
+
+    /// Returns a constant reference to the most recent vector of friction forces.
+    /// These friction forces are defined in accordance to the tangential
+    /// velocities Jacobian Jₜ as documented in
+    /// @ref tamsi_class_intro "this class's documentation".
+    Eigen::VectorBlock<const VectorX<T>> get_friction_forces() const { return variable_size_workspace_.ft(); }
+
+    /// @}
+
+    /// Returns statistics recorded during the last call to SolveWithGuess().
+    /// See IterationStats for details.
+    const TamsiSolverIterationStats& get_iteration_statistics() const { return statistics_; }
+
+    /// Returns the current set of parameters controlling the iteration process.
+    /// See Parameters for details.
+    const TamsiSolverParameters& get_solver_parameters() const { return parameters_; }
+
+    /// Sets the parameters to be used by the solver.
+    /// See Parameters for details.
+    void set_solver_parameters(const TamsiSolverParameters& parameters) {
+        // cos_theta_max must be updated consistently with the new value of
+        // theta_max.
+        cos_theta_max_ = std::cos(parameters.theta_max);
+        parameters_ = parameters;
     }
 
-    // Returns true if this class contains the data for a two-way coupled
-    // problem.
-    bool has_two_way_coupling_data() const {
-      return coupling_scheme_ == kTwoWayCoupled;
-    }
+private:
+    // Helper class for unit testing.
+    friend class TamsiSolverTester;
 
-    Eigen::Ref<const MatrixX<T>> M() const {
-      DRAKE_ASSERT_VOID(DemandValid());
-      return *M_ptr_;
-    }
-    Eigen::Ref<const MatrixX<T>> Jn() const {
-      DRAKE_ASSERT_VOID(DemandValid());
-      return *Jn_ptr_;
-    }
-    Eigen::Ref<const MatrixX<T>> Jt() const {
-      DRAKE_ASSERT_VOID(DemandValid());
-      return *Jt_ptr_;
-    }
-    Eigen::Ref<const VectorX<T>> p_star() const {
-      DRAKE_ASSERT_VOID(DemandValid());
-      return *p_star_ptr_;
-    }
+    // Contains all the references that define the problem to be solved.
+    // These references must remain valid at least from the time they are set with
+    // SetOneWayCoupledProblemData() and until SolveWithGuess() returns.
+    class ProblemDataAliases {
+    public:
+        // Sets the references to the data defining a one-way coupled problem.
+        // This method throws an exception if SetTwoWayCoupledData() was previously
+        // called on this object.
+        void SetOneWayCoupledData(EigenPtr<const MatrixX<T>> M,
+                                  EigenPtr<const MatrixX<T>> Jn,
+                                  EigenPtr<const MatrixX<T>> Jt,
+                                  EigenPtr<const VectorX<T>> p_star,
+                                  EigenPtr<const VectorX<T>> fn,
+                                  EigenPtr<const VectorX<T>> mu) {
+            DRAKE_DEMAND(M != nullptr);
+            DRAKE_DEMAND(Jn != nullptr);
+            DRAKE_DEMAND(Jt != nullptr);
+            DRAKE_DEMAND(p_star != nullptr);
+            DRAKE_DEMAND(fn != nullptr);
+            DRAKE_DEMAND(mu != nullptr);
+            DRAKE_THROW_UNLESS(coupling_scheme_ == kInvalidScheme || coupling_scheme_ == kOneWayCoupled);
+            coupling_scheme_ = kOneWayCoupled;
+            M_ptr_ = M;
+            Jn_ptr_ = Jn;
+            Jt_ptr_ = Jt;
+            p_star_ptr_ = p_star;
+            fn_ptr_ = fn;
+            mu_ptr_ = mu;
+        }
 
-    // For the one-way coupled scheme, it returns a constant reference to the
-    // data for the normal forces. It aborts if called on data for the two-way
-    // coupled scheme, see has_two_way_coupling_data().
-    Eigen::Ref<const VectorX<T>> fn() const {
-      DRAKE_DEMAND(fn_ptr_ != nullptr);
-      return *fn_ptr_;
-    }
+        // Sets the references to the data defining a two-way coupled problem.
+        // This method throws an exception if SetOneWayCoupledData() was previously
+        // called on this object.
+        void SetTwoWayCoupledData(EigenPtr<const MatrixX<T>> M,
+                                  EigenPtr<const MatrixX<T>> Jn,
+                                  EigenPtr<const MatrixX<T>> Jt,
+                                  EigenPtr<const VectorX<T>> p_star,
+                                  EigenPtr<const VectorX<T>> fn0,
+                                  EigenPtr<const VectorX<T>> stiffness,
+                                  EigenPtr<const VectorX<T>> dissipation,
+                                  EigenPtr<const VectorX<T>> mu) {
+            DRAKE_DEMAND(M != nullptr);
+            DRAKE_DEMAND(Jn != nullptr);
+            DRAKE_DEMAND(Jt != nullptr);
+            DRAKE_DEMAND(p_star != nullptr);
+            DRAKE_DEMAND(fn0 != nullptr);
+            DRAKE_DEMAND(stiffness != nullptr);
+            DRAKE_DEMAND(dissipation != nullptr);
+            DRAKE_DEMAND(mu != nullptr);
+            DRAKE_THROW_UNLESS(coupling_scheme_ == kInvalidScheme || coupling_scheme_ == kTwoWayCoupled);
+            coupling_scheme_ = kTwoWayCoupled;
+            M_ptr_ = M;
+            Jn_ptr_ = Jn;
+            Jt_ptr_ = Jt;
+            p_star_ptr_ = p_star;
+            fn0_ptr_ = fn0;
+            stiffness_ptr_ = stiffness;
+            dissipation_ptr_ = dissipation;
+            mu_ptr_ = mu;
+        }
 
-    // For the two-way coupled scheme, it returns a constant reference to the
-    // data for the penetration distance. It aborts if called on data for the
-    // one-way coupled scheme, see has_two_way_coupling_data().
-    Eigen::Ref<const VectorX<T>> fn0() const {
-      DRAKE_DEMAND(fn0_ptr_ != nullptr);
-      return *fn0_ptr_;
-    }
+        // Clears references to any problem-defining data. One of the Set*Data()
+        // methods must be called to provide new references before any of the
+        // problem data accessors can be used again.
+        void Invalidate() {
+            coupling_scheme_ = kInvalidScheme;
+            M_ptr_ = nullptr;
+            Jn_ptr_ = nullptr;
+            Jt_ptr_ = nullptr;
+            p_star_ptr_ = nullptr;
+            fn_ptr_ = nullptr;
+            fn0_ptr_ = nullptr;
+            stiffness_ptr_ = nullptr;
+            dissipation_ptr_ = nullptr;
+            mu_ptr_ = nullptr;
+        }
 
-    // For the two-way coupled scheme, it returns a constant reference to the
-    // data for the stiffness. It aborts if called on data for the
-    // one-way coupled scheme, see has_two_way_coupling_data().
-    Eigen::Ref<const VectorX<T>> stiffness() const {
-      DRAKE_DEMAND(stiffness_ptr_ != nullptr);
-      return *stiffness_ptr_;
-    }
+        // Returns true if this class contains the data for a two-way coupled
+        // problem.
+        bool has_two_way_coupling_data() const { return coupling_scheme_ == kTwoWayCoupled; }
 
-    // For the two-way coupled scheme, it returns a constant reference to the
-    // data for the dissipation. It aborts if called on data for the
-    // one-way coupled scheme, see has_two_way_coupling_data().
-    Eigen::Ref<const VectorX<T>> dissipation() const {
-      DRAKE_DEMAND(dissipation_ptr_ != nullptr);
-      return *dissipation_ptr_;
-    }
+        Eigen::Ref<const MatrixX<T>> M() const {
+            DRAKE_ASSERT_VOID(DemandValid());
+            return *M_ptr_;
+        }
+        Eigen::Ref<const MatrixX<T>> Jn() const {
+            DRAKE_ASSERT_VOID(DemandValid());
+            return *Jn_ptr_;
+        }
+        Eigen::Ref<const MatrixX<T>> Jt() const {
+            DRAKE_ASSERT_VOID(DemandValid());
+            return *Jt_ptr_;
+        }
+        Eigen::Ref<const VectorX<T>> p_star() const {
+            DRAKE_ASSERT_VOID(DemandValid());
+            return *p_star_ptr_;
+        }
 
-    Eigen::Ref<const VectorX<T>> mu() const {
-      DRAKE_ASSERT_VOID(DemandValid());
-      return *mu_ptr_;
-    }
+        // For the one-way coupled scheme, it returns a constant reference to the
+        // data for the normal forces. It aborts if called on data for the two-way
+        // coupled scheme, see has_two_way_coupling_data().
+        Eigen::Ref<const VectorX<T>> fn() const {
+            DRAKE_DEMAND(fn_ptr_ != nullptr);
+            return *fn_ptr_;
+        }
 
-   private:
-    enum {
-      kInvalidScheme,
-      kOneWayCoupled,
-      kTwoWayCoupled
-    } coupling_scheme_{kInvalidScheme};
+        // For the two-way coupled scheme, it returns a constant reference to the
+        // data for the penetration distance. It aborts if called on data for the
+        // one-way coupled scheme, see has_two_way_coupling_data().
+        Eigen::Ref<const VectorX<T>> fn0() const {
+            DRAKE_DEMAND(fn0_ptr_ != nullptr);
+            return *fn0_ptr_;
+        }
 
-    void DemandValid() const {
-      DRAKE_DEMAND(coupling_scheme_ != kInvalidScheme);
-    }
+        // For the two-way coupled scheme, it returns a constant reference to the
+        // data for the stiffness. It aborts if called on data for the
+        // one-way coupled scheme, see has_two_way_coupling_data().
+        Eigen::Ref<const VectorX<T>> stiffness() const {
+            DRAKE_DEMAND(stiffness_ptr_ != nullptr);
+            return *stiffness_ptr_;
+        }
 
-    // The mass matrix of the system.
-    EigenPtr<const MatrixX<T>> M_ptr_{nullptr};
-    // The normal separation velocities Jacobian.
-    EigenPtr<const MatrixX<T>> Jn_ptr_{nullptr};
-    // The tangential velocities Jacobian.
-    EigenPtr<const MatrixX<T>> Jt_ptr_{nullptr};
-    // The generalized momentum vector **before** contact is applied.
-    EigenPtr<const VectorX<T>> p_star_ptr_{nullptr};
-    // Normal force at each contact point. fn_ptr_ is nullptr for two-way
-    // coupled problems.
-    EigenPtr<const VectorX<T>> fn_ptr_{nullptr};
-    // Normal force at previous time step t0. Always positive.
-    // fn0_ptr_ is nullptr for one-way coupled problems.
-    EigenPtr<const VectorX<T>> fn0_ptr_{nullptr};
-    // Stiffness in the normal direction. nullptr for one-way coupled problems.
-    EigenPtr<const VectorX<T>> stiffness_ptr_{nullptr};
-    // Damping in the normal direction. nullptr for one-way coupled problems.
-    EigenPtr<const VectorX<T>> dissipation_ptr_{nullptr};
-    // Friction coefficient for each contact point.
-    EigenPtr<const VectorX<T>> mu_ptr_{nullptr};
-  };
+        // For the two-way coupled scheme, it returns a constant reference to the
+        // data for the dissipation. It aborts if called on data for the
+        // one-way coupled scheme, see has_two_way_coupling_data().
+        Eigen::Ref<const VectorX<T>> dissipation() const {
+            DRAKE_DEMAND(dissipation_ptr_ != nullptr);
+            return *dissipation_ptr_;
+        }
 
-  // The solver's workspace allocated at construction time. Sizes only depend on
-  // nv, the number of generalized velocities.
-  // The size of the variables in this workspace MUST remain fixed throughout
-  // the lifetime of the solver. Do not resize any of them!.
-  class FixedSizeWorkspace {
-   public:
-    // Constructs a workspace with size only dependent on nv.
-    explicit FixedSizeWorkspace(int nv) {
-      v_.setZero(nv);
-      residual_.setZero(nv);
-      Delta_v_.setZero(nv);
-      J_.setZero(nv, nv);
-      tau_f_.setZero(nv);
-      tau_.setZero(nv);
-    }
-    VectorX<T>& mutable_v() { return v_; }
-    VectorX<T>& mutable_residual() { return residual_; }
-    MatrixX<T>& mutable_J() { return J_; }
-    VectorX<T>& mutable_Delta_v() { return Delta_v_; }
-    VectorX<T>& mutable_tau_f() { return tau_f_; }
-    VectorX<T>& mutable_tau() { return tau_; }
+        Eigen::Ref<const VectorX<T>> mu() const {
+            DRAKE_ASSERT_VOID(DemandValid());
+            return *mu_ptr_;
+        }
 
-   private:
-    // Vector of generalized velocities.
-    VectorX<T> v_;
-    // Newton-Raphson residual.
-    VectorX<T> residual_;
-    // Newton-Raphson Jacobian, i.e. Jᵢⱼ = ∂Rᵢ/∂vⱼ.
-    MatrixX<T> J_;
-    // Solution to Newton-Raphson update, i.e. Δv = −J⁻¹ R.
-    VectorX<T> Delta_v_;
-    // Vector of generalized forces due to friction.
-    VectorX<T> tau_f_;
-    // Vector of generalized forces (normal + friction forces).
-    VectorX<T> tau_;
-  };
+    private:
+        enum { kInvalidScheme, kOneWayCoupled, kTwoWayCoupled } coupling_scheme_{kInvalidScheme};
 
-  // The variables in this workspace can change size with each invocation of
-  // SetOneWayCoupledProblemData() since the number of contact points nc can
-  // change.
-  // The workspace only performs re-allocations if needed, meaning that previous
-  // storage is re-used if large enough for the next problem data set.
-  // This class provides accessors that return Eigen blocks of size consistent
-  // with the data currently stored, even if the (maximum) capacity is larger
-  // than the data size.
-  class VariableSizeWorkspace {
-   public:
-    explicit VariableSizeWorkspace(int initial_nc, int nv) {
-      ResizeIfNeeded(initial_nc, nv);
-    }
+        void DemandValid() const { DRAKE_DEMAND(coupling_scheme_ != kInvalidScheme); }
 
-    // Performs a resize of this workspace's variables only if the new size `nc`
-    // is larger than capacity() in order to reuse previously allocated space.
-    void ResizeIfNeeded(int nc, int nv) {
-      nc_ = nc;
-      nv_ = nv;
-      if (capacity() >= nc) return;  // no-op if not needed.
-      const int nf = 2 * nc;
-      // Only reallocate if sizes from previous allocations are not sufficient.
-      vn_.resize(nc);
-      vt_.resize(nf);
-      fn_.resize(nc);
-      ft_.resize(nf);
-      Delta_vn_.resize(nc);
-      Delta_vt_.resize(nf);
-      t_hat_.resize(nf);
-      v_slip_.resize(nc);
-      mus_.resize(nc);
-      dft_dv_.resize(nc);
-      Gn_.resize(nc, nv);
-    }
+        // The mass matrix of the system.
+        EigenPtr<const MatrixX<T>> M_ptr_{nullptr};
+        // The normal separation velocities Jacobian.
+        EigenPtr<const MatrixX<T>> Jn_ptr_{nullptr};
+        // The tangential velocities Jacobian.
+        EigenPtr<const MatrixX<T>> Jt_ptr_{nullptr};
+        // The generalized momentum vector **before** contact is applied.
+        EigenPtr<const VectorX<T>> p_star_ptr_{nullptr};
+        // Normal force at each contact point. fn_ptr_ is nullptr for two-way
+        // coupled problems.
+        EigenPtr<const VectorX<T>> fn_ptr_{nullptr};
+        // Normal force at previous time step t0. Always positive.
+        // fn0_ptr_ is nullptr for one-way coupled problems.
+        EigenPtr<const VectorX<T>> fn0_ptr_{nullptr};
+        // Stiffness in the normal direction. nullptr for one-way coupled problems.
+        EigenPtr<const VectorX<T>> stiffness_ptr_{nullptr};
+        // Damping in the normal direction. nullptr for one-way coupled problems.
+        EigenPtr<const VectorX<T>> dissipation_ptr_{nullptr};
+        // Friction coefficient for each contact point.
+        EigenPtr<const VectorX<T>> mu_ptr_{nullptr};
+    };
 
-    // Returns the size of TAMSI's workspace that was last allocated. It is
-    // measured as the number of contact points since the last call to either
-    // SetOneWayCoupledProblemData() or SetTwoWayCoupledProblemData.
-    int capacity() const { return vn_.size(); }
+    // The solver's workspace allocated at construction time. Sizes only depend on
+    // nv, the number of generalized velocities.
+    // The size of the variables in this workspace MUST remain fixed throughout
+    // the lifetime of the solver. Do not resize any of them!.
+    class FixedSizeWorkspace {
+    public:
+        // Constructs a workspace with size only dependent on nv.
+        explicit FixedSizeWorkspace(int nv) {
+            v_.setZero(nv);
+            residual_.setZero(nv);
+            Delta_v_.setZero(nv);
+            J_.setZero(nv, nv);
+            tau_f_.setZero(nv);
+            tau_.setZero(nv);
+        }
+        VectorX<T>& mutable_v() { return v_; }
+        VectorX<T>& mutable_residual() { return residual_; }
+        MatrixX<T>& mutable_J() { return J_; }
+        VectorX<T>& mutable_Delta_v() { return Delta_v_; }
+        VectorX<T>& mutable_tau_f() { return tau_f_; }
+        VectorX<T>& mutable_tau() { return tau_; }
 
-    // Returns a constant reference to the vector of separation velocities in
-    // the normal direction, of size nc.
-    Eigen::VectorBlock<const VectorX<T>> vn() const {
-      return vn_.segment(0, nc_);
-    }
+    private:
+        // Vector of generalized velocities.
+        VectorX<T> v_;
+        // Newton-Raphson residual.
+        VectorX<T> residual_;
+        // Newton-Raphson Jacobian, i.e. Jᵢⱼ = ∂Rᵢ/∂vⱼ.
+        MatrixX<T> J_;
+        // Solution to Newton-Raphson update, i.e. Δv = −J⁻¹ R.
+        VectorX<T> Delta_v_;
+        // Vector of generalized forces due to friction.
+        VectorX<T> tau_f_;
+        // Vector of generalized forces (normal + friction forces).
+        VectorX<T> tau_;
+    };
 
-    // Returns a mutable reference to the vector of separation velocities in
-    // the normal direction, of size nc.
-    Eigen::VectorBlock<VectorX<T>> mutable_vn() { return vn_.segment(0, nc_); }
+    // The variables in this workspace can change size with each invocation of
+    // SetOneWayCoupledProblemData() since the number of contact points nc can
+    // change.
+    // The workspace only performs re-allocations if needed, meaning that previous
+    // storage is re-used if large enough for the next problem data set.
+    // This class provides accessors that return Eigen blocks of size consistent
+    // with the data currently stored, even if the (maximum) capacity is larger
+    // than the data size.
+    class VariableSizeWorkspace {
+    public:
+        explicit VariableSizeWorkspace(int initial_nc, int nv) { ResizeIfNeeded(initial_nc, nv); }
 
-    // Returns a constant reference to the vector containing the tangential
-    // velocities vₜ for all contact points, of size 2nc.
-    Eigen::VectorBlock<const VectorX<T>> vt() const {
-      return vt_.segment(0, 2 * nc_);
-    }
+        // Performs a resize of this workspace's variables only if the new size `nc`
+        // is larger than capacity() in order to reuse previously allocated space.
+        void ResizeIfNeeded(int nc, int nv) {
+            nc_ = nc;
+            nv_ = nv;
+            if (capacity() >= nc) return;  // no-op if not needed.
+            const int nf = 2 * nc;
+            // Only reallocate if sizes from previous allocations are not sufficient.
+            vn_.resize(nc);
+            vt_.resize(nf);
+            fn_.resize(nc);
+            ft_.resize(nf);
+            Delta_vn_.resize(nc);
+            Delta_vt_.resize(nf);
+            t_hat_.resize(nf);
+            v_slip_.resize(nc);
+            mus_.resize(nc);
+            dft_dv_.resize(nc);
+            Gn_.resize(nc, nv);
+        }
 
-    // Mutable version of vt().
-    Eigen::VectorBlock<VectorX<T>> mutable_vt() {
-      return vt_.segment(0, 2 * nc_);
-    }
+        // Returns the size of TAMSI's workspace that was last allocated. It is
+        // measured as the number of contact points since the last call to either
+        // SetOneWayCoupledProblemData() or SetTwoWayCoupledProblemData.
+        int capacity() const { return vn_.size(); }
 
-    // Returns a mutable reference to the vector containing the normal
-    // velocity updates Δvₙ for all contact points, of size nc.
-    Eigen::VectorBlock<VectorX<T>> mutable_Delta_vn() {
-      return Delta_vn_.segment(0, nc_);
-    }
+        // Returns a constant reference to the vector of separation velocities in
+        // the normal direction, of size nc.
+        Eigen::VectorBlock<const VectorX<T>> vn() const { return vn_.segment(0, nc_); }
 
-    // Returns a mutable reference to the vector containing the tangential
-    // velocity updates Δvₜ for all contact points, of size 2nc.
-    Eigen::VectorBlock<VectorX<T>> mutable_Delta_vt() {
-      return Delta_vt_.segment(0, 2 * nc_);
-    }
+        // Returns a mutable reference to the vector of separation velocities in
+        // the normal direction, of size nc.
+        Eigen::VectorBlock<VectorX<T>> mutable_vn() { return vn_.segment(0, nc_); }
 
-    // Returns a constant reference to the vector containing the normal
-    // contact forces fₙ for all contact points, of size nc.
-    Eigen::VectorBlock<const VectorX<T>> fn() const {
-      return fn_.segment(0, nc_);
-    }
+        // Returns a constant reference to the vector containing the tangential
+        // velocities vₜ for all contact points, of size 2nc.
+        Eigen::VectorBlock<const VectorX<T>> vt() const { return vt_.segment(0, 2 * nc_); }
 
-    // Returns a mutable reference to the vector containing the normal
-    // contact forces fₙ for all contact points, of size nc.
-    Eigen::VectorBlock<VectorX<T>> mutable_fn() { return fn_.segment(0, nc_); }
+        // Mutable version of vt().
+        Eigen::VectorBlock<VectorX<T>> mutable_vt() { return vt_.segment(0, 2 * nc_); }
 
-    // Returns a constant reference to the vector containing the tangential
-    // friction forces fₜ for all contact points. fₜ has size 2nc since it
-    // stores the two tangential components of the friction force for each
-    // contact point. Refer to TamsiSolver for details.
-    Eigen::VectorBlock<const VectorX<T>> ft() const {
-      return ft_.segment(0, 2 * nc_);
-    }
+        // Returns a mutable reference to the vector containing the normal
+        // velocity updates Δvₙ for all contact points, of size nc.
+        Eigen::VectorBlock<VectorX<T>> mutable_Delta_vn() { return Delta_vn_.segment(0, nc_); }
 
-    // Returns a mutable reference to the vector containing the tangential
-    // friction forces fₜ for all contact points, of size 2nc.
-    Eigen::VectorBlock<VectorX<T>> mutable_ft() {
-      return ft_.segment(0, 2 * nc_);
-    }
+        // Returns a mutable reference to the vector containing the tangential
+        // velocity updates Δvₜ for all contact points, of size 2nc.
+        Eigen::VectorBlock<VectorX<T>> mutable_Delta_vt() { return Delta_vt_.segment(0, 2 * nc_); }
 
-    // Returns a mutable reference to the vector containing the tangential
-    // directions t̂ᵏ for all contact points, of size 2nc.
-    Eigen::VectorBlock<VectorX<T>> mutable_t_hat() {
-      return t_hat_.segment(0, 2 * nc_);
-    }
+        // Returns a constant reference to the vector containing the normal
+        // contact forces fₙ for all contact points, of size nc.
+        Eigen::VectorBlock<const VectorX<T>> fn() const { return fn_.segment(0, nc_); }
 
-    // Returns a mutable reference to the vector containing the slip velocity
-    // vₛ = ‖vₜ‖, at each contact point, of size nc.
-    Eigen::VectorBlock<VectorX<T>> mutable_v_slip() {
-      return v_slip_.segment(0, nc_);
-    }
+        // Returns a mutable reference to the vector containing the normal
+        // contact forces fₙ for all contact points, of size nc.
+        Eigen::VectorBlock<VectorX<T>> mutable_fn() { return fn_.segment(0, nc_); }
 
-    // Returns a mutable reference to the vector containing the regularized
-    // friction, function of the slip velocity, at each contact point, of
-    // size nc.
-    Eigen::VectorBlock<VectorX<T>> mutable_mu() { return mus_.segment(0, nc_); }
+        // Returns a constant reference to the vector containing the tangential
+        // friction forces fₜ for all contact points. fₜ has size 2nc since it
+        // stores the two tangential components of the friction force for each
+        // contact point. Refer to TamsiSolver for details.
+        Eigen::VectorBlock<const VectorX<T>> ft() const { return ft_.segment(0, 2 * nc_); }
 
-    // Returns a mutable reference to the gradient Gn = ∇ᵥfₙ(xˢ⁺¹, vₙˢ⁺¹)
-    // with respect to the generalized velocites v.
-    Eigen::Block<MatrixX<T>> mutable_Gn() { return Gn_.block(0, 0, nc_, nv_); }
+        // Returns a mutable reference to the vector containing the tangential
+        // friction forces fₜ for all contact points, of size 2nc.
+        Eigen::VectorBlock<VectorX<T>> mutable_ft() { return ft_.segment(0, 2 * nc_); }
 
-    // Returns a mutable reference to the vector storing ∂fₜ/∂vₜ (in ℝ²ˣ²)
-    // for each contact point, of size nc.
-    std::vector<Matrix2<T>>& mutable_dft_dvt() { return dft_dv_; }
+        // Returns a mutable reference to the vector containing the tangential
+        // directions t̂ᵏ for all contact points, of size 2nc.
+        Eigen::VectorBlock<VectorX<T>> mutable_t_hat() { return t_hat_.segment(0, 2 * nc_); }
 
-   private:
-    // The number of contact points. This determines sizes in this workspace.
-    int nc_, nv_;
-    VectorX<T> Delta_vn_;  // Δvₙᵏ = Jₙ Δvᵏ, in ℝⁿᶜ, for the k-th iteration.
-    VectorX<T> Delta_vt_;  // Δvₜᵏ = Jₜ Δvᵏ, in ℝ²ⁿᶜ, for the k-th iteration.
-    VectorX<T> vn_;      // vₙᵏ, in ℝⁿᶜ.
-    VectorX<T> vt_;      // vₜᵏ, in ℝ²ⁿᶜ.
-    VectorX<T> fn_;      // fₙᵏ, in ℝⁿᶜ.
-    VectorX<T> ft_;      // fₜᵏ, in ℝ²ⁿᶜ.
-    VectorX<T> t_hat_;   // Tangential directions, t̂ᵏ. In ℝ²ⁿᶜ.
-    VectorX<T> v_slip_;  // vₛᵏ = ‖vₜᵏ‖, in ℝⁿᶜ.
-    VectorX<T> mus_;     // (modified) regularized friction, in ℝⁿᶜ.
-    // Vector of size nc storing ∂fₜ/∂vₜ (in ℝ²ˣ²) for each contact point.
-    std::vector<Matrix2<T>> dft_dv_;
-    MatrixX<T> Gn_;  // ∇ᵥfₙ(xˢ⁺¹, vₙˢ⁺¹), in ℝⁿᶜˣⁿᵛ
-  };
+        // Returns a mutable reference to the vector containing the slip velocity
+        // vₛ = ‖vₜ‖, at each contact point, of size nc.
+        Eigen::VectorBlock<VectorX<T>> mutable_v_slip() { return v_slip_.segment(0, nc_); }
 
-  // Returns true if the solver is solving the two-way coupled problem.
-  bool has_two_way_coupling() const {
-    return problem_data_aliases_.has_two_way_coupling_data();
-  }
+        // Returns a mutable reference to the vector containing the regularized
+        // friction, function of the slip velocity, at each contact point, of
+        // size nc.
+        Eigen::VectorBlock<VectorX<T>> mutable_mu() { return mus_.segment(0, nc_); }
 
-  // Helper method to compute, into fn, the normal force at each contact
-  // point pair according to the law:
-  //   fₙ(x, vₙ) = k(vₙ)₊ x₊
-  //       k(vₙ) = k (1 − d vₙ)₊
-  // where `x₊` is max(x, 0) and k and d are the stiffness and
-  // dissipation coefficients for a given contact point, respectively.
-  // In addition, this method also computes the gradient
-  // Gn = ∇ᵥfₙ(xˢ⁺¹, vₙˢ⁺¹).
-  void CalcNormalForces(const Eigen::Ref<const VectorX<T>>& vn,
-                        const Eigen::Ref<const MatrixX<T>>& Jn, double dt,
-                        EigenPtr<VectorX<T>> fn, EigenPtr<MatrixX<T>> Gn) const;
+        // Returns a mutable reference to the gradient Gn = ∇ᵥfₙ(xˢ⁺¹, vₙˢ⁺¹)
+        // with respect to the generalized velocites v.
+        Eigen::Block<MatrixX<T>> mutable_Gn() { return Gn_.block(0, 0, nc_, nv_); }
 
-  // Helper to compute fₜ(vₜ) = −vₜ/‖vₜ‖ₛ μ(‖vₜ‖ₛ) fₙ, where ‖vₜ‖ₛ
-  // is the "soft norm" of vₜ. In addition this method computes
-  // v_slip = ‖vₜ‖ₛ, t_hat = vₜ/‖vₜ‖ₛ and mu_regularized = μ(‖vₜ‖ₛ).
-  void CalcFrictionForces(const Eigen::Ref<const VectorX<T>>& vt,
-                          const Eigen::Ref<const VectorX<T>>& fn,
-                          EigenPtr<VectorX<T>> v_slip,
-                          EigenPtr<VectorX<T>> t_hat,
-                          EigenPtr<VectorX<T>> mu_regularized,
-                          EigenPtr<VectorX<T>> ft) const;
+        // Returns a mutable reference to the vector storing ∂fₜ/∂vₜ (in ℝ²ˣ²)
+        // for each contact point, of size nc.
+        std::vector<Matrix2<T>>& mutable_dft_dvt() { return dft_dv_; }
 
-  // Helper to compute gradient dft_dvt = −∇ᵥₜfₜ(vₜ), as a function of the
-  // normal force fn, friction coefficient mu_vt (μ(‖vₜ‖)), tangent versor
-  // t_hat and (current) slip velocity v_slip.
-  // We define dft_dvt as minus the gradient of the friction forces, ie.
-  // dft_dvt = −∇ᵥₜfₜ(vₜ), so that dft_dvt is PSD, which is convenient for
-  // stability analysis of the time stepping method.
-  void CalcFrictionForcesGradient(const Eigen::Ref<const VectorX<T>>& fn,
-                                  const Eigen::Ref<const VectorX<T>>& mu_vt,
-                                  const Eigen::Ref<const VectorX<T>>& t_hat,
-                                  const Eigen::Ref<const VectorX<T>>& v_slip,
-                                  std::vector<Matrix2<T>>* dft_dvt) const;
+    private:
+        // The number of contact points. This determines sizes in this workspace.
+        int nc_, nv_;
+        VectorX<T> Delta_vn_;  // Δvₙᵏ = Jₙ Δvᵏ, in ℝⁿᶜ, for the k-th iteration.
+        VectorX<T> Delta_vt_;  // Δvₜᵏ = Jₜ Δvᵏ, in ℝ²ⁿᶜ, for the k-th iteration.
+        VectorX<T> vn_;        // vₙᵏ, in ℝⁿᶜ.
+        VectorX<T> vt_;        // vₜᵏ, in ℝ²ⁿᶜ.
+        VectorX<T> fn_;        // fₙᵏ, in ℝⁿᶜ.
+        VectorX<T> ft_;        // fₜᵏ, in ℝ²ⁿᶜ.
+        VectorX<T> t_hat_;     // Tangential directions, t̂ᵏ. In ℝ²ⁿᶜ.
+        VectorX<T> v_slip_;    // vₛᵏ = ‖vₜᵏ‖, in ℝⁿᶜ.
+        VectorX<T> mus_;       // (modified) regularized friction, in ℝⁿᶜ.
+        // Vector of size nc storing ∂fₜ/∂vₜ (in ℝ²ˣ²) for each contact point.
+        std::vector<Matrix2<T>> dft_dv_;
+        MatrixX<T> Gn_;  // ∇ᵥfₙ(xˢ⁺¹, vₙˢ⁺¹), in ℝⁿᶜˣⁿᵛ
+    };
 
-  // Helper method to compute the Newton-Raphson Jacobian, J = ∇ᵥR, as a
-  // function of M, Jn, Jt, Gn, dft_dvt, t_hat, mu_vt and dt.
-  void CalcJacobian(const Eigen::Ref<const MatrixX<T>>& M,
-                    const Eigen::Ref<const MatrixX<T>>& Jn,
-                    const Eigen::Ref<const MatrixX<T>>& Jt,
-                    const Eigen::Ref<const MatrixX<T>>& Gn,
-                    const std::vector<Matrix2<T>>& dft_dvt,
-                    const Eigen::Ref<const VectorX<T>>& t_hat,
-                    const Eigen::Ref<const VectorX<T>>& mu_vt, double dt,
-                    EigenPtr<MatrixX<T>> J) const;
+    // Returns true if the solver is solving the two-way coupled problem.
+    bool has_two_way_coupling() const { return problem_data_aliases_.has_two_way_coupling_data(); }
 
-  // Limit the per-iteration angle change between vₜᵏ⁺¹ and vₜᵏ for
-  // all contact points. The angle change θ is defined by the dot product
-  // between vₜᵏ⁺¹ and vₜᵏ as: cos(θ) = vₜᵏ⁺¹⋅vₜᵏ/(‖vₜᵏ⁺¹‖‖vₜᵏ‖).
-  // We'll do so by computing a coefficient 0 < α ≤ 1 so that if the
-  // generalized velocities are updated as vᵏ⁺¹ = vᵏ + α Δvᵏ then θ ≤ θₘₐₓ
-  // for all contact points.
-  // Returns nullopt in case no solution was found.
-  std::optional<T> CalcAlpha(
-      const Eigen::Ref<const VectorX<T>>& vt,
-      const Eigen::Ref<const VectorX<T>>& Delta_vt) const;
+    // Helper method to compute, into fn, the normal force at each contact
+    // point pair according to the law:
+    //   fₙ(x, vₙ) = k(vₙ)₊ x₊
+    //       k(vₙ) = k (1 − d vₙ)₊
+    // where `x₊` is max(x, 0) and k and d are the stiffness and
+    // dissipation coefficients for a given contact point, respectively.
+    // In addition, this method also computes the gradient
+    // Gn = ∇ᵥfₙ(xˢ⁺¹, vₙˢ⁺¹).
+    void CalcNormalForces(const Eigen::Ref<const VectorX<T>>& vn,
+                          const Eigen::Ref<const MatrixX<T>>& Jn,
+                          double dt,
+                          EigenPtr<VectorX<T>> fn,
+                          EigenPtr<MatrixX<T>> Gn) const;
 
-  // Dimensionless regularized friction function defined as:
-  // ms(s) = ⌈ mu * s * (2 − s),  s  < 1
-  //         ⌊ mu              ,  s >= 1
-  // where s corresponds to the dimensionless tangential speed
-  // s = ‖vᵏ‖ / vₛ, where vₛ is the regularization parameter.
-  // The solver uses this continuous function for two reasons:
-  //   1. Static and dynamic friction coefficients are the same. This avoids
-  //      regions of negative slope. If the slope is always positive the
-  //      implicit update is unconditionally stable.
-  //   2. Non-zero derivative at s = 0 (zero slip velocity). This provides a
-  //      good strong gradient in the neighborhood to zero slip velocities that
-  //      aids in finding a good solution update.
-  // N.B. While this original implementation uses quadratic regularized
-  //      friction, @ref castro_etal_2019 "[Castro et al., 2019]". finds that a
-  //      linear regularized friction function works best for implicit
-  //      integration with TALS. More precisely, the work precision plots are
-  //      better behaved when using linear regularized friction.
-  static T RegularizedFriction(const T& s, const T& mu);
+    // Helper to compute fₜ(vₜ) = −vₜ/‖vₜ‖ₛ μ(‖vₜ‖ₛ) fₙ, where ‖vₜ‖ₛ
+    // is the "soft norm" of vₜ. In addition this method computes
+    // v_slip = ‖vₜ‖ₛ, t_hat = vₜ/‖vₜ‖ₛ and mu_regularized = μ(‖vₜ‖ₛ).
+    void CalcFrictionForces(const Eigen::Ref<const VectorX<T>>& vt,
+                            const Eigen::Ref<const VectorX<T>>& fn,
+                            EigenPtr<VectorX<T>> v_slip,
+                            EigenPtr<VectorX<T>> t_hat,
+                            EigenPtr<VectorX<T>> mu_regularized,
+                            EigenPtr<VectorX<T>> ft) const;
 
-  // Derivative of the dimensionless regularized friction function:
-  // d/ds ms(s) = ⌈ mu * (2 * (1 − s)),  s  < 1
-  //              ⌊ 0                 ,  s >= 1
-  // where s corresponds to the dimensionless tangential speed
-  // s = ‖v‖ / vₛ.
-  static T RegularizedFrictionDerivative(const T& speed_BcAc, const T& mu);
+    // Helper to compute gradient dft_dvt = −∇ᵥₜfₜ(vₜ), as a function of the
+    // normal force fn, friction coefficient mu_vt (μ(‖vₜ‖)), tangent versor
+    // t_hat and (current) slip velocity v_slip.
+    // We define dft_dvt as minus the gradient of the friction forces, ie.
+    // dft_dvt = −∇ᵥₜfₜ(vₜ), so that dft_dvt is PSD, which is convenient for
+    // stability analysis of the time stepping method.
+    void CalcFrictionForcesGradient(const Eigen::Ref<const VectorX<T>>& fn,
+                                    const Eigen::Ref<const VectorX<T>>& mu_vt,
+                                    const Eigen::Ref<const VectorX<T>>& t_hat,
+                                    const Eigen::Ref<const VectorX<T>>& v_slip,
+                                    std::vector<Matrix2<T>>* dft_dvt) const;
 
-  // TODO(#15674): Adding mutability here is in part a consequence of
-  // thread-unsafe integration elsewhere.
-  mutable int nv_;  // Number of generalized velocities.
-  int nc_;          // Number of contact points.
+    // Helper method to compute the Newton-Raphson Jacobian, J = ∇ᵥR, as a
+    // function of M, Jn, Jt, Gn, dft_dvt, t_hat, mu_vt and dt.
+    void CalcJacobian(const Eigen::Ref<const MatrixX<T>>& M,
+                      const Eigen::Ref<const MatrixX<T>>& Jn,
+                      const Eigen::Ref<const MatrixX<T>>& Jt,
+                      const Eigen::Ref<const MatrixX<T>>& Gn,
+                      const std::vector<Matrix2<T>>& dft_dvt,
+                      const Eigen::Ref<const VectorX<T>>& t_hat,
+                      const Eigen::Ref<const VectorX<T>>& mu_vt,
+                      double dt,
+                      EigenPtr<MatrixX<T>> J) const;
 
-  // The parameters of the solver controlling the iteration strategy.
-  TamsiSolverParameters parameters_;
-  ProblemDataAliases problem_data_aliases_;
-  // TODO(#15674): Adding mutability here is in part a consequence of
-  // thread-unsafe integration elsewhere.
-  mutable FixedSizeWorkspace fixed_size_workspace_;
-  mutable VariableSizeWorkspace variable_size_workspace_;
+    // Limit the per-iteration angle change between vₜᵏ⁺¹ and vₜᵏ for
+    // all contact points. The angle change θ is defined by the dot product
+    // between vₜᵏ⁺¹ and vₜᵏ as: cos(θ) = vₜᵏ⁺¹⋅vₜᵏ/(‖vₜᵏ⁺¹‖‖vₜᵏ‖).
+    // We'll do so by computing a coefficient 0 < α ≤ 1 so that if the
+    // generalized velocities are updated as vᵏ⁺¹ = vᵏ + α Δvᵏ then θ ≤ θₘₐₓ
+    // for all contact points.
+    // Returns nullopt in case no solution was found.
+    std::optional<T> CalcAlpha(const Eigen::Ref<const VectorX<T>>& vt,
+                               const Eigen::Ref<const VectorX<T>>& Delta_vt) const;
 
-  // Precomputed value of cos(theta_max), used by TalsLimiter.
-  double cos_theta_max_{std::cos(parameters_.theta_max)};
+    // Dimensionless regularized friction function defined as:
+    // ms(s) = ⌈ mu * s * (2 − s),  s  < 1
+    //         ⌊ mu              ,  s >= 1
+    // where s corresponds to the dimensionless tangential speed
+    // s = ‖vᵏ‖ / vₛ, where vₛ is the regularization parameter.
+    // The solver uses this continuous function for two reasons:
+    //   1. Static and dynamic friction coefficients are the same. This avoids
+    //      regions of negative slope. If the slope is always positive the
+    //      implicit update is unconditionally stable.
+    //   2. Non-zero derivative at s = 0 (zero slip velocity). This provides a
+    //      good strong gradient in the neighborhood to zero slip velocities that
+    //      aids in finding a good solution update.
+    // N.B. While this original implementation uses quadratic regularized
+    //      friction, @ref castro_etal_2019 "[Castro et al., 2019]". finds that a
+    //      linear regularized friction function works best for implicit
+    //      integration with TALS. More precisely, the work precision plots are
+    //      better behaved when using linear regularized friction.
+    static T RegularizedFriction(const T& s, const T& mu);
 
-  // We save solver statistics such as number of iterations and residuals so
-  // that we can report them if requested.
-  mutable TamsiSolverIterationStats statistics_;
+    // Derivative of the dimensionless regularized friction function:
+    // d/ds ms(s) = ⌈ mu * (2 * (1 − s)),  s  < 1
+    //              ⌊ 0                 ,  s >= 1
+    // where s corresponds to the dimensionless tangential speed
+    // s = ‖v‖ / vₛ.
+    static T RegularizedFrictionDerivative(const T& speed_BcAc, const T& mu);
+
+    // TODO(#15674): Adding mutability here is in part a consequence of
+    // thread-unsafe integration elsewhere.
+    mutable int nv_;  // Number of generalized velocities.
+    int nc_;          // Number of contact points.
+
+    // The parameters of the solver controlling the iteration strategy.
+    TamsiSolverParameters parameters_;
+    ProblemDataAliases problem_data_aliases_;
+    // TODO(#15674): Adding mutability here is in part a consequence of
+    // thread-unsafe integration elsewhere.
+    mutable FixedSizeWorkspace fixed_size_workspace_;
+    mutable VariableSizeWorkspace variable_size_workspace_;
+
+    // Precomputed value of cos(theta_max), used by TalsLimiter.
+    double cos_theta_max_{std::cos(parameters_.theta_max)};
+
+    // We save solver statistics such as number of iterations and residuals so
+    // that we can report them if requested.
+    mutable TamsiSolverIterationStats statistics_;
 };
 
 }  // namespace multibody
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    struct ::drake::multibody::internal::TalsLimiter);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(struct ::drake::multibody::internal::TalsLimiter);
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::multibody::TamsiSolver);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::multibody::TamsiSolver);

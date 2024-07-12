@@ -24,29 +24,28 @@ namespace internal {
  @tparam_nonsymbolic_scalar */
 template <typename T>
 class NewmarkScheme : public DiscreteTimeIntegrator<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(NewmarkScheme);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(NewmarkScheme);
 
-  ~NewmarkScheme() = default;
+    ~NewmarkScheme() = default;
 
- protected:
-  NewmarkScheme() = default;
+protected:
+    NewmarkScheme() = default;
 
-  /* Constructs a Newmark scheme with the provided time step, `gamma` and `beta`.
-   @pre dt > 0.
-   @pre 0.5 <= gamma <= 1.
-   @pre 0 <= beta <= 0.5. */
-  NewmarkScheme(double dt, double gamma, double beta)
-      : DiscreteTimeIntegrator<T>(dt), gamma_(gamma), beta_(beta) {
-    DRAKE_DEMAND(0.5 <= gamma && gamma <= 1);
-    DRAKE_DEMAND(0 <= beta && beta <= 0.5);
-  }
+    /* Constructs a Newmark scheme with the provided time step, `gamma` and `beta`.
+     @pre dt > 0.
+     @pre 0.5 <= gamma <= 1.
+     @pre 0 <= beta <= 0.5. */
+    NewmarkScheme(double dt, double gamma, double beta) : DiscreteTimeIntegrator<T>(dt), gamma_(gamma), beta_(beta) {
+        DRAKE_DEMAND(0.5 <= gamma && gamma <= 1);
+        DRAKE_DEMAND(0 <= beta && beta <= 0.5);
+    }
 
-  double gamma() const { return gamma_; }
-  double beta() const { return beta_; }
+    double gamma() const { return gamma_; }
+    double beta() const { return beta_; }
 
-  double gamma_{};
-  double beta_{};
+    double gamma_{};
+    double beta_{};
 };
 
 }  // namespace internal

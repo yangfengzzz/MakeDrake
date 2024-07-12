@@ -29,38 +29,38 @@ bool same_proximity = old_version.IsSameAs(test_version, Role::kProximity);
 @endcode
 */
 class GeometryVersion {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(GeometryVersion);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(GeometryVersion);
 
-  /** Constructs a default-initialized instance; guaranteed to be different
-   from every other instance. */
-  GeometryVersion();
+    /** Constructs a default-initialized instance; guaranteed to be different
+     from every other instance. */
+    GeometryVersion();
 
-  /** Returns true if `this` GeometryVersion has the same `role`
-   version as the `other` GeometryVersion. */
-  bool IsSameAs(const GeometryVersion& other, Role role) const;
+    /** Returns true if `this` GeometryVersion has the same `role`
+     version as the `other` GeometryVersion. */
+    bool IsSameAs(const GeometryVersion& other, Role role) const;
 
- private:
-  using RoleVersionId = Identifier<class RoleVersionTag>;
-  /* Only GeometryState can update the role versions and construct
-   GeometryVersion from scratch. Downstream systems should obtain a reference
-   through the API provided by SceneGraphInspector if they want the version.
-   They then may choose to retain a copy if needed. */
-  template <typename T>
-  friend class GeometryState;
+private:
+    using RoleVersionId = Identifier<class RoleVersionTag>;
+    /* Only GeometryState can update the role versions and construct
+     GeometryVersion from scratch. Downstream systems should obtain a reference
+     through the API provided by SceneGraphInspector if they want the version.
+     They then may choose to retain a copy if needed. */
+    template <typename T>
+    friend class GeometryState;
 
-  /* Facilitates testing. */
-  friend class GeometryVersionTest;
+    /* Facilitates testing. */
+    friend class GeometryVersionTest;
 
-  void modify_proximity();
+    void modify_proximity();
 
-  void modify_perception();
+    void modify_perception();
 
-  void modify_illustration();
+    void modify_illustration();
 
-  RoleVersionId proximity_version_id_;
-  RoleVersionId perception_version_id_;
-  RoleVersionId illustration_version_id_;
+    RoleVersionId proximity_version_id_;
+    RoleVersionId perception_version_id_;
+    RoleVersionId illustration_version_id_;
 };
 }  // namespace geometry
 }  // namespace drake

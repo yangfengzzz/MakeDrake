@@ -60,137 +60,129 @@ namespace controllers {
  */
 template <typename T>
 class InverseDynamics final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(InverseDynamics);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(InverseDynamics);
 
-  enum InverseDynamicsMode {
-    /// Full inverse computation mode.
-    kInverseDynamics,
+    enum InverseDynamicsMode {
+        /// Full inverse computation mode.
+        kInverseDynamics,
 
-    /// Purely gravity compensation mode.
-    kGravityCompensation
-  };
+        /// Purely gravity compensation mode.
+        kGravityCompensation
+    };
 
-  /**
-   * Constructs the InverseDynamics system.
-   *
-   * @param plant Pointer to the multibody plant model. The life span of
-   * `plant` must be longer than that of this instance.
-   * @param mode If set to kGravityCompensation, this instance will only
-   * consider the gravity term. It also will NOT have the desired acceleration
-   * input port.
-   * @param plant_context A specific context of `plant` to use for computing
-   * inverse dynamics. For example, you can use this to pass in a context with
-   * modified mass parameters.  If `nullptr`, the default context of the given
-   * `plant` is used. Note that this will be copied at time of construction, so
-   * there are no lifetime constraints.
-   * @pre The plant must be finalized (i.e., plant.is_finalized() must return
-   * `true`). Also, `plant_context`, if provided, must be compatible with
-   * `plant`.
-   */
-  explicit InverseDynamics(const multibody::MultibodyPlant<T>* plant,
-                           InverseDynamicsMode mode = kInverseDynamics,
-                           const Context<T>* plant_context = nullptr);
+    /**
+     * Constructs the InverseDynamics system.
+     *
+     * @param plant Pointer to the multibody plant model. The life span of
+     * `plant` must be longer than that of this instance.
+     * @param mode If set to kGravityCompensation, this instance will only
+     * consider the gravity term. It also will NOT have the desired acceleration
+     * input port.
+     * @param plant_context A specific context of `plant` to use for computing
+     * inverse dynamics. For example, you can use this to pass in a context with
+     * modified mass parameters.  If `nullptr`, the default context of the given
+     * `plant` is used. Note that this will be copied at time of construction, so
+     * there are no lifetime constraints.
+     * @pre The plant must be finalized (i.e., plant.is_finalized() must return
+     * `true`). Also, `plant_context`, if provided, must be compatible with
+     * `plant`.
+     */
+    explicit InverseDynamics(const multibody::MultibodyPlant<T>* plant,
+                             InverseDynamicsMode mode = kInverseDynamics,
+                             const Context<T>* plant_context = nullptr);
 
-  /**
-   * Constructs the InverseDynamics system and takes the ownership of the
-   * input `plant`.
-   *
-   * @exclude_from_pydrake_mkdoc{This overload is not bound.}
-   */
-  explicit InverseDynamics(std::unique_ptr<multibody::MultibodyPlant<T>> plant,
-                           InverseDynamicsMode mode = kInverseDynamics,
-                           const Context<T>* plant_context = nullptr);
+    /**
+     * Constructs the InverseDynamics system and takes the ownership of the
+     * input `plant`.
+     *
+     * @exclude_from_pydrake_mkdoc{This overload is not bound.}
+     */
+    explicit InverseDynamics(std::unique_ptr<multibody::MultibodyPlant<T>> plant,
+                             InverseDynamicsMode mode = kInverseDynamics,
+                             const Context<T>* plant_context = nullptr);
 
-  // Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  template <typename U>
-  explicit InverseDynamics(const InverseDynamics<U>& other);
+    // Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    template <typename U>
+    explicit InverseDynamics(const InverseDynamics<U>& other);
 
-  ~InverseDynamics() override;
+    ~InverseDynamics() override;
 
-  /**
-   * Returns the input port for the estimated state.
-   */
-  const InputPort<T>& get_input_port_estimated_state() const {
-    return this->get_input_port(estimated_state_);
-  }
+    /**
+     * Returns the input port for the estimated state.
+     */
+    const InputPort<T>& get_input_port_estimated_state() const { return this->get_input_port(estimated_state_); }
 
-  /**
-   * Returns the input port for the desired acceleration.
-   */
-  const InputPort<T>& get_input_port_desired_acceleration() const {
-    DRAKE_THROW_UNLESS(!this->is_pure_gravity_compensation());
-    return this->get_input_port(desired_acceleration_);
-  }
+    /**
+     * Returns the input port for the desired acceleration.
+     */
+    const InputPort<T>& get_input_port_desired_acceleration() const {
+        DRAKE_THROW_UNLESS(!this->is_pure_gravity_compensation());
+        return this->get_input_port(desired_acceleration_);
+    }
 
-  /**
-   * Returns the output port for the generalized forces that realize the desired
-   * acceleration. The dimension of that force vector will be identical to the
-   * dimensionality of the generalized velocities.
-   */
-  const OutputPort<T>& get_output_port_generalized_force() const {
-    return this->get_output_port(generalized_force_);
-  }
+    /**
+     * Returns the output port for the generalized forces that realize the desired
+     * acceleration. The dimension of that force vector will be identical to the
+     * dimensionality of the generalized velocities.
+     */
+    const OutputPort<T>& get_output_port_generalized_force() const { return this->get_output_port(generalized_force_); }
 
-  bool is_pure_gravity_compensation() const {
-    return mode_ == InverseDynamicsMode::kGravityCompensation;
-  }
+    bool is_pure_gravity_compensation() const { return mode_ == InverseDynamicsMode::kGravityCompensation; }
 
- private:
-  // Other constructors delegate to this private constructor.
-  InverseDynamics(std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant,
-                  const multibody::MultibodyPlant<T>* plant,
-                  InverseDynamicsMode mode, const Context<T>* plant_context);
+private:
+    // Other constructors delegate to this private constructor.
+    InverseDynamics(std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant,
+                    const multibody::MultibodyPlant<T>* plant,
+                    InverseDynamicsMode mode,
+                    const Context<T>* plant_context);
 
-  // Helper data structure for scalar conversion.
-  struct ScalarConversionData {
-    std::unique_ptr<multibody::MultibodyPlant<T>> plant;
-    InverseDynamicsMode mode{InverseDynamicsMode::kGravityCompensation};
-    std::unique_ptr<Context<T>> plant_context;
-  };
+    // Helper data structure for scalar conversion.
+    struct ScalarConversionData {
+        std::unique_ptr<multibody::MultibodyPlant<T>> plant;
+        InverseDynamicsMode mode{InverseDynamicsMode::kGravityCompensation};
+        std::unique_ptr<Context<T>> plant_context;
+    };
 
-  // Helper function for the scalar conversion constructor that extracts the
-  // plant context from `other` and scalar converts it to this scalar type, T.
-  template <typename U>
-  static ScalarConversionData ScalarConvertHelper(
-      const InverseDynamics<U>& other);
+    // Helper function for the scalar conversion constructor that extracts the
+    // plant context from `other` and scalar converts it to this scalar type, T.
+    template <typename U>
+    static ScalarConversionData ScalarConvertHelper(const InverseDynamics<U>& other);
 
-  // Delegate constructor for scalar conversion.
-  explicit InverseDynamics(ScalarConversionData&& data);
+    // Delegate constructor for scalar conversion.
+    explicit InverseDynamics(ScalarConversionData&& data);
 
-  template <typename>
-  friend class InverseDynamics;
+    template <typename>
+    friend class InverseDynamics;
 
-  // This is the calculator method for the output port.
-  void CalcOutputForce(const Context<T>& context, BasicVector<T>* force) const;
+    // This is the calculator method for the output port.
+    void CalcOutputForce(const Context<T>& context, BasicVector<T>* force) const;
 
-  // Methods for updating cache entries.
-  void SetMultibodyContext(const Context<T>&, Context<T>*) const;
-  void CalcMultibodyForces(const Context<T>&,
-                           multibody::MultibodyForces<T>*) const;
+    // Methods for updating cache entries.
+    void SetMultibodyContext(const Context<T>&, Context<T>*) const;
+    void CalcMultibodyForces(const Context<T>&, multibody::MultibodyForces<T>*) const;
 
-  const std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant_{};
-  const multibody::MultibodyPlant<T>* const plant_;
+    const std::unique_ptr<multibody::MultibodyPlant<T>> owned_plant_{};
+    const multibody::MultibodyPlant<T>* const plant_;
 
-  // Mode dictates whether to do inverse dynamics or just gravity compensation.
-  const InverseDynamicsMode mode_;
+    // Mode dictates whether to do inverse dynamics or just gravity compensation.
+    const InverseDynamicsMode mode_;
 
-  InputPortIndex estimated_state_;
-  InputPortIndex desired_acceleration_;
-  OutputPortIndex generalized_force_;
+    InputPortIndex estimated_state_;
+    InputPortIndex desired_acceleration_;
+    OutputPortIndex generalized_force_;
 
-  const int q_dim_;
-  const int v_dim_;
+    const int q_dim_;
+    const int v_dim_;
 
-  // Note: unused in gravity compensation mode.
-  CacheIndex external_forces_cache_index_;
+    // Note: unused in gravity compensation mode.
+    CacheIndex external_forces_cache_index_;
 
-  CacheIndex plant_context_cache_index_;
+    CacheIndex plant_context_cache_index_;
 };
 
 }  // namespace controllers
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::controllers::InverseDynamics);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::systems::controllers::InverseDynamics);

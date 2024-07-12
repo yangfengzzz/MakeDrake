@@ -22,8 +22,8 @@ set(PROJECT_FILES
         discrete_lyapunov_equation_test.cc
         eigen_sparse_triplet_test.cc
         evenly_distributed_pts_on_sphere_test.cc
-#        expmap_test.cc
-#        fast_pose_composition_functions_test.cc
+        #        expmap_test.cc
+        #        fast_pose_composition_functions_test.cc
         gradient_util_test.cc
         gray_code_test.cc
         hopf_coordinate_test.cc

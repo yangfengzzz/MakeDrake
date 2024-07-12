@@ -57,13 +57,13 @@ public:
     explicit BarycentricMesh(MeshGrid input_grid);
 
     // Accessor methods.
-    const MeshGrid &get_input_grid() const { return input_grid_; }
+    const MeshGrid& get_input_grid() const { return input_grid_; }
 
     int get_input_size() const { return input_grid_.size(); }
 
     int get_num_mesh_points() const {
         int num_mesh_points = 1;
-        for (const auto &coords : input_grid_) {
+        for (const auto& coords : input_grid_) {
             num_mesh_points *= coords.size();
         }
         return num_mesh_points;
@@ -95,7 +95,7 @@ public:
     /// get_num_interpolants().
     /// @param weights is a vector of coefficients (which sum to 1) of length
     /// get_num_interpolants().
-    void EvalBarycentricWeights(const Eigen::Ref<const VectorX<T>> &input,
+    void EvalBarycentricWeights(const Eigen::Ref<const VectorX<T>>& input,
                                 EigenPtr<Eigen::VectorXi> mesh_indices,
                                 EigenPtr<VectorX<T>> weights) const;
 
@@ -114,12 +114,12 @@ public:
     /// by get_mesh_point().
     /// @param input must be a vector of length get_num_inputs().
     /// @param output is the interpolated vector of length num_outputs
-    void Eval(const Eigen::Ref<const MatrixX<T>> &mesh_values,
-              const Eigen::Ref<const VectorX<T>> &input,
+    void Eval(const Eigen::Ref<const MatrixX<T>>& mesh_values,
+              const Eigen::Ref<const VectorX<T>>& input,
               EigenPtr<VectorX<T>> output) const;
 
     /// Returns the function evaluated at @p input.
-    VectorX<T> Eval(const Eigen::Ref<const MatrixX<T>> &mesh_values, const Eigen::Ref<const VectorX<T>> &input) const;
+    VectorX<T> Eval(const Eigen::Ref<const MatrixX<T>>& mesh_values, const Eigen::Ref<const VectorX<T>>& input) const;
 
     /// Performs Eval, but with the possibility of the values on the mesh
     /// having a different scalar type than the values defining the mesh
@@ -128,8 +128,8 @@ public:
     /// @tparam ValueT defines the scalar type of the mesh_values and the output.
     /// @see Eval
     template <typename ValueT = T>
-    void EvalWithMixedScalars(const Eigen::Ref<const MatrixX<ValueT>> &mesh_values,
-                              const Eigen::Ref<const VectorX<T>> &input,
+    void EvalWithMixedScalars(const Eigen::Ref<const MatrixX<ValueT>>& mesh_values,
+                              const Eigen::Ref<const VectorX<T>>& input,
                               EigenPtr<VectorX<ValueT>> output) const {
         DRAKE_DEMAND(output != nullptr);
         DRAKE_DEMAND(input.size() == get_input_size());
@@ -148,8 +148,8 @@ public:
 
     /// Returns the function evaluated at @p input.
     template <typename ValueT = T>
-    VectorX<ValueT> EvalWithMixedScalars(const Eigen::Ref<const MatrixX<ValueT>> &mesh_values,
-                                         const Eigen::Ref<const VectorX<T>> &input) const {
+    VectorX<ValueT> EvalWithMixedScalars(const Eigen::Ref<const MatrixX<ValueT>>& mesh_values,
+                                         const Eigen::Ref<const VectorX<T>>& input) const {
         VectorX<ValueT> output(mesh_values.rows());
         EvalWithMixedScalars<ValueT>(mesh_values, input, &output);
         return output;
@@ -163,7 +163,7 @@ public:
     ///   MatrixXd mesh_values = bary.MeshValuesFrom(
     ///     [](const auto& x) { return Vector1d(std::sin(x[0])); });
     /// @endcode
-    MatrixX<T> MeshValuesFrom(const std::function<VectorX<T>(const Eigen::Ref<const VectorX<T>> &)> &vector_func) const;
+    MatrixX<T> MeshValuesFrom(const std::function<VectorX<T>(const Eigen::Ref<const VectorX<T>>&)>& vector_func) const;
 
 private:
     MeshGrid input_grid_;  // Specifies the location of the mesh points in

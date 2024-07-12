@@ -13,9 +13,8 @@ namespace internal {
  | Matrix  | Num Rows    | Num Columns |
  | A       | num states  | num states  |
  | B       | num states  | num inputs  | */
-Eigen::MatrixXd ControllabilityMatrix(
-    const Eigen::Ref<const Eigen::MatrixXd>& A,
-    const Eigen::Ref<const Eigen::MatrixXd>& B);
+Eigen::MatrixXd ControllabilityMatrix(const Eigen::Ref<const Eigen::MatrixXd>& A,
+                                      const Eigen::Ref<const Eigen::MatrixXd>& B);
 
 /* Returns true iff the controllability matrix is full row rank.
 @pre The coefficient matrices must obey the following dimensions:
@@ -50,7 +49,8 @@ bool IsObservable(const Eigen::Ref<const Eigen::MatrixXd>& A,
  | B       | num states  | num inputs  | */
 bool IsStabilizable(const Eigen::Ref<const Eigen::MatrixXd>& A,
                     const Eigen::Ref<const Eigen::MatrixXd>& B,
-                    bool continuous_time, std::optional<double> threshold);
+                    bool continuous_time,
+                    std::optional<double> threshold);
 
 /* Returns true iff the system is detectable.
 @pre The coefficient matrices must obey the following dimensions:
@@ -59,7 +59,8 @@ bool IsStabilizable(const Eigen::Ref<const Eigen::MatrixXd>& A,
  | C       | num outputs | num states  | */
 bool IsDetectable(const Eigen::Ref<const Eigen::MatrixXd>& A,
                   const Eigen::Ref<const Eigen::MatrixXd>& C,
-                  bool continuous_time, std::optional<double> threshold);
+                  bool continuous_time,
+                  std::optional<double> threshold);
 
 }  // namespace internal
 }  // namespace systems

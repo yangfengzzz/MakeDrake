@@ -22,34 +22,34 @@ incompatible with such scalars.
 @tparam_default_scalar */
 template <typename T>
 struct GeometryContactData {
-  std::vector<geometry::PenetrationAsPointPair<T>> point_pairs;
-  std::vector<geometry::ContactSurface<T>> surfaces;
-  geometry::internal::DeformableContact<T> deformable;
+    std::vector<geometry::PenetrationAsPointPair<T>> point_pairs;
+    std::vector<geometry::ContactSurface<T>> surfaces;
+    geometry::internal::DeformableContact<T> deformable;
 };
 
 /* Full specialization of HydroelasticContactInfo for T = AutoDiffXd.
 This omits DeformableContact data. */
 template <>
 class GeometryContactData<AutoDiffXd> {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(GeometryContactData);
-  GeometryContactData() = default;
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(GeometryContactData);
+    GeometryContactData() = default;
 
-  using T = AutoDiffXd;
-  std::vector<geometry::PenetrationAsPointPair<T>> point_pairs;
-  std::vector<geometry::ContactSurface<T>> surfaces;
+    using T = AutoDiffXd;
+    std::vector<geometry::PenetrationAsPointPair<T>> point_pairs;
+    std::vector<geometry::ContactSurface<T>> surfaces;
 };
 
 /* Full specialization of HydroelasticContactInfo for T = Expression.
 This omits ContactSurface and DeformableContact data. */
 template <>
 class GeometryContactData<symbolic::Expression> {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(GeometryContactData);
-  GeometryContactData() = default;
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(GeometryContactData);
+    GeometryContactData() = default;
 
-  using T = symbolic::Expression;
-  std::vector<geometry::PenetrationAsPointPair<T>> point_pairs;
+    using T = symbolic::Expression;
+    std::vector<geometry::PenetrationAsPointPair<T>> point_pairs;
 };
 
 }  // namespace internal

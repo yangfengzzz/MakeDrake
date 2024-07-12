@@ -29,10 +29,12 @@ GTEST_TEST(ComputeNumericalGradientTest, TestAffineFunction) {
     // template deduction doesn't work when converting lambda to std::function,
     // explained in
     // https://stackoverflow.com/questions/26665152/compiler-does-not-deduce-template-parameters-map-stdvector-stdvector
-    std::function<void(const Eigen::Vector2d &x, Eigen::Vector3d *)> calc_fun =
-            [&A, &b](const Eigen::Matrix<double, 2, 1> &x, Eigen::Matrix<double, 3, 1> *y) -> void { *y = A * x + b; };
+    std::function<void(const Eigen::Vector2d& x, Eigen::Vector3d*)> calc_fun =
+            [&A, &b](const Eigen::Matrix<double, 2, 1>& x, Eigen::Matrix<double, 3, 1>* y) -> void {
+        *y = A * x + b;
+    };
 
-    auto check_gradient = [&A, &calc_fun](const Eigen::Vector2d &x) {
+    auto check_gradient = [&A, &calc_fun](const Eigen::Vector2d& x) {
         // forward difference
         auto J = ComputeNumericalGradient(calc_fun, x, NumericalGradientOption{NumericalGradientMethod::kForward});
         // The big tolerance is caused by the cancellation error in computing
@@ -56,18 +58,18 @@ GTEST_TEST(ComputeNumericalGradientTest, TestAffineFunction) {
 }
 
 template <typename T>
-void ToyFunction(const Vector3<T> &x, Vector2<T> *y) {
+void ToyFunction(const Vector3<T>& x, Vector2<T>* y) {
     using std::sin;
     (*y)(0) = x(0) + sin(x(1)) + x(0) * x(1) + 2;
     (*y)(1) = 2 * x(0) * x(2) + 3;
 }
 
 GTEST_TEST(ComputeNumericalGradientTest, TestToyFunction) {
-    auto check_gradient = [](const Eigen::Vector3d &x) {
+    auto check_gradient = [](const Eigen::Vector3d& x) {
         // I need to create a std::function, rather than passing ToyFunction<double>
         // to ComputeNumericalGradient directly, as template deduction doesn't work
         // in the implicit conversion from function object to std::function.
-        std::function<void(const Eigen::Vector3d &, Eigen::Vector2d *)> ToyFunctionDouble = ToyFunction<double>;
+        std::function<void(const Eigen::Vector3d&, Eigen::Vector2d*)> ToyFunctionDouble = ToyFunction<double>;
         auto J = ComputeNumericalGradient(ToyFunctionDouble, x,
                                           NumericalGradientOption{NumericalGradientMethod::kForward});
         auto x_autodiff = math::InitializeAutoDiff<3>(x);
@@ -99,7 +101,7 @@ GTEST_TEST(ComputeNumericalGradientTest, TestToyFunction) {
 const double kHessian = 5.0;
 
 template <typename T>
-void Paraboloid(const Vector2<T> &x, Vector1<T> *y) {
+void Paraboloid(const Vector2<T>& x, Vector1<T>* y) {
     (*y)(0) = 0.5 * kHessian * x.squaredNorm();
 }
 
@@ -112,11 +114,11 @@ void Paraboloid(const Vector2<T> &x, Vector1<T> *y) {
 GTEST_TEST(ComputeNumericalGradientTest, TestParaboloid) {
     // We define a lambda so that we can perform a number of tests at different
     // points x in the plane.
-    auto check_gradient = [](const Vector2<double> &x) {
+    auto check_gradient = [](const Vector2<double>& x) {
         // I need to create a std::function, rather than passing ToyFunction<double>
         // to ComputeNumericalGradient directly, as template deduction doesn't work
         // in the implicit conversion from function object to std::function.
-        std::function<void(const Vector2<double> &, Vector1<double> *)> ParaboloidDouble = Paraboloid<double>;
+        std::function<void(const Vector2<double>&, Vector1<double>*)> ParaboloidDouble = Paraboloid<double>;
         auto J = ComputeNumericalGradient(ParaboloidDouble, x,
                                           NumericalGradientOption{NumericalGradientMethod::kForward});
 
@@ -132,7 +134,7 @@ GTEST_TEST(ComputeNumericalGradientTest, TestParaboloid) {
 
         // Compute the Hessian using the autodiff version of
         // ComputeNumericalGradient().
-        std::function<void(const Vector2AD2d &, Vector1AD2d *)> ParaboloidAD3d = Paraboloid<AD2d>;
+        std::function<void(const Vector2AD2d&, Vector1AD2d*)> ParaboloidAD3d = Paraboloid<AD2d>;
 
         // With forward differencing.
         auto JAD3d = ComputeNumericalGradient(ParaboloidAD3d, x_autodiff,
@@ -160,7 +162,7 @@ GTEST_TEST(ComputeNumericalGradientTest, TestParaboloid) {
         // Test for symbolic::Expression, at least for constant expressions.
         typedef Vector2<symbolic::Expression> Vector2Expr;
         typedef Vector1<symbolic::Expression> Vector1Expr;
-        std::function<void(const Vector2Expr &, Vector1Expr *)> ParaboloidExpr = Paraboloid<symbolic::Expression>;
+        std::function<void(const Vector2Expr&, Vector1Expr*)> ParaboloidExpr = Paraboloid<symbolic::Expression>;
 
         // With forward differencing.
         const symbolic::Expression x1(x(0));
@@ -186,20 +188,20 @@ public:
     ~ToyEvaluator() override {}
 
 private:
-    void DoEval(const Eigen::Ref<const Eigen::VectorXd> &x, Eigen::VectorXd *y) const override {
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override {
         Eigen::Vector2d y_double;
         ToyFunction(Eigen::Vector3d(x), &y_double);
         *y = y_double;
     }
 
-    void DoEval(const Eigen::Ref<const AutoDiffVecXd> &x, AutoDiffVecXd *y) const override {
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override {
         AutoDiffVecd<Eigen::Dynamic, 2> y_autodiff;
         ToyFunction(AutoDiffVecd<Eigen::Dynamic, 3>(x), &y_autodiff);
         *y = y_autodiff;
     }
 
-    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>> &x,
-                VectorX<symbolic::Expression> *y) const override {
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>& x,
+                VectorX<symbolic::Expression>* y) const override {
         Vector2<symbolic::Expression> y_sym;
         ToyFunction(Vector3<symbolic::Expression>(x), &y_sym);
         *y = y_sym;
@@ -209,8 +211,8 @@ private:
 GTEST_TEST(ComputeNumericalGradientTest, TestEvaluator) {
     // Test compute numerical gradient for solvers::EvaluatorBase
     ToyEvaluator evaluator;
-    std::function<void(const Eigen::Ref<const Eigen::VectorXd> &, Eigen::VectorXd *)> evaluator_eval =
-            [&evaluator](const Eigen::Ref<const Eigen::VectorXd> &x, Eigen::VectorXd *y) {
+    std::function<void(const Eigen::Ref<const Eigen::VectorXd>&, Eigen::VectorXd*)> evaluator_eval =
+            [&evaluator](const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) {
                 return evaluator.Eval(x, y);
             };
     Eigen::Vector3d x(0, 1, 2);

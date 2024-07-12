@@ -37,254 +37,226 @@ namespace internal {
  6. Records the camera pose provided to UpdateViewpoint() and report it with
     last_updated_X_WC().  */
 class DummyRenderEngine : public render::RenderEngine, private ShapeReifier {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DummyRenderEngine);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DummyRenderEngine);
 
-  /* Constructor to exercise the default constructor of RenderEngine.  */
-  DummyRenderEngine() : DummyRenderEngine(render::RenderLabel::kUnspecified) {}
+    /* Constructor to exercise the default constructor of RenderEngine.  */
+    DummyRenderEngine() : DummyRenderEngine(render::RenderLabel::kUnspecified) {}
 
-  /* Constructor for configuring the underlying RenderEngine.  */
-  explicit DummyRenderEngine(const render::RenderLabel& label)
-      : render::RenderEngine(label),
-        color_camera_{{"", {2, 2, 1.0}, {0.01, 1}, {}}, false},
-        depth_camera_{color_camera_.core(), {0.01, 0.011}},
-        label_camera_{color_camera_} {}
+    /* Constructor for configuring the underlying RenderEngine.  */
+    explicit DummyRenderEngine(const render::RenderLabel& label)
+        : render::RenderEngine(label),
+          color_camera_{{"", {2, 2, 1.0}, {0.01, 1}, {}}, false},
+          depth_camera_{color_camera_.core(), {0.01, 0.011}},
+          label_camera_{color_camera_} {}
 
-  /* @group No-op implementation of RenderEngine interface.  */
-  //@{
-  void UpdateViewpoint(const math::RigidTransformd& X_WC) override {
-    X_WC_ = X_WC;
-  }
-  using render::RenderEngine::RenderColorImage;
-  using render::RenderEngine::RenderDepthImage;
-  using render::RenderEngine::RenderLabelImage;
+    /* @group No-op implementation of RenderEngine interface.  */
+    //@{
+    void UpdateViewpoint(const math::RigidTransformd& X_WC) override { X_WC_ = X_WC; }
+    using render::RenderEngine::RenderColorImage;
+    using render::RenderEngine::RenderDepthImage;
+    using render::RenderEngine::RenderLabelImage;
 
-  using ShapeReifier::ImplementGeometry;
-  void ImplementGeometry(const Box&, void*) override {}
-  void ImplementGeometry(const Capsule&, void*) override {}
-  void ImplementGeometry(const Convex&, void*) override {}
-  void ImplementGeometry(const Cylinder&, void*) override {}
-  void ImplementGeometry(const HalfSpace&, void*) override {}
-  void ImplementGeometry(const Mesh&, void*) override {}
-  void ImplementGeometry(const MeshcatCone&, void*) override {}
-  void ImplementGeometry(const Sphere&, void*) override {}
-  //@}
+    using ShapeReifier::ImplementGeometry;
+    void ImplementGeometry(const Box&, void*) override {}
+    void ImplementGeometry(const Capsule&, void*) override {}
+    void ImplementGeometry(const Convex&, void*) override {}
+    void ImplementGeometry(const Cylinder&, void*) override {}
+    void ImplementGeometry(const HalfSpace&, void*) override {}
+    void ImplementGeometry(const Mesh&, void*) override {}
+    void ImplementGeometry(const MeshcatCone&, void*) override {}
+    void ImplementGeometry(const Sphere&, void*) override {}
+    //@}
 
-  /* @name  Functions for supporting tests.  */
-  //@{
+    /* @name  Functions for supporting tests.  */
+    //@{
 
-  /* Creates a set of perception properties that will cause this render engine
-   to _accept_ geometry during registration.  */
-  PerceptionProperties accepting_properties() const {
-    PerceptionProperties properties;
-    properties.AddProperty(include_group_name_, "ignored", 0);
-    return properties;
-  }
-
-  /* Creates a set of perception properties that will cause this render engine
-   to _reject_ geometry during registration.  */
-  PerceptionProperties rejecting_properties() const {
-    return PerceptionProperties();
-  }
-
-  /* Initializes the set data to the freshly-constructed values. This
-   leaves the registered data intact.  */
-  void init_test_data() { updated_ids_.clear(); }
-
-  /* If true, this render engine will accept all registered geometry.  */
-  void set_force_accept(bool force_accept) { force_accept_ = force_accept; }
-
-  /* Reports the number of geometries that have been _accepted_ in
-   registration.  */
-  int num_registered() const {
-    return static_cast<int>(registered_geometries_.size());
-  }
-
-  /* Reports `true` if the given id is registered with `this` engine.  */
-  bool is_registered(GeometryId id) const {
-    return registered_geometries_.contains(id);
-  }
-
-  // These six functions (and supporting members) facilitate testing while there
-  // are two APIs for specifying the camera for rendering images. They should
-  // go away when the legacy "simple" intrinsics are removed.
-
-  // Reports the number of times the Render[]Image API was called using the
-  // simple camera specification.
-  int num_color_renders() const { return color_count_; }
-  int num_depth_renders() const { return depth_count_; }
-  int num_label_renders() const { return label_count_; }
-
-  const render::ColorRenderCamera& last_color_camera() const {
-    return color_camera_;
-  }
-  const render::DepthRenderCamera& last_depth_camera() const {
-    return depth_camera_;
-  }
-  const render::ColorRenderCamera& last_label_camera() const {
-    return label_camera_;
-  }
-
-  /* Returns the ids that have been updated via a call to UpdatePoses() and
-   the poses that were set.  */
-  const std::map<GeometryId, math::RigidTransformd>& updated_ids() const {
-    return updated_ids_;
-  }
-
-  /* Returns the most recent pose of the geometry with the given `id` in the
-   world frame.  */
-  const math::RigidTransformd& world_pose(GeometryId id) const {
-    return X_WGs_.at(id);
-  }
-
-  /* Returns the most recent vertex normals of the render meshes for the
-   deformable geometry with the given `id` in the world frame.  */
-  const std::vector<Eigen::VectorXd>& world_normals(GeometryId id) const {
-    return nhats_W_.at(id);
-  }
-
-  /* Returns the most recent configurations of the render meshes for the
-   deformable geometry with the given `id` in the world frame.  */
-  const std::vector<Eigen::VectorXd>& world_configurations(
-      GeometryId id) const {
-    return q_WGs_.at(id);
-  }
-
-  const math::RigidTransformd& last_updated_X_WC() const { return X_WC_; }
-
-  // Promote these to be public to facilitate testing.
-  using RenderEngine::MakeLabelFromRgb;
-  using RenderEngine::MakeRgbFromLabel;
-
- protected:
-  /* Dummy implementation that registers the given `shape` if the `properties`
-   contains the "in_test" group or the render engine has been forced to accept
-   all geometries (via set_force_accept()). (Also counts the number of
-   successfully registered shape over the lifespan of `this` instance.) */
-  bool DoRegisterVisual(GeometryId id, const Shape&,
-                        const PerceptionProperties& properties,
-                        const math::RigidTransformd& X_WG) override {
-    X_WGs_[id] = X_WG;
-    GetRenderLabelOrThrow(properties);
-    if (force_accept_ || properties.HasGroup(include_group_name_)) {
-      registered_geometries_.insert(id);
-      return true;
+    /* Creates a set of perception properties that will cause this render engine
+     to _accept_ geometry during registration.  */
+    PerceptionProperties accepting_properties() const {
+        PerceptionProperties properties;
+        properties.AddProperty(include_group_name_, "ignored", 0);
+        return properties;
     }
-    return false;
-  }
 
-  /* Dummy implementation that registers the given deformable geometry with `id`
-   and records the meshes' initial configurations if the `properties` contains
-   the "in_test" group or the render engine has been forced to accept all
-   geometries (via set_force_accept()). */
-  bool DoRegisterDeformableVisual(
-      GeometryId id, const std::vector<internal::RenderMesh>& render_meshes,
-      const PerceptionProperties& properties) override {
-    if (force_accept_ || properties.HasGroup(include_group_name_)) {
-      using Eigen::VectorXd;
-      registered_geometries_.insert(id);
-      std::vector<VectorXd> initial_positions;
-      std::vector<VectorXd> initial_normals;
-      for (int i = 0; i < ssize(render_meshes); ++i) {
-        VectorXd flat_positions = EigenMapView(render_meshes[i].positions);
-        initial_positions.push_back(std::move(flat_positions));
-        VectorXd flat_normals = EigenMapView(render_meshes[i].normals);
-        initial_normals.push_back(std::move(flat_normals));
-      }
-      q_WGs_[id] = std::move(initial_positions);
-      nhats_W_[id] = std::move(initial_normals);
-      return true;
-    }
-    return false;
-  }
+    /* Creates a set of perception properties that will cause this render engine
+     to _reject_ geometry during registration.  */
+    PerceptionProperties rejecting_properties() const { return PerceptionProperties(); }
 
-  /* Updates the pose X_WG for the geometry with the given `id`. Also tracks
-   which ids have been updated and the poses set (over the _lifespan_ of
-   `this` instance). This can be reset with a call to init_test_data().  */
-  void DoUpdateVisualPose(GeometryId id,
+    /* Initializes the set data to the freshly-constructed values. This
+     leaves the registered data intact.  */
+    void init_test_data() { updated_ids_.clear(); }
+
+    /* If true, this render engine will accept all registered geometry.  */
+    void set_force_accept(bool force_accept) { force_accept_ = force_accept; }
+
+    /* Reports the number of geometries that have been _accepted_ in
+     registration.  */
+    int num_registered() const { return static_cast<int>(registered_geometries_.size()); }
+
+    /* Reports `true` if the given id is registered with `this` engine.  */
+    bool is_registered(GeometryId id) const { return registered_geometries_.contains(id); }
+
+    // These six functions (and supporting members) facilitate testing while there
+    // are two APIs for specifying the camera for rendering images. They should
+    // go away when the legacy "simple" intrinsics are removed.
+
+    // Reports the number of times the Render[]Image API was called using the
+    // simple camera specification.
+    int num_color_renders() const { return color_count_; }
+    int num_depth_renders() const { return depth_count_; }
+    int num_label_renders() const { return label_count_; }
+
+    const render::ColorRenderCamera& last_color_camera() const { return color_camera_; }
+    const render::DepthRenderCamera& last_depth_camera() const { return depth_camera_; }
+    const render::ColorRenderCamera& last_label_camera() const { return label_camera_; }
+
+    /* Returns the ids that have been updated via a call to UpdatePoses() and
+     the poses that were set.  */
+    const std::map<GeometryId, math::RigidTransformd>& updated_ids() const { return updated_ids_; }
+
+    /* Returns the most recent pose of the geometry with the given `id` in the
+     world frame.  */
+    const math::RigidTransformd& world_pose(GeometryId id) const { return X_WGs_.at(id); }
+
+    /* Returns the most recent vertex normals of the render meshes for the
+     deformable geometry with the given `id` in the world frame.  */
+    const std::vector<Eigen::VectorXd>& world_normals(GeometryId id) const { return nhats_W_.at(id); }
+
+    /* Returns the most recent configurations of the render meshes for the
+     deformable geometry with the given `id` in the world frame.  */
+    const std::vector<Eigen::VectorXd>& world_configurations(GeometryId id) const { return q_WGs_.at(id); }
+
+    const math::RigidTransformd& last_updated_X_WC() const { return X_WC_; }
+
+    // Promote these to be public to facilitate testing.
+    using RenderEngine::MakeLabelFromRgb;
+    using RenderEngine::MakeRgbFromLabel;
+
+protected:
+    /* Dummy implementation that registers the given `shape` if the `properties`
+     contains the "in_test" group or the render engine has been forced to accept
+     all geometries (via set_force_accept()). (Also counts the number of
+     successfully registered shape over the lifespan of `this` instance.) */
+    bool DoRegisterVisual(GeometryId id,
+                          const Shape&,
+                          const PerceptionProperties& properties,
                           const math::RigidTransformd& X_WG) override {
-    updated_ids_[id] = X_WG;
-    X_WGs_[id] = X_WG;
-  }
+        X_WGs_[id] = X_WG;
+        GetRenderLabelOrThrow(properties);
+        if (force_accept_ || properties.HasGroup(include_group_name_)) {
+            registered_geometries_.insert(id);
+            return true;
+        }
+        return false;
+    }
 
-  void DoUpdateDeformableConfigurations(
-      GeometryId id, const std::vector<VectorX<double>>& q_WGs,
-      const std::vector<VectorX<double>>& nhats_W) override {
-    q_WGs_[id] = q_WGs;
-    nhats_W_[id] = nhats_W;
-  }
+    /* Dummy implementation that registers the given deformable geometry with `id`
+     and records the meshes' initial configurations if the `properties` contains
+     the "in_test" group or the render engine has been forced to accept all
+     geometries (via set_force_accept()). */
+    bool DoRegisterDeformableVisual(GeometryId id,
+                                    const std::vector<internal::RenderMesh>& render_meshes,
+                                    const PerceptionProperties& properties) override {
+        if (force_accept_ || properties.HasGroup(include_group_name_)) {
+            using Eigen::VectorXd;
+            registered_geometries_.insert(id);
+            std::vector<VectorXd> initial_positions;
+            std::vector<VectorXd> initial_normals;
+            for (int i = 0; i < ssize(render_meshes); ++i) {
+                VectorXd flat_positions = EigenMapView(render_meshes[i].positions);
+                initial_positions.push_back(std::move(flat_positions));
+                VectorXd flat_normals = EigenMapView(render_meshes[i].normals);
+                initial_normals.push_back(std::move(flat_normals));
+            }
+            q_WGs_[id] = std::move(initial_positions);
+            nhats_W_[id] = std::move(initial_normals);
+            return true;
+        }
+        return false;
+    }
 
-  /* Removes the given geometry id (if it is registered).  */
-  bool DoRemoveGeometry(GeometryId id) override {
-    return registered_geometries_.erase(id) > 0;
-  }
+    /* Updates the pose X_WG for the geometry with the given `id`. Also tracks
+     which ids have been updated and the poses set (over the _lifespan_ of
+     `this` instance). This can be reset with a call to init_test_data().  */
+    void DoUpdateVisualPose(GeometryId id, const math::RigidTransformd& X_WG) override {
+        updated_ids_[id] = X_WG;
+        X_WGs_[id] = X_WG;
+    }
 
-  /* Implementation of RenderEngine::DoClone().  */
-  std::unique_ptr<render::RenderEngine> DoClone() const override {
-    return std::make_unique<DummyRenderEngine>(*this);
-  }
+    void DoUpdateDeformableConfigurations(GeometryId id,
+                                          const std::vector<VectorX<double>>& q_WGs,
+                                          const std::vector<VectorX<double>>& nhats_W) override {
+        q_WGs_[id] = q_WGs;
+        nhats_W_[id] = nhats_W;
+    }
 
-  /* Implementation of RenderEngine::DoRenderColorImage().  */
-  void DoRenderColorImage(const render::ColorRenderCamera& camera,
-                          systems::sensors::ImageRgba8U*) const override {
-    ++color_count_;
-    color_camera_ = camera;
-  }
+    /* Removes the given geometry id (if it is registered).  */
+    bool DoRemoveGeometry(GeometryId id) override { return registered_geometries_.erase(id) > 0; }
 
-  /* Implementation of RenderEngine::DoRenderDepthImage().  */
-  void DoRenderDepthImage(const render::DepthRenderCamera& camera,
-                          systems::sensors::ImageDepth32F*) const override {
-    ++depth_count_;
-    depth_camera_ = camera;
-  }
+    /* Implementation of RenderEngine::DoClone().  */
+    std::unique_ptr<render::RenderEngine> DoClone() const override {
+        return std::make_unique<DummyRenderEngine>(*this);
+    }
 
-  /* Implementation of RenderEngine::DoRenderLabelImage().  */
-  void DoRenderLabelImage(const render::ColorRenderCamera& camera,
-                          systems::sensors::ImageLabel16I*) const override {
-    ++label_count_;
-    label_camera_ = camera;
-  }
+    /* Implementation of RenderEngine::DoRenderColorImage().  */
+    void DoRenderColorImage(const render::ColorRenderCamera& camera, systems::sensors::ImageRgba8U*) const override {
+        ++color_count_;
+        color_camera_ = camera;
+    }
 
- private:
-  // If true, the engine will accept all geometries.
-  bool force_accept_{};
+    /* Implementation of RenderEngine::DoRenderDepthImage().  */
+    void DoRenderDepthImage(const render::DepthRenderCamera& camera, systems::sensors::ImageDepth32F*) const override {
+        ++depth_count_;
+        depth_camera_ = camera;
+    }
 
-  std::unordered_set<GeometryId> registered_geometries_;
+    /* Implementation of RenderEngine::DoRenderLabelImage().  */
+    void DoRenderLabelImage(const render::ColorRenderCamera& camera, systems::sensors::ImageLabel16I*) const override {
+        ++label_count_;
+        label_camera_ = camera;
+    }
 
-  // The current poses of the geometries in the world frame.
-  std::map<GeometryId, math::RigidTransformd> X_WGs_;
+private:
+    // If true, the engine will accept all geometries.
+    bool force_accept_{};
 
-  // The current configurations of the deformable render meshes in the world
-  // frame.
-  std::map<GeometryId, std::vector<Eigen::VectorXd>> q_WGs_;
+    std::unordered_set<GeometryId> registered_geometries_;
 
-  // The current vertex normals of the deformable render meshes in the world
-  // frame.
-  std::map<GeometryId, std::vector<Eigen::VectorXd>> nhats_W_;
+    // The current poses of the geometries in the world frame.
+    std::map<GeometryId, math::RigidTransformd> X_WGs_;
 
-  // TODO(SeanCurtis-TRI) Shuffle this around so that the updated ids no longer
-  //  redundantly stores the updated poses; those should be accessible via
-  //  X_WGs_.
-  // Track each id that gets updated and what it has been updated to.
-  std::map<GeometryId, math::RigidTransformd> updated_ids_;
+    // The current configurations of the deformable render meshes in the world
+    // frame.
+    std::map<GeometryId, std::vector<Eigen::VectorXd>> q_WGs_;
 
-  // The group name whose presence will lead to a shape being added to the
-  // engine.
-  std::string include_group_name_{"in_test"};
+    // The current vertex normals of the deformable render meshes in the world
+    // frame.
+    std::map<GeometryId, std::vector<Eigen::VectorXd>> nhats_W_;
 
-  // The last updated camera pose (defaults to identity).
-  math::RigidTransformd X_WC_;
+    // TODO(SeanCurtis-TRI) Shuffle this around so that the updated ids no longer
+    //  redundantly stores the updated poses; those should be accessible via
+    //  X_WGs_.
+    // Track each id that gets updated and what it has been updated to.
+    std::map<GeometryId, math::RigidTransformd> updated_ids_;
 
-  // The counts of the times that the various render APIs were called.
-  // This should *only* apply to the render API with *simple* camera intrinsics.
-  // When that API is deprecated, this can be removed.
-  mutable int color_count_{};
-  mutable int depth_count_{};
-  mutable int label_count_{};
+    // The group name whose presence will lead to a shape being added to the
+    // engine.
+    std::string include_group_name_{"in_test"};
 
-  mutable render::ColorRenderCamera color_camera_;
-  mutable render::DepthRenderCamera depth_camera_;
-  mutable render::ColorRenderCamera label_camera_;
+    // The last updated camera pose (defaults to identity).
+    math::RigidTransformd X_WC_;
+
+    // The counts of the times that the various render APIs were called.
+    // This should *only* apply to the render API with *simple* camera intrinsics.
+    // When that API is deprecated, this can be removed.
+    mutable int color_count_{};
+    mutable int depth_count_{};
+    mutable int label_count_{};
+
+    mutable render::ColorRenderCamera color_camera_;
+    mutable render::DepthRenderCamera depth_camera_;
+    mutable render::ColorRenderCamera label_camera_;
 };
 
 }  // namespace internal

@@ -31,39 +31,34 @@ constexpr double kTol = std::numeric_limits<double>::epsilon();
 
 // Asserts that the given spatial inertia is equivalent to the given mass
 // properties, i.e., mass, position vector, and unit inertia.
-::testing::AssertionResult SpatialInertiasEqual(
-    const SpatialInertia<double>& dut,
-    const SpatialInertia<double>& M_expected,
-    double tolerance = 0.0) {
-  const double mass = M_expected.get_mass();
-  const Vector3<double> p_BoBcm_B = M_expected.get_com();
-  const UnitInertia<double> G_BBo_B = M_expected.get_unit_inertia();
-  if (std::abs(mass - dut.get_mass()) > tolerance) {
-    return ::testing::AssertionFailure()
-           << "Expected equal masses\n"
-           << "  expected:   " << mass << "\n"
-           << "  tested:     " << dut.get_mass() << "\n"
-           << "  difference: " << std::abs(mass - dut.get_mass()) << "\n"
-           << "  is greater than tolerance: " << tolerance << "\n";
-  }
-  ::testing::AssertionResult result =
-      CompareMatrices(dut.get_com(), p_BoBcm_B, tolerance);
-  if (!result) return result;
-  if (!dut.get_unit_inertia().IsNearlyEqualTo(G_BBo_B, tolerance)) {
-    return ::testing::AssertionFailure()
-           << "Expected equal unit inertias\n"
-           << "  expected\n"
-           << G_BBo_B << "\n"
-           << "  tested\n"
-           << dut.get_unit_inertia() << "\n"
-           << "  with tolerance: " << tolerance << "\n"
-           << "(with mass: " << dut.get_mass() << "\n"
-           << " and com: "
-           << fmt::to_string(fmt_eigen(dut.get_com().transpose())) << "\n";
-  }
-  return ::testing::AssertionSuccess();
+::testing::AssertionResult SpatialInertiasEqual(const SpatialInertia<double>& dut,
+                                                const SpatialInertia<double>& M_expected,
+                                                double tolerance = 0.0) {
+    const double mass = M_expected.get_mass();
+    const Vector3<double> p_BoBcm_B = M_expected.get_com();
+    const UnitInertia<double> G_BBo_B = M_expected.get_unit_inertia();
+    if (std::abs(mass - dut.get_mass()) > tolerance) {
+        return ::testing::AssertionFailure() << "Expected equal masses\n"
+                                             << "  expected:   " << mass << "\n"
+                                             << "  tested:     " << dut.get_mass() << "\n"
+                                             << "  difference: " << std::abs(mass - dut.get_mass()) << "\n"
+                                             << "  is greater than tolerance: " << tolerance << "\n";
+    }
+    ::testing::AssertionResult result = CompareMatrices(dut.get_com(), p_BoBcm_B, tolerance);
+    if (!result) return result;
+    if (!dut.get_unit_inertia().IsNearlyEqualTo(G_BBo_B, tolerance)) {
+        return ::testing::AssertionFailure()
+               << "Expected equal unit inertias\n"
+               << "  expected\n"
+               << G_BBo_B << "\n"
+               << "  tested\n"
+               << dut.get_unit_inertia() << "\n"
+               << "  with tolerance: " << tolerance << "\n"
+               << "(with mass: " << dut.get_mass() << "\n"
+               << " and com: " << fmt::to_string(fmt_eigen(dut.get_com().transpose())) << "\n";
+    }
+    return ::testing::AssertionSuccess();
 }
-
 
 // Note: Some tests below validate using SpatialInertia::SolidFooWithDensity()
 // or UnitInertia::SolidFoo(). The *implementations* use similar logic, so,
@@ -73,71 +68,59 @@ constexpr double kTol = std::numeric_limits<double>::epsilon();
 // This supports that goal as a regression test.
 
 GTEST_TEST(GeometrySpatialInertaTest, Box) {
-  const double Lx = 1;
-  const double Ly = 2;
-  const double Lz = 3;
-  const geometry::Box box(Lx, Ly, Lz);
-  const SpatialInertia<double> M_BBo_B =
-      SpatialInertia<double>::SolidBoxWithDensity(kDensity, Lx, Ly, Lz);
-  EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(box, kDensity),
-                                   M_BBo_B, /* tolerance = */ 0.0));
+    const double Lx = 1;
+    const double Ly = 2;
+    const double Lz = 3;
+    const geometry::Box box(Lx, Ly, Lz);
+    const SpatialInertia<double> M_BBo_B = SpatialInertia<double>::SolidBoxWithDensity(kDensity, Lx, Ly, Lz);
+    EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(box, kDensity), M_BBo_B, /* tolerance = */ 0.0));
 }
 
 GTEST_TEST(GeometrySpatialInertaTest, Capsule) {
-  const double r = 1.5;
-  const double L = 2;
-  const geometry::Capsule capsule(r, L);
-  const SpatialInertia<double> M_BBo_B =
-      SpatialInertia<double>::SolidCapsuleWithDensity(
-          kDensity, r, L, Vector3<double>::UnitZ());
-  EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(capsule, kDensity),
-                                   M_BBo_B, /* tolerance = */ 0.0));
+    const double r = 1.5;
+    const double L = 2;
+    const geometry::Capsule capsule(r, L);
+    const SpatialInertia<double> M_BBo_B =
+            SpatialInertia<double>::SolidCapsuleWithDensity(kDensity, r, L, Vector3<double>::UnitZ());
+    EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(capsule, kDensity), M_BBo_B, /* tolerance = */ 0.0));
 }
 
 // Note: Convex can be found below in the MeshTypes test.
 
 GTEST_TEST(GeometrySpatialInertaTest, Cylinder) {
-  const double r = 1.5;
-  const double L = 2;
-  const geometry::Cylinder cylinder(r, L);
-  const SpatialInertia<double> M_BBo_B =
-      SpatialInertia<double>::SolidCylinderWithDensity(
-          kDensity, r, L, Vector3<double>::UnitZ());
-  EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(cylinder, kDensity),
-                                   M_BBo_B, /* tolerance = */ 0.0));
+    const double r = 1.5;
+    const double L = 2;
+    const geometry::Cylinder cylinder(r, L);
+    const SpatialInertia<double> M_BBo_B =
+            SpatialInertia<double>::SolidCylinderWithDensity(kDensity, r, L, Vector3<double>::UnitZ());
+    EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(cylinder, kDensity), M_BBo_B, /* tolerance = */ 0.0));
 }
 
 GTEST_TEST(GeometrySpatialInertaTest, Ellipsoid) {
-  const double a = 1.5;
-  const double b = 2.5;
-  const double c = 3.5;
-  const geometry::Ellipsoid ellipsoid(a, b, c);
-  const SpatialInertia<double> M_BBo_B =
-      SpatialInertia<double>::SolidEllipsoidWithDensity(kDensity, a, b, c);
-  EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(ellipsoid, kDensity),
-                                   M_BBo_B, /* tolerance = */ 0.0));
+    const double a = 1.5;
+    const double b = 2.5;
+    const double c = 3.5;
+    const geometry::Ellipsoid ellipsoid(a, b, c);
+    const SpatialInertia<double> M_BBo_B = SpatialInertia<double>::SolidEllipsoidWithDensity(kDensity, a, b, c);
+    EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(ellipsoid, kDensity), M_BBo_B, /* tolerance = */ 0.0));
 }
 
 GTEST_TEST(GeometrySpatialInertaTest, HalfSpace) {
-  DRAKE_EXPECT_THROWS_MESSAGE(
-      CalcSpatialInertia(geometry::HalfSpace(), kDensity), ".*HalfSpace.*");
+    DRAKE_EXPECT_THROWS_MESSAGE(CalcSpatialInertia(geometry::HalfSpace(), kDensity), ".*HalfSpace.*");
 }
 
 // Note: Mesh can be found below in the MeshTypes test.
 
 GTEST_TEST(GeometrySpatialInertaTest, MeshcatCone) {
-  const geometry::MeshcatCone cone(1, 2, 3);
-  DRAKE_EXPECT_THROWS_MESSAGE(CalcSpatialInertia(cone, kDensity),
-                              ".*MeshcatCone.*");
+    const geometry::MeshcatCone cone(1, 2, 3);
+    DRAKE_EXPECT_THROWS_MESSAGE(CalcSpatialInertia(cone, kDensity), ".*MeshcatCone.*");
 }
 
 GTEST_TEST(GeometrySpatialInertaTest, Sphere) {
-  const double r = 1.5;
-  const geometry::Sphere sphere(r);
-  const SpatialInertia<double> M_BBo_B =
-      SpatialInertia<double>::SolidSphereWithDensity(kDensity, r);
-  EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(sphere, kDensity),
-                                   M_BBo_B, /* tolerance = */ 0.0));
+    const double r = 1.5;
+    const geometry::Sphere sphere(r);
+    const SpatialInertia<double> M_BBo_B = SpatialInertia<double>::SolidSphereWithDensity(kDensity, r);
+    EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(sphere, kDensity), M_BBo_B, /* tolerance = */ 0.0));
 }
 
 // Exercises the common code paths for Mesh and Convex (i.e., "MeshTypes").
@@ -156,61 +139,50 @@ TYPED_TEST_SUITE_P(MeshTypeSpatialInertaTest);
 
  Those responsibilities are tested here. The math is tested below. */
 TYPED_TEST_P(MeshTypeSpatialInertaTest, Administrivia) {
-  using MeshType = TypeParam;
+    using MeshType = TypeParam;
 
-  const std::string valid_obj_path = FindResourceOrThrow(
-      "drake/multibody/parsing/test/box_package/meshes/box.obj");
-  const std::string valid_vtk_path = FindResourceOrThrow(
-      "drake/geometry/test/one_tetrahedron.vtk");
-  const MeshType unit_scale_obj(valid_obj_path, 1.0);
-  const MeshType double_scale_obj(valid_obj_path, 2.0);
-  const MeshType unit_scale_vtk(valid_vtk_path, 1.0);
-  const MeshType double_scale_vtk(valid_vtk_path, 2.0);
-  const MeshType nonexistent("nonexistent.stl", 1.0);
+    const std::string valid_obj_path = FindResourceOrThrow("drake/multibody/parsing/test/box_package/meshes/box.obj");
+    const std::string valid_vtk_path = FindResourceOrThrow("drake/geometry/test/one_tetrahedron.vtk");
+    const MeshType unit_scale_obj(valid_obj_path, 1.0);
+    const MeshType double_scale_obj(valid_obj_path, 2.0);
+    const MeshType unit_scale_vtk(valid_vtk_path, 1.0);
+    const MeshType double_scale_vtk(valid_vtk_path, 2.0);
+    const MeshType nonexistent("nonexistent.stl", 1.0);
 
-  {
-    // Extension test; .obj and .vtk don't throw, everything else does.
-    // Note: this should be case-insensitive; .OBJ should also work. However,
-    // we need *another* valid OBJ with the different capitalization of the
-    // extension to test this. Rather than creating/copying such a file, we're
-    // foregoing the test. The case insensitivity is *not* documented.
+    {
+        // Extension test; .obj and .vtk don't throw, everything else does.
+        // Note: this should be case-insensitive; .OBJ should also work. However,
+        // we need *another* valid OBJ with the different capitalization of the
+        // extension to test this. Rather than creating/copying such a file, we're
+        // foregoing the test. The case insensitivity is *not* documented.
 
-    EXPECT_NO_THROW(CalcSpatialInertia(unit_scale_obj, kDensity));
-    EXPECT_NO_THROW(CalcSpatialInertia(unit_scale_vtk, kDensity));
-    DRAKE_EXPECT_THROWS_MESSAGE(
-        CalcSpatialInertia(nonexistent, kDensity),
-        ".*only supports .obj or .*.vtk .* given '.*nonexistent.stl'.*");
-  }
+        EXPECT_NO_THROW(CalcSpatialInertia(unit_scale_obj, kDensity));
+        EXPECT_NO_THROW(CalcSpatialInertia(unit_scale_vtk, kDensity));
+        DRAKE_EXPECT_THROWS_MESSAGE(CalcSpatialInertia(nonexistent, kDensity),
+                                    ".*only supports .obj or .*.vtk .* given '.*nonexistent.stl'.*");
+    }
 
-  {
-    // Confirm that the scale is used with .obj input.
-    const SpatialInertia<double> M_SScm_S_obj_small =
-        CalcSpatialInertia(unit_scale_obj, kDensity);
-    const SpatialInertia<double> M_SScm_S_obj_large =
-        CalcSpatialInertia(double_scale_obj, kDensity);
-    EXPECT_DOUBLE_EQ(M_SScm_S_obj_large.get_mass(),
-                     M_SScm_S_obj_small.get_mass() * 8);
-  }
+    {
+        // Confirm that the scale is used with .obj input.
+        const SpatialInertia<double> M_SScm_S_obj_small = CalcSpatialInertia(unit_scale_obj, kDensity);
+        const SpatialInertia<double> M_SScm_S_obj_large = CalcSpatialInertia(double_scale_obj, kDensity);
+        EXPECT_DOUBLE_EQ(M_SScm_S_obj_large.get_mass(), M_SScm_S_obj_small.get_mass() * 8);
+    }
 
-  {
-    // Confirm that the scale is used with .vtk input.
-    const SpatialInertia<double> M_SScm_S_vtk_small =
-        CalcSpatialInertia(unit_scale_vtk, kDensity);
-    const SpatialInertia<double> M_SScm_S_vtk_large =
-        CalcSpatialInertia(double_scale_vtk, kDensity);
-    EXPECT_DOUBLE_EQ(M_SScm_S_vtk_large.get_mass(),
-                     M_SScm_S_vtk_small.get_mass() * 8);
-  }
+    {
+        // Confirm that the scale is used with .vtk input.
+        const SpatialInertia<double> M_SScm_S_vtk_small = CalcSpatialInertia(unit_scale_vtk, kDensity);
+        const SpatialInertia<double> M_SScm_S_vtk_large = CalcSpatialInertia(double_scale_vtk, kDensity);
+        EXPECT_DOUBLE_EQ(M_SScm_S_vtk_large.get_mass(), M_SScm_S_vtk_small.get_mass() * 8);
+    }
 
-  {
-    // Confirm that the density is used. Note: only .obj input is tested, since
-    // the implementation's handling of density does not differ by file type.
-    const SpatialInertia<double> M_SScm_S_small =
-        CalcSpatialInertia(unit_scale_obj, kDensity);
-    const SpatialInertia<double> M_SScm_S_large =
-        CalcSpatialInertia(unit_scale_obj, kDensity * 2);
-    EXPECT_DOUBLE_EQ(M_SScm_S_large.get_mass(), M_SScm_S_small.get_mass() * 2);
-  }
+    {
+        // Confirm that the density is used. Note: only .obj input is tested, since
+        // the implementation's handling of density does not differ by file type.
+        const SpatialInertia<double> M_SScm_S_small = CalcSpatialInertia(unit_scale_obj, kDensity);
+        const SpatialInertia<double> M_SScm_S_large = CalcSpatialInertia(unit_scale_obj, kDensity * 2);
+        EXPECT_DOUBLE_EQ(M_SScm_S_large.get_mass(), M_SScm_S_small.get_mass() * 2);
+    }
 }
 
 REGISTER_TYPED_TEST_SUITE_P(MeshTypeSpatialInertaTest, Administrivia);
@@ -225,60 +197,54 @@ INSTANTIATE_TYPED_TEST_SUITE_P(All, MeshTypeSpatialInertaTest, MeshTypes);
    - We can transform the mesh and observe predictable changes to the
      resulting spatial inertia.  */
 GTEST_TEST(TriangleSurfaceMassPropertiesTest, ExactPolyhedron) {
-  // Note: this is the same box B used in the Box test above.
-  // Note: p_BoBcm = [0, 0, 0]. The box is defined such that its center of mass
-  // is coincident with the box frame's origin.
-  const double Lx = 2;
-  const double Ly = 1;
-  const double Lz = 3;
-  const geometry::Box box(Lx, Ly, Lz);
-  const SpatialInertia<double> M_BBo_B =
-    SpatialInertia<double>::SolidBoxWithDensity(kDensity, Lx, Ly, Lz);
+    // Note: this is the same box B used in the Box test above.
+    // Note: p_BoBcm = [0, 0, 0]. The box is defined such that its center of mass
+    // is coincident with the box frame's origin.
+    const double Lx = 2;
+    const double Ly = 1;
+    const double Lz = 3;
+    const geometry::Box box(Lx, Ly, Lz);
+    const SpatialInertia<double> M_BBo_B = SpatialInertia<double>::SolidBoxWithDensity(kDensity, Lx, Ly, Lz);
 
-  {
-    // Mesh posed in its frame the same as the solid box is in its own frame.
-    // We use a coarse resolution hint simply to reduce the cost of the test.
-    const double resolution_hint = std::max({Lx, Ly, Lz});
-    const geometry::TriangleSurfaceMesh<double> mesh =
-        geometry::internal::MakeBoxSurfaceMesh<double>(box, resolution_hint);
+    {
+        // Mesh posed in its frame the same as the solid box is in its own frame.
+        // We use a coarse resolution hint simply to reduce the cost of the test.
+        const double resolution_hint = std::max({Lx, Ly, Lz});
+        const geometry::TriangleSurfaceMesh<double> mesh =
+                geometry::internal::MakeBoxSurfaceMesh<double>(box, resolution_hint);
 
-    EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(mesh, kDensity),
-                                     M_BBo_B, kTol));
-  }
+        EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(mesh, kDensity), M_BBo_B, kTol));
+    }
 
-  {
-    // We'll reposition the mesh's vertices so that the "bulk" of the geometry
-    // is posed differently from the solid box (in each geometry's frame). By
-    // transforming the set of vertices rigidly, we preserve the total volume
-    // (and, therefore, mass) but its center of mass and unit inertia, in its
-    // frame M, will be different from the box's in its own frame B. With
-    // X_BM = I, the two bodies' quantities are related as follows:
-    //
-    //     p_MMcm = p_BBo + p_BcmMcm  // R_BM = I and Bo = Bcm.
-    //            = p_BcmMcm          // Bo = Bcm --> p_BBo = [0, 0, 0].
-    //     G_MMo_M = G_BBo_B re-expressed in M and then shifted to Mcm.
+    {
+        // We'll reposition the mesh's vertices so that the "bulk" of the geometry
+        // is posed differently from the solid box (in each geometry's frame). By
+        // transforming the set of vertices rigidly, we preserve the total volume
+        // (and, therefore, mass) but its center of mass and unit inertia, in its
+        // frame M, will be different from the box's in its own frame B. With
+        // X_BM = I, the two bodies' quantities are related as follows:
+        //
+        //     p_MMcm = p_BBo + p_BcmMcm  // R_BM = I and Bo = Bcm.
+        //            = p_BcmMcm          // Bo = Bcm --> p_BBo = [0, 0, 0].
+        //     G_MMo_M = G_BBo_B re-expressed in M and then shifted to Mcm.
 
-    const Vector3d p_BcmMcm(0.25, 2.3, -5.4);
-    const RotationMatrixd R_MB(
-        AngleAxisd(M_PI / 3, Vector3d(1, 2, 3).normalized()));
-    const RigidTransformd X_MB(R_MB, p_BcmMcm);
+        const Vector3d p_BcmMcm(0.25, 2.3, -5.4);
+        const RotationMatrixd R_MB(AngleAxisd(M_PI / 3, Vector3d(1, 2, 3).normalized()));
+        const RigidTransformd X_MB(R_MB, p_BcmMcm);
 
-    geometry::TriangleSurfaceMesh<double> mesh =
-        geometry::internal::MakeBoxSurfaceMesh<double>(box, 5);
-    mesh.TransformVertices(X_MB);
+        geometry::TriangleSurfaceMesh<double> mesh = geometry::internal::MakeBoxSurfaceMesh<double>(box, 5);
+        mesh.TransformVertices(X_MB);
 
-    const double mass = M_BBo_B.get_mass();
-    const UnitInertia<double> G_BBo_B = M_BBo_B.get_unit_inertia();
-    const UnitInertia<double> G_BBo_M = G_BBo_B.ReExpress(R_MB);
-    const UnitInertia<double> G_MMo_M =
-        G_BBo_M.ShiftFromCenterOfMass(p_BcmMcm);
+        const double mass = M_BBo_B.get_mass();
+        const UnitInertia<double> G_BBo_B = M_BBo_B.get_unit_inertia();
+        const UnitInertia<double> G_BBo_M = G_BBo_B.ReExpress(R_MB);
+        const UnitInertia<double> G_MMo_M = G_BBo_M.ShiftFromCenterOfMass(p_BcmMcm);
 
-    // The vertex transformation introduces precision loss, requiring a larger
-    // tolerance.
-    EXPECT_TRUE(SpatialInertiasEqual(
-        CalcSpatialInertia(mesh, kDensity),
-        SpatialInertia<double>(mass, p_BcmMcm, G_MMo_M), 8 * kTol));
-  }
+        // The vertex transformation introduces precision loss, requiring a larger
+        // tolerance.
+        EXPECT_TRUE(SpatialInertiasEqual(CalcSpatialInertia(mesh, kDensity),
+                                         SpatialInertia<double>(mass, p_BcmMcm, G_MMo_M), 8 * kTol));
+    }
 }
 
 }  // namespace

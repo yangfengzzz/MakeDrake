@@ -19,32 +19,32 @@ enum class UvState { kNone, kFull, kPartial };
 /* Specifies a mesh material as currently supported by Drake. We expect this
  definition to grow with time. */
 struct RenderMaterial {
-  /* The diffuse appearance at a point on a geometry surface is defined by the
-   channel-wise product of the `diffuse` and the image color of `diffuse_map`
-   applied as a texture according to the geometry's texture coordinates. If
-   `diffuse_map` is empty, it acts as the multiplicative identity. */
-  Rgba diffuse;
+    /* The diffuse appearance at a point on a geometry surface is defined by the
+     channel-wise product of the `diffuse` and the image color of `diffuse_map`
+     applied as a texture according to the geometry's texture coordinates. If
+     `diffuse_map` is empty, it acts as the multiplicative identity. */
+    Rgba diffuse;
 
-  /* The optional texture to use as diffuse map. For universal compatibility,
-   it is an image file path. However, in RenderEngine implementations that
-   construct and consume their own %RenderMaterial instances, the file path
-   can be replaced with an arbitrary string which the RenderEngine
-   implementation knows how to map to an actual texture. Such %RenderMaterial
-   instances should be kept hidden within those implementations.
+    /* The optional texture to use as diffuse map. For universal compatibility,
+     it is an image file path. However, in RenderEngine implementations that
+     construct and consume their own %RenderMaterial instances, the file path
+     can be replaced with an arbitrary string which the RenderEngine
+     implementation knows how to map to an actual texture. Such %RenderMaterial
+     instances should be kept hidden within those implementations.
 
-   Regardless of how a non-empty string is interpreted, an empty string always
-   means no diffuse map. */
-  std::string diffuse_map;
+     Regardless of how a non-empty string is interpreted, an empty string always
+     means no diffuse map. */
+    std::string diffuse_map;
 
-  /* OpenGL defines image origin at the bottom-left corner of the texture. Some
-   geometry formats (e.g., glTF), define the origin at the top-left corner.
-   When set to true, the texture coordinates need to be flipped in the y
-   direction for this material's texture to render correctly. */
-  bool flip_y{false};
+    /* OpenGL defines image origin at the bottom-left corner of the texture. Some
+     geometry formats (e.g., glTF), define the origin at the top-left corner.
+     When set to true, the texture coordinates need to be flipped in the y
+     direction for this material's texture to render correctly. */
+    bool flip_y{false};
 
-  /* Whether the material definition comes from the mesh itself, e.g., an .mtl
-   file, as opposed to the user specification or an implied texture. */
-  bool from_mesh_file{false};
+    /* Whether the material definition comes from the mesh itself, e.g., an .mtl
+     file, as opposed to the user specification or an implied texture. */
+    bool from_mesh_file{false};
 };
 
 /* Creates a RenderMaterial with the specified diffuse color.
@@ -60,9 +60,9 @@ RenderMaterial MakeDiffuseMaterial(const Rgba& diffuse);
 /* Dispatches a warning to the given diagnostic policy if the props contain a
  material definition. It is assumed an intrinsic material has already been found
  for the named mesh. */
-void MaybeWarnForRedundantMaterial(
-    const GeometryProperties& props, std::string_view mesh_name,
-    const drake::internal::DiagnosticPolicy& policy);
+void MaybeWarnForRedundantMaterial(const GeometryProperties& props,
+                                   std::string_view mesh_name,
+                                   const drake::internal::DiagnosticPolicy& policy);
 
 /* If a mesh definition doesn't include a single material (e.g., as in an .mtl
  file for an .obj mesh), this function applies a cascading priority for
@@ -89,10 +89,11 @@ void MaybeWarnForRedundantMaterial(
 
  @pre The mesh (named by `mesh_filename`) is a valid mesh and did not have an
       acceptable material definition). */
-std::optional<RenderMaterial> MaybeMakeMeshFallbackMaterial(
-    const GeometryProperties& props, const std::filesystem::path& mesh_path,
-    const std::optional<Rgba>& default_diffuse,
-    const drake::internal::DiagnosticPolicy& policy, UvState uv_state);
+std::optional<RenderMaterial> MaybeMakeMeshFallbackMaterial(const GeometryProperties& props,
+                                                            const std::filesystem::path& mesh_path,
+                                                            const std::optional<Rgba>& default_diffuse,
+                                                            const drake::internal::DiagnosticPolicy& policy,
+                                                            UvState uv_state);
 
 /* Creates a RenderMaterial from the given set of geometry properties. If no
  material properties exist, a material with the given default diffuse color is
@@ -104,11 +105,10 @@ std::optional<RenderMaterial> MaybeMakeMeshFallbackMaterial(
 
  The `default_diffuse` color is only applied in the total absence of material
  properties. */
-RenderMaterial DefineMaterial(
-    const GeometryProperties& props,
-    const Rgba& default_diffuse = Rgba(1, 1, 1),
-    const drake::internal::DiagnosticPolicy& policy = {},
-    UvState uv_state = UvState::kFull);
+RenderMaterial DefineMaterial(const GeometryProperties& props,
+                              const Rgba& default_diffuse = Rgba(1, 1, 1),
+                              const drake::internal::DiagnosticPolicy& policy = {},
+                              UvState uv_state = UvState::kFull);
 
 }  // namespace internal
 }  // namespace geometry

@@ -34,15 +34,13 @@ class TamsiDriver;
 // into a single struct to confine memory allocations into a single cache entry.
 template <typename T>
 struct AccelerationsDueNonConstraintForcesCache {
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(
-      AccelerationsDueNonConstraintForcesCache);
-  explicit AccelerationsDueNonConstraintForcesCache(
-      const MultibodyTreeTopology& topology);
-  MultibodyForces<T> forces;  // The external forces causing accelerations.
-  ArticulatedBodyInertiaCache<T> abic;   // Articulated body inertia cache.
-  std::vector<SpatialForce<T>> Zb_Bo_W;  // Articulated body biases cache.
-  multibody::internal::ArticulatedBodyForceCache<T> aba_forces;  // ABA cache.
-  multibody::internal::AccelerationKinematicsCache<T> ac;  // Accelerations.
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(AccelerationsDueNonConstraintForcesCache);
+    explicit AccelerationsDueNonConstraintForcesCache(const MultibodyTreeTopology& topology);
+    MultibodyForces<T> forces;                                     // The external forces causing accelerations.
+    ArticulatedBodyInertiaCache<T> abic;                           // Articulated body inertia cache.
+    std::vector<SpatialForce<T>> Zb_Bo_W;                          // Articulated body biases cache.
+    multibody::internal::ArticulatedBodyForceCache<T> aba_forces;  // ABA cache.
+    multibody::internal::AccelerationKinematicsCache<T> ac;        // Accelerations.
 };
 
 // This class implements the interface given by DiscreteUpdateManager so that
@@ -82,111 +80,100 @@ struct AccelerationsDueNonConstraintForcesCache {
 // @tparam_default_scalar
 template <typename T>
 class CompliantContactManager final : public DiscreteUpdateManager<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(CompliantContactManager);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(CompliantContactManager);
 
-  using DiscreteUpdateManager<T>::plant;
+    using DiscreteUpdateManager<T>::plant;
 
-  CompliantContactManager();
+    CompliantContactManager();
 
-  ~CompliantContactManager() final;
+    ~CompliantContactManager() final;
 
-  // Sets the parameters to be used by the SAP solver.
-  // @pre plant().get_discrete_contact_solver() == DiscreteContactSolver::kSap.
-  // @throws if called when instantiated on T = symbolic::Expression.
-  void set_sap_solver_parameters(
-      const contact_solvers::internal::SapSolverParameters& parameters);
+    // Sets the parameters to be used by the SAP solver.
+    // @pre plant().get_discrete_contact_solver() == DiscreteContactSolver::kSap.
+    // @throws if called when instantiated on T = symbolic::Expression.
+    void set_sap_solver_parameters(const contact_solvers::internal::SapSolverParameters& parameters);
 
-  // @returns `true`.
-  bool is_cloneable_to_double() const final;
+    // @returns `true`.
+    bool is_cloneable_to_double() const final;
 
-  // @returns `true`.
-  bool is_cloneable_to_autodiff() const final;
+    // @returns `true`.
+    bool is_cloneable_to_autodiff() const final;
 
-  // @returns `true`.
-  bool is_cloneable_to_symbolic() const final;
+    // @returns `true`.
+    bool is_cloneable_to_symbolic() const final;
 
- private:
-  // TODO(amcastro-tri): Instead of friendship consider another set of class(es)
-  // with tighter functionality. For instance, a class that takes care of
-  // getting proximity properties and creating DiscreteContactPairs.
-  friend class SapDriver<T>;
-  friend class TamsiDriver<T>;
+private:
+    // TODO(amcastro-tri): Instead of friendship consider another set of class(es)
+    // with tighter functionality. For instance, a class that takes care of
+    // getting proximity properties and creating DiscreteContactPairs.
+    friend class SapDriver<T>;
+    friend class TamsiDriver<T>;
 
-  // Struct used to conglomerate the indexes of cache entries declared by the
-  // manager.
-  struct CacheIndexes {
-    systems::CacheIndex non_constraint_forces_accelerations;
-  };
+    // Struct used to conglomerate the indexes of cache entries declared by the
+    // manager.
+    struct CacheIndexes {
+        systems::CacheIndex non_constraint_forces_accelerations;
+    };
 
-  // Allow different specializations to access each other's private data for
-  // scalar conversion.
-  template <typename U>
-  friend class CompliantContactManager;
+    // Allow different specializations to access each other's private data for
+    // scalar conversion.
+    template <typename U>
+    friend class CompliantContactManager;
 
-  // Provide private access for unit testing only.
-  friend class CompliantContactManagerTester;
+    // Provide private access for unit testing only.
+    friend class CompliantContactManagerTester;
 
-  std::unique_ptr<DiscreteUpdateManager<double>> CloneToDouble() const final;
-  std::unique_ptr<DiscreteUpdateManager<AutoDiffXd>> CloneToAutoDiffXd()
-      const final;
-  std::unique_ptr<DiscreteUpdateManager<symbolic::Expression>> CloneToSymbolic()
-      const final;
+    std::unique_ptr<DiscreteUpdateManager<double>> CloneToDouble() const final;
+    std::unique_ptr<DiscreteUpdateManager<AutoDiffXd>> CloneToAutoDiffXd() const final;
+    std::unique_ptr<DiscreteUpdateManager<symbolic::Expression>> CloneToSymbolic() const final;
 
-  void DoExtractModelInfo() final;
+    void DoExtractModelInfo() final;
 
-  void DoDeclareCacheEntries() final;
+    void DoDeclareCacheEntries() final;
 
-  // Computes the effective damping matrix D̃ used in discrete schemes treating
-  // damping terms implicitly. This includes joint damping and reflected
-  // inertias. That is, if R is the diagonal matrix of reflected inertias and D
-  // is the diagonal matrix of joint damping coefficients, then the effective
-  // discrete damping term D̃ is: D̃ = R + δt⋅D.
-  // Since D̃ is diagonal this method returns a VectorX with the diagonal
-  // entries only.
-  VectorX<T> CalcEffectiveDamping(const systems::Context<T>& context) const;
+    // Computes the effective damping matrix D̃ used in discrete schemes treating
+    // damping terms implicitly. This includes joint damping and reflected
+    // inertias. That is, if R is the diagonal matrix of reflected inertias and D
+    // is the diagonal matrix of joint damping coefficients, then the effective
+    // discrete damping term D̃ is: D̃ = R + δt⋅D.
+    // Since D̃ is diagonal this method returns a VectorX with the diagonal
+    // entries only.
+    VectorX<T> CalcEffectiveDamping(const systems::Context<T>& context) const;
 
-  // TODO(amcastro-tri): implement these APIs according to #16955.
-  // @throws For SAP if T = symbolic::Expression.
-  // @throws For TAMSI if T = symbolic::Expression only if the model contains
-  // contact geometry.
-  void DoCalcContactSolverResults(
-      const systems::Context<T>&,
-      contact_solvers::internal::ContactSolverResults<T>*) const final;
-  void DoCalcAccelerationKinematicsCache(
-      const systems::Context<T>&,
-      multibody::internal::AccelerationKinematicsCache<T>*) const final;
-  void DoCalcDiscreteUpdateMultibodyForces(
-      const systems::Context<T>& context,
-      MultibodyForces<T>* forces) const final;
-  void DoCalcActuation(const systems::Context<T>& context,
-                       VectorX<T>* forces) const final;
+    // TODO(amcastro-tri): implement these APIs according to #16955.
+    // @throws For SAP if T = symbolic::Expression.
+    // @throws For TAMSI if T = symbolic::Expression only if the model contains
+    // contact geometry.
+    void DoCalcContactSolverResults(const systems::Context<T>&,
+                                    contact_solvers::internal::ContactSolverResults<T>*) const final;
+    void DoCalcAccelerationKinematicsCache(const systems::Context<T>&,
+                                           multibody::internal::AccelerationKinematicsCache<T>*) const final;
+    void DoCalcDiscreteUpdateMultibodyForces(const systems::Context<T>& context,
+                                             MultibodyForces<T>* forces) const final;
+    void DoCalcActuation(const systems::Context<T>& context, VectorX<T>* forces) const final;
 
-  // Computes non-constraint forces and the accelerations they induce.
-  void CalcAccelerationsDueToNonConstraintForcesCache(
-      const systems::Context<T>& context,
-      AccelerationsDueNonConstraintForcesCache<T>*
-          non_constraint_accelerations_cache) const;
+    // Computes non-constraint forces and the accelerations they induce.
+    void CalcAccelerationsDueToNonConstraintForcesCache(
+            const systems::Context<T>& context,
+            AccelerationsDueNonConstraintForcesCache<T>* non_constraint_accelerations_cache) const;
 
-  // Eval version of CalcAccelerationsDueToNonConstraintForcesCache().
-  const multibody::internal::AccelerationKinematicsCache<T>&
-  EvalAccelerationsDueToNonConstraintForcesCache(
-      const systems::Context<T>& context) const;
+    // Eval version of CalcAccelerationsDueToNonConstraintForcesCache().
+    const multibody::internal::AccelerationKinematicsCache<T>& EvalAccelerationsDueToNonConstraintForcesCache(
+            const systems::Context<T>& context) const;
 
-  CacheIndexes cache_indexes_;
-  // Vector of joint damping coefficients, of size plant().num_velocities().
-  // This information is extracted during the call to ExtractModelInfo().
-  VectorX<T> joint_damping_;
+    CacheIndexes cache_indexes_;
+    // Vector of joint damping coefficients, of size plant().num_velocities().
+    // This information is extracted during the call to ExtractModelInfo().
+    VectorX<T> joint_damping_;
 
-  // Specific contact solver drivers are created at ExtractModelInfo() time,
-  // when the manager retrieves modeling information from MultibodyPlant.
-  // Only one of these drivers will be non-nullptr.
-  // When T=Expression, the sap_driver_ is always nullptr, because the driver
-  // doesn't even compile for T=Expression.
-  std::conditional_t<std::is_same_v<T, symbolic::Expression>, void*,
-                     std::unique_ptr<SapDriver<T>>>
-      sap_driver_{};
-  std::unique_ptr<TamsiDriver<T>> tamsi_driver_;
+    // Specific contact solver drivers are created at ExtractModelInfo() time,
+    // when the manager retrieves modeling information from MultibodyPlant.
+    // Only one of these drivers will be non-nullptr.
+    // When T=Expression, the sap_driver_ is always nullptr, because the driver
+    // doesn't even compile for T=Expression.
+    std::conditional_t<std::is_same_v<T, symbolic::Expression>, void*, std::unique_ptr<SapDriver<T>>> sap_driver_{};
+    std::unique_ptr<TamsiDriver<T>> tamsi_driver_;
 };
 
 }  // namespace internal
@@ -194,4 +181,4 @@ class CompliantContactManager final : public DiscreteUpdateManager<T> {
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::multibody::internal::CompliantContactManager);
+        class ::drake::multibody::internal::CompliantContactManager);

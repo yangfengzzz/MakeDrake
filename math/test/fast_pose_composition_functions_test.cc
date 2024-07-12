@@ -69,7 +69,7 @@ struct Param {
     bool inverse{};
 
     /* A printer so that test names are helpful. */
-    friend std::ostream &operator<<(std::ostream &out, const Param &param) {
+    friend std::ostream& operator<<(std::ostream& out, const Param& param) {
         out << param.args;
         if (param.inverse) {
             out << "inv";
@@ -102,7 +102,7 @@ auto MakePermutations() {
 HWY_TARGET_INSTANTIATE_TEST_SUITE_P_T(FastPoseCompositionFunctions, MakePermutations());
 
 TEST_P(FastPoseCompositionFunctions, ComposeRR) {
-    const Param &param = GetParam();
+    const Param& param = GetParam();
 
     // We have three options for input / output objects.
     RotationMatrixd A = MakeA().rotation();
@@ -110,15 +110,15 @@ TEST_P(FastPoseCompositionFunctions, ComposeRR) {
     RotationMatrixd O;
 
     // Choose which arguments we want to pass in this instance.
-    auto lookup = [&A, &B, &O](char abo) -> RotationMatrixd * {
+    auto lookup = [&A, &B, &O](char abo) -> RotationMatrixd* {
         if (abo == 'A') return &A;
         if (abo == 'B') return &B;
         if (abo == 'O') return &O;
         DRAKE_UNREACHABLE();
     };
-    const RotationMatrixd *const arg1 = lookup(param.args.at(0));
-    const RotationMatrixd *const arg2 = lookup(param.args.at(1));
-    RotationMatrixd *const arg3 = lookup(param.args.at(2));
+    const RotationMatrixd* const arg1 = lookup(param.args.at(0));
+    const RotationMatrixd* const arg2 = lookup(param.args.at(1));
+    RotationMatrixd* const arg3 = lookup(param.args.at(2));
 
     // We must prepare the answer prior to calling the function. Some calls will
     // alias their input and output.
@@ -133,7 +133,7 @@ TEST_P(FastPoseCompositionFunctions, ComposeRR) {
 }
 
 TEST_P(FastPoseCompositionFunctions, ComposeXX) {
-    const Param &param = GetParam();
+    const Param& param = GetParam();
 
     // We have three options for input / output objects.
     RigidTransformd A = MakeA();
@@ -141,15 +141,15 @@ TEST_P(FastPoseCompositionFunctions, ComposeXX) {
     RigidTransformd O;
 
     // Choose which arguments we want to pass in this instance.
-    auto lookup = [&A, &B, &O](char abo) -> RigidTransformd * {
+    auto lookup = [&A, &B, &O](char abo) -> RigidTransformd* {
         if (abo == 'A') return &A;
         if (abo == 'B') return &B;
         if (abo == 'O') return &O;
         DRAKE_UNREACHABLE();
     };
-    const RigidTransformd *const arg1 = lookup(param.args.at(0));
-    const RigidTransformd *const arg2 = lookup(param.args.at(1));
-    RigidTransformd *const arg3 = lookup(param.args.at(2));
+    const RigidTransformd* const arg1 = lookup(param.args.at(0));
+    const RigidTransformd* const arg2 = lookup(param.args.at(1));
+    RigidTransformd* const arg3 = lookup(param.args.at(2));
 
     // We must prepare the answer prior to calling the function. Some calls will
     // alias their input and output.

@@ -26,15 +26,14 @@ namespace internal {
         instead of a tetrahedral mesh.
  */
 template <typename T>
-VolumeMesh<T> MakeVolumeMeshFromVtk(const std::filesystem::path& filename,
-                                    double scale);
+VolumeMesh<T> MakeVolumeMeshFromVtk(const std::filesystem::path& filename, double scale);
 
 /* Overload the 2-argument MakeVolumeMeshFromVtk() to take filename and scale
    from either Mesh or Convex shape specifications.
  */
 template <typename T, typename Shape>
 VolumeMesh<T> MakeVolumeMeshFromVtk(const Shape& shape) {
-  return MakeVolumeMeshFromVtk<T>(shape.filename(), shape.scale());
+    return MakeVolumeMeshFromVtk<T>(shape.filename(), shape.scale());
 }
 
 }  // namespace internal

@@ -43,7 +43,7 @@ zero. drake::ExtractDoubleOrThrow() has many specializations, including one for
 @see DiscardGradient(), drake::ExtractDoubleOrThrow() */
 template <typename Derived>
 MatrixLikewise<typename Derived::Scalar::Scalar, Derived> ExtractValue(
-        const Eigen::MatrixBase<Derived> &auto_diff_matrix) {
+        const Eigen::MatrixBase<Derived>& auto_diff_matrix) {
     MatrixLikewise<typename Derived::Scalar::Scalar, Derived> value(auto_diff_matrix.rows(), auto_diff_matrix.cols());
     for (int i = 0; i < auto_diff_matrix.rows(); ++i) {
         for (int j = 0; j < auto_diff_matrix.cols(); ++j) {
@@ -69,7 +69,7 @@ See ExtractValue() for a note on similar Drake functions.
 
 @see ExtractValue(), DiscardZeroGradient() */
 template <typename Derived>
-decltype(auto) DiscardGradient(const Eigen::MatrixBase<Derived> &matrix) {
+decltype(auto) DiscardGradient(const Eigen::MatrixBase<Derived>& matrix) {
     if constexpr (std::is_same_v<typename Derived::Scalar, double>) {
         return matrix;
     } else {
@@ -101,10 +101,10 @@ storage order of the two must match.
 
 @exclude_from_pydrake_mkdoc{Not bound in pydrake.} */
 template <typename Derived, typename DerivedAutoDiff>
-void InitializeAutoDiff(const Eigen::MatrixBase<Derived> &value,
+void InitializeAutoDiff(const Eigen::MatrixBase<Derived>& value,
                         std::optional<int> num_derivatives,
                         std::optional<int> deriv_num_start,
-                        Eigen::MatrixBase<DerivedAutoDiff> *auto_diff_matrix) {
+                        Eigen::MatrixBase<DerivedAutoDiff>* auto_diff_matrix) {
     // Any fixed-size dimension of auto_diff_matrix must match the
     // corresponding fixed-size dimension of value. Any dynamic-size
     // dimension must be dynamic in both matrices.
@@ -131,7 +131,7 @@ void InitializeAutoDiff(const Eigen::MatrixBase<Derived> &value,
 
 @exclude_from_pydrake_mkdoc{Not bound in pydrake.} */
 template <typename Derived, typename DerivedAutoDiff>
-void InitializeAutoDiff(const Eigen::MatrixBase<Derived> &value, Eigen::MatrixBase<DerivedAutoDiff> *auto_diff_matrix) {
+void InitializeAutoDiff(const Eigen::MatrixBase<Derived>& value, Eigen::MatrixBase<DerivedAutoDiff>* auto_diff_matrix) {
     InitializeAutoDiff(value, {}, {}, auto_diff_matrix);
 }
 
@@ -163,7 +163,7 @@ that the derivative numbers count up using the _storage order_ of `value(i)`.
 
 @pydrake_mkdoc_identifier{just_value} */
 template <int nq = Eigen::Dynamic, typename Derived>
-AutoDiffMatrixType<Derived, nq> InitializeAutoDiff(const Eigen::MatrixBase<Derived> &value,
+AutoDiffMatrixType<Derived, nq> InitializeAutoDiff(const Eigen::MatrixBase<Derived>& value,
                                                    std::optional<int> num_derivatives = {},
                                                    std::optional<int> deriv_num_start = {}) {
     AutoDiffMatrixType<Derived, nq> auto_diff_matrix(value.rows(), value.cols());
@@ -190,7 +190,7 @@ InitializeAutoDiff() for that matrix), and so on for subsequent arguments.
 @returns a tuple of properly initialized AutoDiff matrices corresponding to
     `args` */
 template <typename... Deriveds>
-auto InitializeAutoDiffTuple(const Eigen::MatrixBase<Deriveds> &...args) {
+auto InitializeAutoDiffTuple(const Eigen::MatrixBase<Deriveds>&... args) {
     // Compute the total compile-time size of all args (or Dynamic, if unknown).
     // Refer to https://en.cppreference.com/w/cpp/language/fold for the syntax.
     constexpr int nq = ((Deriveds::SizeAtCompileTime != Eigen::Dynamic) && ...)
@@ -213,7 +213,7 @@ auto InitializeAutoDiffTuple(const Eigen::MatrixBase<Deriveds> &...args) {
     // Set the values and gradients of the result using InitializeAutoDiff from
     // each Matrix in 'args...'. This is a "constexpr for" loop for 0 <= I < N.
     auto args_tuple = std::forward_as_tuple(args...);
-    [&]<size_t... I>(std::integer_sequence<size_t, I...> &&) {
+    [&]<size_t... I>(std::integer_sequence<size_t, I...>&&) {
         (InitializeAutoDiff(std::get<I>(args_tuple), num_derivatives, std::get<I>(deriv_num_starts),
                             &std::get<I>(result)),
          ...);

@@ -22,77 +22,71 @@ namespace multibody {
 /// @tparam_default_scalar
 template <typename T>
 class RevoluteSpring final : public ForceElement<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(RevoluteSpring);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(RevoluteSpring);
 
-  /// Constructor for a spring attached to the given joint
-  /// @param[in] nominal_angle
-  ///   The nominal angle of the spring  θ₀, in radians, at which the spring
-  ///   applies no moment.
-  /// @param[in] stiffness
-  ///   The stiffness k of the spring in N⋅m/rad.
-  /// @throws std::exception if `stiffness` is negative.
-  RevoluteSpring(const RevoluteJoint<T>& joint, double nominal_angle,
-                 double stiffness);
+    /// Constructor for a spring attached to the given joint
+    /// @param[in] nominal_angle
+    ///   The nominal angle of the spring  θ₀, in radians, at which the spring
+    ///   applies no moment.
+    /// @param[in] stiffness
+    ///   The stiffness k of the spring in N⋅m/rad.
+    /// @throws std::exception if `stiffness` is negative.
+    RevoluteSpring(const RevoluteJoint<T>& joint, double nominal_angle, double stiffness);
 
-  ~RevoluteSpring() override;
+    ~RevoluteSpring() override;
 
-  const RevoluteJoint<T>& joint() const;
+    const RevoluteJoint<T>& joint() const;
 
-  double nominal_angle() const { return nominal_angle_; }
+    double nominal_angle() const { return nominal_angle_; }
 
-  double stiffness() const { return stiffness_; }
+    double stiffness() const { return stiffness_; }
 
-  T CalcPotentialEnergy(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>& pc) const override;
+    T CalcPotentialEnergy(const systems::Context<T>& context,
+                          const internal::PositionKinematicsCache<T>& pc) const override;
 
-  T CalcConservativePower(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>& pc,
-      const internal::VelocityKinematicsCache<T>& vc) const override;
+    T CalcConservativePower(const systems::Context<T>& context,
+                            const internal::PositionKinematicsCache<T>& pc,
+                            const internal::VelocityKinematicsCache<T>& vc) const override;
 
-  T CalcNonConservativePower(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>& pc,
-      const internal::VelocityKinematicsCache<T>& vc) const override;
+    T CalcNonConservativePower(const systems::Context<T>& context,
+                               const internal::PositionKinematicsCache<T>& pc,
+                               const internal::VelocityKinematicsCache<T>& vc) const override;
 
- protected:
-  void DoCalcAndAddForceContribution(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>& pc,
-      const internal::VelocityKinematicsCache<T>& vc,
-      MultibodyForces<T>* forces) const override;
+protected:
+    void DoCalcAndAddForceContribution(const systems::Context<T>& context,
+                                       const internal::PositionKinematicsCache<T>& pc,
+                                       const internal::VelocityKinematicsCache<T>& vc,
+                                       MultibodyForces<T>* forces) const override;
 
-  std::unique_ptr<ForceElement<double>> DoCloneToScalar(
-      const internal::MultibodyTree<double>& tree_clone) const override;
+    std::unique_ptr<ForceElement<double>> DoCloneToScalar(
+            const internal::MultibodyTree<double>& tree_clone) const override;
 
-  std::unique_ptr<ForceElement<AutoDiffXd>> DoCloneToScalar(
-      const internal::MultibodyTree<AutoDiffXd>& tree_clone) const override;
+    std::unique_ptr<ForceElement<AutoDiffXd>> DoCloneToScalar(
+            const internal::MultibodyTree<AutoDiffXd>& tree_clone) const override;
 
-  std::unique_ptr<ForceElement<symbolic::Expression>> DoCloneToScalar(
-      const internal::MultibodyTree<symbolic::Expression>&) const override;
+    std::unique_ptr<ForceElement<symbolic::Expression>> DoCloneToScalar(
+            const internal::MultibodyTree<symbolic::Expression>&) const override;
 
- private:
-  // Allow different specializations to access each other's private data for
-  // scalar conversion.
-  template <typename U> friend class RevoluteSpring;
+private:
+    // Allow different specializations to access each other's private data for
+    // scalar conversion.
+    template <typename U>
+    friend class RevoluteSpring;
 
-  RevoluteSpring(ModelInstanceIndex model_instance, JointIndex joint_index,
-                 double nominal_angle, double stiffness);
+    RevoluteSpring(ModelInstanceIndex model_instance, JointIndex joint_index, double nominal_angle, double stiffness);
 
-  // Helper method to make a clone templated on ToScalar().
-  template <typename ToScalar>
-  std::unique_ptr<ForceElement<ToScalar>> TemplatedDoCloneToScalar(
-      const internal::MultibodyTree<ToScalar>& tree_clone) const;
+    // Helper method to make a clone templated on ToScalar().
+    template <typename ToScalar>
+    std::unique_ptr<ForceElement<ToScalar>> TemplatedDoCloneToScalar(
+            const internal::MultibodyTree<ToScalar>& tree_clone) const;
 
-  const JointIndex joint_index_;
-  double nominal_angle_;
-  double stiffness_;
+    const JointIndex joint_index_;
+    double nominal_angle_;
+    double stiffness_;
 };
 
 }  // namespace multibody
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::multibody::RevoluteSpring);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::multibody::RevoluteSpring);

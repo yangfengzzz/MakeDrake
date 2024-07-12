@@ -34,37 +34,35 @@ discrete_systems.
 */
 template <typename T>
 class DiscreteTimeIntegrator final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiscreteTimeIntegrator);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiscreteTimeIntegrator);
 
-  /// Constructs an %DiscreteTimeIntegrator system.
-  /// @param size number of elements in the signal to be processed.
-  /// @param time_step the discrete time step.
-  /// @pre size > 0. time_step > 0.
-  DiscreteTimeIntegrator(int size, double time_step);
+    /// Constructs an %DiscreteTimeIntegrator system.
+    /// @param size number of elements in the signal to be processed.
+    /// @param time_step the discrete time step.
+    /// @pre size > 0. time_step > 0.
+    DiscreteTimeIntegrator(int size, double time_step);
 
-  /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  template <typename U>
-  explicit DiscreteTimeIntegrator(const DiscreteTimeIntegrator<U>&);
+    /// Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    template <typename U>
+    explicit DiscreteTimeIntegrator(const DiscreteTimeIntegrator<U>&);
 
-  ~DiscreteTimeIntegrator() final;
+    ~DiscreteTimeIntegrator() final;
 
-  /// Sets the value of the integral modifying the state in the context.
-  /// @p value must be a column vector of the appropriate size.
-  void set_integral_value(Context<T>* context,
-                          const Eigen::Ref<const VectorX<T>>& value) const;
+    /// Sets the value of the integral modifying the state in the context.
+    /// @p value must be a column vector of the appropriate size.
+    void set_integral_value(Context<T>* context, const Eigen::Ref<const VectorX<T>>& value) const;
 
-  /// Returns the time_step used by the integrator.
-  double time_step() const { return time_step_; }
+    /// Returns the time_step used by the integrator.
+    double time_step() const { return time_step_; }
 
- private:
-  void Update(const Context<T>& context, DiscreteValues<T>* next_state) const;
+private:
+    void Update(const Context<T>& context, DiscreteValues<T>* next_state) const;
 
-  double time_step_{};
+    double time_step_{};
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::DiscreteTimeIntegrator);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::systems::DiscreteTimeIntegrator);

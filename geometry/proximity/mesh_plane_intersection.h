@@ -46,10 +46,11 @@ namespace internal {
  @pre `tet_index` lies in the range `[0, mesh_M.mesh().num_elements())`.
  */
 template <typename T>
-void SliceTetrahedronWithPlane(
-    int tet_index, const VolumeMesh<double>& mesh_M, const Plane<T>& plane_M,
-    std::vector<Vector3<T>>* polygon_vertices,
-    std::vector<SortedPair<int>>* cut_edges = nullptr);
+void SliceTetrahedronWithPlane(int tet_index,
+                               const VolumeMesh<double>& mesh_M,
+                               const Plane<T>& plane_M,
+                               std::vector<Vector3<T>>* polygon_vertices,
+                               std::vector<SortedPair<int>>* cut_edges = nullptr);
 
 /* Intersects a tetrahedron with a plane; the resulting polygon is passed
  into the provided MeshBuilder.
@@ -100,12 +101,12 @@ void SliceTetrahedronWithPlane(
  @pre `tet_index` lies in the range `[0, field_M.mesh().num_elements())`.
  */
 template <typename MeshBuilder>
-int SliceTetWithPlane(
-    int tet_index, const VolumeMeshFieldLinear<double, double>& field_M,
-    const Plane<typename MeshBuilder::ScalarType>& plane_M,
-    const math::RigidTransform<typename MeshBuilder::ScalarType>& X_WM,
-    MeshBuilder* builder_W,
-    std::unordered_map<SortedPair<int>, int>* cut_edges);
+int SliceTetWithPlane(int tet_index,
+                      const VolumeMeshFieldLinear<double, double>& field_M,
+                      const Plane<typename MeshBuilder::ScalarType>& plane_M,
+                      const math::RigidTransform<typename MeshBuilder::ScalarType>& X_WM,
+                      MeshBuilder* builder_W,
+                      std::unordered_map<SortedPair<int>, int>* cut_edges);
 
 /* Computes a ContactSurface by intersecting a plane with a set of tetrahedra
  drawn from the given volume mesh (and its pressure field). The indicated
@@ -136,13 +137,13 @@ int SliceTetWithPlane(
        mesh_M.
 */
 template <typename MeshBuilder>
-std::unique_ptr<ContactSurface<typename MeshBuilder::ScalarType>>
-ComputeContactSurface(
-    GeometryId mesh_id,
-    const VolumeMeshFieldLinear<double, double>& mesh_field_M,
-    GeometryId plane_id, const Plane<typename MeshBuilder::ScalarType>& plane_M,
-    const std::vector<int>& tet_indices,
-    const math::RigidTransform<typename MeshBuilder::ScalarType>& X_WM);
+std::unique_ptr<ContactSurface<typename MeshBuilder::ScalarType>> ComputeContactSurface(
+        GeometryId mesh_id,
+        const VolumeMeshFieldLinear<double, double>& mesh_field_M,
+        GeometryId plane_id,
+        const Plane<typename MeshBuilder::ScalarType>& plane_M,
+        const std::vector<int>& tet_indices,
+        const math::RigidTransform<typename MeshBuilder::ScalarType>& X_WM);
 
 // TODO(SeanCurtis-TRI): This is, in some sense, the "public" api. It refers to
 //  half spaces. Does it belong in this file? Does it belong elsewhere? At the
@@ -174,13 +175,14 @@ ComputeContactSurface(
  @tparam_nonsymbolic_scalar
  */
 template <typename T>
-std::unique_ptr<ContactSurface<T>>
-ComputeContactSurfaceFromSoftVolumeRigidHalfSpace(
-    const GeometryId id_S, const VolumeMeshFieldLinear<double, double>& field_S,
-    const Bvh<Obb, VolumeMesh<double>>& bvh_S,
-    const math::RigidTransform<T>& X_WS, const GeometryId id_R,
-    const math::RigidTransform<T>& X_WR,
-    HydroelasticContactRepresentation representation);
+std::unique_ptr<ContactSurface<T>> ComputeContactSurfaceFromSoftVolumeRigidHalfSpace(
+        const GeometryId id_S,
+        const VolumeMeshFieldLinear<double, double>& field_S,
+        const Bvh<Obb, VolumeMesh<double>>& bvh_S,
+        const math::RigidTransform<T>& X_WS,
+        const GeometryId id_R,
+        const math::RigidTransform<T>& X_WR,
+        HydroelasticContactRepresentation representation);
 
 }  // namespace internal
 }  // namespace geometry

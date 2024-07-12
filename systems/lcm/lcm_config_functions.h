@@ -28,9 +28,8 @@ aliases into the builder (and then eventually, the diagram).
 by drivers, sensors, etc.
 
 @exclude_from_pydrake_mkdoc{Cannot overload on dict value type.} */
-LcmBuses ApplyLcmBusConfig(
-    const std::map<std::string, drake::lcm::DrakeLcmParams>& lcm_buses,
-    systems::DiagramBuilder<double>* builder);
+LcmBuses ApplyLcmBusConfig(const std::map<std::string, drake::lcm::DrakeLcmParams>& lcm_buses,
+                           systems::DiagramBuilder<double>* builder);
 
 /** Given LCM bus names and (nullable) parameters, adds an LcmInterfaceSystem
 within the given diagram builder for each bus, and returns an LcmBuses object
@@ -52,10 +51,8 @@ will _not_ be pumped.
 
 @param lcm_buses A map of {bus_name: params} for LCM transceivers, to be used
 by drivers, sensors, etc. */
-LcmBuses ApplyLcmBusConfig(
-    const std::map<std::string, std::optional<drake::lcm::DrakeLcmParams>>&
-        lcm_buses,
-    systems::DiagramBuilder<double>* builder);
+LcmBuses ApplyLcmBusConfig(const std::map<std::string, std::optional<drake::lcm::DrakeLcmParams>>& lcm_buses,
+                           systems::DiagramBuilder<double>* builder);
 
 /** (Advanced) Returns an LCM interface based on a convenient set of heuristics.
 
@@ -77,10 +74,11 @@ DiagramBuilder or a Diagram) and is never nullptr.
 @param lcm_buses can be null
 @param builder must not be null
 */
-drake::lcm::DrakeLcmInterface* FindOrCreateLcmBus(
-    drake::lcm::DrakeLcmInterface* forced_result, const LcmBuses* lcm_buses,
-    DiagramBuilder<double>* builder, std::string_view description_of_caller,
-    const std::string& bus_name);
+drake::lcm::DrakeLcmInterface* FindOrCreateLcmBus(drake::lcm::DrakeLcmInterface* forced_result,
+                                                  const LcmBuses* lcm_buses,
+                                                  DiagramBuilder<double>* builder,
+                                                  std::string_view description_of_caller,
+                                                  const std::string& bus_name);
 
 }  // namespace lcm
 }  // namespace systems

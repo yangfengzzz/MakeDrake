@@ -27,17 +27,23 @@ namespace internal {
 // described here :
 // https://www.gurobi.com/documentation/10.0/refman/error_codes.html
 // This function assumes `vars` doesn't contain duplicate variables.
-int AddLinearConstraintNoDuplication(
-    const MathematicalProgram& prog, GRBmodel* model,
-    const Eigen::SparseMatrix<double>& A, const Eigen::VectorXd& lb,
-    const Eigen::VectorXd& ub, const VectorXDecisionVariable& vars,
-    bool is_equality, int* num_gurobi_linear_constraints);
+int AddLinearConstraintNoDuplication(const MathematicalProgram& prog,
+                                     GRBmodel* model,
+                                     const Eigen::SparseMatrix<double>& A,
+                                     const Eigen::VectorXd& lb,
+                                     const Eigen::VectorXd& ub,
+                                     const VectorXDecisionVariable& vars,
+                                     bool is_equality,
+                                     int* num_gurobi_linear_constraints);
 
 // Add the linear constraint lb <= A * vars <= ub to Gurobi model.
-int AddLinearConstraint(const MathematicalProgram& prog, GRBmodel* model,
+int AddLinearConstraint(const MathematicalProgram& prog,
+                        GRBmodel* model,
                         const Eigen::SparseMatrix<double>& A,
-                        const Eigen::VectorXd& lb, const Eigen::VectorXd& ub,
-                        const VectorXDecisionVariable& vars, bool is_equality,
+                        const Eigen::VectorXd& lb,
+                        const Eigen::VectorXd& ub,
+                        const VectorXDecisionVariable& vars,
+                        bool is_equality,
                         int* num_gurobi_linear_constraints);
 
 /*
@@ -59,11 +65,11 @@ int AddLinearConstraint(const MathematicalProgram& prog, GRBmodel* model,
  * constraints stored in the gurobi model.
  */
 template <typename C>
-int AddSecondOrderConeConstraints(
-    const MathematicalProgram& prog,
-    const std::vector<Binding<C>>& second_order_cone_constraints,
-    const std::vector<std::vector<int>>& second_order_cone_new_variable_indices,
-    GRBmodel* model, int* num_gurobi_linear_constraints);
+int AddSecondOrderConeConstraints(const MathematicalProgram& prog,
+                                  const std::vector<Binding<C>>& second_order_cone_constraints,
+                                  const std::vector<std::vector<int>>& second_order_cone_new_variable_indices,
+                                  GRBmodel* model,
+                                  int* num_gurobi_linear_constraints);
 
 // For Lorentz and rotated Lorentz cone constraints
 // Ax + b in (rotated) Lorentz cone, we will introduce new variables z as
@@ -92,12 +98,13 @@ int AddSecondOrderConeConstraints(
 // @param xlow The lower bound of the Gurobi variables.
 // @param xupp The upper bound of the Gurobi variables.
 template <typename C>
-void AddSecondOrderConeVariables(
-    const std::vector<Binding<C>>& second_order_cones,
-    std::vector<bool>* is_new_variable, int* num_gurobi_vars,
-    std::vector<std::vector<int>>* second_order_cone_variable_indices,
-    std::vector<char>* gurobi_var_type, std::vector<double>* xlow,
-    std::vector<double>* xupp);
+void AddSecondOrderConeVariables(const std::vector<Binding<C>>& second_order_cones,
+                                 std::vector<bool>* is_new_variable,
+                                 int* num_gurobi_vars,
+                                 std::vector<std::vector<int>>* second_order_cone_variable_indices,
+                                 std::vector<char>* gurobi_var_type,
+                                 std::vector<double>* xlow,
+                                 std::vector<double>* xupp);
 
 // For an L2 norm cost min |Cx+d|₂, we consider introducing a Lorentz cone
 // constraint as
@@ -114,12 +121,13 @@ void AddSecondOrderConeVariables(
 // variable in the Gurobi model.
 // @param[in/out] xlow The lower bound of the Gurobi variables.
 // @param[in/out] xupp The upper bound of the Gurobi variables.
-void AddL2NormCostVariables(
-    const std::vector<Binding<L2NormCost>>& l2_norm_costs,
-    std::vector<bool>* is_new_variable, int* num_gurobi_vars,
-    std::vector<std::vector<int>>* lorentz_cone_variable_indices,
-    std::vector<char>* gurobi_var_type, std::vector<double>* xlow,
-    std::vector<double>* xupp);
+void AddL2NormCostVariables(const std::vector<Binding<L2NormCost>>& l2_norm_costs,
+                            std::vector<bool>* is_new_variable,
+                            int* num_gurobi_vars,
+                            std::vector<std::vector<int>>* lorentz_cone_variable_indices,
+                            std::vector<char>* gurobi_var_type,
+                            std::vector<double>* xlow,
+                            std::vector<double>* xupp);
 
 // Adds L2 norm cost |Cx+d|₂ to Gurobi.
 // We introduce a Lorentz cone constraint as
@@ -134,9 +142,9 @@ void AddL2NormCostVariables(
 // @param[in/out] num_gurobi_linear_constraints The number of linear constraints
 // in Gurobi before/after calling this function.
 int AddL2NormCosts(const MathematicalProgram& prog,
-                   const std::vector<std::vector<int>>&
-                       l2norm_costs_lorentz_cone_variable_indices,
-                   GRBmodel* model, int* num_gurobi_linear_constraints);
+                   const std::vector<std::vector<int>>& l2norm_costs_lorentz_cone_variable_indices,
+                   GRBmodel* model,
+                   int* num_gurobi_linear_constraints);
 }  // namespace internal
 }  // namespace solvers
 }  // namespace drake

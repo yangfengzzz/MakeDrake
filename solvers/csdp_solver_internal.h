@@ -25,25 +25,29 @@ namespace internal {
  * @p C_csdp, @p rhs_csdp and @p constraints. The memory should be cleared by
  * calling FreeCsdpProblemData().
  */
-void ConvertSparseMatrixFormatToCsdpProblemData(
-    const std::vector<BlockInX>& X_blocks, const Eigen::SparseMatrix<double>& C,
-    const std::vector<Eigen::SparseMatrix<double>> A,
-    const Eigen::VectorXd& rhs, csdp::blockmatrix* C_csdp, double** rhs_csdp,
-    csdp::constraintmatrix** constraints);
+void ConvertSparseMatrixFormatToCsdpProblemData(const std::vector<BlockInX>& X_blocks,
+                                                const Eigen::SparseMatrix<double>& C,
+                                                const std::vector<Eigen::SparseMatrix<double>> A,
+                                                const Eigen::VectorXd& rhs,
+                                                csdp::blockmatrix* C_csdp,
+                                                double** rhs_csdp,
+                                                csdp::constraintmatrix** constraints);
 
 /**
  * Converts to a CSDP problem data if `sdpa_free_format` has no free variables.
  * @throws std::exception if sdpa_free_format has free variables.
  */
-void GenerateCsdpProblemDataWithoutFreeVariables(
-    const SdpaFreeFormat& sdpa_free_format, csdp::blockmatrix* C, double** b,
-    csdp::constraintmatrix** constraints);
+void GenerateCsdpProblemDataWithoutFreeVariables(const SdpaFreeFormat& sdpa_free_format,
+                                                 csdp::blockmatrix* C,
+                                                 double** b,
+                                                 csdp::constraintmatrix** constraints);
 
-void ConvertCsdpBlockMatrixtoEigen(const csdp::blockmatrix& X_csdp,
-                                   Eigen::SparseMatrix<double>* X);
+void ConvertCsdpBlockMatrixtoEigen(const csdp::blockmatrix& X_csdp, Eigen::SparseMatrix<double>* X);
 
-void FreeCsdpProblemData(int num_constraints, csdp::blockmatrix C_csdp,
-                         double* rhs_csdp, csdp::constraintmatrix* constraints);
+void FreeCsdpProblemData(int num_constraints,
+                         csdp::blockmatrix C_csdp,
+                         double* rhs_csdp,
+                         csdp::constraintmatrix* constraints);
 
 /**
  * Csdp internally stores each block of the matrix as an array. This function

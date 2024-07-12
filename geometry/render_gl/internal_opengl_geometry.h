@@ -27,19 +27,19 @@ enum RenderType { kColor = 0, kLabel, kDepth, kTypeCount };
  associated vertex buffer object (VBO). This struct merely communicates how to
  identify and interpret the bytes in that buffer object. */
 struct VertexAttrib {
-  /* The index for this attribute as defined by the shaders. To match the
-   shaders this value must be 0 for position, 1 for normals, and 2 for uvs. */
-  int attribute_index{};
-  /* Number of values per element; e.g., 3 values per position, etc. */
-  int components_per_element{};
-  /* Offset into the corresponding buffer at which this data starts. */
-  int byte_offset{};
-  /* The byte distance between subsequent elements. Zero is a valid value;
-   OpenGL will assume compact representation and use a stride equal to
-   `components_per_element * sizeof("value_type"). */
-  int stride{};
-  /* The numeric type of the single values (e.g., GL_INT, GL_FLOAT, etc.). */
-  int numeric_type{};
+    /* The index for this attribute as defined by the shaders. To match the
+     shaders this value must be 0 for position, 1 for normals, and 2 for uvs. */
+    int attribute_index{};
+    /* Number of values per element; e.g., 3 values per position, etc. */
+    int components_per_element{};
+    /* Offset into the corresponding buffer at which this data starts. */
+    int byte_offset{};
+    /* The byte distance between subsequent elements. Zero is a valid value;
+     OpenGL will assume compact representation and use a stride equal to
+     `components_per_element * sizeof("value_type"). */
+    int stride{};
+    /* The numeric type of the single values (e.g., GL_INT, GL_FLOAT, etc.). */
+    int numeric_type{};
 };
 
 /* The collection of vertex attributes for a single mesh. As with VertexAttrib
@@ -47,9 +47,9 @@ struct VertexAttrib {
  VertexSpec instance. Note, if a particular VertexAttrib is undefined, its
  `components_per_element` will be zero. */
 struct VertexSpec {
-  VertexAttrib positions;
-  VertexAttrib normals;
-  VertexAttrib uvs;
+    VertexAttrib positions;
+    VertexAttrib normals;
+    VertexAttrib uvs;
 };
 
 /* @group Frames, Geometries, and Instances
@@ -138,57 +138,57 @@ struct VertexSpec {
  will be the identity. For meshes from other sources (e.g., glTF files), these
  transforms may be non-identity.  */
 struct OpenGlGeometry {
-  /* Reports true if `this` has been defined with "meaningful" values. In this
-   case, "meaningful" is limited to "not default initialized". It can't know
-   if the values are actually object identifiers in the current OpenGl context.
-   */
-  bool is_defined() const {
-    return vertex_array != kInvalid && vertex_buffer != kInvalid &&
-           index_buffer != kInvalid && v_count >= 0 && index_count >= 0;
-  }
+    /* Reports true if `this` has been defined with "meaningful" values. In this
+     case, "meaningful" is limited to "not default initialized". It can't know
+     if the values are actually object identifiers in the current OpenGl context.
+     */
+    bool is_defined() const {
+        return vertex_array != kInvalid && vertex_buffer != kInvalid && index_buffer != kInvalid && v_count >= 0 &&
+               index_count >= 0;
+    }
 
-  /* Throws an exception with the given `message` if `this` hasn't been
-   populated with meaningful values.
-   @see if_defined().  */
-  void throw_if_undefined(const char* message) const {
-    if (!is_defined()) throw std::logic_error(message);
-  }
+    /* Throws an exception with the given `message` if `this` hasn't been
+     populated with meaningful values.
+     @see if_defined().  */
+    void throw_if_undefined(const char* message) const {
+        if (!is_defined()) throw std::logic_error(message);
+    }
 
-  // TODO(SeanCurtis-TRI): This can't really be a struct; there are invariants
-  // that need to be maintained: vertex_array depends on vertex_buffer,
-  // and index_count needs to be the actual number of indices stored in
-  // index_buffer.
-  GLuint vertex_array{kInvalid};
-  GLuint vertex_buffer{kInvalid};
-  GLuint index_buffer{kInvalid};
+    // TODO(SeanCurtis-TRI): This can't really be a struct; there are invariants
+    // that need to be maintained: vertex_array depends on vertex_buffer,
+    // and index_count needs to be the actual number of indices stored in
+    // index_buffer.
+    GLuint vertex_array{kInvalid};
+    GLuint vertex_buffer{kInvalid};
+    GLuint index_buffer{kInvalid};
 
-  // The number of vertices encoded in `vertex_buffer`.
-  int v_count{};
+    // The number of vertices encoded in `vertex_buffer`.
+    int v_count{};
 
-  // Parameters for glDrawElements(). See
-  // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDrawElements.xhtml
-  int index_count{-1};
-  // The numerical representation of the indices (e.g., u char, u short, u int).
-  GLenum type{};
-  // How the indices should be interpreted (e.g., triangles, triangle strip,
-  // points, etc.)
-  GLenum mode{};
+    // Parameters for glDrawElements(). See
+    // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDrawElements.xhtml
+    int index_count{-1};
+    // The numerical representation of the indices (e.g., u char, u short, u int).
+    GLenum type{};
+    // How the indices should be interpreted (e.g., triangles, triangle strip,
+    // points, etc.)
+    GLenum mode{};
 
-  /* The transform mapping vertex position to the model frame intrinsic to the
-   geometry definition. */
-  Eigen::Matrix4f T_MN{Eigen::Matrix4f::Identity()};
-  /* The transform mapping vertex normals to the model frame intrinsic to the
-   geometry definition. */
-  Eigen::Matrix3f N_MN{Eigen::Matrix3f::Identity()};
+    /* The transform mapping vertex position to the model frame intrinsic to the
+     geometry definition. */
+    Eigen::Matrix4f T_MN{Eigen::Matrix4f::Identity()};
+    /* The transform mapping vertex normals to the model frame intrinsic to the
+     geometry definition. */
+    Eigen::Matrix3f N_MN{Eigen::Matrix3f::Identity()};
 
-  /* Stores the description of the geometry's vertex data so that the arrays
-   can be recreated upon cloning -- clones share the underlying buffer objects
-   but vertex arrays are *not* shared. */
-  VertexSpec spec;
+    /* Stores the description of the geometry's vertex data so that the arrays
+     can be recreated upon cloning -- clones share the underlying buffer objects
+     but vertex arrays are *not* shared. */
+    VertexSpec spec;
 
-  /* The value of an object (array, buffer) that should be considered invalid.
-   */
-  static constexpr GLuint kInvalid = std::numeric_limits<GLuint>::max();
+    /* The value of an object (array, buffer) that should be considered invalid.
+     */
+    static constexpr GLuint kInvalid = std::numeric_limits<GLuint>::max();
 };
 
 /* An instance of a geometry in the renderer - a reference to the underlying
@@ -204,57 +204,58 @@ struct OpenGlGeometry {
  updating the pose of the geometry (X_WG), update the final transforms that
  depend on the instantaneous pose and immutable transforms (see below). */
 struct OpenGlInstance {
-  /* Constructs an instance from a geometry definition, transforms for the
-   geometry's vertex position and normals, and the instance's shader data for
-   depth and label shaders.
+    /* Constructs an instance from a geometry definition, transforms for the
+     geometry's vertex position and normals, and the instance's shader data for
+     depth and label shaders.
 
-   @param g_in        The index of the geometry `this` instantiates.
-   @param scale       The scale to apply to the underlying model geometry to
-                      create the drake geometry: S_GM.
-   @param geo         The geometry this is an instance of.
-   @param color_data  The shader data this instance uses for color images.
-   @param depth_data  The shader data this instance uses for depth images.
-   @param label_data  The shader data this instance uses for label images.
+     @param g_in        The index of the geometry `this` instantiates.
+     @param scale       The scale to apply to the underlying model geometry to
+                        create the drake geometry: S_GM.
+     @param geo         The geometry this is an instance of.
+     @param color_data  The shader data this instance uses for color images.
+     @param depth_data  The shader data this instance uses for depth images.
+     @param label_data  The shader data this instance uses for label images.
 
-   @pre g_in indexes into the geometry referenced by `geo`.
-   @pre The shader program data has valid shader ids.  */
-  OpenGlInstance(int g_in, const Eigen::Vector3f& scale,
-                 const OpenGlGeometry& geo, ShaderProgramData color_data,
-                 ShaderProgramData depth_data, ShaderProgramData label_data)
-      : geometry(g_in) {
-    const Eigen::DiagonalMatrix<float, 4> S_GM(
-        Eigen::Vector4f(scale.x(), scale.y(), scale.z(), 1.0));
-    T_GN = S_GM * geo.T_MN;
-    const Eigen::DiagonalMatrix<float, 3> N_GM(
-        Eigen::Vector3f(1.0 / scale.x(), 1.0 / scale.y(), 1.0 / scale.z()));
-    N_GN = N_GM * geo.N_MN;
-    DRAKE_DEMAND(color_data.shader_id().is_valid());
-    DRAKE_DEMAND(depth_data.shader_id().is_valid());
-    DRAKE_DEMAND(label_data.shader_id().is_valid());
-    shader_data[RenderType::kColor] = std::move(color_data);
-    shader_data[RenderType::kDepth] = std::move(depth_data);
-    shader_data[RenderType::kLabel] = std::move(label_data);
-    DRAKE_DEMAND(geometry >= 0);
-  }
+     @pre g_in indexes into the geometry referenced by `geo`.
+     @pre The shader program data has valid shader ids.  */
+    OpenGlInstance(int g_in,
+                   const Eigen::Vector3f& scale,
+                   const OpenGlGeometry& geo,
+                   ShaderProgramData color_data,
+                   ShaderProgramData depth_data,
+                   ShaderProgramData label_data)
+        : geometry(g_in) {
+        const Eigen::DiagonalMatrix<float, 4> S_GM(Eigen::Vector4f(scale.x(), scale.y(), scale.z(), 1.0));
+        T_GN = S_GM * geo.T_MN;
+        const Eigen::DiagonalMatrix<float, 3> N_GM(Eigen::Vector3f(1.0 / scale.x(), 1.0 / scale.y(), 1.0 / scale.z()));
+        N_GN = N_GM * geo.N_MN;
+        DRAKE_DEMAND(color_data.shader_id().is_valid());
+        DRAKE_DEMAND(depth_data.shader_id().is_valid());
+        DRAKE_DEMAND(label_data.shader_id().is_valid());
+        shader_data[RenderType::kColor] = std::move(color_data);
+        shader_data[RenderType::kDepth] = std::move(depth_data);
+        shader_data[RenderType::kLabel] = std::move(label_data);
+        DRAKE_DEMAND(geometry >= 0);
+    }
 
-  /* This is the index to the OpenGlGeometry stored by RenderEngineGl. */
-  int geometry{};
+    /* This is the index to the OpenGlGeometry stored by RenderEngineGl. */
+    int geometry{};
 
-  /* The immutable transform mapping vertex position to the instance frame.
-   Initialized in constructor. */
-  Eigen::Matrix4f T_GN;
-  /* The pose-dependent transform mapping vertex position to Drake World.
-   RenderEngineGl::DoUpdateVisualPose() is responsible for updating this.  */
-  Eigen::Matrix4f T_WN{Eigen::Matrix4f::Identity()};
+    /* The immutable transform mapping vertex position to the instance frame.
+     Initialized in constructor. */
+    Eigen::Matrix4f T_GN;
+    /* The pose-dependent transform mapping vertex position to Drake World.
+     RenderEngineGl::DoUpdateVisualPose() is responsible for updating this.  */
+    Eigen::Matrix4f T_WN{Eigen::Matrix4f::Identity()};
 
-  /* The immutable transform mapping vertex normals to the instance frame.
-   Initialized in constructor. */
-  Eigen::Matrix3f N_GN;
-  /* The pose-dependent transform mapping vertex normals to Drake World.
-   RenderEngineGl::DoUpdateVisualPose() is responsible for updating this.  */
-  Eigen::Matrix3f N_WN{Eigen::Matrix3f::Identity()};
+    /* The immutable transform mapping vertex normals to the instance frame.
+     Initialized in constructor. */
+    Eigen::Matrix3f N_GN;
+    /* The pose-dependent transform mapping vertex normals to Drake World.
+     RenderEngineGl::DoUpdateVisualPose() is responsible for updating this.  */
+    Eigen::Matrix3f N_WN{Eigen::Matrix3f::Identity()};
 
-  std::array<ShaderProgramData, RenderType::kTypeCount> shader_data;
+    std::array<ShaderProgramData, RenderType::kTypeCount> shader_data;
 };
 
 }  // namespace internal

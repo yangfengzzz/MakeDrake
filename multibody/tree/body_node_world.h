@@ -13,9 +13,8 @@ namespace internal {
 // Base class BodyNode methods are sufficient for this zero-dof node.
 template <typename T>
 class BodyNodeWorld : public BodyNode<T> {
- public:
-  explicit BodyNodeWorld(const RigidBody<T>* body) :
-      BodyNode<T>(nullptr, body, nullptr) {}
+public:
+    explicit BodyNodeWorld(const RigidBody<T>* body) : BodyNode<T>(nullptr, body, nullptr) {}
 };
 
 }  // namespace internal

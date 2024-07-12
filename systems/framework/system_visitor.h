@@ -36,20 +36,20 @@ call Accept on the subsystems.
 */
 template <typename T>
 class SystemVisitor {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(SystemVisitor);
-  virtual ~SystemVisitor() = default;
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(SystemVisitor);
+    virtual ~SystemVisitor() = default;
 
-  /** This method will be called by System<T>::accept() if the System *is not* a
-  Diagram<T>. */
-  virtual void VisitSystem(const System<T>& system) = 0;
+    /** This method will be called by System<T>::accept() if the System *is not* a
+    Diagram<T>. */
+    virtual void VisitSystem(const System<T>& system) = 0;
 
-  /** This method will be called by System<T>::accept() if the System *is* a
-  Diagram<T>. */
-  virtual void VisitDiagram(const Diagram<T>& diagram) = 0;
+    /** This method will be called by System<T>::accept() if the System *is* a
+    Diagram<T>. */
+    virtual void VisitDiagram(const Diagram<T>& diagram) = 0;
 
- protected:
-  SystemVisitor() = default;
+protected:
+    SystemVisitor() = default;
 };
 
 }  // namespace systems

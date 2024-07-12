@@ -30,8 +30,7 @@ dimension for a point constrained to lie within a convex set region.
 maximum values.
 @throws std::exception if dimension is outside the interval
 [0, region.ambient_dimension()). */
-std::pair<double, double> GetMinimumAndMaximumValueAlongDimension(
-    const ConvexSet& region, int dimension);
+std::pair<double, double> GetMinimumAndMaximumValueAlongDimension(const ConvexSet& region, int dimension);
 
 /* Convenience overload to find the minimum and maximum values that can be
 attained along a list of dimensions for a point constrained to lie within a
@@ -44,15 +43,14 @@ describing the minimum and maximum value along the dimension given by index i
 of the input dimensions vector.
 @throws std::exception if any entry of dimensions is outside the interval
 [0, region.ambient_dimension()). */
-std::vector<std::pair<double, double>> GetMinimumAndMaximumValueAlongDimension(
-    const ConvexSet& region, std::vector<int> dimensions);
+std::vector<std::pair<double, double>> GetMinimumAndMaximumValueAlongDimension(const ConvexSet& region,
+                                                                               std::vector<int> dimensions);
 
 /* Helper function to assert that a given list of continuous revolute joint
 indices satisfies the requirements for the constructor to
 GcsTrajectoryOptimization, as well as any static functions that may take in
 such a list. */
-void ThrowsForInvalidContinuousJointsList(
-    int num_positions, const std::vector<int>& continuous_revolute_joints);
+void ThrowsForInvalidContinuousJointsList(int num_positions, const std::vector<int>& continuous_revolute_joints);
 
 /* Given two convex sets A and B with ambient dimension num_positions, we denote
 a subset of those positions as continuous_revolute_joints, and the bounding box
@@ -66,10 +64,10 @@ may occur with continuous revolute joints.
 satisfy the conditions checked by
 internal::ThrowsForInvalidContinuousJointsList.
 */
-Eigen::VectorXd ComputeOffsetContinuousRevoluteJoints(
-    const int num_positions, const std::vector<int>& continuous_revolute_joints,
-    const std::vector<std::pair<double, double>>& continuous_bbox_A,
-    const std::vector<std::pair<double, double>>& continuous_bbox_B);
+Eigen::VectorXd ComputeOffsetContinuousRevoluteJoints(const int num_positions,
+                                                      const std::vector<int>& continuous_revolute_joints,
+                                                      const std::vector<std::pair<double, double>>& continuous_bbox_A,
+                                                      const std::vector<std::pair<double, double>>& continuous_bbox_B);
 }  // namespace internal
 
 /** Given a convex set, and a list of indices corresponding to continuous
@@ -81,9 +79,8 @@ of stricty less than π along each dimension corresponding to a continuous
 revolute joint.
 @throws std::exception if continuous_revolute_joints has repeated entries, or if
 any entry is outside the interval [0, convex_set.ambient_dimension()). */
-bool CheckIfSatisfiesConvexityRadius(
-    const geometry::optimization::ConvexSet& convex_set,
-    const std::vector<int>& continuous_revolute_joints);
+bool CheckIfSatisfiesConvexityRadius(const geometry::optimization::ConvexSet& convex_set,
+                                     const std::vector<int>& continuous_revolute_joints);
 
 /** Partitions a convex set into (smaller) convex sets whose union is the
 original set and that each respect the convexity radius as in
@@ -101,10 +98,9 @@ overlap by ϵ radians along each dimension, for numerical purposes.
 corresponding to continuous revolute joints.
 @throws std::exception if continuous_revolute_joints has repeated entries, or if
 any entry is outside the interval [0, convex_set.ambient_dimension()). */
-geometry::optimization::ConvexSets PartitionConvexSet(
-    const geometry::optimization::ConvexSet& convex_set,
-    const std::vector<int>& continuous_revolute_joints,
-    const double epsilon = 1e-5);
+geometry::optimization::ConvexSets PartitionConvexSet(const geometry::optimization::ConvexSet& convex_set,
+                                                      const std::vector<int>& continuous_revolute_joints,
+                                                      const double epsilon = 1e-5);
 
 // TODO(@cohnt): Call the following function "PartitionConvexSets" instead.
 // Currently // the name is misleading and causes problem in the documentation.
@@ -121,10 +117,9 @@ ambient_dimension.
 corresponding to continuous revolute joints.
 @throws std::exception if continuous_revolute_joints has repeated entries, or if
 any entry is outside the interval [0, ambient_dimension). */
-geometry::optimization::ConvexSets PartitionConvexSet(
-    const geometry::optimization::ConvexSets& convex_sets,
-    const std::vector<int>& continuous_revolute_joints,
-    const double epsilon = 1e-5);
+geometry::optimization::ConvexSets PartitionConvexSet(const geometry::optimization::ConvexSets& convex_sets,
+                                                      const std::vector<int>& continuous_revolute_joints,
+                                                      const double epsilon = 1e-5);
 
 /** Computes the pairwise intersections edges between two lists of convex sets.
 Each edge is a tuple in the form [index_A, index_B, offset_A_to_B], where
@@ -150,8 +145,9 @@ ambient dimension of the convex sets in `convex_sets_A` and `convex_sets_B`.
 @throws if `convex_sets_A` or `convex_sets_B` are empty.
 */
 std::vector<std::tuple<int, int, Eigen::VectorXd>> CalcPairwiseIntersections(
-    const ConvexSets& convex_sets_A, const ConvexSets& convex_sets_B,
-    const std::vector<int>& continuous_revolute_joints);
+        const ConvexSets& convex_sets_A,
+        const ConvexSets& convex_sets_B,
+        const std::vector<int>& continuous_revolute_joints);
 
 /** Convenience overload to compute pairwise intersections within a list of
 convex sets. Equivalent to calling CalcPairwiseIntersections(convex_sets,
@@ -168,8 +164,7 @@ ambient dimension of the convex sets in `convex_sets_A` and `convex_sets_B`.
 @throws if `convex_sets_A` is empty.
 */
 std::vector<std::tuple<int, int, Eigen::VectorXd>> CalcPairwiseIntersections(
-    const ConvexSets& convex_sets,
-    const std::vector<int>& continuous_revolute_joints);
+        const ConvexSets& convex_sets, const std::vector<int>& continuous_revolute_joints);
 
 }  // namespace optimization
 }  // namespace geometry

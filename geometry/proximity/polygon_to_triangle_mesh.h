@@ -13,8 +13,7 @@ namespace internal {
  The triangles will likewise mirror the winding present in the polygon mesh.
 
  @pre Each polygon in poly_mesh is convex. */
-TriangleSurfaceMesh<double> MakeTriangleFromPolygonMesh(
-    const PolygonSurfaceMesh<double>& poly_mesh);
+TriangleSurfaceMesh<double> MakeTriangleFromPolygonMesh(const PolygonSurfaceMesh<double>& poly_mesh);
 
 }  // namespace internal
 }  // namespace geometry

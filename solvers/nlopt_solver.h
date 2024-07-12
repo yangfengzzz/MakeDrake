@@ -13,50 +13,52 @@ namespace solvers {
  * details.
  */
 struct NloptSolverDetails {
-  /// The return status of NLopt solver. Please refer to
-  /// https://nlopt.readthedocs.io/en/latest/NLopt_Reference/#return-values.
-  int status{};
+    /// The return status of NLopt solver. Please refer to
+    /// https://nlopt.readthedocs.io/en/latest/NLopt_Reference/#return-values.
+    int status{};
 };
 
 class NloptSolver final : public SolverBase {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(NloptSolver);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(NloptSolver);
 
-  /// Type of details stored in MathematicalProgramResult.
-  using Details = NloptSolverDetails;
+    /// Type of details stored in MathematicalProgramResult.
+    using Details = NloptSolverDetails;
 
-  NloptSolver();
-  ~NloptSolver() final;
+    NloptSolver();
+    ~NloptSolver() final;
 
-  /** The key name for the double-valued constraint tolerance.*/
-  static std::string ConstraintToleranceName();
+    /** The key name for the double-valued constraint tolerance.*/
+    static std::string ConstraintToleranceName();
 
-  /** The key name for double-valued x relative tolerance.*/
-  static std::string XRelativeToleranceName();
+    /** The key name for double-valued x relative tolerance.*/
+    static std::string XRelativeToleranceName();
 
-  /** The key name for double-valued x absolute tolerance.*/
-  static std::string XAbsoluteToleranceName();
+    /** The key name for double-valued x absolute tolerance.*/
+    static std::string XAbsoluteToleranceName();
 
-  /** The key name for int-valued maximum number of evaluations. */
-  static std::string MaxEvalName();
+    /** The key name for int-valued maximum number of evaluations. */
+    static std::string MaxEvalName();
 
-  /** The key name for the string-valued algorithm. */
-  static std::string AlgorithmName();
+    /** The key name for the string-valued algorithm. */
+    static std::string AlgorithmName();
 
-  /// @name Static versions of the instance methods with similar names.
-  //@{
-  static SolverId id();
-  static bool is_available();
-  static bool is_enabled();
-  static bool ProgramAttributesSatisfied(const MathematicalProgram&);
-  //@}
+    /// @name Static versions of the instance methods with similar names.
+    //@{
+    static SolverId id();
+    static bool is_available();
+    static bool is_enabled();
+    static bool ProgramAttributesSatisfied(const MathematicalProgram&);
+    //@}
 
-  // A using-declaration adds these methods into our class's Doxygen.
-  using SolverBase::Solve;
+    // A using-declaration adds these methods into our class's Doxygen.
+    using SolverBase::Solve;
 
- private:
-  void DoSolve(const MathematicalProgram&, const Eigen::VectorXd&,
-               const SolverOptions&, MathematicalProgramResult*) const final;
+private:
+    void DoSolve(const MathematicalProgram&,
+                 const Eigen::VectorXd&,
+                 const SolverOptions&,
+                 MathematicalProgramResult*) const final;
 };
 
 }  // namespace solvers

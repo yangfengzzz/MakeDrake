@@ -20,46 +20,46 @@ namespace solvers {
  *     [yᵀ, one]
  */
 struct SemidefiniteRelaxationOptions {
-  /** Given a program with the linear constraints Ay ≤ b, sets whether to add
-   * the implied linear constraints [A,-b]X[A,-b]ᵀ ≤ 0 to the semidefinite
-   * relaxation.*/
-  bool add_implied_linear_equality_constraints = true;
+    /** Given a program with the linear constraints Ay ≤ b, sets whether to add
+     * the implied linear constraints [A,-b]X[A,-b]ᵀ ≤ 0 to the semidefinite
+     * relaxation.*/
+    bool add_implied_linear_equality_constraints = true;
 
-  /** Given a program with the linear equality constraints Ay = b, sets whether
-   * to add the implied linear constraints [A, -b]X = 0 to the semidefinite
-   * relaxation.*/
-  bool add_implied_linear_constraints = true;
+    /** Given a program with the linear equality constraints Ay = b, sets whether
+     * to add the implied linear constraints [A, -b]X = 0 to the semidefinite
+     * relaxation.*/
+    bool add_implied_linear_constraints = true;
 
-  // TODO(Alexandre.Amice): change this to true by default.
+    // TODO(Alexandre.Amice): change this to true by default.
 
-  /** Given a program with convex quadratic constraints, sets whether
-   * equivalent rotated second order cone constraints are enforced on the last
-   * column of X in the semidefinite relaxation. This ensures that the last
-   * column of X, which are a relaxation of the original program's variables
-   * satisfy the original progam's quadratic constraints.*/
-  bool preserve_convex_quadratic_constraints = false;
+    /** Given a program with convex quadratic constraints, sets whether
+     * equivalent rotated second order cone constraints are enforced on the last
+     * column of X in the semidefinite relaxation. This ensures that the last
+     * column of X, which are a relaxation of the original program's variables
+     * satisfy the original progam's quadratic constraints.*/
+    bool preserve_convex_quadratic_constraints = false;
 
-  /** Configure the semidefinite relaxation options to provide the strongest
-   * possible semidefinite relaxation that we currently support. This in general
-   * will give the tightest convex relaxation we support, but the longest solve
-   * times.*/
-  void set_to_strongest() {
-    add_implied_linear_equality_constraints = true;
-    add_implied_linear_constraints = true;
-    preserve_convex_quadratic_constraints = true;
-  }
+    /** Configure the semidefinite relaxation options to provide the strongest
+     * possible semidefinite relaxation that we currently support. This in general
+     * will give the tightest convex relaxation we support, but the longest solve
+     * times.*/
+    void set_to_strongest() {
+        add_implied_linear_equality_constraints = true;
+        add_implied_linear_constraints = true;
+        preserve_convex_quadratic_constraints = true;
+    }
 
-  /** Configure the semidefinite relaxation options to provide the weakest
-   * semidefinite relaxation that we currently support. This in general will
-   * create the loosest convex relaxation we support, but the shortest solve
-   * times. This is equivalent to the standard Shor Relaxation (see Quadratic
-   * Optimization Problems by NZ Shor or Semidefinite Programming by
-   * Vandenberghe and Boyd). */
-  void set_to_weakest() {
-    add_implied_linear_equality_constraints = false;
-    add_implied_linear_constraints = false;
-    preserve_convex_quadratic_constraints = false;
-  }
+    /** Configure the semidefinite relaxation options to provide the weakest
+     * semidefinite relaxation that we currently support. This in general will
+     * create the loosest convex relaxation we support, but the shortest solve
+     * times. This is equivalent to the standard Shor Relaxation (see Quadratic
+     * Optimization Problems by NZ Shor or Semidefinite Programming by
+     * Vandenberghe and Boyd). */
+    void set_to_weakest() {
+        add_implied_linear_equality_constraints = false;
+        add_implied_linear_constraints = false;
+        preserve_convex_quadratic_constraints = false;
+    }
 };
 
 // TODO(russt): Consider adding Y as an optional argument return value, to help
@@ -80,9 +80,8 @@ struct SemidefiniteRelaxationOptions {
  @throws std::exception if `prog` has costs and constraints which are not
  linear nor quadratic.
  */
-std::unique_ptr<MathematicalProgram> MakeSemidefiniteRelaxation(
-    const MathematicalProgram& prog,
-    const SemidefiniteRelaxationOptions& options = {});
+std::unique_ptr<MathematicalProgram> MakeSemidefiniteRelaxation(const MathematicalProgram& prog,
+                                                                const SemidefiniteRelaxationOptions& options = {});
 
 /** A version of MakeSemidefiniteRelaxation that allows for specifying the
  * sparsity of the relaxation.
@@ -155,10 +154,9 @@ std::unique_ptr<MathematicalProgram> MakeSemidefiniteRelaxation(
  * @throw std::exception if there is a non-convex cost or constraint whose
  * variables do not intersect with any of the variable groups.
  */
-std::unique_ptr<MathematicalProgram> MakeSemidefiniteRelaxation(
-    const MathematicalProgram& prog,
-    const std::vector<symbolic::Variables>& variable_groups,
-    const SemidefiniteRelaxationOptions& options = {});
+std::unique_ptr<MathematicalProgram> MakeSemidefiniteRelaxation(const MathematicalProgram& prog,
+                                                                const std::vector<symbolic::Variables>& variable_groups,
+                                                                const SemidefiniteRelaxationOptions& options = {});
 
 }  // namespace solvers
 }  // namespace drake

@@ -14,7 +14,7 @@ namespace {
  * sparse matrix is the same as the original one.
  */
 template <typename T, int options>
-void checkTriplet(const Eigen::SparseMatrix<T, options> &sp_mat) {
+void checkTriplet(const Eigen::SparseMatrix<T, options>& sp_mat) {
     auto triplets = SparseMatrixToTriplets(sp_mat);
     Eigen::SparseMatrix<T, options> sp_mat_from_triplets(sp_mat.rows(), sp_mat.cols());
     sp_mat_from_triplets.setFromTriplets(triplets.begin(), triplets.end());

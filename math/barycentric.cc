@@ -36,7 +36,7 @@ void BarycentricMesh<T>::get_mesh_point(int index, EigenPtr<Eigen::VectorXd> poi
     // Iterate through the input dimensions, assigning the value and reducing
     // the index to be relevant only to the remaining dimensions.
     for (int i = 0; i < get_input_size(); i++) {
-        const auto &coords = input_grid_[i];
+        const auto& coords = input_grid_[i];
         const int dim_index = index % coords.size();
         (*point)[i] = *(std::next(input_grid_[i].begin(), dim_index));
         index /= coords.size();  // intentionally truncate to int.
@@ -65,7 +65,7 @@ MatrixX<T> BarycentricMesh<T>::get_all_mesh_points() const {
 }
 
 template <typename T>
-void BarycentricMesh<T>::EvalBarycentricWeights(const Eigen::Ref<const VectorX<T>> &input,
+void BarycentricMesh<T>::EvalBarycentricWeights(const Eigen::Ref<const VectorX<T>>& input,
                                                 EigenPtr<Eigen::VectorXi> mesh_indices,
                                                 EigenPtr<VectorX<T>> weights) const {
     DRAKE_DEMAND(input.size() == static_cast<int>(input_grid_.size()));
@@ -87,7 +87,7 @@ void BarycentricMesh<T>::EvalBarycentricWeights(const Eigen::Ref<const VectorX<T
     // indices.  Set current_index to the "top right" corner index.
     int count = 0;
     for (int i = 0; i < get_input_size(); i++) {
-        const auto &coords = input_grid_[i];
+        const auto& coords = input_grid_[i];
 
         // Skip over singleton dimensions.
         if (coords.size() == 1) continue;
@@ -117,8 +117,8 @@ void BarycentricMesh<T>::EvalBarycentricWeights(const Eigen::Ref<const VectorX<T
             // ... then input is inside the grid.
             has_volume[i] = true;
             right_index = std::distance(coords.begin(), right_iter);
-            const T &right_value = *(right_iter);
-            const T &left_value = *(std::prev(right_iter));
+            const T& right_value = *(right_iter);
+            const T& left_value = *(std::prev(right_iter));
             relative_position[count].first = (input[i] - left_value) / (right_value - left_value);
         }
 
@@ -152,21 +152,21 @@ void BarycentricMesh<T>::EvalBarycentricWeights(const Eigen::Ref<const VectorX<T
 }
 
 template <typename T>
-void BarycentricMesh<T>::Eval(const Eigen::Ref<const MatrixX<T>> &mesh_values,
-                              const Eigen::Ref<const VectorX<T>> &input,
+void BarycentricMesh<T>::Eval(const Eigen::Ref<const MatrixX<T>>& mesh_values,
+                              const Eigen::Ref<const VectorX<T>>& input,
                               EigenPtr<VectorX<T>> output) const {
     EvalWithMixedScalars<T>(mesh_values, input, output);
 }
 
 template <typename T>
-VectorX<T> BarycentricMesh<T>::Eval(const Eigen::Ref<const MatrixX<T>> &mesh_values,
-                                    const Eigen::Ref<const VectorX<T>> &input) const {
+VectorX<T> BarycentricMesh<T>::Eval(const Eigen::Ref<const MatrixX<T>>& mesh_values,
+                                    const Eigen::Ref<const VectorX<T>>& input) const {
     return EvalWithMixedScalars<T>(mesh_values, input);
 }
 
 template <typename T>
 MatrixX<T> BarycentricMesh<T>::MeshValuesFrom(
-        const std::function<VectorX<T>(const Eigen::Ref<const VectorX<T>> &)> &vector_func) const {
+        const std::function<VectorX<T>(const Eigen::Ref<const VectorX<T>>&)>& vector_func) const {
     VectorX<T> sample(get_input_size());
     const int N = get_num_mesh_points();
 

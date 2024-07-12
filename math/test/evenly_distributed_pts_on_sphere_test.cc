@@ -8,7 +8,7 @@ namespace drake {
 namespace math {
 namespace {
 void EvenlyDistributedPtsOnSphereFibonacciTest(int num_samples, double tol) {
-    const auto &pts = UniformPtsOnSphereFibonacci(num_samples);
+    const auto& pts = UniformPtsOnSphereFibonacci(num_samples);
     // Check the size of the output.
     EXPECT_EQ(pts.rows(), 3);
     EXPECT_EQ(pts.cols(), num_samples);
@@ -27,8 +27,8 @@ void EvenlyDistributedPtsOnSphereFibonacciTest(int num_samples, double tol) {
     cones.emplace_back(Eigen::Vector3d(-1.0 / 3, 2.0 / 3, -2.0 / 3), M_PI / 5);
     cones.emplace_back(Eigen::Vector3d(1 / std::sqrt(2), 0, 1 / std::sqrt(2)), M_PI / 3);
     cones.emplace_back(Eigen::Vector3d(1 / std::sqrt(2), -1 / std::sqrt(3), -1 / std::sqrt(6)), M_PI / 4);
-    for (const auto &cone : cones) {
-        const auto &a = cone.first;
+    for (const auto& cone : cones) {
+        const auto& a = cone.first;
         const double theta = cone.second;
         EXPECT_NEAR(a.norm(), 1.0, 1E-6);
         int num_pts_in_cone = 0;

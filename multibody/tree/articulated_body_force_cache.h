@@ -22,58 +22,56 @@ namespace internal {
 // the force bias terms.
 //
 // @tparam_default_scalar
-template<typename T>
+template <typename T>
 class ArticulatedBodyForceCache {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ArticulatedBodyForceCache);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ArticulatedBodyForceCache);
 
-  // Constructs an %ArticulatedBodyForceCache object properly sized to
-  // store the force bias terms for a model with the given `topology`.
-  explicit ArticulatedBodyForceCache(
-      const MultibodyTreeTopology& topology) :
-      num_mobods_(topology.num_mobods()) {
-    Allocate();
-  }
+    // Constructs an %ArticulatedBodyForceCache object properly sized to
+    // store the force bias terms for a model with the given `topology`.
+    explicit ArticulatedBodyForceCache(const MultibodyTreeTopology& topology) : num_mobods_(topology.num_mobods()) {
+        Allocate();
+    }
 
-  // The articulated body inertia residual force `Zplus_PB_W` for this mobilized
-  // body projected across its inboard mobilizer to frame P.
-  const SpatialForce<T>& get_Zplus_PB_W(MobodIndex mobod_index) const {
-    DRAKE_ASSERT(0 <= mobod_index && mobod_index < num_mobods_);
-    return Zplus_PB_W_[mobod_index];
-  }
+    // The articulated body inertia residual force `Zplus_PB_W` for this mobilized
+    // body projected across its inboard mobilizer to frame P.
+    const SpatialForce<T>& get_Zplus_PB_W(MobodIndex mobod_index) const {
+        DRAKE_ASSERT(0 <= mobod_index && mobod_index < num_mobods_);
+        return Zplus_PB_W_[mobod_index];
+    }
 
-  // Mutable version of get_Zplus_PB_W().
-  SpatialForce<T>& get_mutable_Zplus_PB_W(MobodIndex mobod_index) {
-    DRAKE_ASSERT(0 <= mobod_index && mobod_index < num_mobods_);
-    return Zplus_PB_W_[mobod_index];
-  }
+    // Mutable version of get_Zplus_PB_W().
+    SpatialForce<T>& get_mutable_Zplus_PB_W(MobodIndex mobod_index) {
+        DRAKE_ASSERT(0 <= mobod_index && mobod_index < num_mobods_);
+        return Zplus_PB_W_[mobod_index];
+    }
 
-  // The articulated body inertia innovations generalized force `e_B` for this
-  // mobilized body's mobilizer.
-  const VectorUpTo6<T>& get_e_B(MobodIndex mobod_index) const {
-    DRAKE_ASSERT(0 <= mobod_index && mobod_index < num_mobods_);
-    return e_B_[mobod_index];
-  }
+    // The articulated body inertia innovations generalized force `e_B` for this
+    // mobilized body's mobilizer.
+    const VectorUpTo6<T>& get_e_B(MobodIndex mobod_index) const {
+        DRAKE_ASSERT(0 <= mobod_index && mobod_index < num_mobods_);
+        return e_B_[mobod_index];
+    }
 
-  // Mutable version of get_e_B().
-  VectorUpTo6<T>& get_mutable_e_B(MobodIndex mobod_index) {
-    DRAKE_ASSERT(0 <= mobod_index && mobod_index < num_mobods_);
-    return e_B_[mobod_index];
-  }
+    // Mutable version of get_e_B().
+    VectorUpTo6<T>& get_mutable_e_B(MobodIndex mobod_index) {
+        DRAKE_ASSERT(0 <= mobod_index && mobod_index < num_mobods_);
+        return e_B_[mobod_index];
+    }
 
- private:
-  // Allocates resources for this articulated body cache.
-  void Allocate() {
-    Zplus_PB_W_.resize(num_mobods_);
-    e_B_.resize(num_mobods_);
-  }
+private:
+    // Allocates resources for this articulated body cache.
+    void Allocate() {
+        Zplus_PB_W_.resize(num_mobods_);
+        e_B_.resize(num_mobods_);
+    }
 
-  // Number of mobilized bodies in the corresponding MultibodyTree.
-  int num_mobods_{0};
+    // Number of mobilized bodies in the corresponding MultibodyTree.
+    int num_mobods_{0};
 
-  // Pools indexed by MobodIndex.
-  std::vector<SpatialForce<T>> Zplus_PB_W_;
-  std::vector<VectorUpTo6<T>> e_B_;
+    // Pools indexed by MobodIndex.
+    std::vector<SpatialForce<T>> Zplus_PB_W_;
+    std::vector<VectorUpTo6<T>> e_B_;
 };
 
 }  // namespace internal
@@ -81,4 +79,4 @@ class ArticulatedBodyForceCache {
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::multibody::internal::ArticulatedBodyForceCache);
+        class ::drake::multibody::internal::ArticulatedBodyForceCache);

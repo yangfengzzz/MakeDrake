@@ -159,257 +159,241 @@ enum class HydroelasticContactRepresentation { kTriangle, kPolygon };
  */
 template <typename T>
 class ContactSurface {
- public:
-  DRAKE_DECLARE_COPY_AND_MOVE_AND_ASSIGN(ContactSurface);
+public:
+    DRAKE_DECLARE_COPY_AND_MOVE_AND_ASSIGN(ContactSurface);
 
-  /** @name Constructors
+    /** @name Constructors
 
-   The %ContactSurface can be constructed with either a polygon or triangle
-   mesh representation. The constructor invoked determines the representation.
+     The %ContactSurface can be constructed with either a polygon or triangle
+     mesh representation. The constructor invoked determines the representation.
 
-   The general shape of each constructor is identical. They take the unique
-   identifiers for the two geometries in contact, a mesh representation, a
-   field representation, and (optional) gradients of the contacting geometries'
-   pressure fields.
+     The general shape of each constructor is identical. They take the unique
+     identifiers for the two geometries in contact, a mesh representation, a
+     field representation, and (optional) gradients of the contacting geometries'
+     pressure fields.
 
-   @param id_M         The id of the first geometry M.
-   @param id_N         The id of the second geometry N.
-   @param mesh_W       The surface mesh of the contact surface 𝕊ₘₙ between M
-                       and N. The mesh vertices are defined in the world frame.
-   @param e_MN         Represents the scalar field eₘₙ on the surface mesh.
-   @param grad_eM_W    ∇eₘ sampled once per face, expressed in the world frame.
-   @param grad_eN_W    ∇eₙ sampled once per face, expressed in the world frame.
-   @pre The face normals in `mesh_W` point *out of* geometry N and *into* M.
-   @pre If given, `grad_eM_W` and `grad_eN_W` must have as many entries as
-        `mesh_W` has faces and the ith entry in each should correspond to the
-        ith face in `mesh_W`.
-   @note If `id_M > id_N`, the labels will be swapped and the normals of the
-         mesh reversed (to maintain the documented invariants). Comparing the
-         input parameters with the members of the resulting %ContactSurface will
-         reveal if such a swap has occurred. */
-  //@{
+     @param id_M         The id of the first geometry M.
+     @param id_N         The id of the second geometry N.
+     @param mesh_W       The surface mesh of the contact surface 𝕊ₘₙ between M
+                         and N. The mesh vertices are defined in the world frame.
+     @param e_MN         Represents the scalar field eₘₙ on the surface mesh.
+     @param grad_eM_W    ∇eₘ sampled once per face, expressed in the world frame.
+     @param grad_eN_W    ∇eₙ sampled once per face, expressed in the world frame.
+     @pre The face normals in `mesh_W` point *out of* geometry N and *into* M.
+     @pre If given, `grad_eM_W` and `grad_eN_W` must have as many entries as
+          `mesh_W` has faces and the ith entry in each should correspond to the
+          ith face in `mesh_W`.
+     @note If `id_M > id_N`, the labels will be swapped and the normals of the
+           mesh reversed (to maintain the documented invariants). Comparing the
+           input parameters with the members of the resulting %ContactSurface will
+           reveal if such a swap has occurred. */
+    //@{
 
-  /** Constructs a %ContactSurface with a triangle mesh representation. */
-  ContactSurface(GeometryId id_M, GeometryId id_N,
-                 std::unique_ptr<TriangleSurfaceMesh<T>> mesh_W,
-                 std::unique_ptr<TriangleSurfaceMeshFieldLinear<T, T>> e_MN,
-                 std::unique_ptr<std::vector<Vector3<T>>> grad_eM_W = nullptr,
-                 std::unique_ptr<std::vector<Vector3<T>>> grad_eN_W = nullptr)
-      : ContactSurface(id_M, id_N, std::move(mesh_W), std::move(e_MN),
-                       std::move(grad_eM_W), std::move(grad_eN_W), 0) {}
+    /** Constructs a %ContactSurface with a triangle mesh representation. */
+    ContactSurface(GeometryId id_M,
+                   GeometryId id_N,
+                   std::unique_ptr<TriangleSurfaceMesh<T>> mesh_W,
+                   std::unique_ptr<TriangleSurfaceMeshFieldLinear<T, T>> e_MN,
+                   std::unique_ptr<std::vector<Vector3<T>>> grad_eM_W = nullptr,
+                   std::unique_ptr<std::vector<Vector3<T>>> grad_eN_W = nullptr)
+        : ContactSurface(
+                  id_M, id_N, std::move(mesh_W), std::move(e_MN), std::move(grad_eM_W), std::move(grad_eN_W), 0) {}
 
-  /** Constructs a %ContactSurface with a polygonal mesh representation. */
-  ContactSurface(GeometryId id_M, GeometryId id_N,
-                 std::unique_ptr<PolygonSurfaceMesh<T>> mesh_W,
-                 std::unique_ptr<PolygonSurfaceMeshFieldLinear<T, T>> e_MN,
-                 std::unique_ptr<std::vector<Vector3<T>>> grad_eM_W = nullptr,
-                 std::unique_ptr<std::vector<Vector3<T>>> grad_eN_W = nullptr)
-      : ContactSurface(id_M, id_N, std::move(mesh_W), std::move(e_MN),
-                       std::move(grad_eM_W), std::move(grad_eN_W), 0) {}
+    /** Constructs a %ContactSurface with a polygonal mesh representation. */
+    ContactSurface(GeometryId id_M,
+                   GeometryId id_N,
+                   std::unique_ptr<PolygonSurfaceMesh<T>> mesh_W,
+                   std::unique_ptr<PolygonSurfaceMeshFieldLinear<T, T>> e_MN,
+                   std::unique_ptr<std::vector<Vector3<T>>> grad_eM_W = nullptr,
+                   std::unique_ptr<std::vector<Vector3<T>>> grad_eN_W = nullptr)
+        : ContactSurface(
+                  id_M, id_N, std::move(mesh_W), std::move(e_MN), std::move(grad_eM_W), std::move(grad_eN_W), 0) {}
 
-  ~ContactSurface();
+    ~ContactSurface();
 
-  //@}
+    //@}
 
-  /** Returns the geometry id of Geometry M. */
-  GeometryId id_M() const { return id_M_; }
+    /** Returns the geometry id of Geometry M. */
+    GeometryId id_M() const { return id_M_; }
 
-  /** Returns the geometry id of Geometry N. */
-  GeometryId id_N() const { return id_N_; }
+    /** Returns the geometry id of Geometry N. */
+    GeometryId id_N() const { return id_N_; }
 
-  /** @name Representation-independent API
+    /** @name Representation-independent API
 
-   These methods represent sugar which masks the details of the mesh
-   representation. They facilitate querying various mesh quantities that are
-   common to the two representations, so that code can access the properties
-   without worrying about the representation. If necessary, the actual meshes
-   and fields can be accessed directly via the representation-dependent APIs
-   below. */
-  //@{
+     These methods represent sugar which masks the details of the mesh
+     representation. They facilitate querying various mesh quantities that are
+     common to the two representations, so that code can access the properties
+     without worrying about the representation. If necessary, the actual meshes
+     and fields can be accessed directly via the representation-dependent APIs
+     below. */
+    //@{
 
-  int num_faces() const {
-    return is_triangle() ? tri_mesh_W().num_elements()
-                         : poly_mesh_W().num_elements();
-  }
+    int num_faces() const { return is_triangle() ? tri_mesh_W().num_elements() : poly_mesh_W().num_elements(); }
 
-  int num_vertices() const {
-    return is_triangle() ? tri_mesh_W().num_vertices()
-                         : poly_mesh_W().num_vertices();
-  }
+    int num_vertices() const { return is_triangle() ? tri_mesh_W().num_vertices() : poly_mesh_W().num_vertices(); }
 
-  const T& area(int face_index) const {
-    return is_triangle() ? tri_mesh_W().area(face_index)
-                         : poly_mesh_W().area(face_index);
-  }
+    const T& area(int face_index) const {
+        return is_triangle() ? tri_mesh_W().area(face_index) : poly_mesh_W().area(face_index);
+    }
 
-  const T& total_area() const {
-    return is_triangle() ? tri_mesh_W().total_area()
-                         : poly_mesh_W().total_area();
-  }
+    const T& total_area() const { return is_triangle() ? tri_mesh_W().total_area() : poly_mesh_W().total_area(); }
 
-  const Vector3<T>& face_normal(int face_index) const {
-    return is_triangle() ? tri_mesh_W().face_normal(face_index)
-                         : poly_mesh_W().face_normal(face_index);
-  }
+    const Vector3<T>& face_normal(int face_index) const {
+        return is_triangle() ? tri_mesh_W().face_normal(face_index) : poly_mesh_W().face_normal(face_index);
+    }
 
-  // TODO(SeanCurtis-TRI): If TriangleSurfaceMesh pre-computed centroids and
-  //  stored them, this could return a const reference. It's not clear, however,
-  //  that this would get invoked enough to matter.
-  Vector3<T> centroid(int face_index) const {
-    return is_triangle() ? tri_mesh_W().element_centroid(face_index)
-                         : poly_mesh_W().element_centroid(face_index);
-  }
+    // TODO(SeanCurtis-TRI): If TriangleSurfaceMesh pre-computed centroids and
+    //  stored them, this could return a const reference. It's not clear, however,
+    //  that this would get invoked enough to matter.
+    Vector3<T> centroid(int face_index) const {
+        return is_triangle() ? tri_mesh_W().element_centroid(face_index) : poly_mesh_W().element_centroid(face_index);
+    }
 
-  const Vector3<T>& centroid() const {
-    return is_triangle() ? tri_mesh_W().centroid() : poly_mesh_W().centroid();
-  }
+    const Vector3<T>& centroid() const { return is_triangle() ? tri_mesh_W().centroid() : poly_mesh_W().centroid(); }
 
-  //@}
+    //@}
 
-  /** @name Representation-dependent API
+    /** @name Representation-dependent API
 
-   These functions provide insight into what representation the %ContactSurface
-   instance uses, and provide access to the representation-dependent quantities:
-   mesh and field. */
-  //@{
+     These functions provide insight into what representation the %ContactSurface
+     instance uses, and provide access to the representation-dependent quantities:
+     mesh and field. */
+    //@{
 
-  /** Simply reports if this contact surface's mesh representation is triangle.
-   Equivalent to:
+    /** Simply reports if this contact surface's mesh representation is triangle.
+     Equivalent to:
 
-       representation() == HydroelasticContactRepresentation::kTriangle
+         representation() == HydroelasticContactRepresentation::kTriangle
 
-   and offered as convenient sugar. */
-  bool is_triangle() const {
-    return std::holds_alternative<std::unique_ptr<TriangleSurfaceMesh<T>>>(
-        mesh_W_);
-  }
+     and offered as convenient sugar. */
+    bool is_triangle() const { return std::holds_alternative<std::unique_ptr<TriangleSurfaceMesh<T>>>(mesh_W_); }
 
-  /** Reports the representation mode of this contact surface. If accessing the
-   mesh or field directly, the APIs that can be successfully exercised are
-   related to this methods return value. See below. */
-  HydroelasticContactRepresentation representation() const {
-    return is_triangle() ? HydroelasticContactRepresentation::kTriangle
-                         : HydroelasticContactRepresentation::kPolygon;
-  }
+    /** Reports the representation mode of this contact surface. If accessing the
+     mesh or field directly, the APIs that can be successfully exercised are
+     related to this methods return value. See below. */
+    HydroelasticContactRepresentation representation() const {
+        return is_triangle() ? HydroelasticContactRepresentation::kTriangle
+                             : HydroelasticContactRepresentation::kPolygon;
+    }
 
-  /** Returns a reference to the _triangular_ surface mesh whose vertex
-   positions are measured and expressed in the world frame.
-   @pre `is_triangle()` returns `true`. */
-  const TriangleSurfaceMesh<T>& tri_mesh_W() const {
-    DRAKE_DEMAND(is_triangle());
-    return *std::get<std::unique_ptr<TriangleSurfaceMesh<T>>>(mesh_W_);
-  }
+    /** Returns a reference to the _triangular_ surface mesh whose vertex
+     positions are measured and expressed in the world frame.
+     @pre `is_triangle()` returns `true`. */
+    const TriangleSurfaceMesh<T>& tri_mesh_W() const {
+        DRAKE_DEMAND(is_triangle());
+        return *std::get<std::unique_ptr<TriangleSurfaceMesh<T>>>(mesh_W_);
+    }
 
-  /** Returns a reference to the scalar field eₘₙ for the _triangle_ mesh.
-   @pre `is_triangle()` returns `true`. */
-  const TriangleSurfaceMeshFieldLinear<T, T>& tri_e_MN() const {
-    DRAKE_DEMAND(is_triangle());
-    return *std::get<std::unique_ptr<TriangleSurfaceMeshFieldLinear<T, T>>>(
-        e_MN_);
-  }
+    /** Returns a reference to the scalar field eₘₙ for the _triangle_ mesh.
+     @pre `is_triangle()` returns `true`. */
+    const TriangleSurfaceMeshFieldLinear<T, T>& tri_e_MN() const {
+        DRAKE_DEMAND(is_triangle());
+        return *std::get<std::unique_ptr<TriangleSurfaceMeshFieldLinear<T, T>>>(e_MN_);
+    }
 
-  /** Returns a reference to the _polygonal_ surface mesh whose vertex
-   positions are measured and expressed in the world frame.
-   @pre `is_triangle()` returns `false`. */
-  const PolygonSurfaceMesh<T>& poly_mesh_W() const {
-    DRAKE_DEMAND(!is_triangle());
-    return *std::get<std::unique_ptr<PolygonSurfaceMesh<T>>>(mesh_W_);
-  }
+    /** Returns a reference to the _polygonal_ surface mesh whose vertex
+     positions are measured and expressed in the world frame.
+     @pre `is_triangle()` returns `false`. */
+    const PolygonSurfaceMesh<T>& poly_mesh_W() const {
+        DRAKE_DEMAND(!is_triangle());
+        return *std::get<std::unique_ptr<PolygonSurfaceMesh<T>>>(mesh_W_);
+    }
 
-  /** Returns a reference to the scalar field eₘₙ for the _polygonal_ mesh.
-   @pre `is_triangle()` returns `false`. */
-  const PolygonSurfaceMeshFieldLinear<T, T>& poly_e_MN() const {
-    DRAKE_DEMAND(!is_triangle());
-    return *std::get<std::unique_ptr<PolygonSurfaceMeshFieldLinear<T, T>>>(
-        e_MN_);
-  }
+    /** Returns a reference to the scalar field eₘₙ for the _polygonal_ mesh.
+     @pre `is_triangle()` returns `false`. */
+    const PolygonSurfaceMeshFieldLinear<T, T>& poly_e_MN() const {
+        DRAKE_DEMAND(!is_triangle());
+        return *std::get<std::unique_ptr<PolygonSurfaceMeshFieldLinear<T, T>>>(e_MN_);
+    }
 
-  //@}
+    //@}
 
-  /** @name  Evaluation of constituent pressure fields
+    /** @name  Evaluation of constituent pressure fields
 
-   The %ContactSurface *provisionally* includes the gradients of the constituent
-   pressure fields (∇eₘ and ∇eₙ) sampled on the contact surface. In order for
-   these values to be included in an instance, the gradient for the
-   corresponding mesh must be well defined. For example a rigid mesh will not
-   have a well-defined pressure gradient; as stiffness goes to infinity, the
-   geometry becomes rigid and the gradient _direction_ converges to the
-   direction of the rigid mesh's surface normals, but the magnitude goes to
-   infinity, producing a pressure gradient that would be some variant of
-   `<∞, ∞, ∞>`.
+     The %ContactSurface *provisionally* includes the gradients of the constituent
+     pressure fields (∇eₘ and ∇eₙ) sampled on the contact surface. In order for
+     these values to be included in an instance, the gradient for the
+     corresponding mesh must be well defined. For example a rigid mesh will not
+     have a well-defined pressure gradient; as stiffness goes to infinity, the
+     geometry becomes rigid and the gradient _direction_ converges to the
+     direction of the rigid mesh's surface normals, but the magnitude goes to
+     infinity, producing a pressure gradient that would be some variant of
+     `<∞, ∞, ∞>`.
 
-   Accessing the gradient values must be pre-conditioned on a test that the
-   particular instance of %ContactSurface actually contains the gradient data.
-   The presence of gradient data for each geometry must be confirmed separately.
+     Accessing the gradient values must be pre-conditioned on a test that the
+     particular instance of %ContactSurface actually contains the gradient data.
+     The presence of gradient data for each geometry must be confirmed separately.
 
-   The values ∇eₘ and ∇eₘ are piecewise constant over the %ContactSurface and
-   can only be evaluate on a per-face basis.  */
-  //@{
+     The values ∇eₘ and ∇eₘ are piecewise constant over the %ContactSurface and
+     can only be evaluate on a per-face basis.  */
+    //@{
 
-  /** @returns `true` if `this` contains values for ∇eₘ.  */
-  bool HasGradE_M() const { return grad_eM_W_ != nullptr; }
+    /** @returns `true` if `this` contains values for ∇eₘ.  */
+    bool HasGradE_M() const { return grad_eM_W_ != nullptr; }
 
-  /** @returns `true` if `this` contains values for ∇eₙ.  */
-  bool HasGradE_N() const { return grad_eN_W_ != nullptr; }
+    /** @returns `true` if `this` contains values for ∇eₙ.  */
+    bool HasGradE_N() const { return grad_eN_W_ != nullptr; }
 
-  /** Returns the value of ∇eₘ for the face with index `index`.
-   @throws std::exception if HasGradE_M() returns false.
-   @pre `index ∈ [0, mesh().num_faces())`.  */
-  const Vector3<T>& EvaluateGradE_M_W(int index) const;
+    /** Returns the value of ∇eₘ for the face with index `index`.
+     @throws std::exception if HasGradE_M() returns false.
+     @pre `index ∈ [0, mesh().num_faces())`.  */
+    const Vector3<T>& EvaluateGradE_M_W(int index) const;
 
-  /** Returns the value of ∇eₙ for the face with index `index`.
-   @throws std::exception if HasGradE_N() returns false.
-   @pre `index ∈ [0, mesh().num_faces())`.  */
-  const Vector3<T>& EvaluateGradE_N_W(int index) const;
+    /** Returns the value of ∇eₙ for the face with index `index`.
+     @throws std::exception if HasGradE_N() returns false.
+     @pre `index ∈ [0, mesh().num_faces())`.  */
+    const Vector3<T>& EvaluateGradE_N_W(int index) const;
 
-  //@}
+    //@}
 
-  // TODO(#12173): Consider NaN==NaN to be true in equality tests.
-  /** Checks to see whether the given ContactSurface object is equal via deep
-   exact comparison. NaNs are treated as not equal as per the IEEE standard.
+    // TODO(#12173): Consider NaN==NaN to be true in equality tests.
+    /** Checks to see whether the given ContactSurface object is equal via deep
+     exact comparison. NaNs are treated as not equal as per the IEEE standard.
 
-   @param surface The contact surface for comparison.
-   @returns `true` if the given contact surface is equal.
-   */
-  bool Equal(const ContactSurface<T>& surface) const;
+     @param surface The contact surface for comparison.
+     @returns `true` if the given contact surface is equal.
+     */
+    bool Equal(const ContactSurface<T>& surface) const;
 
- private:
-  using MeshVariant = std::variant<std::unique_ptr<TriangleSurfaceMesh<T>>,
-                                   std::unique_ptr<PolygonSurfaceMesh<T>>>;
-  using FieldVariant =
-      std::variant<std::unique_ptr<TriangleSurfaceMeshFieldLinear<T, T>>,
-                   std::unique_ptr<PolygonSurfaceMeshFieldLinear<T, T>>>;
+private:
+    using MeshVariant = std::variant<std::unique_ptr<TriangleSurfaceMesh<T>>, std::unique_ptr<PolygonSurfaceMesh<T>>>;
+    using FieldVariant = std::variant<std::unique_ptr<TriangleSurfaceMeshFieldLinear<T, T>>,
+                                      std::unique_ptr<PolygonSurfaceMeshFieldLinear<T, T>>>;
 
-  // Main delegation constructor. The extra int parameter is to introduce a
-  // disambiguation mechanism.
-  ContactSurface(GeometryId id_M, GeometryId id_N, MeshVariant mesh_W,
-                 FieldVariant e_MN,
-                 std::unique_ptr<std::vector<Vector3<T>>> grad_eM_W,
-                 std::unique_ptr<std::vector<Vector3<T>>> grad_eN_W, int);
+    // Main delegation constructor. The extra int parameter is to introduce a
+    // disambiguation mechanism.
+    ContactSurface(GeometryId id_M,
+                   GeometryId id_N,
+                   MeshVariant mesh_W,
+                   FieldVariant e_MN,
+                   std::unique_ptr<std::vector<Vector3<T>>> grad_eM_W,
+                   std::unique_ptr<std::vector<Vector3<T>>> grad_eN_W,
+                   int);
 
-  // Swaps M and N (modifying the data in place to reflect the change).
-  void SwapMAndN();
+    // Swaps M and N (modifying the data in place to reflect the change).
+    void SwapMAndN();
 
-  // The id of the first geometry M.
-  GeometryId id_M_;
-  // The id of the second geometry N.
-  GeometryId id_N_;
+    // The id of the first geometry M.
+    GeometryId id_M_;
+    // The id of the second geometry N.
+    GeometryId id_N_;
 
-  // The surface mesh of the contact surface 𝕊ₘₙ between M and N.
-  MeshVariant mesh_W_;
+    // The surface mesh of the contact surface 𝕊ₘₙ between M and N.
+    MeshVariant mesh_W_;
 
-  // Represents the scalar field eₘₙ on the surface mesh.
-  FieldVariant e_MN_;
+    // Represents the scalar field eₘₙ on the surface mesh.
+    FieldVariant e_MN_;
 
-  // The gradients of the pressure fields eₘ and eₙ sampled on the contact
-  // surface. There is one gradient value *per contact surface face*.
-  // These quantities may not be defined if the gradient is not well-defined.
-  // See class documentation for elaboration.
-  std::unique_ptr<std::vector<Vector3<T>>> grad_eM_W_;
-  std::unique_ptr<std::vector<Vector3<T>>> grad_eN_W_;
+    // The gradients of the pressure fields eₘ and eₙ sampled on the contact
+    // surface. There is one gradient value *per contact surface face*.
+    // These quantities may not be defined if the gradient is not well-defined.
+    // See class documentation for elaboration.
+    std::unique_ptr<std::vector<Vector3<T>>> grad_eM_W_;
+    std::unique_ptr<std::vector<Vector3<T>>> grad_eN_W_;
 
-  template <typename U>
-  friend class ContactSurfaceTester;
+    template <typename U>
+    friend class ContactSurfaceTester;
 };
 
 // These are cheap enough to be inline for performance.

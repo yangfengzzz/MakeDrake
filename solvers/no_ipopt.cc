@@ -8,21 +8,22 @@ namespace drake {
 namespace solvers {
 
 const char* IpoptSolverDetails::ConvertStatusToString() const {
-  throw std::runtime_error(
-      "The IPOPT bindings were not compiled.  You'll need to use a different "
-      "solver.");
+    throw std::runtime_error(
+            "The IPOPT bindings were not compiled.  You'll need to use a different "
+            "solver.");
 }
 
 bool IpoptSolver::is_available() {
-  return false;
+    return false;
 }
 
-void IpoptSolver::DoSolve(const MathematicalProgram&, const Eigen::VectorXd&,
+void IpoptSolver::DoSolve(const MathematicalProgram&,
+                          const Eigen::VectorXd&,
                           const SolverOptions&,
                           MathematicalProgramResult*) const {
-  throw std::runtime_error(
-      "The IPOPT bindings were not compiled.  You'll need to use a different "
-      "solver.");
+    throw std::runtime_error(
+            "The IPOPT bindings were not compiled.  You'll need to use a different "
+            "solver.");
 }
 
 }  // namespace solvers

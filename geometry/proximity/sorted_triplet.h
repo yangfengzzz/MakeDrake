@@ -26,58 +26,57 @@ namespace internal {
 //           construction.
 template <class T>
 struct SortedTriplet {
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SortedTriplet);
-  static_assert(is_less_than_comparable<T>::value,
-                "SortedTriplet can only be used with types that can be "
-                "compared using the less-than operator (operator<).");
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SortedTriplet);
+    static_assert(is_less_than_comparable<T>::value,
+                  "SortedTriplet can only be used with types that can be "
+                  "compared using the less-than operator (operator<).");
 
-  // The default constructor creates the three objects using their
-  // respective default constructors.
-  SortedTriplet() = default;
+    // The default constructor creates the three objects using their
+    // respective default constructors.
+    SortedTriplet() = default;
 
-  // TODO(DamrongGuoy): Add rvalue reference constructor, permits constructing
-  //  with std::unique_ptr types, for example.
+    // TODO(DamrongGuoy): Add rvalue reference constructor, permits constructing
+    //  with std::unique_ptr types, for example.
 
-  // Constructs a %SortedTriplet from three objects.
-  SortedTriplet(const T& a, const T& b, const T& c) : objects_{a, b, c} {
-    std::stable_sort(objects_.begin(), objects_.end());
-  }
+    // Constructs a %SortedTriplet from three objects.
+    SortedTriplet(const T& a, const T& b, const T& c) : objects_{a, b, c} {
+        std::stable_sort(objects_.begin(), objects_.end());
+    }
 
-  // TODO(DamrongGuoy): Add type-converting copy constructor.
+    // TODO(DamrongGuoy): Add type-converting copy constructor.
 
-  // TODO(DamrongGuoy): Add set(a,b,c) to reset the stored objects.
+    // TODO(DamrongGuoy): Add set(a,b,c) to reset the stored objects.
 
-  // Gets the first (according to `operator<`) of the objects.
-  const T& first() const { return objects_[0]; }
+    // Gets the first (according to `operator<`) of the objects.
+    const T& first() const { return objects_[0]; }
 
-  // Gets the second (according to `operator<`) of the objects.
-  const T& second() const { return objects_[1]; }
+    // Gets the second (according to `operator<`) of the objects.
+    const T& second() const { return objects_[1]; }
 
-  // Gets the third (according to `operator<`) of the objects.
-  const T& third() const { return objects_[2]; }
+    // Gets the third (according to `operator<`) of the objects.
+    const T& third() const { return objects_[2]; }
 
-  // TODO(DamrongGuoy): Add Swap(t) to swap `this` and `t`.
+    // TODO(DamrongGuoy): Add Swap(t) to swap `this` and `t`.
 
-  // TODO(DamrongGuoy): Add hash_append(HashAlgorithm&, SortedTriplet&) to
-  //  implement the hash_append concept.
+    // TODO(DamrongGuoy): Add hash_append(HashAlgorithm&, SortedTriplet&) to
+    //  implement the hash_append concept.
 
- private:
-  // The three objects in the order of T::operator<.
-  std::array<T, 3> objects_{};
+private:
+    // The three objects in the order of T::operator<.
+    std::array<T, 3> objects_{};
 };
 
 // Two triplets of the same type are equal iff their members are equal after
 // sorting.
 template <class T>
 inline bool operator==(const SortedTriplet<T>& x, const SortedTriplet<T>& y) {
-  return !(x < y) && !(y < x);
+    return !(x < y) && !(y < x);
 }
 
 // Compares two triplets using lexicographic ordering.
 template <class T>
 inline bool operator<(const SortedTriplet<T>& x, const SortedTriplet<T>& y) {
-  return std::tie(x.first(), x.second(), x.third()) <
-         std::tie(y.first(), y.second(), y.third());
+    return std::tie(x.first(), x.second(), x.third()) < std::tie(y.first(), y.second(), y.third());
 }
 
 // TODO(DamrongGuoy): Provide operators !=, >, <=, >=.

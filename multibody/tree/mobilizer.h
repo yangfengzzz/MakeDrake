@@ -18,11 +18,13 @@ namespace drake {
 namespace multibody {
 
 // Forward declarations.
-template<typename T> class RigidBody;
+template <typename T>
+class RigidBody;
 
 namespace internal {
 
-template<typename T> class BodyNode;
+template <typename T>
+class BodyNode;
 
 // %Mobilizer is a fundamental object within Drake's multibody engine used to
 // specify the allowed motions between two Frame objects within a
@@ -209,529 +211,480 @@ template<typename T> class BodyNode;
 // @tparam_default_scalar
 template <typename T>
 class Mobilizer : public MultibodyElement<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Mobilizer);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Mobilizer);
 
-  // The minimum amount of information that we need to define a %Mobilizer is
-  // the knowledge of the inboard and outboard frames it connects.
-  // Subclasses of %Mobilizer are therefore required to provide this
-  // information in their respective constructors.
-  // @throws std::exception if `inboard_frame` and `outboard_frame`
-  // reference the same frame object.
-  Mobilizer(const Frame<T>& inboard_frame,
-            const Frame<T>& outboard_frame) :
-      inboard_frame_(inboard_frame), outboard_frame_(outboard_frame) {
-    // Verify they are not the same frame.
-    if (&inboard_frame == &outboard_frame) {
-      throw std::runtime_error(
-          "The provided inboard and outboard frames reference the same object");
+    // The minimum amount of information that we need to define a %Mobilizer is
+    // the knowledge of the inboard and outboard frames it connects.
+    // Subclasses of %Mobilizer are therefore required to provide this
+    // information in their respective constructors.
+    // @throws std::exception if `inboard_frame` and `outboard_frame`
+    // reference the same frame object.
+    Mobilizer(const Frame<T>& inboard_frame, const Frame<T>& outboard_frame)
+        : inboard_frame_(inboard_frame), outboard_frame_(outboard_frame) {
+        // Verify they are not the same frame.
+        if (&inboard_frame == &outboard_frame) {
+            throw std::runtime_error("The provided inboard and outboard frames reference the same object");
+        }
     }
-  }
 
-  ~Mobilizer() override;
+    ~Mobilizer() override;
 
-  /// Returns this element's unique index.
-  MobilizerIndex index() const {
-    return this->template index_impl<MobilizerIndex>();
-  }
+    /// Returns this element's unique index.
+    MobilizerIndex index() const { return this->template index_impl<MobilizerIndex>(); }
 
-  // Returns the number of generalized coordinates granted by this mobilizer.
-  // As an example, consider RevoluteMobilizer, for which
-  // `num_positions() == 1` since RevoluteMobilizer adds a single
-  // generalized coordinate representing the rotational degree of freedom about
-  // a given axis between the inboard and outboard frames. Another example
-  // would be a 6 DOF "free" mobilizer internally using a quaternion
-  // representation to parameterize free rotations and a position vector to
-  // parameterize free translations; this method would return 7 (a quaternion
-  // plus a position vector).
-  // @see num_velocities()
-  virtual int num_positions() const = 0;
+    // Returns the number of generalized coordinates granted by this mobilizer.
+    // As an example, consider RevoluteMobilizer, for which
+    // `num_positions() == 1` since RevoluteMobilizer adds a single
+    // generalized coordinate representing the rotational degree of freedom about
+    // a given axis between the inboard and outboard frames. Another example
+    // would be a 6 DOF "free" mobilizer internally using a quaternion
+    // representation to parameterize free rotations and a position vector to
+    // parameterize free translations; this method would return 7 (a quaternion
+    // plus a position vector).
+    // @see num_velocities()
+    virtual int num_positions() const = 0;
 
-  // Returns the number of generalized velocities granted by this mobilizer.
-  // Given that all physics occurs in the generalized velocities space, the
-  // number of generalized velocities exactly matches the number of degrees of
-  // freedom granted by the mobilizer.
-  // As an example, consider RevoluteMobilizer, for which
-  // `num_velocities() == 1` since for RevoluteMobilizer its one and only
-  // generalized velocity describes the magnitude of the angular velocity about
-  // a given axis between the inboard and outboard frames.
-  // @see num_positions()
-  virtual int num_velocities() const = 0;
+    // Returns the number of generalized velocities granted by this mobilizer.
+    // Given that all physics occurs in the generalized velocities space, the
+    // number of generalized velocities exactly matches the number of degrees of
+    // freedom granted by the mobilizer.
+    // As an example, consider RevoluteMobilizer, for which
+    // `num_velocities() == 1` since for RevoluteMobilizer its one and only
+    // generalized velocity describes the magnitude of the angular velocity about
+    // a given axis between the inboard and outboard frames.
+    // @see num_positions()
+    virtual int num_velocities() const = 0;
 
-  // Returns the index to the first generalized position for this mobilizer
-  // within the vector q of generalized positions for the full multibody
-  // system.
-  int position_start_in_q() const {
-    DRAKE_DEMAND(this->get_parent_tree().topology_is_valid());
-    return topology_.positions_start;
-  }
+    // Returns the index to the first generalized position for this mobilizer
+    // within the vector q of generalized positions for the full multibody
+    // system.
+    int position_start_in_q() const {
+        DRAKE_DEMAND(this->get_parent_tree().topology_is_valid());
+        return topology_.positions_start;
+    }
 
-  // Returns the index to the first generalized velocity for this mobilizer
-  // within the vector v of generalized velocities for the full multibody
-  // system.
-  int velocity_start_in_v() const {
-    DRAKE_DEMAND(this->get_parent_tree().topology_is_valid());
-    return topology_.velocities_start_in_v;
-  }
+    // Returns the index to the first generalized velocity for this mobilizer
+    // within the vector v of generalized velocities for the full multibody
+    // system.
+    int velocity_start_in_v() const {
+        DRAKE_DEMAND(this->get_parent_tree().topology_is_valid());
+        return topology_.velocities_start_in_v;
+    }
 
-  /// Returns a string suffix (e.g. to be appended to the name()) to identify
-  /// the `k`th position in this mobilizer. Mobilizers with more than one
-  // position or that don't want to use the default `q`, must override this
-  // method.
-  virtual std::string position_suffix(int position_index_in_mobilizer) const {
-    // Mobilizers with num_positions > 1 must overload this method.
-    // The method should not be called for mobilizers with num_positions < 1.
-    DRAKE_DEMAND(num_positions() == 1);
-    DRAKE_DEMAND(position_index_in_mobilizer == 0);
-    return "q";
-  }
+    /// Returns a string suffix (e.g. to be appended to the name()) to identify
+    /// the `k`th position in this mobilizer. Mobilizers with more than one
+    // position or that don't want to use the default `q`, must override this
+    // method.
+    virtual std::string position_suffix(int position_index_in_mobilizer) const {
+        // Mobilizers with num_positions > 1 must overload this method.
+        // The method should not be called for mobilizers with num_positions < 1.
+        DRAKE_DEMAND(num_positions() == 1);
+        DRAKE_DEMAND(position_index_in_mobilizer == 0);
+        return "q";
+    }
 
-  /// Returns a string suffix (e.g. to be appended to the name()) to identify
-  /// the `k`th velocity in this mobilizer. Mobilizers with more than one
-  // velocity or that don't want to use the default 'v' must override this
-  // method.
-  virtual std::string velocity_suffix(int velocity_index_in_mobilizer) const {
-    // Mobilizers with num_velocities > 1 must overload this method.
-    // The method should not be called for mobilizers with num_velocities < 1.
-    DRAKE_DEMAND(num_velocities() == 1);
-    DRAKE_DEMAND(velocity_index_in_mobilizer == 0);
-    return "v";
-  }
+    /// Returns a string suffix (e.g. to be appended to the name()) to identify
+    /// the `k`th velocity in this mobilizer. Mobilizers with more than one
+    // velocity or that don't want to use the default 'v' must override this
+    // method.
+    virtual std::string velocity_suffix(int velocity_index_in_mobilizer) const {
+        // Mobilizers with num_velocities > 1 must overload this method.
+        // The method should not be called for mobilizers with num_velocities < 1.
+        DRAKE_DEMAND(num_velocities() == 1);
+        DRAKE_DEMAND(velocity_index_in_mobilizer == 0);
+        return "v";
+    }
 
-  // Returns true if this mobilizer can rotate.
-  virtual bool can_rotate() const = 0;
+    // Returns true if this mobilizer can rotate.
+    virtual bool can_rotate() const = 0;
 
-  // Returns true if this mobilizer can translate.
-  virtual bool can_translate() const = 0;
+    // Returns true if this mobilizer can translate.
+    virtual bool can_translate() const = 0;
 
-  // Returns a constant reference to the inboard frame.
-  const Frame<T>& inboard_frame() const {
-    return inboard_frame_;
-  }
+    // Returns a constant reference to the inboard frame.
+    const Frame<T>& inboard_frame() const { return inboard_frame_; }
 
-  // Returns a constant reference to the outboard frame.
-  const Frame<T>& outboard_frame() const {
-    return outboard_frame_;
-  }
+    // Returns a constant reference to the outboard frame.
+    const Frame<T>& outboard_frame() const { return outboard_frame_; }
 
-  // Returns a constant reference to the body associated with `this`
-  // mobilizer's inboard frame.
-  const RigidBody<T>& inboard_body() const {
-    return inboard_frame().body();
-  }
+    // Returns a constant reference to the body associated with `this`
+    // mobilizer's inboard frame.
+    const RigidBody<T>& inboard_body() const { return inboard_frame().body(); }
 
-  // Returns a constant reference to the body associated with `this`
-  // mobilizer's outboard frame.
-  const RigidBody<T>& outboard_body() const {
-    return outboard_frame().body();
-  }
+    // Returns a constant reference to the body associated with `this`
+    // mobilizer's outboard frame.
+    const RigidBody<T>& outboard_body() const { return outboard_frame().body(); }
 
-  // Returns `true` if `this` mobilizer grants 6-dofs to the outboard frame.
-  virtual bool is_floating() const { return false; }
+    // Returns `true` if `this` mobilizer grants 6-dofs to the outboard frame.
+    virtual bool is_floating() const { return false; }
 
-  // Returns `true` if `this` uses a quaternion parametrization of rotations.
-  virtual bool has_quaternion_dofs() const { return false; }
+    // Returns `true` if `this` uses a quaternion parametrization of rotations.
+    virtual bool has_quaternion_dofs() const { return false; }
 
-  // Returns the topology information for this mobilizer. Users should not
-  // need to call this method since MobilizerTopology is an internal
-  // bookkeeping detail.
-  const MobilizerTopology& get_topology() const { return topology_; }
+    // Returns the topology information for this mobilizer. Users should not
+    // need to call this method since MobilizerTopology is an internal
+    // bookkeeping detail.
+    const MobilizerTopology& get_topology() const { return topology_; }
 
-  // @name Methods that define a %Mobilizer
-  // @{
+    // @name Methods that define a %Mobilizer
+    // @{
 
-  // Sets the `state` to what will be considered to be the _zero_ state
-  // (position and velocity) for `this` mobilizer. For most mobilizers the
-  // _zero_ position corresponds to the value of generalized positions at
-  // which the inboard frame F and the outboard frame coincide or, in other
-  // words, when `X_FM = Id` is the identity pose. In the general case
-  // however, the zero position will correspond to a value of the
-  // generalized positions for which `X_FM = X_FM_ref` where `X_FM_ref` may
-  // generally be different from the identity transformation.
-  // In other words, `X_FM_ref = CalcAcrossMobilizerTransform(ref_context)`
-  // where `ref_context` is a Context storing a State set to the zero
-  // configuration with SetZeroState().
-  // In addition, all generalized velocities are set to zero in the _zero_
-  // state.
-  //
-  // Most often the _zero_ position will correspond to setting
-  // the vector of generalized positions related to this mobilizer to zero.
-  // However, in the general case, setting all generalized coordinates to zero
-  // does not correspond to the _zero_ position and it might even not
-  // represent a mathematically valid one. Consider for instance a quaternion
-  // mobilizer, for which its _zero_ position corresponds to the quaternion
-  // [1, 0, 0, 0].
-  //
-  // Note that the zero state may fall outside of the limits for any joints
-  // associated with this mobilizer.
-  // @see set_default_state().
-  virtual void SetZeroState(const systems::Context<T>& context,
-                            systems::State<T>* state) const = 0;
+    // Sets the `state` to what will be considered to be the _zero_ state
+    // (position and velocity) for `this` mobilizer. For most mobilizers the
+    // _zero_ position corresponds to the value of generalized positions at
+    // which the inboard frame F and the outboard frame coincide or, in other
+    // words, when `X_FM = Id` is the identity pose. In the general case
+    // however, the zero position will correspond to a value of the
+    // generalized positions for which `X_FM = X_FM_ref` where `X_FM_ref` may
+    // generally be different from the identity transformation.
+    // In other words, `X_FM_ref = CalcAcrossMobilizerTransform(ref_context)`
+    // where `ref_context` is a Context storing a State set to the zero
+    // configuration with SetZeroState().
+    // In addition, all generalized velocities are set to zero in the _zero_
+    // state.
+    //
+    // Most often the _zero_ position will correspond to setting
+    // the vector of generalized positions related to this mobilizer to zero.
+    // However, in the general case, setting all generalized coordinates to zero
+    // does not correspond to the _zero_ position and it might even not
+    // represent a mathematically valid one. Consider for instance a quaternion
+    // mobilizer, for which its _zero_ position corresponds to the quaternion
+    // [1, 0, 0, 0].
+    //
+    // Note that the zero state may fall outside of the limits for any joints
+    // associated with this mobilizer.
+    // @see set_default_state().
+    virtual void SetZeroState(const systems::Context<T>& context, systems::State<T>* state) const = 0;
 
-  // Sets the `state` to the _default_ state (position and velocity) for
-  // `this` mobilizer.  For example, the zero state for our standard IIWA
-  // model has the arm pointing directly up; this is the correct definition of
-  // the zero state (it is where our joint angles measure zero).  But we also
-  // support a default state (perhaps a more comfortable initial configuration
-  // of the IIWA), which need not be the zero state, that describes a state of
-  // the Mobilizer to be used in e.g. MultibodyPlant::SetDefaultContext().
-  virtual void set_default_state(const systems::Context<T>& context,
-                                 systems::State<T>* state) const = 0;
+    // Sets the `state` to the _default_ state (position and velocity) for
+    // `this` mobilizer.  For example, the zero state for our standard IIWA
+    // model has the arm pointing directly up; this is the correct definition of
+    // the zero state (it is where our joint angles measure zero).  But we also
+    // support a default state (perhaps a more comfortable initial configuration
+    // of the IIWA), which need not be the zero state, that describes a state of
+    // the Mobilizer to be used in e.g. MultibodyPlant::SetDefaultContext().
+    virtual void set_default_state(const systems::Context<T>& context, systems::State<T>* state) const = 0;
 
-  // Sets the `state` to a (potentially) random position and velocity, by
-  // evaluating any random distributions that were declared (via e.g.
-  // MobilizerImpl::set_random_position_distribution() and/or
-  // MobilizerImpl::set_random_velocity_distribution(), or calling
-  // set_default_state() if none have been declared. Note that the intended
-  // caller of this method is `MultibodyTree::SetRandomState()` which treats
-  // the independent samples returned from this sample as an initial guess,
-  // but may change the value in order to "project" it onto a constraint
-  // manifold.
-  virtual void set_random_state(const systems::Context<T>& context,
-                                systems::State<T>* state,
-                                RandomGenerator* generator) const = 0;
+    // Sets the `state` to a (potentially) random position and velocity, by
+    // evaluating any random distributions that were declared (via e.g.
+    // MobilizerImpl::set_random_position_distribution() and/or
+    // MobilizerImpl::set_random_velocity_distribution(), or calling
+    // set_default_state() if none have been declared. Note that the intended
+    // caller of this method is `MultibodyTree::SetRandomState()` which treats
+    // the independent samples returned from this sample as an initial guess,
+    // but may change the value in order to "project" it onto a constraint
+    // manifold.
+    virtual void set_random_state(const systems::Context<T>& context,
+                                  systems::State<T>* state,
+                                  RandomGenerator* generator) const = 0;
 
-  // Computes the across-mobilizer transform `X_FM(q)` between the inboard
-  // frame F and the outboard frame M as a function of the vector of
-  // generalized positions `q`.
-  // %Mobilizer subclasses implementing this method can retrieve the fixed-size
-  // vector of generalized positions for `this` mobilizer from `context` with:
-  //
-  // @code
-  // auto q = this->get_positions(context);
-  // @endcode
-  //
-  // Additionally, `context` can provide any other parameters the mobilizer
-  // could depend on.
-  virtual math::RigidTransform<T> CalcAcrossMobilizerTransform(
-      const systems::Context<T>& context) const = 0;
+    // Computes the across-mobilizer transform `X_FM(q)` between the inboard
+    // frame F and the outboard frame M as a function of the vector of
+    // generalized positions `q`.
+    // %Mobilizer subclasses implementing this method can retrieve the fixed-size
+    // vector of generalized positions for `this` mobilizer from `context` with:
+    //
+    // @code
+    // auto q = this->get_positions(context);
+    // @endcode
+    //
+    // Additionally, `context` can provide any other parameters the mobilizer
+    // could depend on.
+    virtual math::RigidTransform<T> CalcAcrossMobilizerTransform(const systems::Context<T>& context) const = 0;
 
-  // Computes the across-mobilizer spatial velocity `V_FM(q, v)` of the
-  // outboard frame M in the inboard frame F.
-  // This method can be thought of as the application of the operator `H_FM(q)`
-  // to the input vector of generalized velocities `v`, i.e. the output of this
-  // method is the application `v ∈ ℝⁿᵛ → M⁶: V_FM(q, v) = H_FM(q) * v`, where
-  // `nv` is the number of generalized velocities of this mobilizer (see
-  // num_velocities()) and M⁶ is the vector space of "motion vectors" (be
-  // aware that while M⁶ is introduced in [Featherstone 2008, Ch. 2] spatial
-  // velocities in Drake are not Plücker vectors as in Featherstone's book).
-  // Therefore we say this method is the _operator form_ of the mobilizer hinge
-  // matrix `H_FM(q)`.
-  // This method aborts in Debug builds if the dimension of the input vector of
-  // generalized velocities has a size different from num_velocities().
-  //
-  // @param[in] context The context of the parent tree that owns this
-  // mobilizer. This mobilizer's generalized positions q are inferred from this
-  // context.
-  // @param[in] v A vector of generalized velocities. It must live in ℝⁿᵛ.
-  // @retval V_FM The across-mobilizer spatial velocity of the outboard frame
-  // M measured and expressed in the inboard frame F.
-  virtual SpatialVelocity<T> CalcAcrossMobilizerSpatialVelocity(
-      const systems::Context<T>& context,
-      const Eigen::Ref<const VectorX<T>>& v) const = 0;
+    // Computes the across-mobilizer spatial velocity `V_FM(q, v)` of the
+    // outboard frame M in the inboard frame F.
+    // This method can be thought of as the application of the operator `H_FM(q)`
+    // to the input vector of generalized velocities `v`, i.e. the output of this
+    // method is the application `v ∈ ℝⁿᵛ → M⁶: V_FM(q, v) = H_FM(q) * v`, where
+    // `nv` is the number of generalized velocities of this mobilizer (see
+    // num_velocities()) and M⁶ is the vector space of "motion vectors" (be
+    // aware that while M⁶ is introduced in [Featherstone 2008, Ch. 2] spatial
+    // velocities in Drake are not Plücker vectors as in Featherstone's book).
+    // Therefore we say this method is the _operator form_ of the mobilizer hinge
+    // matrix `H_FM(q)`.
+    // This method aborts in Debug builds if the dimension of the input vector of
+    // generalized velocities has a size different from num_velocities().
+    //
+    // @param[in] context The context of the parent tree that owns this
+    // mobilizer. This mobilizer's generalized positions q are inferred from this
+    // context.
+    // @param[in] v A vector of generalized velocities. It must live in ℝⁿᵛ.
+    // @retval V_FM The across-mobilizer spatial velocity of the outboard frame
+    // M measured and expressed in the inboard frame F.
+    virtual SpatialVelocity<T> CalcAcrossMobilizerSpatialVelocity(const systems::Context<T>& context,
+                                                                  const Eigen::Ref<const VectorX<T>>& v) const = 0;
 
-  // Computes the across-mobilizer spatial accelerations `A_FM(q, v, v̇)` of the
-  // outboard frame M in the inboard frame F.
-  // This method can be thought of as the application of the operation
-  // `v̇ ∈ ℝⁿᵛ → M⁶: A_FM(q, v, v̇) = H_FM(q) * v̇ + Ḣ_FM(q) * v`, where
-  // `nv` is the number of generalized velocities of this mobilizer (see
-  // num_velocities()) and M⁶ is the vector space of "motion vectors" (be
-  // aware that while M⁶ is introduced in [Featherstone 2008, Ch. 2] spatial
-  // vectors in Drake are not Plücker vectors as in Featherstone's book).
-  // Therefore, we say this method is in its _operator form_; the mobilizer
-  // hinge matrix `H_FM(q)` is not explicitly formed.
-  // This method aborts in Debug builds if the dimension of the input vector of
-  // generalized accelerations has a size different from num_velocities().
-  //
-  // @param[in] context
-  //   The context of the parent tree that owns this mobilizer. This
-  //   mobilizer's generalized positions q and generalized velocities v are
-  //   taken from this context.
-  // @param[in] vdot
-  //   The vector of generalized velocities' time derivatives v̇. It must live
-  //   in ℝⁿᵛ.
-  // @retval A_FM
-  //   The across-mobilizer spatial acceleration of the outboard frame M
-  //   measured and expressed in the inboard frame F.
-  virtual SpatialAcceleration<T> CalcAcrossMobilizerSpatialAcceleration(
-      const systems::Context<T>& context,
-      const Eigen::Ref<const VectorX<T>>& vdot) const = 0;
+    // Computes the across-mobilizer spatial accelerations `A_FM(q, v, v̇)` of the
+    // outboard frame M in the inboard frame F.
+    // This method can be thought of as the application of the operation
+    // `v̇ ∈ ℝⁿᵛ → M⁶: A_FM(q, v, v̇) = H_FM(q) * v̇ + Ḣ_FM(q) * v`, where
+    // `nv` is the number of generalized velocities of this mobilizer (see
+    // num_velocities()) and M⁶ is the vector space of "motion vectors" (be
+    // aware that while M⁶ is introduced in [Featherstone 2008, Ch. 2] spatial
+    // vectors in Drake are not Plücker vectors as in Featherstone's book).
+    // Therefore, we say this method is in its _operator form_; the mobilizer
+    // hinge matrix `H_FM(q)` is not explicitly formed.
+    // This method aborts in Debug builds if the dimension of the input vector of
+    // generalized accelerations has a size different from num_velocities().
+    //
+    // @param[in] context
+    //   The context of the parent tree that owns this mobilizer. This
+    //   mobilizer's generalized positions q and generalized velocities v are
+    //   taken from this context.
+    // @param[in] vdot
+    //   The vector of generalized velocities' time derivatives v̇. It must live
+    //   in ℝⁿᵛ.
+    // @retval A_FM
+    //   The across-mobilizer spatial acceleration of the outboard frame M
+    //   measured and expressed in the inboard frame F.
+    virtual SpatialAcceleration<T> CalcAcrossMobilizerSpatialAcceleration(
+            const systems::Context<T>& context, const Eigen::Ref<const VectorX<T>>& vdot) const = 0;
 
-  // Calculates a mobilizer's generalized forces `tau = H_FMᵀ(q) ⋅ F_Mo_F`,
-  // where `H_FMᵀ` is the transpose of frame M's mobilizer hinge matrix and
-  // `F_Mo_F` is the spatial force on frame M at Mo, expressed in F.
-  // @see CalcAcrossMobilizerSpatialVelocity() and this class' documentation
-  // for the definition of the mobilizer hinge matrix `H_FM`.
-  //
-  // This method can be thought of as the application of the transpose operator
-  // `H_FMᵀ(q)` to the input spatial force `F_Mo_F`, i.e. the output of this
-  // method is the application `F_Mo_F ∈ F⁶ → ℝⁿᵛ: tau = H_FMᵀ(q) * F_Mo_F`,
-  // where `nv` is the number of generalized velocities of this mobilizer (see
-  // num_velocities()) and F⁶ is the vector space of "force vectors" (be
-  // aware that while F⁶ is introduced in [Featherstone 2008, Ch. 2] spatial
-  // forces in Drake are not Plücker vectors as in Featherstone's book).
-  // Therefore we say this method is the _operator form_ of the mobilizer
-  // hinge matrix transpose `H_FMᵀ(q)`.
-  // This method aborts in Debug builds if the dimension of the output vector
-  // of generalized forces has a size different from num_velocities().
-  //
-  // @param[in] context
-  //   The context of the parent tree that owns this mobilizer. This
-  //   mobilizer's generalized positions q are stored in this context.
-  // @param[in] F_Mo_F
-  //   A SpatialForce applied at `this` mobilizer's outboard frame origin `Mo`,
-  //   expressed in the inboard frame F.
-  // @retval tau
-  //   The vector of generalized forces. It must live in ℝⁿᵛ.
-  virtual void ProjectSpatialForce(
-      const systems::Context<T>& context,
-      const SpatialForce<T>& F_Mo_F,
-      Eigen::Ref<VectorX<T>> tau) const = 0;
+    // Calculates a mobilizer's generalized forces `tau = H_FMᵀ(q) ⋅ F_Mo_F`,
+    // where `H_FMᵀ` is the transpose of frame M's mobilizer hinge matrix and
+    // `F_Mo_F` is the spatial force on frame M at Mo, expressed in F.
+    // @see CalcAcrossMobilizerSpatialVelocity() and this class' documentation
+    // for the definition of the mobilizer hinge matrix `H_FM`.
+    //
+    // This method can be thought of as the application of the transpose operator
+    // `H_FMᵀ(q)` to the input spatial force `F_Mo_F`, i.e. the output of this
+    // method is the application `F_Mo_F ∈ F⁶ → ℝⁿᵛ: tau = H_FMᵀ(q) * F_Mo_F`,
+    // where `nv` is the number of generalized velocities of this mobilizer (see
+    // num_velocities()) and F⁶ is the vector space of "force vectors" (be
+    // aware that while F⁶ is introduced in [Featherstone 2008, Ch. 2] spatial
+    // forces in Drake are not Plücker vectors as in Featherstone's book).
+    // Therefore we say this method is the _operator form_ of the mobilizer
+    // hinge matrix transpose `H_FMᵀ(q)`.
+    // This method aborts in Debug builds if the dimension of the output vector
+    // of generalized forces has a size different from num_velocities().
+    //
+    // @param[in] context
+    //   The context of the parent tree that owns this mobilizer. This
+    //   mobilizer's generalized positions q are stored in this context.
+    // @param[in] F_Mo_F
+    //   A SpatialForce applied at `this` mobilizer's outboard frame origin `Mo`,
+    //   expressed in the inboard frame F.
+    // @retval tau
+    //   The vector of generalized forces. It must live in ℝⁿᵛ.
+    virtual void ProjectSpatialForce(const systems::Context<T>& context,
+                                     const SpatialForce<T>& F_Mo_F,
+                                     Eigen::Ref<VectorX<T>> tau) const = 0;
 
-  // Computes the kinematic mapping matrix `N(q)` that maps generalized
-  // velocities for this mobilizer to time derivatives of the generalized
-  // positions for this mobilizer according to `q̇ = N(q)⋅v`.
-  // @param[in] context
-  //   The context for the parent tree that owns this mobilizer storing the
-  //   generalized positions q.
-  // @param[out] N
-  //   The kinematic mapping matrix `N(q)`. On input it must have size
-  //   `nq x nv` with nq and nv the number of generalized positions and the
-  //   number of generalized velocities for this mobilizer, respectively.
-  // @see MapVelocityToQDot().
-  void CalcNMatrix(
-      const systems::Context<T>& context, EigenPtr<MatrixX<T>> N) const {
-    DRAKE_DEMAND(N != nullptr);
-    DRAKE_DEMAND(N->rows() == num_positions());
-    DRAKE_DEMAND(N->cols() == num_velocities());
-    DoCalcNMatrix(context, N);
-  }
+    // Computes the kinematic mapping matrix `N(q)` that maps generalized
+    // velocities for this mobilizer to time derivatives of the generalized
+    // positions for this mobilizer according to `q̇ = N(q)⋅v`.
+    // @param[in] context
+    //   The context for the parent tree that owns this mobilizer storing the
+    //   generalized positions q.
+    // @param[out] N
+    //   The kinematic mapping matrix `N(q)`. On input it must have size
+    //   `nq x nv` with nq and nv the number of generalized positions and the
+    //   number of generalized velocities for this mobilizer, respectively.
+    // @see MapVelocityToQDot().
+    void CalcNMatrix(const systems::Context<T>& context, EigenPtr<MatrixX<T>> N) const {
+        DRAKE_DEMAND(N != nullptr);
+        DRAKE_DEMAND(N->rows() == num_positions());
+        DRAKE_DEMAND(N->cols() == num_velocities());
+        DoCalcNMatrix(context, N);
+    }
 
-  // Computes the kinematic mapping matrix `N⁺(q)` that maps time
-  // derivatives of the generalized positions to generalized velocities
-  // according to `v = N⁺(q)⋅q̇`. `N⁺(q)` is the left pseudoinverse of the
-  // kinematic mapping `N(q)`, see CalcNMatrix().
-  // @param[in] context
-  //   The context for the parent tree that owns this mobilizer storing the
-  //   generalized positions q.
-  // @param[out] Nplus
-  //   The kinematic mapping matrix `N⁺(q)`. On input it must have size
-  //   `nv x nq` with nq the number of generalized positions and nv the
-  //   number of generalized velocities.
-  // @see MapVelocityToQDot().
-  void CalcNplusMatrix(
-      const systems::Context<T>& context,
-      EigenPtr<MatrixX<T>> Nplus) const {
-    DRAKE_DEMAND(Nplus != nullptr);
-    DRAKE_DEMAND(Nplus->rows() == num_velocities());
-    DRAKE_DEMAND(Nplus->cols() == num_positions());
-    DoCalcNplusMatrix(context, Nplus);
-  }
+    // Computes the kinematic mapping matrix `N⁺(q)` that maps time
+    // derivatives of the generalized positions to generalized velocities
+    // according to `v = N⁺(q)⋅q̇`. `N⁺(q)` is the left pseudoinverse of the
+    // kinematic mapping `N(q)`, see CalcNMatrix().
+    // @param[in] context
+    //   The context for the parent tree that owns this mobilizer storing the
+    //   generalized positions q.
+    // @param[out] Nplus
+    //   The kinematic mapping matrix `N⁺(q)`. On input it must have size
+    //   `nv x nq` with nq the number of generalized positions and nv the
+    //   number of generalized velocities.
+    // @see MapVelocityToQDot().
+    void CalcNplusMatrix(const systems::Context<T>& context, EigenPtr<MatrixX<T>> Nplus) const {
+        DRAKE_DEMAND(Nplus != nullptr);
+        DRAKE_DEMAND(Nplus->rows() == num_velocities());
+        DRAKE_DEMAND(Nplus->cols() == num_positions());
+        DoCalcNplusMatrix(context, Nplus);
+    }
 
-  virtual bool is_velocity_equal_to_qdot() const = 0;
+    virtual bool is_velocity_equal_to_qdot() const = 0;
 
-  // Computes the kinematic mapping `q̇ = N(q)⋅v` between generalized
-  // velocities v and time derivatives of the generalized positions `qdot`.
-  // The generalized positions vector is stored in `context`.
-  virtual void MapVelocityToQDot(
-      const systems::Context<T>& context,
-      const Eigen::Ref<const VectorX<T>>& v,
-      EigenPtr<VectorX<T>> qdot) const = 0;
+    // Computes the kinematic mapping `q̇ = N(q)⋅v` between generalized
+    // velocities v and time derivatives of the generalized positions `qdot`.
+    // The generalized positions vector is stored in `context`.
+    virtual void MapVelocityToQDot(const systems::Context<T>& context,
+                                   const Eigen::Ref<const VectorX<T>>& v,
+                                   EigenPtr<VectorX<T>> qdot) const = 0;
 
-  // Computes the mapping `v = N⁺(q)⋅q̇` from time derivatives of the
-  // generalized positions `qdot` to generalized velocities v, where `N⁺(q)` is
-  // the left pseudo-inverse of `N(q)` defined by MapVelocityToQDot().
-  // The generalized positions vector is stored in `context`.
-  virtual void MapQDotToVelocity(
-      const systems::Context<T>& context,
-      const Eigen::Ref<const VectorX<T>>& qdot,
-      EigenPtr<VectorX<T>> v) const = 0;
-  // @}
+    // Computes the mapping `v = N⁺(q)⋅q̇` from time derivatives of the
+    // generalized positions `qdot` to generalized velocities v, where `N⁺(q)` is
+    // the left pseudo-inverse of `N(q)` defined by MapVelocityToQDot().
+    // The generalized positions vector is stored in `context`.
+    virtual void MapQDotToVelocity(const systems::Context<T>& context,
+                                   const Eigen::Ref<const VectorX<T>>& qdot,
+                                   EigenPtr<VectorX<T>> v) const = 0;
+    // @}
 
-  // Returns a const Eigen expression of the vector of generalized positions
-  // for `this` mobilizer from a vector `q_array` of generalized positions for
-  // the entire MultibodyTree model.
-  // @pre @p q_array is of size MultibodyTree::num_positions().
-  Eigen::Ref<const VectorX<T>> get_positions_from_array(
-      const Eigen::Ref<const VectorX<T>>& q_array) const {
-    DRAKE_DEMAND(
-        q_array.size() == this->get_parent_tree().num_positions());
-    return q_array.segment(topology_.positions_start,
-                           topology_.num_positions);
-  }
+    // Returns a const Eigen expression of the vector of generalized positions
+    // for `this` mobilizer from a vector `q_array` of generalized positions for
+    // the entire MultibodyTree model.
+    // @pre @p q_array is of size MultibodyTree::num_positions().
+    Eigen::Ref<const VectorX<T>> get_positions_from_array(const Eigen::Ref<const VectorX<T>>& q_array) const {
+        DRAKE_DEMAND(q_array.size() == this->get_parent_tree().num_positions());
+        return q_array.segment(topology_.positions_start, topology_.num_positions);
+    }
 
-  // Mutable version of get_positions_from_array().
-  Eigen::Ref<VectorX<T>> get_mutable_positions_from_array(
-      EigenPtr<VectorX<T>> q_array) const {
-    DRAKE_DEMAND(q_array != nullptr);
-    DRAKE_DEMAND(
-        q_array->size() == this->get_parent_tree().num_positions());
-    return q_array->segment(topology_.positions_start,
-                            topology_.num_positions);
-  }
+    // Mutable version of get_positions_from_array().
+    Eigen::Ref<VectorX<T>> get_mutable_positions_from_array(EigenPtr<VectorX<T>> q_array) const {
+        DRAKE_DEMAND(q_array != nullptr);
+        DRAKE_DEMAND(q_array->size() == this->get_parent_tree().num_positions());
+        return q_array->segment(topology_.positions_start, topology_.num_positions);
+    }
 
-  // Returns a const Eigen expression of the vector of generalized velocities
-  // for `this` mobilizer from a vector `v_array` of generalized velocities for
-  // the entire MultibodyTree model.
-  // @pre @p v_array is of size MultibodyTree::num_velocities().
-  Eigen::Ref<const VectorX<T>>
-  get_velocities_from_array(const Eigen::Ref<const VectorX<T>>& v_array) const {
-    DRAKE_DEMAND(
-        v_array.size() == this->get_parent_tree().num_velocities());
-    return v_array.segment(topology_.velocities_start_in_v,
-                           topology_.num_velocities);
-  }
+    // Returns a const Eigen expression of the vector of generalized velocities
+    // for `this` mobilizer from a vector `v_array` of generalized velocities for
+    // the entire MultibodyTree model.
+    // @pre @p v_array is of size MultibodyTree::num_velocities().
+    Eigen::Ref<const VectorX<T>> get_velocities_from_array(const Eigen::Ref<const VectorX<T>>& v_array) const {
+        DRAKE_DEMAND(v_array.size() == this->get_parent_tree().num_velocities());
+        return v_array.segment(topology_.velocities_start_in_v, topology_.num_velocities);
+    }
 
-  // Mutable version of get_velocities_from_array().
-  Eigen::Ref<VectorX<T>> get_mutable_velocities_from_array(
-      EigenPtr<VectorX<T>> v_array) const {
-    DRAKE_DEMAND(v_array != nullptr);
-    DRAKE_DEMAND(
-        v_array->size() == this->get_parent_tree().num_velocities());
-    return v_array->segment(topology_.velocities_start_in_v,
-                            topology_.num_velocities);
-  }
+    // Mutable version of get_velocities_from_array().
+    Eigen::Ref<VectorX<T>> get_mutable_velocities_from_array(EigenPtr<VectorX<T>> v_array) const {
+        DRAKE_DEMAND(v_array != nullptr);
+        DRAKE_DEMAND(v_array->size() == this->get_parent_tree().num_velocities());
+        return v_array->segment(topology_.velocities_start_in_v, topology_.num_velocities);
+    }
 
-  // Returns a const Eigen expression of the vector of generalized
-  // accelerations for `this` mobilizer from a vector `vdot_array` of
-  // generalized accelerations for the entire MultibodyTree model.
-  // This method aborts if the input array is not of size
-  // MultibodyTree::num_velocities().
-  Eigen::Ref<const VectorX<T>> get_accelerations_from_array(
-      const Eigen::Ref<const VectorX<T>>& vdot_array) const {
-    return get_velocities_from_array(vdot_array);
-  }
+    // Returns a const Eigen expression of the vector of generalized
+    // accelerations for `this` mobilizer from a vector `vdot_array` of
+    // generalized accelerations for the entire MultibodyTree model.
+    // This method aborts if the input array is not of size
+    // MultibodyTree::num_velocities().
+    Eigen::Ref<const VectorX<T>> get_accelerations_from_array(const Eigen::Ref<const VectorX<T>>& vdot_array) const {
+        return get_velocities_from_array(vdot_array);
+    }
 
-  // Mutable version of get_accelerations_from_array().
-  Eigen::Ref<VectorX<T>> get_mutable_accelerations_from_array(
-      EigenPtr<VectorX<T>> vdot_array) const {
-    return get_mutable_velocities_from_array(vdot_array);
-  }
+    // Mutable version of get_accelerations_from_array().
+    Eigen::Ref<VectorX<T>> get_mutable_accelerations_from_array(EigenPtr<VectorX<T>> vdot_array) const {
+        return get_mutable_velocities_from_array(vdot_array);
+    }
 
-  // Returns a const Eigen expression of the vector of generalized forces
-  // for `this` mobilizer from a vector of generalized forces for the
-  // entire MultibodyTree model.
-  // This method aborts if the input array is not of size
-  // MultibodyTree::num_velocities().
-  Eigen::Ref<const VectorX<T>> get_generalized_forces_from_array(
-      const Eigen::Ref<const VectorX<T>>& tau_array) const {
-    return get_velocities_from_array(tau_array);
-  }
+    // Returns a const Eigen expression of the vector of generalized forces
+    // for `this` mobilizer from a vector of generalized forces for the
+    // entire MultibodyTree model.
+    // This method aborts if the input array is not of size
+    // MultibodyTree::num_velocities().
+    Eigen::Ref<const VectorX<T>> get_generalized_forces_from_array(
+            const Eigen::Ref<const VectorX<T>>& tau_array) const {
+        return get_velocities_from_array(tau_array);
+    }
 
-  // Mutable version of get_generalized_forces_from_array().
-  Eigen::Ref<VectorX<T>> get_mutable_generalized_forces_from_array(
-      EigenPtr<VectorX<T>> tau_array) const {
-    return get_mutable_velocities_from_array(tau_array);
-  }
+    // Mutable version of get_generalized_forces_from_array().
+    Eigen::Ref<VectorX<T>> get_mutable_generalized_forces_from_array(EigenPtr<VectorX<T>> tau_array) const {
+        return get_mutable_velocities_from_array(tau_array);
+    }
 
-  // NVI to DoCloneToScalar() templated on the scalar type of the new clone to
-  // be created. This method is mostly intended to be called by
-  // MultibodyTree::CloneToScalar(). Most users should not call this clone
-  // method directly but rather clone the entire parent MultibodyTree if
-  // needed.
-  // @sa MultibodyTree::CloneToScalar()
-  template <typename ToScalar>
-  std::unique_ptr<Mobilizer<ToScalar>> CloneToScalar(
-      const MultibodyTree<ToScalar>& cloned_tree) const {
-    return DoCloneToScalar(cloned_tree);
-  }
+    // NVI to DoCloneToScalar() templated on the scalar type of the new clone to
+    // be created. This method is mostly intended to be called by
+    // MultibodyTree::CloneToScalar(). Most users should not call this clone
+    // method directly but rather clone the entire parent MultibodyTree if
+    // needed.
+    // @sa MultibodyTree::CloneToScalar()
+    template <typename ToScalar>
+    std::unique_ptr<Mobilizer<ToScalar>> CloneToScalar(const MultibodyTree<ToScalar>& cloned_tree) const {
+        return DoCloneToScalar(cloned_tree);
+    }
 
-  // For MultibodyTree internal use only.
-  virtual std::unique_ptr<internal::BodyNode<T>> CreateBodyNode(
-      const internal::BodyNode<T>* parent_node,
-      const RigidBody<T>* body, const Mobilizer<T>* mobilizer) const = 0;
+    // For MultibodyTree internal use only.
+    virtual std::unique_ptr<internal::BodyNode<T>> CreateBodyNode(const internal::BodyNode<T>* parent_node,
+                                                                  const RigidBody<T>* body,
+                                                                  const Mobilizer<T>* mobilizer) const = 0;
 
-  // Lock the mobilizer. Its generalized velocities will be 0 until it is
-  // unlocked.
-  void Lock(systems::Context<T>* context) const {
-    // Joint locking is only supported for discrete mode.
-    context->get_mutable_abstract_parameter(is_locked_parameter_index_)
-        .set_value(true);
-    this->get_parent_tree()
-        .GetMutableVelocities(context)
-        .segment(this->velocity_start_in_v(), this->num_velocities())
-        .setZero();
-  }
+    // Lock the mobilizer. Its generalized velocities will be 0 until it is
+    // unlocked.
+    void Lock(systems::Context<T>* context) const {
+        // Joint locking is only supported for discrete mode.
+        context->get_mutable_abstract_parameter(is_locked_parameter_index_).set_value(true);
+        this->get_parent_tree()
+                .GetMutableVelocities(context)
+                .segment(this->velocity_start_in_v(), this->num_velocities())
+                .setZero();
+    }
 
-  // Unlock the mobilizer. Unlocking is not yet supported for continuous-mode
-  // systems.
-  void Unlock(systems::Context<T>* context) const {
-    context->get_mutable_abstract_parameter(is_locked_parameter_index_)
-        .set_value(false);
-  }
+    // Unlock the mobilizer. Unlocking is not yet supported for continuous-mode
+    // systems.
+    void Unlock(systems::Context<T>* context) const {
+        context->get_mutable_abstract_parameter(is_locked_parameter_index_).set_value(false);
+    }
 
-  // @return true if the mobilizer is locked, false otherwise.
-  bool is_locked(const systems::Context<T>& context) const {
-    return context.get_parameters().template get_abstract_parameter<bool>(
-        is_locked_parameter_index_);
-  }
+    // @return true if the mobilizer is locked, false otherwise.
+    bool is_locked(const systems::Context<T>& context) const {
+        return context.get_parameters().template get_abstract_parameter<bool>(is_locked_parameter_index_);
+    }
 
- protected:
-  // NVI to CalcNMatrix(). Implementations can safely assume that N is not the
-  // nullptr and that N has the proper size.
-  virtual void DoCalcNMatrix(
-      const systems::Context<T>& context, EigenPtr<MatrixX<T>> N) const = 0;
+protected:
+    // NVI to CalcNMatrix(). Implementations can safely assume that N is not the
+    // nullptr and that N has the proper size.
+    virtual void DoCalcNMatrix(const systems::Context<T>& context, EigenPtr<MatrixX<T>> N) const = 0;
 
-  // NVI to CalcNplusMatrix(). Implementations can safely assume that Nplus is
-  // not the nullptr and that Nplus has the proper size.
-  virtual void DoCalcNplusMatrix(
-      const systems::Context<T>& context,
-      EigenPtr<MatrixX<T>> Nplus) const = 0;
+    // NVI to CalcNplusMatrix(). Implementations can safely assume that Nplus is
+    // not the nullptr and that Nplus has the proper size.
+    virtual void DoCalcNplusMatrix(const systems::Context<T>& context, EigenPtr<MatrixX<T>> Nplus) const = 0;
 
-  // @name Methods to make a clone templated on different scalar types.
-  //
-  // The only const argument to these methods is the new MultibodyTree clone
-  // under construction, which is required to already own the clones of the
-  // inboard and outboard frames of the mobilizer being cloned.
-  // @{
+    // @name Methods to make a clone templated on different scalar types.
+    //
+    // The only const argument to these methods is the new MultibodyTree clone
+    // under construction, which is required to already own the clones of the
+    // inboard and outboard frames of the mobilizer being cloned.
+    // @{
 
-  // Clones this %Mobilizer (templated on T) to a mobilizer templated on
-  // `double`.
-  // @pre Inboard and outboard frames for this mobilizer already have a clone
-  // in `tree_clone`.
-  virtual std::unique_ptr<Mobilizer<double>> DoCloneToScalar(
-      const MultibodyTree<double>& tree_clone) const = 0;
+    // Clones this %Mobilizer (templated on T) to a mobilizer templated on
+    // `double`.
+    // @pre Inboard and outboard frames for this mobilizer already have a clone
+    // in `tree_clone`.
+    virtual std::unique_ptr<Mobilizer<double>> DoCloneToScalar(const MultibodyTree<double>& tree_clone) const = 0;
 
-  // Clones this %Mobilizer (templated on T) to a mobilizer templated on
-  // AutoDiffXd.
-  // @pre Inboard and outboard frames for this mobilizer already have a clone
-  // in `tree_clone`.
-  virtual std::unique_ptr<Mobilizer<AutoDiffXd>> DoCloneToScalar(
-      const MultibodyTree<AutoDiffXd>& tree_clone) const = 0;
+    // Clones this %Mobilizer (templated on T) to a mobilizer templated on
+    // AutoDiffXd.
+    // @pre Inboard and outboard frames for this mobilizer already have a clone
+    // in `tree_clone`.
+    virtual std::unique_ptr<Mobilizer<AutoDiffXd>> DoCloneToScalar(
+            const MultibodyTree<AutoDiffXd>& tree_clone) const = 0;
 
-  virtual std::unique_ptr<Mobilizer<symbolic::Expression>> DoCloneToScalar(
-      const MultibodyTree<symbolic::Expression>& tree_clone) const = 0;
-  // @}
+    virtual std::unique_ptr<Mobilizer<symbolic::Expression>> DoCloneToScalar(
+            const MultibodyTree<symbolic::Expression>& tree_clone) const = 0;
+    // @}
 
-  // Implementation for MultibodyElement::DoDeclareParameters().
-  void DoDeclareParameters(
-      internal::MultibodyTreeSystem<T>* tree_system) final {
-    is_locked_parameter_index_ =
-        this->DeclareAbstractParameter(tree_system, Value<bool>(false));
-  }
+    // Implementation for MultibodyElement::DoDeclareParameters().
+    void DoDeclareParameters(internal::MultibodyTreeSystem<T>* tree_system) final {
+        is_locked_parameter_index_ = this->DeclareAbstractParameter(tree_system, Value<bool>(false));
+    }
 
-  // Implementation for MultibodyElement::DoDeclareParameters().
-  void DoSetDefaultParameters(systems::Parameters<T>* parameters) const final {
-    // TODO(joemasterjonh): Consider exposing a default locked model value.
-    parameters->template get_mutable_abstract_parameter<bool>(
-        is_locked_parameter_index_) = false;
-  }
+    // Implementation for MultibodyElement::DoDeclareParameters().
+    void DoSetDefaultParameters(systems::Parameters<T>* parameters) const final {
+        // TODO(joemasterjonh): Consider exposing a default locked model value.
+        parameters->template get_mutable_abstract_parameter<bool>(is_locked_parameter_index_) = false;
+    }
 
- private:
-  // Implementation for MultibodyElement::DoSetTopology().
-  // At MultibodyTree::Finalize() time, each mobilizer retrieves its topology
-  // from the parent MultibodyTree.
-  void DoSetTopology(const MultibodyTreeTopology& tree_topology) final {
-    topology_ = tree_topology.get_mobilizer(this->index());
-  }
+private:
+    // Implementation for MultibodyElement::DoSetTopology().
+    // At MultibodyTree::Finalize() time, each mobilizer retrieves its topology
+    // from the parent MultibodyTree.
+    void DoSetTopology(const MultibodyTreeTopology& tree_topology) final {
+        topology_ = tree_topology.get_mobilizer(this->index());
+    }
 
-  const Frame<T>& inboard_frame_;
-  const Frame<T>& outboard_frame_;
-  MobilizerTopology topology_;
+    const Frame<T>& inboard_frame_;
+    const Frame<T>& outboard_frame_;
+    MobilizerTopology topology_;
 
-  // System parameter index for `this` mobilizer's lock state stored in a
-  // context.
-  systems::AbstractParameterIndex is_locked_parameter_index_;
+    // System parameter index for `this` mobilizer's lock state stored in a
+    // context.
+    systems::AbstractParameterIndex is_locked_parameter_index_;
 };
 
 }  // namespace internal

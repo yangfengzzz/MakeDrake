@@ -13,23 +13,23 @@ namespace test {
 constexpr int kNumLocations = 1;
 
 GTEST_TEST(LinearLinearCorotatedModelTest, Parameters) {
-  TestParameters<LinearCorotatedModel<double, kNumLocations>>();
-  TestParameters<LinearCorotatedModel<AutoDiffXd, kNumLocations>>();
-  LinearCorotatedModel<double, kNumLocations> model(100, 0.4);
-  EXPECT_TRUE(model.is_linear);
+    TestParameters<LinearCorotatedModel<double, kNumLocations>>();
+    TestParameters<LinearCorotatedModel<AutoDiffXd, kNumLocations>>();
+    LinearCorotatedModel<double, kNumLocations> model(100, 0.4);
+    EXPECT_TRUE(model.is_linear);
 }
 
 GTEST_TEST(LinearLinearCorotatedModelTest, UndeformedState) {
-  TestUndeformedState<LinearCorotatedModel<double, kNumLocations>>();
-  TestUndeformedState<LinearCorotatedModel<AutoDiffXd, kNumLocations>>();
+    TestUndeformedState<LinearCorotatedModel<double, kNumLocations>>();
+    TestUndeformedState<LinearCorotatedModel<AutoDiffXd, kNumLocations>>();
 }
 
 GTEST_TEST(LinearLinearCorotatedModelTest, PIsDerivativeOfPsi) {
-  TestPIsDerivativeOfPsi<LinearCorotatedModel<AutoDiffXd, kNumLocations>>();
+    TestPIsDerivativeOfPsi<LinearCorotatedModel<AutoDiffXd, kNumLocations>>();
 }
 
 GTEST_TEST(LinearLinearCorotatedModelTest, dPdFIsDerivativeOfP) {
-  TestdPdFIsDerivativeOfP<LinearCorotatedModel<AutoDiffXd, kNumLocations>>();
+    TestdPdFIsDerivativeOfP<LinearCorotatedModel<AutoDiffXd, kNumLocations>>();
 }
 
 }  // namespace test

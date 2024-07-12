@@ -31,52 +31,51 @@ parsing. The only condition checked here is that a group with a given name is
 only added once.
 */
 class CollisionFilterGroups {
- public:
-  DRAKE_DECLARE_COPY_AND_MOVE_AND_ASSIGN(CollisionFilterGroups);
+public:
+    DRAKE_DECLARE_COPY_AND_MOVE_AND_ASSIGN(CollisionFilterGroups);
 
-  CollisionFilterGroups();
-  ~CollisionFilterGroups();
+    CollisionFilterGroups();
+    ~CollisionFilterGroups();
 
-  bool operator==(const CollisionFilterGroups&) const;
+    bool operator==(const CollisionFilterGroups&) const;
 
-  /** Adds a new collision filter group.
-  @param name the fully-qualified scoped name of the group being defined.
-  @param members the fully-qualified scoped names of the member bodies.
-  @pre name is not already a defined group in this object.
-  */
-  void AddGroup(const std::string& name, const std::set<std::string>& members);
+    /** Adds a new collision filter group.
+    @param name the fully-qualified scoped name of the group being defined.
+    @param members the fully-qualified scoped names of the member bodies.
+    @pre name is not already a defined group in this object.
+    */
+    void AddGroup(const std::string& name, const std::set<std::string>& members);
 
-  /** Adds an exclusion pair between two collision filter groups.
-  @param pair a pair of fully-qualified scoped names of groups.
-  @note A pair can consist of the same name twice, which means the pair defines
-  a rule where all members of the group exclude each other. Adding an already
-  defined pair does nothing.
-  */
-  void AddExclusionPair(const SortedPair<std::string>& pair);
+    /** Adds an exclusion pair between two collision filter groups.
+    @param pair a pair of fully-qualified scoped names of groups.
+    @note A pair can consist of the same name twice, which means the pair defines
+    a rule where all members of the group exclude each other. Adding an already
+    defined pair does nothing.
+    */
+    void AddExclusionPair(const SortedPair<std::string>& pair);
 
-  /** @returns true iff both groups() and exclusion_pairs() are empty. */
-  bool empty() const;
+    /** @returns true iff both groups() and exclusion_pairs() are empty. */
+    bool empty() const;
 
-  /** @returns the groups stored by prior calls to AddGroup(). */
-  const std::map<std::string, std::set<std::string>>& groups() const;
+    /** @returns the groups stored by prior calls to AddGroup(). */
+    const std::map<std::string, std::set<std::string>>& groups() const;
 
-  /** @returns the pairs stored by prior calls to AddExclusionPair(). */
-  const std::set<SortedPair<std::string>>& exclusion_pairs() const;
+    /** @returns the pairs stored by prior calls to AddExclusionPair(). */
+    const std::set<SortedPair<std::string>>& exclusion_pairs() const;
 
-  /** @returns a multi-line human-readable representation of this' contents. */
-  std::string to_string() const;
+    /** @returns a multi-line human-readable representation of this' contents. */
+    std::string to_string() const;
 
 #ifndef DRAKE_DOXYGEN_CXX
-  /* (Internal use only) Internal move-constructor for efficiency. */
-  explicit CollisionFilterGroups(
-      internal::CollisionFilterGroupsImpl<std::string>&&);
+    /* (Internal use only) Internal move-constructor for efficiency. */
+    explicit CollisionFilterGroups(internal::CollisionFilterGroupsImpl<std::string>&&);
 #endif
 
- private:
-  // To reduce implementation complexity, the impl_ pointer must never be null.
-  // Otherwise, every method would need to check for null and implement
-  // alternative behavior.
-  copyable_unique_ptr<internal::CollisionFilterGroupsImpl<std::string>> impl_;
+private:
+    // To reduce implementation complexity, the impl_ pointer must never be null.
+    // Otherwise, every method would need to check for null and implement
+    // alternative behavior.
+    copyable_unique_ptr<internal::CollisionFilterGroupsImpl<std::string>> impl_;
 };
 
 }  // namespace multibody

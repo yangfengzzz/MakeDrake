@@ -15,16 +15,14 @@ namespace internal {
  parameters. */
 template <int natural_dimension, int order>
 constexpr int num_simplex_quadrature_locations() {
-  static_assert(
-      1 <= order && order <= 3,
-      "Only linear, quadratic and cubic quadrature rules are supported.");
-  if constexpr (order == 1) {
-    return 1;
-  } else if constexpr (order == 2) {
-    return natural_dimension + 1;
-  } else if constexpr (order == 3) {
-    return natural_dimension + 2;
-  }
+    static_assert(1 <= order && order <= 3, "Only linear, quadratic and cubic quadrature rules are supported.");
+    if constexpr (order == 1) {
+        return 1;
+    } else if constexpr (order == 2) {
+        return natural_dimension + 1;
+    } else if constexpr (order == 3) {
+        return natural_dimension + 2;
+    }
 }
 
 // TODO(xuchenhan-tri): Support natural_dimension = 1 if it turns out useful.
@@ -45,23 +43,20 @@ constexpr int num_simplex_quadrature_locations() {
  The finite element method: its basis and fundamentals. Elsevier, 2005. */
 template <int natural_dimension, int order>
 class SimplexGaussianQuadrature
-    : public Quadrature<natural_dimension, num_simplex_quadrature_locations<
-                                               natural_dimension, order>()> {
- public:
-  using Base =
-      Quadrature<natural_dimension,
-                 num_simplex_quadrature_locations<natural_dimension, order>()>;
-  using VectorD = typename Base::VectorD;
-  using LocationsType = typename Base::LocationsType;
-  using WeightsType = typename Base::WeightsType;
+    : public Quadrature<natural_dimension, num_simplex_quadrature_locations<natural_dimension, order>()> {
+public:
+    using Base = Quadrature<natural_dimension, num_simplex_quadrature_locations<natural_dimension, order>()>;
+    using VectorD = typename Base::VectorD;
+    using LocationsType = typename Base::LocationsType;
+    using WeightsType = typename Base::WeightsType;
 
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SimplexGaussianQuadrature);
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SimplexGaussianQuadrature);
 
-  SimplexGaussianQuadrature() : Base(ComputePointsAndWeights()) {}
+    SimplexGaussianQuadrature() : Base(ComputePointsAndWeights()) {}
 
- private:
-  /* Helper function to initialize quadrature locations and weights. */
-  static std::pair<LocationsType, WeightsType> ComputePointsAndWeights();
+private:
+    /* Helper function to initialize quadrature locations and weights. */
+    static std::pair<LocationsType, WeightsType> ComputePointsAndWeights();
 };
 
 }  // namespace internal

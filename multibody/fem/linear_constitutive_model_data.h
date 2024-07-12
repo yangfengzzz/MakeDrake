@@ -22,40 +22,34 @@ namespace internal {
  of this template with `num_locations = 1`, but more instantiations can easily
  be added when needed. */
 template <typename T, int num_locations>
-class LinearConstitutiveModelData
-    : public DeformationGradientData<
-          LinearConstitutiveModelData<T, num_locations>> {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(LinearConstitutiveModelData);
+class LinearConstitutiveModelData : public DeformationGradientData<LinearConstitutiveModelData<T, num_locations>> {
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(LinearConstitutiveModelData);
 
-  /* Constructs a LinearConstitutiveModelData with zero strain. */
-  LinearConstitutiveModelData();
+    /* Constructs a LinearConstitutiveModelData with zero strain. */
+    LinearConstitutiveModelData();
 
-  /* Returns the infinitesimal strains (E = 0.5 * (F + Fᵀ) - I) evaluated with
-   the deformation gradient passed when DeformationGradientData::UpdateData()
-   was last invoked. */
-  const std::array<Matrix3<T>, num_locations>& strain() const {
-    return strain_;
-  }
+    /* Returns the infinitesimal strains (E = 0.5 * (F + Fᵀ) - I) evaluated with
+     the deformation gradient passed when DeformationGradientData::UpdateData()
+     was last invoked. */
+    const std::array<Matrix3<T>, num_locations>& strain() const { return strain_; }
 
-  /* Returns the traces of the infinitesimal strains (Tr(E)) evaluated with the
-   deformation gradient passed when DeformationGradientData::UpdateData() was
-   last invoked. */
-  const std::array<T, num_locations>& trace_strain() const {
-    return trace_strain_;
-  }
+    /* Returns the traces of the infinitesimal strains (Tr(E)) evaluated with the
+     deformation gradient passed when DeformationGradientData::UpdateData() was
+     last invoked. */
+    const std::array<T, num_locations>& trace_strain() const { return trace_strain_; }
 
- private:
-  friend DeformationGradientData<LinearConstitutiveModelData<T, num_locations>>;
+private:
+    friend DeformationGradientData<LinearConstitutiveModelData<T, num_locations>>;
 
-  /* Shadows DeformationGradientData::UpdateFromDeformationGradient() as
-   required by the CRTP base class. */
-  void UpdateFromDeformationGradient();
+    /* Shadows DeformationGradientData::UpdateFromDeformationGradient() as
+     required by the CRTP base class. */
+    void UpdateFromDeformationGradient();
 
-  /* The infinitesimal strain. */
-  std::array<Matrix3<T>, num_locations> strain_;
-  /* Trace of `strain_`. */
-  std::array<T, num_locations> trace_strain_;
+    /* The infinitesimal strain. */
+    std::array<Matrix3<T>, num_locations> strain_;
+    /* Trace of `strain_`. */
+    std::array<T, num_locations> trace_strain_;
 };
 
 }  // namespace internal

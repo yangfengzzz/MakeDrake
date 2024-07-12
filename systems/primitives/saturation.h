@@ -49,86 +49,83 @@ namespace systems {
 /// @ingroup primitive_systems
 template <typename T>
 class Saturation final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Saturation);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(Saturation);
 
-  /// Constructs a variable %Saturation system where the upper and lower values
-  /// are represented by vectors of identical size and can be supplied via the
-  /// max_value_port and min_value_port respectively.
-  ///
-  /// @system
-  /// name: Saturation
-  /// input_ports:
-  /// - u0
-  /// - u1
-  /// - u2
-  /// output_ports:
-  /// - y0
-  /// @endsystem
-  ///
-  /// Port `u1` is the source of @f$ u_{max} @f$; port `u2` is the source of
-  /// @f$ u_{min} @f$.
-  ///
-  /// @param[in] input_size sets size of the input and output ports.
-  ///
-  /// Please consult this class's description for the requirements of
-  /// @p u_min and @p u_max to be supplied via the corresponding ports.
-  explicit Saturation(int input_size);
+    /// Constructs a variable %Saturation system where the upper and lower values
+    /// are represented by vectors of identical size and can be supplied via the
+    /// max_value_port and min_value_port respectively.
+    ///
+    /// @system
+    /// name: Saturation
+    /// input_ports:
+    /// - u0
+    /// - u1
+    /// - u2
+    /// output_ports:
+    /// - y0
+    /// @endsystem
+    ///
+    /// Port `u1` is the source of @f$ u_{max} @f$; port `u2` is the source of
+    /// @f$ u_{min} @f$.
+    ///
+    /// @param[in] input_size sets size of the input and output ports.
+    ///
+    /// Please consult this class's description for the requirements of
+    /// @p u_min and @p u_max to be supplied via the corresponding ports.
+    explicit Saturation(int input_size);
 
-  /// Constructs a constant %Saturation system where the upper and lower
-  /// values are represented by vectors of identical size supplied via this
-  /// constructor.
-  ///
-  /// @system
-  /// name: Saturation
-  /// input_ports:
-  /// - u0
-  /// output_ports:
-  /// - y0
-  /// @endsystem
-  ///
-  /// @param[in] u_min the lower (vector) limit to the
-  /// saturation.
-  /// @param[in] u_max the upper (vector) limit to the
-  /// saturation.
-  ///
-  /// Please consult this class's description for the requirements of
-  /// @p u_min and @p u_max.
-  Saturation(const VectorX<T>& min_value, const VectorX<T>& max_value);
+    /// Constructs a constant %Saturation system where the upper and lower
+    /// values are represented by vectors of identical size supplied via this
+    /// constructor.
+    ///
+    /// @system
+    /// name: Saturation
+    /// input_ports:
+    /// - u0
+    /// output_ports:
+    /// - y0
+    /// @endsystem
+    ///
+    /// @param[in] u_min the lower (vector) limit to the
+    /// saturation.
+    /// @param[in] u_max the upper (vector) limit to the
+    /// saturation.
+    ///
+    /// Please consult this class's description for the requirements of
+    /// @p u_min and @p u_max.
+    Saturation(const VectorX<T>& min_value, const VectorX<T>& max_value);
 
-  /// Returns the input port.
-  const InputPort<T>& get_input_port() const {
-    return System<T>::get_input_port(input_port_index_);
-  }
+    /// Returns the input port.
+    const InputPort<T>& get_input_port() const { return System<T>::get_input_port(input_port_index_); }
 
-  /// Returns the min value port.
-  const InputPort<T>& get_min_value_port() const {
-    DRAKE_THROW_UNLESS(min_max_ports_enabled_);
-    return System<T>::get_input_port(min_value_port_index_);
-  }
+    /// Returns the min value port.
+    const InputPort<T>& get_min_value_port() const {
+        DRAKE_THROW_UNLESS(min_max_ports_enabled_);
+        return System<T>::get_input_port(min_value_port_index_);
+    }
 
-  /// Returns the max value port.
-  const InputPort<T>& get_max_value_port() const {
-    DRAKE_THROW_UNLESS(min_max_ports_enabled_);
-    return System<T>::get_input_port(max_value_port_index_);
-  }
+    /// Returns the max value port.
+    const InputPort<T>& get_max_value_port() const {
+        DRAKE_THROW_UNLESS(min_max_ports_enabled_);
+        return System<T>::get_input_port(max_value_port_index_);
+    }
 
-  /// Returns the size.
-  int get_size() const { return input_size_; }
-  // TODO(naveenoid) : Add a witness function for capturing events when
-  // saturation limits are reached.
+    /// Returns the size.
+    int get_size() const { return input_size_; }
+    // TODO(naveenoid) : Add a witness function for capturing events when
+    // saturation limits are reached.
 
- private:
-  void CalcSaturatedOutput(const Context<T>& context,
-                           BasicVector<T>* output_vector) const;
+private:
+    void CalcSaturatedOutput(const Context<T>& context, BasicVector<T>* output_vector) const;
 
-  int input_port_index_{};
-  int min_value_port_index_{};
-  int max_value_port_index_{};
-  const bool min_max_ports_enabled_{false};
-  const int input_size_{};
-  const VectorX<T> max_value_;
-  const VectorX<T> min_value_;
+    int input_port_index_{};
+    int min_value_port_index_{};
+    int max_value_port_index_{};
+    const bool min_max_ports_enabled_{false};
+    const int input_size_{};
+    const VectorX<T> max_value_;
+    const VectorX<T> min_value_;
 };
 
 }  // namespace systems

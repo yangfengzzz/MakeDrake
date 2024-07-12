@@ -150,7 +150,6 @@ def _run(*, temp_dir: Path, package_name: str, urls: List[str], sha256: str,
 
 
 def _wrapped_main(*, config_json):
-
     # Read our config file.
     with open(config_json, "r") as f:
         kwargs = json.load(f)

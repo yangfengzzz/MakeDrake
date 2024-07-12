@@ -12,28 +12,28 @@ namespace internal {
 // a SapSolver.
 template <class T>
 struct SapSolverResults {
-  // Resizes `this` object to store the contact results for a problem with
-  // `num_velocities` and `num_constraint_equations`.
-  void Resize(int num_velocities, int num_constraint_equations) {
-    v.resize(num_velocities);
-    gamma.resize(num_constraint_equations);
-    vc.resize(num_constraint_equations);
-    j.resize(num_velocities);
-  }
+    // Resizes `this` object to store the contact results for a problem with
+    // `num_velocities` and `num_constraint_equations`.
+    void Resize(int num_velocities, int num_constraint_equations) {
+        v.resize(num_velocities);
+        gamma.resize(num_constraint_equations);
+        vc.resize(num_constraint_equations);
+        j.resize(num_velocities);
+    }
 
-  // Vector of generalized velocities at the next time step.
-  VectorX<T> v;
+    // Vector of generalized velocities at the next time step.
+    VectorX<T> v;
 
-  // Constraints' impulses, of size `num_constraint_equations`.
-  VectorX<T> gamma;
+    // Constraints' impulses, of size `num_constraint_equations`.
+    VectorX<T> gamma;
 
-  // Constraints' velocities vc = J⋅v, where J is the contact Jacobian. Of size
-  // `num_constraint_equations`.
-  VectorX<T> vc;
+    // Constraints' velocities vc = J⋅v, where J is the contact Jacobian. Of size
+    // `num_constraint_equations`.
+    VectorX<T> vc;
 
-  // Vector of generalized impulses j = Jᵀ⋅γ due to constraints, where J is the
-  // contact Jacobian. Of size `num_velocities`.
-  VectorX<T> j;
+    // Vector of generalized impulses j = Jᵀ⋅γ due to constraints, where J is the
+    // contact Jacobian. Of size `num_velocities`.
+    VectorX<T> j;
 };
 
 }  // namespace internal
@@ -42,4 +42,4 @@ struct SapSolverResults {
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    struct ::drake::multibody::contact_solvers::internal::SapSolverResults);
+        struct ::drake::multibody::contact_solvers::internal::SapSolverResults);

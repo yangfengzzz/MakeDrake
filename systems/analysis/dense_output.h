@@ -43,142 +43,136 @@ namespace systems {
 /// @tparam_default_scalar
 template <typename T>
 class DenseOutput {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DenseOutput);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DenseOutput);
 
-  virtual ~DenseOutput() = default;
+    virtual ~DenseOutput() = default;
 
-  /// Evaluates the output at the given time @p t.
-  /// @param t Time at which to evaluate output.
-  /// @returns Output vector value.
-  /// @pre Output is not empty i.e. is_empty() equals false.
-  /// @throws std::exception if any of the preconditions are not met.
-  /// @throws std::exception if given @p t is not within output's domain
-  ///                        i.e. @p t ∉ [start_time(), end_time()].
-  VectorX<T> Evaluate(const T& t) const {
-    ThrowIfOutputIsEmpty(__func__);
-    ThrowIfTimeIsInvalid(__func__, t);
-    return this->DoEvaluate(t);
-  }
-
-  /// Evaluates the output value's `n`th scalar element (0-indexed) at the
-  /// given time @p t.
-  /// @note On some implementations, the computational cost of this
-  ///       method may be lower than that of indexing an Evaluate(const T&)
-  ///       call return vector value, thus making it the preferred mechanism
-  ///       when targeting a single dimension.
-  /// @param t Time at which to evaluate output.
-  /// @param n The nth scalar element (0-indexed) of the output
-  ///          value to evaluate.
-  /// @returns Output value's `n`th scalar element (0-indexed).
-  /// @pre Output is not empty i.e. is_empty() equals false.
-  /// @throws std::exception if any of the preconditions are not met.
-  /// @throws std::exception if given @p t is not within output's domain
-  ///                        i.e. @p t ∉ [start_time(), end_time()].
-  /// @throws std::exception if given @p n does not refer to a valid
-  ///                        output dimension i.e. @p n ∉ [0, size()).
-  T EvaluateNth(const T& t, int n) const {
-    ThrowIfOutputIsEmpty(__func__);
-    ThrowIfNthElementIsInvalid(__func__, n);
-    ThrowIfTimeIsInvalid(__func__, t);
-    return this->DoEvaluateNth(t, n);
-  }
-
-  /// Returns the output size (i.e. the number of elements in an
-  /// output value).
-  /// @pre Output is not empty i.e. is_empty() equals false.
-  /// @throws std::exception if any of the preconditions is not met.
-  int size() const {
-    ThrowIfOutputIsEmpty(__func__);
-    return this->do_size();
-  }
-
-  /// Checks whether the output is empty or not.
-  bool is_empty() const { return this->do_is_empty(); }
-
-  /// Returns output's start time, or in other words, the oldest time
-  /// `t` that it can be evaluated at e.g. via Evaluate().
-  /// @pre Output is not empty i.e. is_empty() equals false.
-  /// @throws std::exception if any of the preconditions is not met.
-  const T& start_time() const {
-    ThrowIfOutputIsEmpty(__func__);
-    return this->do_start_time();
-  }
-
-  /// Returns output's end time, or in other words, the newest time
-  /// `t` that it can be evaluated at e.g. via Evaluate().
-  /// @pre Output is not empty i.e. is_empty() equals false.
-  /// @throws std::exception if any of the preconditions is not met.
-  const T& end_time() const {
-    ThrowIfOutputIsEmpty(__func__);
-    return this->do_end_time();
-  }
-
- protected:
-  DenseOutput() = default;
-
-  // @see Evaluate(const T&)
-  virtual VectorX<T> DoEvaluate(const T& t) const = 0;
-
-  // @remarks The computational cost of this method must
-  //          be less than or equal to that of indexing
-  //          DoEvaluate(const T&) return value.
-  // @see Evaluate(const T&, int)
-  virtual T DoEvaluateNth(const T& t, int n) const {
-    return this->DoEvaluate(t)(n);
-  }
-
-  // @see is_empty()
-  virtual bool do_is_empty() const = 0;
-
-  // @see size()
-  virtual int do_size() const = 0;
-
-  // @see start_time()
-  virtual const T& do_start_time() const = 0;
-
-  // @see end_time()
-  virtual const T& do_end_time() const = 0;
-
-  // Asserts that this dense output is not empty.
-  // @param func_name Call site name for error message clarity (i.e. __func__).
-  // @throws std::exception if output is empty i.e. is_empty() equals false.
-  void ThrowIfOutputIsEmpty(const char* func_name) const {
-    if (is_empty()) {
-      throw std::logic_error(fmt::format(
-          "{}(): Dense output is empty.", func_name));
+    /// Evaluates the output at the given time @p t.
+    /// @param t Time at which to evaluate output.
+    /// @returns Output vector value.
+    /// @pre Output is not empty i.e. is_empty() equals false.
+    /// @throws std::exception if any of the preconditions are not met.
+    /// @throws std::exception if given @p t is not within output's domain
+    ///                        i.e. @p t ∉ [start_time(), end_time()].
+    VectorX<T> Evaluate(const T& t) const {
+        ThrowIfOutputIsEmpty(__func__);
+        ThrowIfTimeIsInvalid(__func__, t);
+        return this->DoEvaluate(t);
     }
-  }
 
-  // Asserts that the given element index @p n is valid for this dense output.
-  // @param func_name Call site name for error message clarity (i.e. __func__).
-  // @param n The nth scalar element (0-indexed) to be checked.
-  // @throws std::exception if given @p n does not refer to a valid
-  //                        output dimension i.e. @p n ∉ [0, size()).
-  void ThrowIfNthElementIsInvalid(const char* func_name, int n) const {
-    if (n < 0 || this->do_size() <= n) {
-      throw std::runtime_error(fmt::format(
-          "{}(): Index {} out of dense output [0, {}) range.",
-          func_name, n, this->do_size()));
+    /// Evaluates the output value's `n`th scalar element (0-indexed) at the
+    /// given time @p t.
+    /// @note On some implementations, the computational cost of this
+    ///       method may be lower than that of indexing an Evaluate(const T&)
+    ///       call return vector value, thus making it the preferred mechanism
+    ///       when targeting a single dimension.
+    /// @param t Time at which to evaluate output.
+    /// @param n The nth scalar element (0-indexed) of the output
+    ///          value to evaluate.
+    /// @returns Output value's `n`th scalar element (0-indexed).
+    /// @pre Output is not empty i.e. is_empty() equals false.
+    /// @throws std::exception if any of the preconditions are not met.
+    /// @throws std::exception if given @p t is not within output's domain
+    ///                        i.e. @p t ∉ [start_time(), end_time()].
+    /// @throws std::exception if given @p n does not refer to a valid
+    ///                        output dimension i.e. @p n ∉ [0, size()).
+    T EvaluateNth(const T& t, int n) const {
+        ThrowIfOutputIsEmpty(__func__);
+        ThrowIfNthElementIsInvalid(__func__, n);
+        ThrowIfTimeIsInvalid(__func__, t);
+        return this->DoEvaluateNth(t, n);
     }
-  }
 
-  // Asserts that the given time @p t is valid for this dense output.
-  // @param func_name Call site name for error message clarity (i.e. __func__).
-  // @param t Time to be checked.
-  // @throws std::exception if given @p t is not within output's domain
-  //                        i.e. @p t ∉ [start_time(), end_time()].
-  void ThrowIfTimeIsInvalid(const char* func_name, const T& t) const {
-    if (t < this->do_start_time() || t > this->do_end_time()) {
-      throw std::runtime_error(fmt::format(
-          "{}(): Time {} out of dense output [{}, {}] domain.",
-          func_name, t, this->do_start_time(), this->do_end_time()));
+    /// Returns the output size (i.e. the number of elements in an
+    /// output value).
+    /// @pre Output is not empty i.e. is_empty() equals false.
+    /// @throws std::exception if any of the preconditions is not met.
+    int size() const {
+        ThrowIfOutputIsEmpty(__func__);
+        return this->do_size();
     }
-  }
+
+    /// Checks whether the output is empty or not.
+    bool is_empty() const { return this->do_is_empty(); }
+
+    /// Returns output's start time, or in other words, the oldest time
+    /// `t` that it can be evaluated at e.g. via Evaluate().
+    /// @pre Output is not empty i.e. is_empty() equals false.
+    /// @throws std::exception if any of the preconditions is not met.
+    const T& start_time() const {
+        ThrowIfOutputIsEmpty(__func__);
+        return this->do_start_time();
+    }
+
+    /// Returns output's end time, or in other words, the newest time
+    /// `t` that it can be evaluated at e.g. via Evaluate().
+    /// @pre Output is not empty i.e. is_empty() equals false.
+    /// @throws std::exception if any of the preconditions is not met.
+    const T& end_time() const {
+        ThrowIfOutputIsEmpty(__func__);
+        return this->do_end_time();
+    }
+
+protected:
+    DenseOutput() = default;
+
+    // @see Evaluate(const T&)
+    virtual VectorX<T> DoEvaluate(const T& t) const = 0;
+
+    // @remarks The computational cost of this method must
+    //          be less than or equal to that of indexing
+    //          DoEvaluate(const T&) return value.
+    // @see Evaluate(const T&, int)
+    virtual T DoEvaluateNth(const T& t, int n) const { return this->DoEvaluate(t)(n); }
+
+    // @see is_empty()
+    virtual bool do_is_empty() const = 0;
+
+    // @see size()
+    virtual int do_size() const = 0;
+
+    // @see start_time()
+    virtual const T& do_start_time() const = 0;
+
+    // @see end_time()
+    virtual const T& do_end_time() const = 0;
+
+    // Asserts that this dense output is not empty.
+    // @param func_name Call site name for error message clarity (i.e. __func__).
+    // @throws std::exception if output is empty i.e. is_empty() equals false.
+    void ThrowIfOutputIsEmpty(const char* func_name) const {
+        if (is_empty()) {
+            throw std::logic_error(fmt::format("{}(): Dense output is empty.", func_name));
+        }
+    }
+
+    // Asserts that the given element index @p n is valid for this dense output.
+    // @param func_name Call site name for error message clarity (i.e. __func__).
+    // @param n The nth scalar element (0-indexed) to be checked.
+    // @throws std::exception if given @p n does not refer to a valid
+    //                        output dimension i.e. @p n ∉ [0, size()).
+    void ThrowIfNthElementIsInvalid(const char* func_name, int n) const {
+        if (n < 0 || this->do_size() <= n) {
+            throw std::runtime_error(
+                    fmt::format("{}(): Index {} out of dense output [0, {}) range.", func_name, n, this->do_size()));
+        }
+    }
+
+    // Asserts that the given time @p t is valid for this dense output.
+    // @param func_name Call site name for error message clarity (i.e. __func__).
+    // @param t Time to be checked.
+    // @throws std::exception if given @p t is not within output's domain
+    //                        i.e. @p t ∉ [start_time(), end_time()].
+    void ThrowIfTimeIsInvalid(const char* func_name, const T& t) const {
+        if (t < this->do_start_time() || t > this->do_end_time()) {
+            throw std::runtime_error(fmt::format("{}(): Time {} out of dense output [{}, {}] domain.", func_name, t,
+                                                 this->do_start_time(), this->do_end_time()));
+        }
+    }
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class drake::systems::DenseOutput);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class drake::systems::DenseOutput);

@@ -37,22 +37,22 @@ void AggregateLinearCosts(const std::vector<Binding<LinearCost>>& linear_costs,
  * @param linear_vars[out] x₂ in the documentation above.
  * @param constant_cost[out] c in the documentation above.
  */
-void AggregateQuadraticAndLinearCosts(
-    const std::vector<Binding<QuadraticCost>>& quadratic_costs,
-    const std::vector<Binding<LinearCost>>& linear_costs,
-    Eigen::SparseMatrix<double>* Q_lower,
-    VectorX<symbolic::Variable>* quadratic_vars,
-    Eigen::SparseVector<double>* linear_coeff,
-    VectorX<symbolic::Variable>* linear_vars, double* constant_cost);
+void AggregateQuadraticAndLinearCosts(const std::vector<Binding<QuadraticCost>>& quadratic_costs,
+                                      const std::vector<Binding<LinearCost>>& linear_costs,
+                                      Eigen::SparseMatrix<double>* Q_lower,
+                                      VectorX<symbolic::Variable>* quadratic_vars,
+                                      Eigen::SparseVector<double>* linear_coeff,
+                                      VectorX<symbolic::Variable>* linear_vars,
+                                      double* constant_cost);
 
 /**
  * Stores the lower and upper bound of a variable.
  */
 struct Bound {
-  /** Lower bound. */
-  double lower{};
-  /** Upper bound. */
-  double upper{};
+    /** Lower bound. */
+    double lower{};
+    /** Upper bound. */
+    double upper{};
 };
 
 /**
@@ -63,10 +63,8 @@ struct Bound {
  * (lower, upper) bounds of that variable as the tightest bounds of @p
  * bounding_box_constraints.
  */
-[[nodiscard]] std::unordered_map<symbolic::Variable, Bound>
-AggregateBoundingBoxConstraints(
-    const std::vector<Binding<BoundingBoxConstraint>>&
-        bounding_box_constraints);
+[[nodiscard]] std::unordered_map<symbolic::Variable, Bound> AggregateBoundingBoxConstraints(
+        const std::vector<Binding<BoundingBoxConstraint>>& bounding_box_constraints);
 
 /**
  * Aggregates all the BoundingBoxConstraints inside @p prog, returns the
@@ -79,9 +77,7 @@ AggregateBoundingBoxConstraints(
  * @param[out] upper (*upper)[i] is the upper bound of
  * prog.decision_variable(i).
  */
-void AggregateBoundingBoxConstraints(const MathematicalProgram& prog,
-                                     Eigen::VectorXd* lower,
-                                     Eigen::VectorXd* upper);
+void AggregateBoundingBoxConstraints(const MathematicalProgram& prog, Eigen::VectorXd* lower, Eigen::VectorXd* upper);
 
 /**
  * Overloads AggregateBoundingBoxConstraints, but the type of lower and upper
@@ -105,13 +101,12 @@ namespace internal {
 // Returns the first non-convex quadratic cost among @p quadratic_costs. If all
 // quadratic costs are convex, then return a nullptr.
 [[nodiscard]] const Binding<QuadraticCost>* FindNonconvexQuadraticCost(
-    const std::vector<Binding<QuadraticCost>>& quadratic_costs);
+        const std::vector<Binding<QuadraticCost>>& quadratic_costs);
 // Returns the first non-convex quadratic constraint among @p
 // quadratic_constraints. If all quadratic constraints are convex, then returns
 // a nullptr.
-[[nodiscard]] const Binding<QuadraticConstraint>*
-FindNonconvexQuadraticConstraint(
-    const std::vector<Binding<QuadraticConstraint>>& quadratic_constraints);
+[[nodiscard]] const Binding<QuadraticConstraint>* FindNonconvexQuadraticConstraint(
+        const std::vector<Binding<QuadraticConstraint>>& quadratic_constraints);
 
 // If the program is compatible with this solver (the solver meets the required
 // capabilities of the program, and the program is convex), returns true and
@@ -127,8 +122,7 @@ bool CheckConvexSolverAttributes(const MathematicalProgram& prog,
 // @note c and constant might not be zero. This function adds
 // prog.linear_costs() to the coefficient c and constant.
 // @pre c->size() >= prog.num_vars();
-void ParseLinearCosts(const MathematicalProgram& prog, std::vector<double>* c,
-                      double* constant);
+void ParseLinearCosts(const MathematicalProgram& prog, std::vector<double>* c, double* constant);
 
 // Parses all prog.linear_equality_constraints() to
 // A*x = b
@@ -156,11 +150,12 @@ void ParseLinearCosts(const MathematicalProgram& prog, std::vector<double>* c,
 // appended to A*x+s=b in all prog.linear_equality_constraints(). Note
 // num_linear_equality_constraints_rows is A_row_count AFTER calling this
 // function minus A_row_count BEFORE calling this function.
-void ParseLinearEqualityConstraints(
-    const solvers::MathematicalProgram& prog,
-    std::vector<Eigen::Triplet<double>>* A_triplets, std::vector<double>* b,
-    int* A_row_count, std::vector<int>* linear_eq_y_start_indices,
-    int* num_linear_equality_constraints_rows);
+void ParseLinearEqualityConstraints(const solvers::MathematicalProgram& prog,
+                                    std::vector<Eigen::Triplet<double>>* A_triplets,
+                                    std::vector<double>* b,
+                                    int* A_row_count,
+                                    std::vector<int>* linear_eq_y_start_indices,
+                                    int* num_linear_equality_constraints_rows);
 
 // Parses all prog.linear_constraints() to
 // A*x + s = b
@@ -187,16 +182,17 @@ void ParseLinearEqualityConstraints(
 // prog.linear_equality_constraints()
 void ParseLinearConstraints(const solvers::MathematicalProgram& prog,
                             std::vector<Eigen::Triplet<double>>* A_triplets,
-                            std::vector<double>* b, int* A_row_count,
-                            std::vector<std::vector<std::pair<int, int>>>*
-                                linear_constraint_dual_indices,
+                            std::vector<double>* b,
+                            int* A_row_count,
+                            std::vector<std::vector<std::pair<int, int>>>* linear_constraint_dual_indices,
                             int* num_linear_constraint_rows);
 
 // Aggregates all quadratic prog.quadratic_costs() and add the aggregated cost
 // to 0.5*x'P*x + c'*x + constant. where x is prog.decision_variables().
 void ParseQuadraticCosts(const MathematicalProgram& prog,
                          std::vector<Eigen::Triplet<double>>* P_upper_triplets,
-                         std::vector<double>* c, double* constant);
+                         std::vector<double>* c,
+                         double* constant);
 
 // Parse a L2NormCost |Cx+d|₂ to Clarabel/SCS format.
 // We need to
@@ -229,7 +225,8 @@ void ParseQuadraticCosts(const MathematicalProgram& prog,
 void ParseL2NormCosts(const MathematicalProgram& prog,
                       int* num_solver_variables,
                       std::vector<Eigen::Triplet<double>>* A_triplets,
-                      std::vector<double>* b, int* A_row_count,
+                      std::vector<double>* b,
+                      int* A_row_count,
                       std::vector<int>* second_order_cone_length,
                       std::vector<int>* lorentz_cone_y_start_indices,
                       std::vector<double>* cost_coeffs,
@@ -259,12 +256,13 @@ void ParseL2NormCosts(const MathematicalProgram& prog,
 // transformation. Hence we need to apply the transpose of that linear
 // transformation on the y variable to get the dual variable in the dual cone
 // of rotated Lorentz cone.
-void ParseSecondOrderConeConstraints(
-    const MathematicalProgram& prog,
-    std::vector<Eigen::Triplet<double>>* A_triplets, std::vector<double>* b,
-    int* A_row_count, std::vector<int>* second_order_cone_length,
-    std::vector<int>* lorentz_cone_y_start_indices,
-    std::vector<int>* rotated_lorentz_cone_y_start_indices);
+void ParseSecondOrderConeConstraints(const MathematicalProgram& prog,
+                                     std::vector<Eigen::Triplet<double>>* A_triplets,
+                                     std::vector<double>* b,
+                                     int* A_row_count,
+                                     std::vector<int>* second_order_cone_length,
+                                     std::vector<int>* lorentz_cone_y_start_indices,
+                                     std::vector<int>* rotated_lorentz_cone_y_start_indices);
 
 // Add a rotated Lorentz cone constraint that A_cone * x + b_cone is in the
 // rotated Lorentz cone.
@@ -285,13 +283,14 @@ void ParseSecondOrderConeConstraints(
 // @param rotated_lorentz_cone_y_start_indices[in/out] The starting index of y
 // corresponds to this rotated Lorentz cone. If set to nullopt, then we don't
 // modify rotated_lorentz_cone_y_start_indices.
-void ParseRotatedLorentzConeConstraint(
-    const std::vector<Eigen::Triplet<double>>& A_cone_triplets,
-    const Eigen::Ref<const Eigen::VectorXd>& b_cone,
-    const std::vector<int>& x_indices,
-    std::vector<Eigen::Triplet<double>>* A_triplets, std::vector<double>* b,
-    int* A_row_count, std::vector<int>* second_order_cone_length,
-    std::optional<std::vector<int>*> rotated_lorentz_cone_y_start_indices);
+void ParseRotatedLorentzConeConstraint(const std::vector<Eigen::Triplet<double>>& A_cone_triplets,
+                                       const Eigen::Ref<const Eigen::VectorXd>& b_cone,
+                                       const std::vector<int>& x_indices,
+                                       std::vector<Eigen::Triplet<double>>* A_triplets,
+                                       std::vector<double>* b,
+                                       int* A_row_count,
+                                       std::vector<int>* second_order_cone_length,
+                                       std::optional<std::vector<int>*> rotated_lorentz_cone_y_start_indices);
 
 // Parses all prog.exponential_cone_constraints() to
 // A*x + s = b
@@ -311,10 +310,10 @@ void ParseRotatedLorentzConeConstraint(
 // prog.exponential_cone_constraints() will be appended to b.
 // @param[in/out] A_row_count The number of rows in A before and after calling
 // this function.
-void ParseExponentialConeConstraints(
-    const MathematicalProgram& prog,
-    std::vector<Eigen::Triplet<double>>* A_triplets, std::vector<double>* b,
-    int* A_row_count);
+void ParseExponentialConeConstraints(const MathematicalProgram& prog,
+                                     std::vector<Eigen::Triplet<double>>* A_triplets,
+                                     std::vector<double>* b,
+                                     int* A_row_count);
 
 // This function parses prog.positive_semidefinite_constraints() and
 // prog.linear_matrix_inequality_constraints() into SCS/Clarabel format.
@@ -339,10 +338,12 @@ void ParseExponentialConeConstraints(
 // @param[out] psd_cone_length The length of all the psd cones from
 // prog.positive_semidefinite_constraints() and
 // prog.linear_matrix_inequality_constraints().
-void ParsePositiveSemidefiniteConstraints(
-    const MathematicalProgram& prog, bool upper_triangular,
-    std::vector<Eigen::Triplet<double>>* A_triplets, std::vector<double>* b,
-    int* A_row_count, std::vector<int>* psd_cone_length);
+void ParsePositiveSemidefiniteConstraints(const MathematicalProgram& prog,
+                                          bool upper_triangular,
+                                          std::vector<Eigen::Triplet<double>>* A_triplets,
+                                          std::vector<double>* b,
+                                          int* A_row_count,
+                                          std::vector<int>* psd_cone_length);
 }  // namespace internal
 }  // namespace solvers
 }  // namespace drake

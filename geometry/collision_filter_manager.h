@@ -165,84 +165,77 @@ class GeometryState;
  Attempting to change the persistent configuration when there are active
  transient declarations in the history will throw an exception.   */
 class CollisionFilterManager {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(CollisionFilterManager);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(CollisionFilterManager);
 
-  /** Applies the given `declaration` to the geometry state managed by `this`
-   instance.
+    /** Applies the given `declaration` to the geometry state managed by `this`
+     instance.
 
-   The process of *applying* the collision filter data also validates it. The
-   following polices are implemented during application:
+     The process of *applying* the collision filter data also validates it. The
+     following polices are implemented during application:
 
-     - Referencing an invalid id (FrameId or GeometryId): throws.
-     - Declaring a filtered pair that is already filtered: no discernible
-       change.
-     - Attempts to "allow" collision between a pair that is strictly excluded
-       (e.g., between two anchored geometries) will be ignored.
+       - Referencing an invalid id (FrameId or GeometryId): throws.
+       - Declaring a filtered pair that is already filtered: no discernible
+         change.
+       - Attempts to "allow" collision between a pair that is strictly excluded
+         (e.g., between two anchored geometries) will be ignored.
 
-   @throws std::exception if the `declaration` references invalid ids or there
-                          is an active history. */
-  void Apply(const CollisionFilterDeclaration& declaration) {
-    /* Modifications made via this API are by the user. Only the internals can
-     declare filters to be "invariant". */
-    filter_->Apply(declaration, extract_ids_, false /* is_invariant */);
-  }
+     @throws std::exception if the `declaration` references invalid ids or there
+                            is an active history. */
+    void Apply(const CollisionFilterDeclaration& declaration) {
+        /* Modifications made via this API are by the user. Only the internals can
+         declare filters to be "invariant". */
+        filter_->Apply(declaration, extract_ids_, false /* is_invariant */);
+    }
 
-  // TODO(SeanCurtis-TRI) SceneGraphInspector includes the method
-  //  CollisionFiltered. It reports whether two geometries are filtered. It
-  //  would be logical to include that here with *two* caveats.
-  //  1. The SceneGraphInspector relies on GeometryState to provide detailed
-  //     error message in case of failure (e.g., id is valid, but has no
-  //     proximity) role. This class lacks that intelligence.
-  //  2. The SceneGraphInspector can be acquired via an input port (from a
-  //     QueryObject instance). CollisionFilterManager cannot. However, the
-  //     QueryObject class can be extended to return a manager just like an
-  //     inspector.
-  //  If those can be resolved, it would make more sense to make the
-  //  CollisionFilterManager the one-stop shop for all things collision filter
-  //  rather than having it split over two classes.
+    // TODO(SeanCurtis-TRI) SceneGraphInspector includes the method
+    //  CollisionFiltered. It reports whether two geometries are filtered. It
+    //  would be logical to include that here with *two* caveats.
+    //  1. The SceneGraphInspector relies on GeometryState to provide detailed
+    //     error message in case of failure (e.g., id is valid, but has no
+    //     proximity) role. This class lacks that intelligence.
+    //  2. The SceneGraphInspector can be acquired via an input port (from a
+    //     QueryObject instance). CollisionFilterManager cannot. However, the
+    //     QueryObject class can be extended to return a manager just like an
+    //     inspector.
+    //  If those can be resolved, it would make more sense to make the
+    //  CollisionFilterManager the one-stop shop for all things collision filter
+    //  rather than having it split over two classes.
 
-  /** Applies the declaration as the newest *transient* modification to the
-   collision filter configuration. The declaration must be considered "valid",
-   as defined for Apply(). */
-  FilterId ApplyTransient(const CollisionFilterDeclaration& declaration) {
-    return filter_->ApplyTransient(declaration, extract_ids_);
-  }
+    /** Applies the declaration as the newest *transient* modification to the
+     collision filter configuration. The declaration must be considered "valid",
+     as defined for Apply(). */
+    FilterId ApplyTransient(const CollisionFilterDeclaration& declaration) {
+        return filter_->ApplyTransient(declaration, extract_ids_);
+    }
 
-  /** Attempts to remove the transient declaration from the history for the
-   declaration associated with the given `filter_id`.
-   @param filter_id   The id of the filter declaration to remove.
-   @returns `true` iff `is_active(filter_id)` returns `true` before calling this
-            method (i.e., `filter_id` refers to an existent filter that has
-            successfully been removed). */
-  bool RemoveDeclaration(FilterId filter_id) {
-    return filter_->RemoveDeclaration(filter_id);
-  }
+    /** Attempts to remove the transient declaration from the history for the
+     declaration associated with the given `filter_id`.
+     @param filter_id   The id of the filter declaration to remove.
+     @returns `true` iff `is_active(filter_id)` returns `true` before calling this
+              method (i.e., `filter_id` refers to an existent filter that has
+              successfully been removed). */
+    bool RemoveDeclaration(FilterId filter_id) { return filter_->RemoveDeclaration(filter_id); }
 
-  /** Reports if there are any active transient filter declarations. */
-  bool has_transient_history() const {
-    return filter_->has_transient_history();
-  }
+    /** Reports if there are any active transient filter declarations. */
+    bool has_transient_history() const { return filter_->has_transient_history(); }
 
-  /** Reports if the transient collision filter declaration indicated by the
-   given `filter_id` is part of the history. */
-  bool IsActive(FilterId filter_id) const {
-    return filter_->IsActive(filter_id);
-  }
+    /** Reports if the transient collision filter declaration indicated by the
+     given `filter_id` is part of the history. */
+    bool IsActive(FilterId filter_id) const { return filter_->IsActive(filter_id); }
 
- private:
-  /* Only GeometryState can construct a collision filter manager. */
-  template <typename>
-  friend class GeometryState;
+private:
+    /* Only GeometryState can construct a collision filter manager. */
+    template <typename>
+    friend class GeometryState;
 
-  /* Constructs the manager for a `filter` with the appropriate callback for
-   resolving GeometrySet into set of GeometryIds. */
-  explicit CollisionFilterManager(
-      internal::CollisionFilter* filter,
-      internal::CollisionFilter::ExtractIds extract_ids);
+    /* Constructs the manager for a `filter` with the appropriate callback for
+     resolving GeometrySet into set of GeometryIds. */
+    explicit CollisionFilterManager(internal::CollisionFilter* filter,
+                                    internal::CollisionFilter::ExtractIds extract_ids);
 
-  internal::CollisionFilter* filter_{};
-  internal::CollisionFilter::ExtractIds extract_ids_;
+    internal::CollisionFilter* filter_{};
+    internal::CollisionFilter::ExtractIds extract_ids_;
 };
 
 }  // namespace geometry

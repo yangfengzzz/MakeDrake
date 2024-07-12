@@ -22,8 +22,7 @@ namespace multibody {
 namespace internal {
 
 /* Used for resolving URIs / filenames.  */
-using ResolveFilename = std::function<std::string (
-    const SDFormatDiagnostic&, std::string)>;
+using ResolveFilename = std::function<std::string(const SDFormatDiagnostic&, std::string)>;
 
 /* Given an sdf::Geometry object representing a <geometry> element from an SDF
  file, this method makes a new drake::geometry::Shape object from this
@@ -31,10 +30,9 @@ using ResolveFilename = std::function<std::string (
  If no recognizable geometry is specified, nullptr is returned. If the geometry
  is recognized, but malformed, emits an error. When the error policy is set to
  not throw it returns std::nullopt. */
-std::optional<std::unique_ptr<geometry::Shape>> MakeShapeFromSdfGeometry(
-    const SDFormatDiagnostic& diagnostic,
-    const sdf::Geometry& sdf_geometry,
-    ResolveFilename resolve_filename);
+std::optional<std::unique_ptr<geometry::Shape>> MakeShapeFromSdfGeometry(const SDFormatDiagnostic& diagnostic,
+                                                                         const sdf::Geometry& sdf_geometry,
+                                                                         ResolveFilename resolve_filename);
 
 /* Given an sdf::Visual object representing a <visual> element from an SDF
  file, this method makes a new drake::geometry::GeometryInstance object from
@@ -74,10 +72,10 @@ std::optional<std::unique_ptr<geometry::Shape>> MakeShapeFromSdfGeometry(
 
  This feature is one way to provide multiple visual representations of a body.
  */
-std::optional<std::unique_ptr<geometry::GeometryInstance>>
-    MakeGeometryInstanceFromSdfVisual(
+std::optional<std::unique_ptr<geometry::GeometryInstance>> MakeGeometryInstanceFromSdfVisual(
         const SDFormatDiagnostic& diagnostic,
-        const sdf::Visual& sdf_visual, ResolveFilename resolve_filename,
+        const sdf::Visual& sdf_visual,
+        ResolveFilename resolve_filename,
         const math::RigidTransformd& X_LG);
 
 /* Extracts the material properties from the given sdf::Visual object.
@@ -130,18 +128,17 @@ std::optional<std::unique_ptr<geometry::GeometryInstance>>
  property tags, the property set will be empty. If the material is malformed
  an error will be emitted. If the error policy is not set to throw, an
  std::nullopt will be returned. */
-std::optional<geometry::IllustrationProperties>
-    MakeVisualPropertiesFromSdfVisual(
-        const SDFormatDiagnostic& diagnostic,
-        const sdf::Visual& sdf_visual, ResolveFilename resolve_filename);
+std::optional<geometry::IllustrationProperties> MakeVisualPropertiesFromSdfVisual(const SDFormatDiagnostic& diagnostic,
+                                                                                  const sdf::Visual& sdf_visual,
+                                                                                  ResolveFilename resolve_filename);
 
 /* Computes the pose `X_LC` of frame C (the "canonical frame" of the geometry)
  relative to the link L containing the collision, given an `sdf_collision`
  stemming from the parsing of a `<collision>` element in an SDF file and its
  pose `X_LG`, where `G` represents the frame for the geometry of that collision
  element.  */
-math::RigidTransformd MakeGeometryPoseFromSdfCollision(
-    const sdf::Collision& sdf_collision, const math::RigidTransformd& X_LG);
+math::RigidTransformd MakeGeometryPoseFromSdfCollision(const sdf::Collision& sdf_collision,
+                                                       const math::RigidTransformd& X_LG);
 
 /* @anchor sdf_contact_material
  Parses the drake-relevant collision properties from a <collision> element.
@@ -164,16 +161,21 @@ math::RigidTransformd MakeGeometryPoseFromSdfCollision(
   @ref YET_TO_BE_WRITTEN_HYDROELASTIC_GEOMETRY_MODULE for details on the
  semantics of these properties.
 
- | Tag                              | Group        | Property                  | Notes                                                                                                                            |
- | :------------------------------: | :----------: | :-----------------------: | :------------------------------------------------------------------------------------------------------------------------------: |
- | drake:mesh_resolution_hint       | hydroelastic | resolution_hint           | Required for shapes that require tessellation to support hydroelastic contact.                                                   |
- | drake:hydroelastic_modulus       | hydroelastic | hydroelastic_modulus      | Finite positive value. Required for compliant hydroelastic representations.                                                      |
- | drake:hunt_crossley_dissipation  | material     | hunt_crossley_dissipation |                                                                                                                                  |
- | drake:relaxation_time            | material     | relaxation_time           | Required when using a linear model of dissipation, for instance with the SAP solver.                                             |
- | drake:mu_dynamic                 | material     | coulomb_friction          | See note below on friction.                                                                                                      |
- | drake:mu_static                  | material     | coulomb_friction          | See note below on friction.                                                                                                      |
- | drake:rigid_hydroelastic         | hydroelastic | compliance_type           | Requests a rigid hydroelastic representation. Cannot be combined *with* soft_hydroelastic.                                       |
- | drake:compliant_hydroelastic     | hydroelastic | compliance_type           | Requests a compliant hydroelastic representation. Cannot be combined *with* rigid_hydroelastic. Requires a value for hydroelastic_modulus. |
+ | Tag                              | Group        | Property                  | Notes | |
+ :------------------------------: | :----------: | :-----------------------: |
+ :------------------------------------------------------------------------------------------------------------------------------:
+ | | drake:mesh_resolution_hint       | hydroelastic | resolution_hint           | Required for shapes that require
+ tessellation to support hydroelastic contact.                                                   | |
+ drake:hydroelastic_modulus       | hydroelastic | hydroelastic_modulus      | Finite positive value. Required for
+ compliant hydroelastic representations.                                                      | |
+ drake:hunt_crossley_dissipation  | material     | hunt_crossley_dissipation | | | drake:relaxation_time            |
+ material     | relaxation_time           | Required when using a linear model of dissipation, for instance with the SAP
+ solver.                                             | | drake:mu_dynamic                 | material     |
+ coulomb_friction          | See note below on friction. | | drake:mu_static                  | material     |
+ coulomb_friction          | See note below on friction. | | drake:rigid_hydroelastic         | hydroelastic |
+ compliance_type           | Requests a rigid hydroelastic representation. Cannot be combined *with* soft_hydroelastic.
+ | | drake:compliant_hydroelastic     | hydroelastic | compliance_type           | Requests a compliant hydroelastic
+ representation. Cannot be combined *with* rigid_hydroelastic. Requires a value for hydroelastic_modulus. |
 
  <h3>Coefficients of friction</h3>
 
@@ -196,10 +198,8 @@ math::RigidTransformd MakeGeometryPoseFromSdfCollision(
       created (see default_friction()).
  As long as no exception is thrown, the resulting ProximityProperties will have
  the ('material', 'coulomb_friction') property.  */
-std::optional<geometry::ProximityProperties>
-    MakeProximityPropertiesForCollision(
-        const SDFormatDiagnostic& diagnostic,
-        const sdf::Collision& sdf_collision);
+std::optional<geometry::ProximityProperties> MakeProximityPropertiesForCollision(const SDFormatDiagnostic& diagnostic,
+                                                                                 const sdf::Collision& sdf_collision);
 
 /* Parses friction coefficients from `sdf_collision`.
  This method looks for the definitions specific to ODE, as given by the SDF
@@ -220,10 +220,8 @@ std::optional<geometry::ProximityProperties>
  ```
  If mu or mu2 are not found, an error is emitted. If the error policy is not
  set to throw an std::nullopt is returned. */
-std::optional<CoulombFriction<double>>
-    MakeCoulombFrictionFromSdfCollisionOde(
-        const SDFormatDiagnostic& diagnostic,
-        const sdf::Collision& sdf_collision);
+std::optional<CoulombFriction<double>> MakeCoulombFrictionFromSdfCollisionOde(const SDFormatDiagnostic& diagnostic,
+                                                                              const sdf::Collision& sdf_collision);
 
 }  // namespace internal
 }  // namespace multibody

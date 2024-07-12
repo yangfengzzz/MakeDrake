@@ -24,7 +24,7 @@ namespace optimization {
  the paper above on the meaning of s.
  */
 enum class SeparatingPlaneOrder {
-  kAffine = 1,  ///< a and b are affine functions of s.
+    kAffine = 1,  ///< a and b are affine functions of s.
 };
 
 /** Convert an integer degree to the SeparatingPlaneOrder */
@@ -43,59 +43,61 @@ enum class SeparatingPlaneOrder {
  */
 template <typename T>
 struct CSpaceSeparatingPlane {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(CSpaceSeparatingPlane);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(CSpaceSeparatingPlane);
 
-  CSpaceSeparatingPlane(
-      Vector3<symbolic::Polynomial> m_a, symbolic::Polynomial m_b,
-      const CIrisCollisionGeometry* m_positive_side_geometry,
-      const CIrisCollisionGeometry* m_negative_side_geometry,
-      multibody::BodyIndex m_expressed_body, int m_plane_degree,
-      const Eigen::Ref<const VectorX<T>>& m_decision_variables)
-      : a{std::move(m_a)},
-        b{std::move(m_b)},
-        positive_side_geometry{m_positive_side_geometry},
-        negative_side_geometry{m_negative_side_geometry},
-        expressed_body{m_expressed_body},
-        plane_degree{m_plane_degree},
-        decision_variables{m_decision_variables} {}
+    CSpaceSeparatingPlane(Vector3<symbolic::Polynomial> m_a,
+                          symbolic::Polynomial m_b,
+                          const CIrisCollisionGeometry* m_positive_side_geometry,
+                          const CIrisCollisionGeometry* m_negative_side_geometry,
+                          multibody::BodyIndex m_expressed_body,
+                          int m_plane_degree,
+                          const Eigen::Ref<const VectorX<T>>& m_decision_variables)
+        : a{std::move(m_a)},
+          b{std::move(m_b)},
+          positive_side_geometry{m_positive_side_geometry},
+          negative_side_geometry{m_negative_side_geometry},
+          expressed_body{m_expressed_body},
+          plane_degree{m_plane_degree},
+          decision_variables{m_decision_variables} {}
 
-  /// Return the geometry on the specified side.
-  [[nodiscard]] const CIrisCollisionGeometry* geometry(
-      PlaneSide plane_side) const {
-    return plane_side == PlaneSide::kPositive ? positive_side_geometry
-                                              : negative_side_geometry;
-  }
+    /// Return the geometry on the specified side.
+    [[nodiscard]] const CIrisCollisionGeometry* geometry(PlaneSide plane_side) const {
+        return plane_side == PlaneSide::kPositive ? positive_side_geometry : negative_side_geometry;
+    }
 
-  [[nodiscard]] SortedPair<geometry::GeometryId> geometry_pair() const {
-    return SortedPair<geometry::GeometryId>(positive_side_geometry->id(),
-                                            negative_side_geometry->id());
-  }
+    [[nodiscard]] SortedPair<geometry::GeometryId> geometry_pair() const {
+        return SortedPair<geometry::GeometryId>(positive_side_geometry->id(), negative_side_geometry->id());
+    }
 
-  Vector3<symbolic::Polynomial> a;
-  symbolic::Polynomial b;
-  const CIrisCollisionGeometry* positive_side_geometry;
-  const CIrisCollisionGeometry* negative_side_geometry;
-  multibody::BodyIndex expressed_body;
-  int plane_degree{1};
-  VectorX<T> decision_variables;
+    Vector3<symbolic::Polynomial> a;
+    symbolic::Polynomial b;
+    const CIrisCollisionGeometry* positive_side_geometry;
+    const CIrisCollisionGeometry* negative_side_geometry;
+    multibody::BodyIndex expressed_body;
+    int plane_degree{1};
+    VectorX<T> decision_variables;
 };
 
 namespace internal {
 
 void CalcPlane(const VectorX<symbolic::Variable>& decision_variables,
                const VectorX<symbolic::Variable>& vars_for_plane,
-               int plane_degree, Vector3<symbolic::Polynomial>* a_val,
+               int plane_degree,
+               Vector3<symbolic::Polynomial>* a_val,
                symbolic::Polynomial* b_val);
 
 void CalcPlane(const VectorX<double>& decision_variables,
                const VectorX<symbolic::Variable>& vars_for_plane,
-               int plane_degree, Vector3<symbolic::Polynomial>* a_val,
+               int plane_degree,
+               Vector3<symbolic::Polynomial>* a_val,
                symbolic::Polynomial* b_val);
 
 void CalcPlane(const VectorX<double>& decision_variables,
-               const VectorX<double>& vars_for_plane, int plane_degree,
-               Vector3<double>* a_val, double* b_val);
+               const VectorX<double>& vars_for_plane,
+               int plane_degree,
+               Vector3<double>* a_val,
+               double* b_val);
 
 }  // namespace internal
 
@@ -111,10 +113,11 @@ void CalcPlane(const VectorX<double>& decision_variables,
  */
 template <typename D, typename S, typename V>
 void CalcPlane(const VectorX<D>& decision_variables,
-               const VectorX<S>& s_for_plane, int plane_degree,
-               Vector3<V>* a_val, V* b_val) {
-  internal::CalcPlane(decision_variables, s_for_plane, plane_degree, a_val,
-                      b_val);
+               const VectorX<S>& s_for_plane,
+               int plane_degree,
+               Vector3<V>* a_val,
+               V* b_val) {
+    internal::CalcPlane(decision_variables, s_for_plane, plane_degree, a_val, b_val);
 }
 
 }  // namespace optimization

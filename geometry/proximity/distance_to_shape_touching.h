@@ -73,8 +73,7 @@ Eigen::Vector3d CalcGradientWhenTouching(const fcl::CollisionObjectd& a,
  of `p_BQ` (face, edge, or vertex of `box_B`) depends on its precision.
  For example, if p_BQ is on a face normal to Bx axis, p_BQ.x() should be
  within the internal tolerance from box_B.side.x()/2.  */
-Eigen::Vector3d PointOnBoxSurfaceHelper(const Eigen::Vector3d& p_BQ,
-                                        const fcl::Boxd& box_B);
+Eigen::Vector3d PointOnBoxSurfaceHelper(const Eigen::Vector3d& p_BQ, const fcl::Boxd& box_B);
 
 /* Returns the projected interval [min, max] of a box on a line through
  World's origin. The line is defined by the parametric function s(t) = û_W⋅t
@@ -106,10 +105,11 @@ std::pair<double, double> ProjectedMinMax(const fcl::Boxd& box_A,
 
  @pre The signed distance between the two boxes is zero (or within an
       internal tolerance), i.e., the two boxes barely touch.  */
-std::optional<Eigen::Vector3d> MaybeMakeSeparatingVector(
-    const fcl::Boxd& box_A, const fcl::Boxd& box_B,
-    const math::RigidTransformd& X_WA, const math::RigidTransformd& X_WB,
-    const std::vector<Eigen::Vector3d>& v_Ws);
+std::optional<Eigen::Vector3d> MaybeMakeSeparatingVector(const fcl::Boxd& box_A,
+                                                         const fcl::Boxd& box_B,
+                                                         const math::RigidTransformd& X_WA,
+                                                         const math::RigidTransformd& X_WB,
+                                                         const std::vector<Eigen::Vector3d>& v_Ws);
 
 /* Computes the signed-distance gradient between two touching boxes.
 
@@ -128,7 +128,8 @@ std::optional<Eigen::Vector3d> MaybeMakeSeparatingVector(
  @pre The signed distance between the two boxes is zero (or within an
       internal tolerance), i.e., the two witness points are at the same
       location (or within an internal tolerance) in World frame. */
-Eigen::Vector3d BoxBoxGradient(const fcl::Boxd& box_A, const fcl::Boxd& box_B,
+Eigen::Vector3d BoxBoxGradient(const fcl::Boxd& box_A,
+                               const fcl::Boxd& box_B,
                                const math::RigidTransformd& X_WA,
                                const math::RigidTransformd& X_WB,
                                const Eigen::Vector3d& p_ACa,

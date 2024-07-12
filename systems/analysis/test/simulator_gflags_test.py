@@ -19,7 +19,7 @@ class TestSimulatorGflags(unittest.TestCase):
             "--simulator_target_realtime_rate=1.",
             "--simulator_publish_every_time_step=true"
         ],
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT,
-                                encoding="utf-8")
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            encoding="utf-8")
         self.assertIn("integration_scheme: implicit_euler", result.stdout)

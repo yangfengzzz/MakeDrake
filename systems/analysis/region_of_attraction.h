@@ -18,51 +18,51 @@ namespace analysis {
  * attraction algorithm.
  */
 struct RegionOfAttractionOptions {
-  RegionOfAttractionOptions() = default;
+    RegionOfAttractionOptions() = default;
 
-  /** Passes this object to an Archive.
-   Refer to @ref yaml_serialization "YAML Serialization" for background. */
-  template <typename Archive>
-  void Serialize(Archive* a) {
-    a->Visit(DRAKE_NVP(lyapunov_candidate));
-    a->Visit(DRAKE_NVP(state_variables));
-    a->Visit(DRAKE_NVP(use_implicit_dynamics));
-    a->Visit(DRAKE_NVP(solver_id));
-    a->Visit(DRAKE_NVP(solver_options));
-  }
+    /** Passes this object to an Archive.
+     Refer to @ref yaml_serialization "YAML Serialization" for background. */
+    template <typename Archive>
+    void Serialize(Archive* a) {
+        a->Visit(DRAKE_NVP(lyapunov_candidate));
+        a->Visit(DRAKE_NVP(state_variables));
+        a->Visit(DRAKE_NVP(use_implicit_dynamics));
+        a->Visit(DRAKE_NVP(solver_id));
+        a->Visit(DRAKE_NVP(solver_options));
+    }
 
-  /** A candidate Lyapunov function using the symbolic Variables named
-   * x0, x1, ..., where the order matches the continuous state vector of the
-   * system being evaluated (or the vector state_variables).
-   */
-  symbolic::Expression lyapunov_candidate{};
+    /** A candidate Lyapunov function using the symbolic Variables named
+     * x0, x1, ..., where the order matches the continuous state vector of the
+     * system being evaluated (or the vector state_variables).
+     */
+    symbolic::Expression lyapunov_candidate{};
 
-  /** If non-empty, a list of Variable that associates the variable name with
-   * the elements of the System's continuous state vector.  Must be empty
-   * or have size equal to the number of continuous state variables in the
-   * system.
-   */
-  VectorX<symbolic::Variable> state_variables{};
+    /** If non-empty, a list of Variable that associates the variable name with
+     * the elements of the System's continuous state vector.  Must be empty
+     * or have size equal to the number of continuous state variables in the
+     * system.
+     */
+    VectorX<symbolic::Variable> state_variables{};
 
-  /** If true, the system dynamics will be evaluated using
-   * CalcImplicitTimeDerivativesResidual instead of CalcTimeDerivatives to
-   * obtain g(x,ẋ) = 0 (instead of ẋ = f(x)).  The Lyapunov conditions will
-   * also be evaluated in the implicit form. This is more expensive than
-   * analysis in the explicit form, as it requires more indeterminates, but it
-   * enables analysis of systems with rational polynomial dynamics.
-   *
-   * See https://underactuated.csail.mit.edu/lyapunov.html#ex:implicit for more
-   * details.
-   */
-  bool use_implicit_dynamics{false};
+    /** If true, the system dynamics will be evaluated using
+     * CalcImplicitTimeDerivativesResidual instead of CalcTimeDerivatives to
+     * obtain g(x,ẋ) = 0 (instead of ẋ = f(x)).  The Lyapunov conditions will
+     * also be evaluated in the implicit form. This is more expensive than
+     * analysis in the explicit form, as it requires more indeterminates, but it
+     * enables analysis of systems with rational polynomial dynamics.
+     *
+     * See https://underactuated.csail.mit.edu/lyapunov.html#ex:implicit for more
+     * details.
+     */
+    bool use_implicit_dynamics{false};
 
-  /** If not std::nullopt, then we will solve the optimization problem using the
-   * specified solver; otherwise Drake will choose a solver.
-   */
-  std::optional<solvers::SolverId> solver_id{std::nullopt};
+    /** If not std::nullopt, then we will solve the optimization problem using the
+     * specified solver; otherwise Drake will choose a solver.
+     */
+    std::optional<solvers::SolverId> solver_id{std::nullopt};
 
-  /** The solver options used in the optimization problem. */
-  std::optional<solvers::SolverOptions> solver_options{std::nullopt};
+    /** The solver options used in the optimization problem. */
+    std::optional<solvers::SolverOptions> solver_options{std::nullopt};
 };
 
 /**
@@ -103,9 +103,9 @@ struct RegionOfAttractionOptions {
  *
  * @ingroup analysis
  */
-symbolic::Expression RegionOfAttraction(
-    const System<double>& system, const Context<double>& context,
-    const RegionOfAttractionOptions& options = RegionOfAttractionOptions());
+symbolic::Expression RegionOfAttraction(const System<double>& system,
+                                        const Context<double>& context,
+                                        const RegionOfAttractionOptions& options = RegionOfAttractionOptions());
 
 }  // namespace analysis
 }  // namespace systems

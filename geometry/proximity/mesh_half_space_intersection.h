@@ -75,15 +75,16 @@ namespace internal {
 */
 template <typename MeshBuilder>
 void ConstructTriangleHalfspaceIntersectionPolygon(
-    const TriangleSurfaceMesh<double>& mesh_F, int tri_index,
-    const PosedHalfSpace<typename MeshBuilder::ScalarType>& half_space_F,
-    const std::function<typename MeshBuilder::ScalarType(
-        const Vector3<typename MeshBuilder::ScalarType>&)>& pressure_in_F,
-    const Vector3<typename MeshBuilder::ScalarType>& grad_pressure_in_W,
-    const math::RigidTransform<typename MeshBuilder::ScalarType>& X_WF,
-    MeshBuilder* builder_W,
-    std::unordered_map<int, int>* vertices_to_newly_created_vertices,
-    std::unordered_map<SortedPair<int>, int>* edges_to_newly_created_vertices);
+        const TriangleSurfaceMesh<double>& mesh_F,
+        int tri_index,
+        const PosedHalfSpace<typename MeshBuilder::ScalarType>& half_space_F,
+        const std::function<typename MeshBuilder::ScalarType(const Vector3<typename MeshBuilder::ScalarType>&)>&
+                pressure_in_F,
+        const Vector3<typename MeshBuilder::ScalarType>& grad_pressure_in_W,
+        const math::RigidTransform<typename MeshBuilder::ScalarType>& X_WF,
+        MeshBuilder* builder_W,
+        std::unordered_map<int, int>* vertices_to_newly_created_vertices,
+        std::unordered_map<SortedPair<int>, int>* edges_to_newly_created_vertices);
 
 /*
  Computes a ContactSurface between a half space and a collection of triangles
@@ -121,16 +122,16 @@ void ConstructTriangleHalfspaceIntersectionPolygon(
          expressed in Frame W. `nullptr` if there is no intersection.
  */
 template <typename MeshBuilder>
-std::unique_ptr<ContactSurface<typename MeshBuilder::ScalarType>>
-ComputeContactSurface(
-    GeometryId mesh_id, const TriangleSurfaceMesh<double>& input_mesh_F,
-    GeometryId half_space_id,
-    const PosedHalfSpace<typename MeshBuilder::ScalarType>& half_space_F,
-    const std::function<typename MeshBuilder::ScalarType(
-        const Vector3<typename MeshBuilder::ScalarType>&)>& pressure_in_F,
-    const Vector3<typename MeshBuilder::ScalarType>& grad_p_W,
-    const std::vector<int>& tri_indices,
-    const math::RigidTransform<typename MeshBuilder::ScalarType>& X_WF);
+std::unique_ptr<ContactSurface<typename MeshBuilder::ScalarType>> ComputeContactSurface(
+        GeometryId mesh_id,
+        const TriangleSurfaceMesh<double>& input_mesh_F,
+        GeometryId half_space_id,
+        const PosedHalfSpace<typename MeshBuilder::ScalarType>& half_space_F,
+        const std::function<typename MeshBuilder::ScalarType(const Vector3<typename MeshBuilder::ScalarType>&)>&
+                pressure_in_F,
+        const Vector3<typename MeshBuilder::ScalarType>& grad_p_W,
+        const std::vector<int>& tri_indices,
+        const math::RigidTransform<typename MeshBuilder::ScalarType>& X_WF);
 
 /*
  Computes the ContactSurface formed by a soft half space and the given rigid
@@ -163,13 +164,15 @@ ComputeContactSurface(
            only double is supported.
  */
 template <typename T>
-std::unique_ptr<ContactSurface<T>>
-ComputeContactSurfaceFromSoftHalfSpaceRigidMesh(
-    GeometryId id_S, const math::RigidTransform<T>& X_WS, double pressure_scale,
-    GeometryId id_R, const TriangleSurfaceMesh<double>& mesh_R,
-    const Bvh<Obb, TriangleSurfaceMesh<double>>& bvh_R,
-    const math::RigidTransform<T>& X_WR,
-    HydroelasticContactRepresentation representation);
+std::unique_ptr<ContactSurface<T>> ComputeContactSurfaceFromSoftHalfSpaceRigidMesh(
+        GeometryId id_S,
+        const math::RigidTransform<T>& X_WS,
+        double pressure_scale,
+        GeometryId id_R,
+        const TriangleSurfaceMesh<double>& mesh_R,
+        const Bvh<Obb, TriangleSurfaceMesh<double>>& bvh_R,
+        const math::RigidTransform<T>& X_WR,
+        HydroelasticContactRepresentation representation);
 
 }  // namespace internal
 }  // namespace geometry

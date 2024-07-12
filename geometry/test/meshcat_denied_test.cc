@@ -8,7 +8,7 @@ namespace geometry {
 namespace {
 
 GTEST_TEST(MeshcatDeniedTest, ExceptionMessage) {
-  DRAKE_EXPECT_THROWS_MESSAGE(Meshcat{}, ".*DRAKE_ALLOW_NETWORK.*");
+    DRAKE_EXPECT_THROWS_MESSAGE(Meshcat{}, ".*DRAKE_ALLOW_NETWORK.*");
 }
 
 }  // namespace

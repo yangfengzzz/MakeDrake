@@ -37,25 +37,24 @@ namespace internal {
 // @returns The model instance index for the newly added model; this might be
 //   null if there were parsing errors reported through the workspace.diagnostic
 //   policy.
-std::optional<ModelInstanceIndex> AddModelFromMesh(
-    const DataSource& data_source, const std::string& model_name,
-    const std::optional<std::string>& parent_model_name,
-    const ParsingWorkspace& workspace);
+std::optional<ModelInstanceIndex> AddModelFromMesh(const DataSource& data_source,
+                                                   const std::string& model_name,
+                                                   const std::optional<std::string>& parent_model_name,
+                                                   const ParsingWorkspace& workspace);
 
 class MeshParserWrapper final : public ParserInterface {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MeshParserWrapper);
-  MeshParserWrapper();
-  ~MeshParserWrapper() final;
-  std::optional<ModelInstanceIndex> AddModel(
-      const DataSource& data_source, const std::string& model_name,
-      const std::optional<std::string>& parent_model_name,
-      const ParsingWorkspace& workspace) final;
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MeshParserWrapper);
+    MeshParserWrapper();
+    ~MeshParserWrapper() final;
+    std::optional<ModelInstanceIndex> AddModel(const DataSource& data_source,
+                                               const std::string& model_name,
+                                               const std::optional<std::string>& parent_model_name,
+                                               const ParsingWorkspace& workspace) final;
 
-  std::vector<ModelInstanceIndex> AddAllModels(
-      const DataSource& data_source,
-      const std::optional<std::string>& parent_model_name,
-      const ParsingWorkspace& workspace) final;
+    std::vector<ModelInstanceIndex> AddAllModels(const DataSource& data_source,
+                                                 const std::optional<std::string>& parent_model_name,
+                                                 const ParsingWorkspace& workspace) final;
 };
 
 }  // namespace internal

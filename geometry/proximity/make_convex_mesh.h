@@ -46,8 +46,7 @@ VolumeMesh<T> MakeConvexVolumeMesh(const Convex& convex);
 /* Also creates a tetrahedral volume mesh, but, this time, from a triangle mesh.
  @pre `surface_mesh` is sufficiently "nice" (see above). */
 template <typename T>
-VolumeMesh<T> MakeConvexVolumeMesh(
-    const TriangleSurfaceMesh<double>& surface_mesh);
+VolumeMesh<T> MakeConvexVolumeMesh(const TriangleSurfaceMesh<double>& surface_mesh);
 
 }  // namespace internal
 }  // namespace geometry

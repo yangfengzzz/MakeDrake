@@ -36,34 +36,32 @@ Matrix4<double> EigenMatrixFromGltfMatrix(const nlohmann::json& matrix_json);
  struct provides a record of where merged extras and extensions come from so
  we can effectively report the source of the conflict. */
 class DRAKE_NO_EXPORT MergeRecord {
- public:
-  /* The initial merge record should be created with the path of the initial
-   target glTF's source; it need not be a path to an existing file. */
-  explicit MergeRecord(std::filesystem::path initial_path);
+public:
+    /* The initial merge record should be created with the path of the initial
+     target glTF's source; it need not be a path to an existing file. */
+    explicit MergeRecord(std::filesystem::path initial_path);
 
-  /* Finds the source path for the given element.
-   @pre element is part of this merge record. */
-  const std::filesystem::path& FindSourcePath(
-      const nlohmann::json& element) const;
+    /* Finds the source path for the given element.
+     @pre element is part of this merge record. */
+    const std::filesystem::path& FindSourcePath(const nlohmann::json& element) const;
 
-  /* Adds the json tree with the given `root` to the record associated with the
-   given `source_name`.
-   @pre `source_name` is not in the record already. */
-  void AddElementTree(const nlohmann::json& root,
-                      const std::filesystem::path& source_path);
+    /* Adds the json tree with the given `root` to the record associated with the
+     given `source_name`.
+     @pre `source_name` is not in the record already. */
+    void AddElementTree(const nlohmann::json& root, const std::filesystem::path& source_path);
 
- private:
-  /* A map from a json pointer in the target glTF structure to the index of the
-   source path from which it came. The mapped values should all be valid
-   indices into `source_paths_`.
+private:
+    /* A map from a json pointer in the target glTF structure to the index of the
+     source path from which it came. The mapped values should all be valid
+     indices into `source_paths_`.
 
-   Note: This works because nlohmann::json is linked-list-esque. Each node is
-   allocated on the heap and they don't move just because additional children
-   get included. */
-  std::unordered_map<const nlohmann::json*, int> merged_trees_;
+     Note: This works because nlohmann::json is linked-list-esque. Each node is
+     allocated on the heap and they don't move just because additional children
+     get included. */
+    std::unordered_map<const nlohmann::json*, int> merged_trees_;
 
-  /* The paths of all sources contributing to the composition of j1. */
-  std::vector<std::filesystem::path> source_paths_;
+    /* The paths of all sources contributing to the composition of j1. */
+    std::vector<std::filesystem::path> source_paths_;
 };
 
 /* Merges the default scene from j2 into j1's default scene.
@@ -77,7 +75,8 @@ class DRAKE_NO_EXPORT MergeRecord {
  @pre Both j1 and j2 have a valid default scene.
  @throws if there are merge conflicts between the scenes' "extra" or
  "extensions" data. */
-void MergeDefaultScenes(nlohmann::json* j1, nlohmann::json&& j2,
+void MergeDefaultScenes(nlohmann::json* j1,
+                        nlohmann::json&& j2,
                         const std::filesystem::path& j2_path,
                         MergeRecord* record);
 
@@ -108,8 +107,7 @@ void MergeBufferViews(nlohmann::json* j1, nlohmann::json&& j2);
 /* Merges the "buffers" array from j2 into j1. As part of that process, converts
 any `uri`s with relative files into embedded `data:`. The `j2_directory` is the
 base path for resolving relative filenames against. */
-void MergeBuffers(nlohmann::json* j1, nlohmann::json&& j2,
-                  const std::filesystem::path& j2_directory);
+void MergeBuffers(nlohmann::json* j1, nlohmann::json&& j2, const std::filesystem::path& j2_directory);
 
 /* Merges the "textures" array from j2 into j1. */
 void MergeTextures(nlohmann::json* j1, nlohmann::json&& j2);
@@ -117,8 +115,7 @@ void MergeTextures(nlohmann::json* j1, nlohmann::json&& j2);
 /* Merges the "images" array from j2 into j1. As part of that process, converts
 any `uri`s with relative files into embedded `data:`. The `j2_directory` is the
 base path for resolving relative filenames against. */
-void MergeImages(nlohmann::json* j1, nlohmann::json&& j2,
-                 const std::filesystem::path& j2_directory);
+void MergeImages(nlohmann::json* j1, nlohmann::json&& j2, const std::filesystem::path& j2_directory);
 
 /* Merges the "samplers" array from j2 into j1. */
 void MergeSamplers(nlohmann::json* j1, nlohmann::json&& j2);
@@ -175,8 +172,7 @@ void MergeSamplers(nlohmann::json* j1, nlohmann::json&& j2);
  (although the underlying data contained in buffers remains).
 
  @pre Both j1 and j2 indicate version 2.0 glTF files. */
-void MergeGltf(nlohmann::json* j1, nlohmann::json&& j2,
-               const std::filesystem::path& j2_path, MergeRecord* record);
+void MergeGltf(nlohmann::json* j1, nlohmann::json&& j2, const std::filesystem::path& j2_path, MergeRecord* record);
 
 }  // namespace internal
 }  // namespace render_gltf_client

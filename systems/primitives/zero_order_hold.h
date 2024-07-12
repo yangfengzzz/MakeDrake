@@ -47,76 +47,73 @@ namespace systems {
 /// @ingroup primitive_systems
 template <typename T>
 class ZeroOrderHold final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ZeroOrderHold);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ZeroOrderHold);
 
-  /// Constructs a ZeroOrderHold system with the given `period_sec`, over a
-  /// vector-valued input of size `vector_size`. The default initial value for
-  /// this system will be zero. The first update occurs at t=offset_sec, which
-  /// must be >= 0.
-  ZeroOrderHold(double period_sec, int vector_size, double offset_sec = 0.0)
-      : ZeroOrderHold(period_sec, offset_sec, vector_size, nullptr) {}
+    /// Constructs a ZeroOrderHold system with the given `period_sec`, over a
+    /// vector-valued input of size `vector_size`. The default initial value for
+    /// this system will be zero. The first update occurs at t=offset_sec, which
+    /// must be >= 0.
+    ZeroOrderHold(double period_sec, int vector_size, double offset_sec = 0.0)
+        : ZeroOrderHold(period_sec, offset_sec, vector_size, nullptr) {}
 
-  /// Constructs a ZeroOrderHold system with the given `period_sec`, over a
-  /// abstract-valued input `abstract_model_value`. The default initial value
-  /// for this system will be `abstract_model_value`. The first update occurs
-  /// at t=offset_sec, which must be >= 0.
-  ZeroOrderHold(double period_sec, const AbstractValue& abstract_model_value,
-                double offset_sec = 0.0)
-      : ZeroOrderHold(period_sec, offset_sec, -1,
-                      abstract_model_value.Clone()) {}
+    /// Constructs a ZeroOrderHold system with the given `period_sec`, over a
+    /// abstract-valued input `abstract_model_value`. The default initial value
+    /// for this system will be `abstract_model_value`. The first update occurs
+    /// at t=offset_sec, which must be >= 0.
+    ZeroOrderHold(double period_sec, const AbstractValue& abstract_model_value, double offset_sec = 0.0)
+        : ZeroOrderHold(period_sec, offset_sec, -1, abstract_model_value.Clone()) {}
 
-  /// Scalar-type converting copy constructor.
-  /// See @ref system_scalar_conversion.
-  template <typename U>
-  explicit ZeroOrderHold(const ZeroOrderHold<U>& other);
+    /// Scalar-type converting copy constructor.
+    /// See @ref system_scalar_conversion.
+    template <typename U>
+    explicit ZeroOrderHold(const ZeroOrderHold<U>& other);
 
-  ~ZeroOrderHold() final = default;
+    ~ZeroOrderHold() final = default;
 
-  /// Reports the period of this hold (in seconds).
-  double period() const { return period_sec_; }
+    /// Reports the period of this hold (in seconds).
+    double period() const { return period_sec_; }
 
-  /// Reports the first update time of this hold (in seconds).
-  double offset() const { return offset_sec_; }
+    /// Reports the first update time of this hold (in seconds).
+    double offset() const { return offset_sec_; }
 
-  /// (Advanced) Manually sample the input port and copy ("latch") the value
-  /// into the state. This emulates an update event and is mostly useful for
-  /// testing.
-  void LatchInputPortToState(Context<T>* context) const {
-    this->ValidateContext(context);
-    if (is_abstract()) {
-      LatchInputAbstractValueToState(*context, &context->get_mutable_state());
-    } else {
-      LatchInputVectorToState(*context, &context->get_mutable_discrete_state());
+    /// (Advanced) Manually sample the input port and copy ("latch") the value
+    /// into the state. This emulates an update event and is mostly useful for
+    /// testing.
+    void LatchInputPortToState(Context<T>* context) const {
+        this->ValidateContext(context);
+        if (is_abstract()) {
+            LatchInputAbstractValueToState(*context, &context->get_mutable_state());
+        } else {
+            LatchInputVectorToState(*context, &context->get_mutable_discrete_state());
+        }
     }
-  }
 
- private:
-  // Allow different specializations to access each other's private data.
-  template <typename U>
-  friend class ZeroOrderHold;
+private:
+    // Allow different specializations to access each other's private data.
+    template <typename U>
+    friend class ZeroOrderHold;
 
-  // All of the other constructors delegate here.
-  ZeroOrderHold(double period_sec, double offset_sec, int vector_size,
-                std::unique_ptr<const AbstractValue> model_value);
+    // All of the other constructors delegate here.
+    ZeroOrderHold(double period_sec,
+                  double offset_sec,
+                  int vector_size,
+                  std::unique_ptr<const AbstractValue> model_value);
 
-  // Latches the input port into the discrete vector-valued state.
-  void LatchInputVectorToState(const Context<T>& context,
-                               DiscreteValues<T>* discrete_state) const;
+    // Latches the input port into the discrete vector-valued state.
+    void LatchInputVectorToState(const Context<T>& context, DiscreteValues<T>* discrete_state) const;
 
-  // Latches the abstract input port into the abstract-valued state.
-  void LatchInputAbstractValueToState(const Context<T>& context,
-                                      State<T>* state) const;
+    // Latches the abstract input port into the abstract-valued state.
+    void LatchInputAbstractValueToState(const Context<T>& context, State<T>* state) const;
 
-  bool is_abstract() const { return abstract_model_value_ != nullptr; }
+    bool is_abstract() const { return abstract_model_value_ != nullptr; }
 
-  const double period_sec_;
-  const double offset_sec_;
-  std::unique_ptr<const AbstractValue> abstract_model_value_;
+    const double period_sec_;
+    const double offset_sec_;
+    std::unique_ptr<const AbstractValue> abstract_model_value_;
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::ZeroOrderHold);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::systems::ZeroOrderHold);

@@ -27,7 +27,7 @@ namespace internal DRAKE_NO_EXPORT {
  for round-off error which arises due to transformations.
  @pre size > 0.  */
 constexpr double DistanceToPointRelativeTolerance(double size) {
-  return 1e-14 * std::max(1.0, size);
+    return 1e-14 * std::max(1.0, size);
 }
 
 /* Class for coordinating the collision objects stored in the proximity engine
@@ -42,82 +42,76 @@ constexpr double DistanceToPointRelativeTolerance(double size) {
  pointer-sized integer. This integer is, in turn, stored directly into
  fcl::CollisionObject's void* user data member.  */
 class EncodedData {
- public:
-  using ValueType = decltype(GeometryId::get_new_id().get_value());
+public:
+    using ValueType = decltype(GeometryId::get_new_id().get_value());
 
-  /* Constructs encoded data directly from the id and the known
-   anchored/dynamic characterization.  */
-  EncodedData(GeometryId id, bool is_dynamic)
-      : data_(static_cast<ValueType>(id.get_value())) {
-    // Make sure we haven't used so many ids that we're *using* the highest-
-    // order bit -- i.e., it must be strictly positive.
-    DRAKE_DEMAND(data_ > 0);
-    if (is_dynamic) set_dynamic();
-    // NOTE: data is encoded as anchored by default. So, an action only needs to
-    // be taken in the dynamic case.
-  }
+    /* Constructs encoded data directly from the id and the known
+     anchored/dynamic characterization.  */
+    EncodedData(GeometryId id, bool is_dynamic) : data_(static_cast<ValueType>(id.get_value())) {
+        // Make sure we haven't used so many ids that we're *using* the highest-
+        // order bit -- i.e., it must be strictly positive.
+        DRAKE_DEMAND(data_ > 0);
+        if (is_dynamic) set_dynamic();
+        // NOTE: data is encoded as anchored by default. So, an action only needs to
+        // be taken in the dynamic case.
+    }
 
-  /* Constructs encoded data by extracting it from the given collision object.
-   */
-  explicit EncodedData(const fcl::CollisionObject<double>& fcl_object)
-      : data_(reinterpret_cast<ValueType>(fcl_object.getUserData())) {}
+    /* Constructs encoded data by extracting it from the given collision object.
+     */
+    explicit EncodedData(const fcl::CollisionObject<double>& fcl_object)
+        : data_(reinterpret_cast<ValueType>(fcl_object.getUserData())) {}
 
-  /* Constructs encoded data for the given id identified as dynamic.  */
-  static EncodedData encode_dynamic(GeometryId id) { return {id, true}; }
+    /* Constructs encoded data for the given id identified as dynamic.  */
+    static EncodedData encode_dynamic(GeometryId id) { return {id, true}; }
 
-  /* Constructs encoded data for the given id identified as anchored.  */
-  static EncodedData encode_anchored(GeometryId id) { return {id, false}; }
+    /* Constructs encoded data for the given id identified as anchored.  */
+    static EncodedData encode_anchored(GeometryId id) { return {id, false}; }
 
-  /* Sets the encoded data to be dynamic.  */
-  void set_dynamic() { data_ |= kIsDynamicMask; }
+    /* Sets the encoded data to be dynamic.  */
+    void set_dynamic() { data_ |= kIsDynamicMask; }
 
-  /* Sets the encoded data to be anchored.  */
-  void set_anchored() { data_ &= ~kIsDynamicMask; }
+    /* Sets the encoded data to be anchored.  */
+    void set_anchored() { data_ &= ~kIsDynamicMask; }
 
-  /* Writes the encoded data into the collision object's user data.  */
-  void write_to(fcl::CollisionObject<double>* object) const {
-    object->setUserData(reinterpret_cast<void*>(data_));
-  }
+    /* Writes the encoded data into the collision object's user data.  */
+    void write_to(fcl::CollisionObject<double>* object) const { object->setUserData(reinterpret_cast<void*>(data_)); }
 
-  /* Reports true if the encoded data is marked as dynamic. False if anchored.
-   */
-  bool is_dynamic() const { return (data_ & kIsDynamicMask) != 0; }
+    /* Reports true if the encoded data is marked as dynamic. False if anchored.
+     */
+    bool is_dynamic() const { return (data_ & kIsDynamicMask) != 0; }
 
-  /* Reports the stored id.  */
-  GeometryId id() const {
-    return static_cast<GeometryId>(data_ & ~kIsDynamicMask);
-  }
+    /* Reports the stored id.  */
+    GeometryId id() const { return static_cast<GeometryId>(data_ & ~kIsDynamicMask); }
 
-  /* Reports the encoded data.  */
-  ValueType encoding() const { return data_; }
+    /* Reports the encoded data.  */
+    ValueType encoding() const { return data_; }
 
- private:
-  // For this encoding to work we have the following requirements:
-  //  1. ValueType must be at least as large as a pointer.
-  //  2. ValueType must be at least as large as GeometryId. (At least as large
-  //     still implies that with enough GeometryIds allocated, the high order
-  //     bit could become ambiguous -- however, that would require one id for
-  //     each atom in the universe).
-  // These static asserts guarantee these conditions.
+private:
+    // For this encoding to work we have the following requirements:
+    //  1. ValueType must be at least as large as a pointer.
+    //  2. ValueType must be at least as large as GeometryId. (At least as large
+    //     still implies that with enough GeometryIds allocated, the high order
+    //     bit could become ambiguous -- however, that would require one id for
+    //     each atom in the universe).
+    // These static asserts guarantee these conditions.
 
-  // This is redundant of the declaration of ValueType; it serves as an
-  // independent witness to the requirement in case the declaration changes.
-  static_assert(sizeof(ValueType) >= sizeof(GeometryId),
-                "The encoded data type must be at least as large as the "
-                "identifier to use in EncodedData");
+    // This is redundant of the declaration of ValueType; it serves as an
+    // independent witness to the requirement in case the declaration changes.
+    static_assert(sizeof(ValueType) >= sizeof(GeometryId),
+                  "The encoded data type must be at least as large as the "
+                  "identifier to use in EncodedData");
 
-  static_assert(sizeof(ValueType) >= sizeof(void*),
-                "The encoded data type must be at least as large as a pointer "
-                "type");
+    static_assert(sizeof(ValueType) >= sizeof(void*),
+                  "The encoded data type must be at least as large as a pointer "
+                  "type");
 
-  // Regardless of how large ValueType is, ultimately, we need to be able to
-  // pack the encoding into a void*. So, we set the bit mask as the highest
-  // order bit of something pointer sized.
-  static const ValueType kIsDynamicMask = ValueType{1}
-                                          << (sizeof(void*) * 8 - 1);
+    // Regardless of how large ValueType is, ultimately, we need to be able to
+    // pack the encoding into a void*. So, we set the bit mask as the highest
+    // order bit of something pointer sized.
+    static const ValueType kIsDynamicMask = ValueType{1} << (sizeof(void*) * 8 - 1);
 
-  // The encoded data - id and mobility type masked together.
-  ValueType data_{};
+    // The encoded data - id and mobility type masked together.
+    ValueType data_{};
 };
 
 /* Returns the name of the geometry associated with the given collision

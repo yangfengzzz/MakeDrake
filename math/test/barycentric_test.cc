@@ -204,7 +204,9 @@ GTEST_TEST(BarycentricTest, MultidimensionalOutput) {
     EXPECT_TRUE(CompareMatrices(value, Vector2d{2.75, 6.75}, 1e-8));
 }
 
-Vector1d my_sine(const Eigen::Ref<const Vector1d> &x) { return Vector1d(std::sin(x[0])); }
+Vector1d my_sine(const Eigen::Ref<const Vector1d>& x) {
+    return Vector1d(std::sin(x[0]));
+}
 
 // Build a BarycentricMesh from a function pointer.
 GTEST_TEST(BarycentricTest, FromVectorFunc) {
@@ -217,7 +219,7 @@ GTEST_TEST(BarycentricTest, FromVectorFunc) {
     // Check that it evaluates correctly on the grid (the interpolation is
     // verified with the other tests).
     Vector1d y_value;
-    for (const auto &x : x_values) {
+    for (const auto& x : x_values) {
         bary.Eval(mesh_values, Vector1d(x), &y_value);
         EXPECT_EQ(y_value[0], std::sin(x));
     }
@@ -229,12 +231,14 @@ GTEST_TEST(BarycentricTest, FromLambda) {
 
     BarycentricMesh<double> bary({x_values});
 
-    MatrixXd mesh_values = bary.MeshValuesFrom([](const auto &x) { return Vector1d(std::sin(x[0])); });
+    MatrixXd mesh_values = bary.MeshValuesFrom([](const auto& x) {
+        return Vector1d(std::sin(x[0]));
+    });
 
     // Check that it evaluates correctly on the grid (the interpolation is
     // verified with the other tests).
     Vector1d y_value;
-    for (const auto &x : x_values) {
+    for (const auto& x : x_values) {
         bary.Eval(mesh_values, Vector1d(x), &y_value);
         EXPECT_EQ(y_value[0], std::sin(x));
     }

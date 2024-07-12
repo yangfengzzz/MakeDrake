@@ -100,9 +100,9 @@ typename std::enable_if<
                 internal::is_double_or_symbolic_v<typename DerivedB::Scalar> &&
                 std::is_same_v<typename DerivedA::Scalar, typename DerivedB::Scalar>,
         Eigen::Matrix<typename DerivedA::Scalar, DerivedA::RowsAtCompileTime, DerivedB::ColsAtCompileTime>>::type
-SolveLinearSystem(const LinearSolver &linear_solver,
-                  const Eigen::MatrixBase<DerivedA> &A,
-                  const Eigen::MatrixBase<DerivedB> &b) {
+SolveLinearSystem(const LinearSolver& linear_solver,
+                  const Eigen::MatrixBase<DerivedA>& A,
+                  const Eigen::MatrixBase<DerivedB>& b) {
     unused(A);
     return linear_solver.solve(b);
 }
@@ -119,7 +119,7 @@ typename std::enable_if<internal::is_double_or_symbolic_v<typename LinearSolver:
                         Eigen::Matrix<typename LinearSolver::MatrixType::Scalar,
                                       DerivedB::RowsAtCompileTime,
                                       DerivedB::ColsAtCompileTime>>::type
-SolveLinearSystem(const LinearSolver &linear_solver, const Eigen::MatrixBase<DerivedB> &b) {
+SolveLinearSystem(const LinearSolver& linear_solver, const Eigen::MatrixBase<DerivedB>& b) {
     return linear_solver.solve(b);
 }
 
@@ -133,7 +133,7 @@ typename std::enable_if<
         std::is_same_v<typename LinearSolver::MatrixType::Scalar, double> &&
                 internal::is_autodiff_v<typename DerivedB::Scalar>,
         Eigen::Matrix<typename DerivedB::Scalar, DerivedB::RowsAtCompileTime, DerivedB::ColsAtCompileTime>>::type
-SolveLinearSystem(const LinearSolver &linear_solver, const Eigen::MatrixBase<DerivedB> &b) {
+SolveLinearSystem(const LinearSolver& linear_solver, const Eigen::MatrixBase<DerivedB>& b) {
     const int num_z_b = GetDerivativeSize(b);
     if (num_z_b == 0) {
         return linear_solver.solve(ExtractValue(b)).template cast<typename DerivedB::Scalar>();
@@ -167,9 +167,9 @@ template <typename LinearSolver, typename DerivedA, typename DerivedB>
 typename std::enable_if<
         std::is_same_v<typename DerivedA::Scalar, double> && internal::is_autodiff_v<typename DerivedB::Scalar>,
         Eigen::Matrix<typename DerivedB::Scalar, DerivedA::RowsAtCompileTime, DerivedB::ColsAtCompileTime>>::type
-SolveLinearSystem(const LinearSolver &linear_solver,
-                  const Eigen::MatrixBase<DerivedA> &A,
-                  const Eigen::MatrixBase<DerivedB> &b) {
+SolveLinearSystem(const LinearSolver& linear_solver,
+                  const Eigen::MatrixBase<DerivedA>& A,
+                  const Eigen::MatrixBase<DerivedB>& b) {
     unused(A);
     return SolveLinearSystem(linear_solver, b);
 }
@@ -183,9 +183,9 @@ template <typename LinearSolver, typename DerivedA, typename DerivedB>
 typename std::enable_if<
         internal::is_autodiff_v<typename DerivedA::Scalar>,
         Eigen::Matrix<typename DerivedA::Scalar, DerivedA::RowsAtCompileTime, DerivedB::ColsAtCompileTime>>::type
-SolveLinearSystem(const LinearSolver &linear_solver,
-                  const Eigen::MatrixBase<DerivedA> &A,
-                  const Eigen::MatrixBase<DerivedB> &b) {
+SolveLinearSystem(const LinearSolver& linear_solver,
+                  const Eigen::MatrixBase<DerivedA>& A,
+                  const Eigen::MatrixBase<DerivedB>& b) {
     // We differentiate A * x = b directly
     // A*∂x/∂zᵢ + ∂A/∂zᵢ * x = ∂b/∂zᵢ
     // So ∂x/∂zᵢ = A⁻¹(∂b/∂zᵢ - ∂A/∂zᵢ * x)
@@ -378,7 +378,7 @@ using Solution = typename Eigen::Matrix<Promoted<typename DerivedA::Scalar, type
  * of double. See @ref get_linear_solver for more details.
  */
 template <template <typename, int...> typename LinearSolverType, typename DerivedA>
-internal::EigenLinearSolver<LinearSolverType, DerivedA> GetLinearSolver(const Eigen::MatrixBase<DerivedA> &A) {
+internal::EigenLinearSolver<LinearSolverType, DerivedA> GetLinearSolver(const Eigen::MatrixBase<DerivedA>& A) {
     if constexpr (internal::is_double_or_symbolic_v<typename DerivedA::Scalar>) {
         const internal::EigenLinearSolver<LinearSolverType, DerivedA> linear_solver(A);
         return linear_solver;
@@ -467,8 +467,8 @@ internal::EigenLinearSolver<LinearSolverType, DerivedA> GetLinearSolver(const Ei
  * summarized in the table above.  See @ref linear_solve for more details.
  */
 template <template <typename, int...> typename LinearSolverType, typename DerivedA, typename DerivedB>
-internal::Solution<DerivedA, DerivedB> SolveLinearSystem(const Eigen::MatrixBase<DerivedA> &A,
-                                                         const Eigen::MatrixBase<DerivedB> &b) {
+internal::Solution<DerivedA, DerivedB> SolveLinearSystem(const Eigen::MatrixBase<DerivedA>& A,
+                                                         const Eigen::MatrixBase<DerivedB>& b) {
     using ScalarA = typename DerivedA::Scalar;
     using ScalarB = typename DerivedB::Scalar;
     static_assert(std::is_same_v<ScalarA, ScalarB> ||
@@ -546,7 +546,7 @@ public:
     /** Default constructor. Constructs an empty linear solver. */
     LinearSolver() : eigen_linear_solver_() {}
 
-    explicit LinearSolver(const Eigen::MatrixBase<DerivedA> &A)
+    explicit LinearSolver(const Eigen::MatrixBase<DerivedA>& A)
         : eigen_linear_solver_{GetLinearSolver<LinearSolverType>(A)} {
         if constexpr (internal::is_autodiff_v<typename DerivedA::Scalar>) {
             A_.emplace(A);
@@ -558,7 +558,7 @@ public:
      * Return type is as described in the table above.
      */
     template <typename DerivedB>
-    SolutionType<DerivedB> Solve(const Eigen::MatrixBase<DerivedB> &b) const {
+    SolutionType<DerivedB> Solve(const Eigen::MatrixBase<DerivedB>& b) const {
         using ScalarA = typename DerivedA::Scalar;
         using ScalarB = typename DerivedB::Scalar;
         static_assert(std::is_same_v<ScalarA, ScalarB> ||
@@ -593,7 +593,7 @@ public:
      * solution much faster than directly autodiffing the Eigen linear solver.
      *
      */
-    const SolverType &eigen_linear_solver() const { return eigen_linear_solver_; }
+    const SolverType& eigen_linear_solver() const { return eigen_linear_solver_; }
 
 private:
     SolverType eigen_linear_solver_;

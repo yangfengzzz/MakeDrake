@@ -20,65 +20,59 @@ By convention, a zero-dimensional spectrahedron is considered nonempty.
 
 @ingroup geometry_optimization */
 class Spectrahedron final : public ConvexSet {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Spectrahedron);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Spectrahedron);
 
-  /** Default constructor (yields the zero-dimensional nonempty set). */
-  Spectrahedron();
+    /** Default constructor (yields the zero-dimensional nonempty set). */
+    Spectrahedron();
 
-  /** Constructs the spectrahedron from a MathematicalProgram.
-  @throws std::exception if `prog.required_capabilities()` is not a subset of
-  supported_attributes(). */
-  explicit Spectrahedron(const solvers::MathematicalProgram& prog);
+    /** Constructs the spectrahedron from a MathematicalProgram.
+    @throws std::exception if `prog.required_capabilities()` is not a subset of
+    supported_attributes(). */
+    explicit Spectrahedron(const solvers::MathematicalProgram& prog);
 
-  ~Spectrahedron() final;
+    ~Spectrahedron() final;
 
-  /** Returns the list of solvers::ProgramAttributes supported by this class. */
-  static const solvers::ProgramAttributes& supported_attributes();
+    /** Returns the list of solvers::ProgramAttributes supported by this class. */
+    static const solvers::ProgramAttributes& supported_attributes();
 
-  // TODO(russt): Add PointInSet(MatrixXd X, double tol) overload, which will
-  // only work in the case where the ambient_dimension is ONLY symmetric
-  // matrices.
+    // TODO(russt): Add PointInSet(MatrixXd X, double tol) overload, which will
+    // only work in the case where the ambient_dimension is ONLY symmetric
+    // matrices.
 
-  /** @throws  Not implemented. */
-  using ConvexSet::CalcVolume;
+    /** @throws  Not implemented. */
+    using ConvexSet::CalcVolume;
 
- private:
-  std::unique_ptr<ConvexSet> DoClone() const final;
+private:
+    std::unique_ptr<ConvexSet> DoClone() const final;
 
-  std::optional<bool> DoIsBoundedShortcut() const final;
+    std::optional<bool> DoIsBoundedShortcut() const final;
 
-  // N.B. No need to override DoMaybeGetPoint here.
+    // N.B. No need to override DoMaybeGetPoint here.
 
-  std::optional<bool> DoPointInSetShortcut(
-      const Eigen::Ref<const Eigen::VectorXd>& x, double tol) const final;
+    std::optional<bool> DoPointInSetShortcut(const Eigen::Ref<const Eigen::VectorXd>& x, double tol) const final;
 
-  std::pair<VectorX<symbolic::Variable>,
-            std::vector<solvers::Binding<solvers::Constraint>>>
-  DoAddPointInSetConstraints(
-      solvers::MathematicalProgram* prog,
-      const Eigen::Ref<const solvers::VectorXDecisionVariable>& vars)
-      const final;
+    std::pair<VectorX<symbolic::Variable>, std::vector<solvers::Binding<solvers::Constraint>>>
+    DoAddPointInSetConstraints(solvers::MathematicalProgram* prog,
+                               const Eigen::Ref<const solvers::VectorXDecisionVariable>& vars) const final;
 
-  std::vector<solvers::Binding<solvers::Constraint>>
-  DoAddPointInNonnegativeScalingConstraints(
-      solvers::MathematicalProgram* prog,
-      const Eigen::Ref<const solvers::VectorXDecisionVariable>& x,
-      const symbolic::Variable& t) const final;
+    std::vector<solvers::Binding<solvers::Constraint>> DoAddPointInNonnegativeScalingConstraints(
+            solvers::MathematicalProgram* prog,
+            const Eigen::Ref<const solvers::VectorXDecisionVariable>& x,
+            const symbolic::Variable& t) const final;
 
-  std::vector<solvers::Binding<solvers::Constraint>>
-  DoAddPointInNonnegativeScalingConstraints(
-      solvers::MathematicalProgram* prog,
-      const Eigen::Ref<const Eigen::MatrixXd>& A,
-      const Eigen::Ref<const Eigen::VectorXd>& b,
-      const Eigen::Ref<const Eigen::VectorXd>& c, double d,
-      const Eigen::Ref<const solvers::VectorXDecisionVariable>& x,
-      const Eigen::Ref<const solvers::VectorXDecisionVariable>& t) const final;
+    std::vector<solvers::Binding<solvers::Constraint>> DoAddPointInNonnegativeScalingConstraints(
+            solvers::MathematicalProgram* prog,
+            const Eigen::Ref<const Eigen::MatrixXd>& A,
+            const Eigen::Ref<const Eigen::VectorXd>& b,
+            const Eigen::Ref<const Eigen::VectorXd>& c,
+            double d,
+            const Eigen::Ref<const solvers::VectorXDecisionVariable>& x,
+            const Eigen::Ref<const solvers::VectorXDecisionVariable>& t) const final;
 
-  std::pair<std::unique_ptr<Shape>, math::RigidTransformd> DoToShapeWithPose()
-      const final;
+    std::pair<std::unique_ptr<Shape>, math::RigidTransformd> DoToShapeWithPose() const final;
 
-  copyable_unique_ptr<solvers::MathematicalProgram> sdp_{};
+    copyable_unique_ptr<solvers::MathematicalProgram> sdp_{};
 };
 
 }  // namespace optimization

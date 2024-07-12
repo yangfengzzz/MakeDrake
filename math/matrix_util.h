@@ -18,7 +18,7 @@ namespace math {
 /// Determines if a matrix is symmetric. If std::equal_to<>()(matrix(i, j),
 /// matrix(j, i)) is true for all i, j, then the matrix is symmetric.
 template <typename Derived>
-bool IsSymmetric(const Eigen::MatrixBase<Derived> &matrix) {
+bool IsSymmetric(const Eigen::MatrixBase<Derived>& matrix) {
     using DerivedScalar = typename Derived::Scalar;
     if (matrix.rows() != matrix.cols()) {
         return false;
@@ -38,7 +38,7 @@ bool IsSymmetric(const Eigen::MatrixBase<Derived> &matrix) {
 /// The precision is absolute.
 /// Matrix with nan or inf entries is not allowed.
 template <typename Derived>
-bool IsSymmetric(const Eigen::MatrixBase<Derived> &matrix, const typename Derived::Scalar &precision) {
+bool IsSymmetric(const Eigen::MatrixBase<Derived>& matrix, const typename Derived::Scalar& precision) {
     if (!std::isfinite(precision)) {
         throw std::runtime_error("Cannot accept nans or inf is IsSymmetric");
     }
@@ -70,8 +70,8 @@ bool IsSymmetric(const Eigen::MatrixBase<Derived> &matrix, const typename Derive
 namespace internal {
 template <typename Derived1, typename Derived2>
 void to_symmetric_matrix_from_lower_triangular_columns_impl(int rows,
-                                                            const Eigen::MatrixBase<Derived1> &lower_triangular_columns,
-                                                            Eigen::MatrixBase<Derived2> *symmetric_matrix) {
+                                                            const Eigen::MatrixBase<Derived1>& lower_triangular_columns,
+                                                            Eigen::MatrixBase<Derived2>* symmetric_matrix) {
     int count = 0;
     for (int j = 0; j < rows; ++j) {
         (*symmetric_matrix)(j, j) = lower_triangular_columns(count);
@@ -91,7 +91,7 @@ void to_symmetric_matrix_from_lower_triangular_columns_impl(int rows,
 /// @pydrake_mkdoc_identifier{dynamic_size}
 template <typename Derived>
 drake::MatrixX<typename Derived::Scalar> ToSymmetricMatrixFromLowerTriangularColumns(
-        const Eigen::MatrixBase<Derived> &lower_triangular_columns) {
+        const Eigen::MatrixBase<Derived>& lower_triangular_columns) {
     int rows = (-1 + sqrt(1 + 8 * lower_triangular_columns.rows())) / 2;
 
     DRAKE_ASSERT(rows * (rows + 1) / 2 == lower_triangular_columns.rows());
@@ -109,7 +109,7 @@ drake::MatrixX<typename Derived::Scalar> ToSymmetricMatrixFromLowerTriangularCol
 /// @tparam rows The number of rows in the symmetric matrix.
 template <int rows, typename Derived>
 Eigen::Matrix<typename Derived::Scalar, rows, rows> ToSymmetricMatrixFromLowerTriangularColumns(
-        const Eigen::MatrixBase<Derived> &lower_triangular_columns) {
+        const Eigen::MatrixBase<Derived>& lower_triangular_columns) {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Derived, rows * (rows + 1) / 2);
 
     Eigen::Matrix<typename Derived::Scalar, rows, rows> symmetric_matrix(rows, rows);
@@ -122,7 +122,7 @@ Eigen::Matrix<typename Derived::Scalar, rows, rows> ToSymmetricMatrixFromLowerTr
 /// vector. This is a particularly useful operation when vectorizing symmetric
 /// matrices.
 template <typename Derived>
-drake::VectorX<typename Derived::Scalar> ToLowerTriangularColumnsFromMatrix(const Eigen::MatrixBase<Derived> &matrix) {
+drake::VectorX<typename Derived::Scalar> ToLowerTriangularColumnsFromMatrix(const Eigen::MatrixBase<Derived>& matrix) {
     DRAKE_ASSERT(matrix.rows() == matrix.cols());
     const int num_rows = (matrix.rows() * (matrix.rows() + 1)) / 2;
     drake::VectorX<typename Derived::Scalar> stacked_lower_triangular(num_rows);
@@ -145,7 +145,7 @@ drake::VectorX<typename Derived::Scalar> ToLowerTriangularColumnsFromMatrix(cons
 /// specifically check that min_eigenvalue >= eigenvalue_tolerance * max(1,
 /// max_abs_eigenvalue).
 template <typename Derived>
-bool IsPositiveDefinite(const Eigen::MatrixBase<Derived> &matrix,
+bool IsPositiveDefinite(const Eigen::MatrixBase<Derived>& matrix,
                         double eigenvalue_tolerance = 0.0,
                         double symmetry_tolerance = 0.0) {
     DRAKE_DEMAND(eigenvalue_tolerance >= 0);
@@ -166,7 +166,7 @@ bool IsPositiveDefinite(const Eigen::MatrixBase<Derived> &matrix,
 /// Converts a MatrixX<T> into a std::vector<MatrixX<T>>, taking each column of
 /// the m-by-n matrix `mat` into an m-by-1 element of the returned std::vector.
 template <typename T>
-std::vector<MatrixX<T>> EigenToStdVector(const Eigen::Ref<const MatrixX<T>> &mat) {
+std::vector<MatrixX<T>> EigenToStdVector(const Eigen::Ref<const MatrixX<T>>& mat) {
     std::vector<MatrixX<T>> vec(mat.cols());
     for (int i = 0; i < mat.cols(); ++i) {
         vec[i] = mat.col(i);
@@ -180,7 +180,7 @@ std::vector<MatrixX<T>> EigenToStdVector(const Eigen::Ref<const MatrixX<T>> &mat
 /// @pre all elements of `vec` must have one column and the same number of
 /// rows.
 template <typename T>
-MatrixX<T> StdVectorToEigen(const std::vector<MatrixX<T>> &vec) {
+MatrixX<T> StdVectorToEigen(const std::vector<MatrixX<T>>& vec) {
     DRAKE_DEMAND(vec.size() > 0);
     MatrixX<T> mat(vec[0].rows(), vec.size());
     for (int i = 0; i < static_cast<int>(vec.size()); ++i) {
@@ -196,8 +196,8 @@ MatrixX<T> StdVectorToEigen(const std::vector<MatrixX<T>> &vec) {
 /// makes no assumptions about the symmetry of the matrix, nor that the matrix
 /// is square. However, all indices must be valid for both rows and columns.
 template <typename Derived>
-MatrixX<typename Derived::Scalar> ExtractPrincipalSubmatrix(const Eigen::MatrixBase<Derived> &mat,
-                                                            const std::set<int> &indices) {
+MatrixX<typename Derived::Scalar> ExtractPrincipalSubmatrix(const Eigen::MatrixBase<Derived>& mat,
+                                                            const std::set<int>& indices) {
     DRAKE_THROW_UNLESS(!indices.empty());
     // Stores the contiguous intervals of the index set of the principal
     // submatrix. These intervals include the first index but exclude the last,

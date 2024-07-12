@@ -25,33 +25,30 @@ output_ports:
 @tparam_default_scalar
 */
 template <typename T>
-class ExternallyAppliedSpatialForceMultiplexer final
-    : public systems::LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ExternallyAppliedSpatialForceMultiplexer);
+class ExternallyAppliedSpatialForceMultiplexer final : public systems::LeafSystem<T> {
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ExternallyAppliedSpatialForceMultiplexer);
 
-  /**
-  Constructor.
-  @param num_inputs Number of input ports to be added.
-  */
-  explicit ExternallyAppliedSpatialForceMultiplexer(int num_inputs);
+    /**
+    Constructor.
+    @param num_inputs Number of input ports to be added.
+    */
+    explicit ExternallyAppliedSpatialForceMultiplexer(int num_inputs);
 
-  /**
-  Scalar-converting copy constructor.  See @ref system_scalar_conversion.
-  */
-  template <typename U>
-  explicit ExternallyAppliedSpatialForceMultiplexer(
-      const ExternallyAppliedSpatialForceMultiplexer<U>& other);
+    /**
+    Scalar-converting copy constructor.  See @ref system_scalar_conversion.
+    */
+    template <typename U>
+    explicit ExternallyAppliedSpatialForceMultiplexer(const ExternallyAppliedSpatialForceMultiplexer<U>& other);
 
-  ~ExternallyAppliedSpatialForceMultiplexer() final;
+    ~ExternallyAppliedSpatialForceMultiplexer() final;
 
- private:
-  using ValueType = ExternallyAppliedSpatialForce<T>;
-  using ListType = std::vector<ValueType>;
+private:
+    using ValueType = ExternallyAppliedSpatialForce<T>;
+    using ListType = std::vector<ValueType>;
 
-  // This is the calculator for the output port.
-  void CombineInputsToOutput(const systems::Context<T>& context,
-                             ListType* output) const;
+    // This is the calculator for the output port.
+    void CombineInputsToOutput(const systems::Context<T>& context, ListType* output) const;
 };
 
 }  // namespace multibody

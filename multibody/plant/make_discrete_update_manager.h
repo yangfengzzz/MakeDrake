@@ -26,8 +26,7 @@ namespace internal {
  MultibodyPlant given the type of contact solver.
  @tparam_default_scalar */
 template <typename T>
-std::unique_ptr<DiscreteUpdateManager<T>> MakeDiscreteUpdateManager(
-    DiscreteContactSolver contact_solver);
+std::unique_ptr<DiscreteUpdateManager<T>> MakeDiscreteUpdateManager(DiscreteContactSolver contact_solver);
 
 }  // namespace internal
 }  // namespace multibody

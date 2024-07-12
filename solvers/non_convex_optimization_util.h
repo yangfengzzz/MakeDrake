@@ -40,8 +40,7 @@ namespace solvers {
  * @throws std::exception if Q is not square.
  * @return The optimal decomposition (Q₁, Q₂)
  */
-std::pair<Eigen::MatrixXd, Eigen::MatrixXd> DecomposeNonConvexQuadraticForm(
-    const Eigen::Ref<const Eigen::MatrixXd>& Q);
+std::pair<Eigen::MatrixXd, Eigen::MatrixXd> DecomposeNonConvexQuadraticForm(const Eigen::Ref<const Eigen::MatrixXd>& Q);
 
 /**
  * For a non-convex quadratic constraint
@@ -151,18 +150,16 @@ std::pair<Eigen::MatrixXd, Eigen::MatrixXd> DecomposeNonConvexQuadraticForm(
  *      @throws std::exception when the precondition is not satisfied.
  * @ingroup solver_evaluators
  */
-std::tuple<Binding<LinearConstraint>,
-           std::vector<Binding<RotatedLorentzConeConstraint>>,
-           VectorXDecisionVariable>
-AddRelaxNonConvexQuadraticConstraintInTrustRegion(
-    MathematicalProgram* prog,
-    const Eigen::Ref<const VectorXDecisionVariable>& x,
-    const Eigen::Ref<const Eigen::MatrixXd>& Q1,
-    const Eigen::Ref<const Eigen::MatrixXd>& Q2,
-    const Eigen::Ref<const VectorXDecisionVariable>& y,
-    const Eigen::Ref<const Eigen::VectorXd>& p, double lower_bound,
-    double upper_bound,
-    const Eigen::Ref<const Eigen::VectorXd>& linearization_point,
-    double trust_region_gap);
+std::tuple<Binding<LinearConstraint>, std::vector<Binding<RotatedLorentzConeConstraint>>, VectorXDecisionVariable>
+AddRelaxNonConvexQuadraticConstraintInTrustRegion(MathematicalProgram* prog,
+                                                  const Eigen::Ref<const VectorXDecisionVariable>& x,
+                                                  const Eigen::Ref<const Eigen::MatrixXd>& Q1,
+                                                  const Eigen::Ref<const Eigen::MatrixXd>& Q2,
+                                                  const Eigen::Ref<const VectorXDecisionVariable>& y,
+                                                  const Eigen::Ref<const Eigen::VectorXd>& p,
+                                                  double lower_bound,
+                                                  double upper_bound,
+                                                  const Eigen::Ref<const Eigen::VectorXd>& linearization_point,
+                                                  double trust_region_gap);
 }  // namespace solvers
 }  // namespace drake

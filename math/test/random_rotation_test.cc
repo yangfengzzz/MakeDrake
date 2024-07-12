@@ -26,10 +26,10 @@ namespace {
  * accomplishes this bound within a factor of fudge_factor.
  */
 template <typename Orientation>
-void CheckUniformAngleAxes(const std::vector<Orientation> &orientations, int num_intervals, double fudge_factor) {
+void CheckUniformAngleAxes(const std::vector<Orientation>& orientations, int num_intervals, double fudge_factor) {
     const double h = M_PI / num_intervals;
     std::vector<int> count(num_intervals, 0);
-    for (const auto &orientation : orientations) {
+    for (const auto& orientation : orientations) {
         const int interval_index = floor(Eigen::AngleAxisd(orientation).angle() / h);
         DRAKE_DEMAND(interval_index < num_intervals);
         DRAKE_DEMAND(interval_index >= 0);
@@ -65,7 +65,7 @@ void CheckUniformAngleAxes(const std::vector<Orientation> &orientations, int num
 //    count/N = E[Y] ± 1.645 √(Var(Y)/N)
 // with 95% confidence.  Checks that our pseudo-random sampler
 // accomplishes this bound within a factor of fudge_factor.
-void CheckUniformHopfCoordinate(const std::vector<Eigen::Vector3d> &hopf_coordinates,
+void CheckUniformHopfCoordinate(const std::vector<Eigen::Vector3d>& hopf_coordinates,
                                 int num_intervals,
                                 double fudge_factor) {
     const Eigen::VectorXd theta_all = Eigen::VectorXd::LinSpaced(num_intervals + 1, 0, M_PI);
@@ -81,7 +81,7 @@ void CheckUniformHopfCoordinate(const std::vector<Eigen::Vector3d> &hopf_coordin
             }
         }
     }
-    for (const auto &hopf : hopf_coordinates) {
+    for (const auto& hopf : hopf_coordinates) {
         const int theta_index = std::floor(hopf[0] / (M_PI / num_intervals));
         const int phi_index = std::floor(hopf[1] / (2 * M_PI / num_intervals));
         const int psi_index = std::floor((hopf[2] + M_PI) / (2 * M_PI / num_intervals));

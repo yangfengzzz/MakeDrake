@@ -2,9 +2,9 @@ The Model Directives mechanism
 ==============================
 
 "Model Directives" is a small YAML-based language for building a complex
-MultibodyPlant-based scene out of numerous `.sdf` and `.urdf` files.  For
+MultibodyPlant-based scene out of numerous `.sdf` and `.urdf` files. For
 instance in the TRI dish-loading demo we have individual SDFormat files for
-the counter, sink, cameras, pedestal, arm, gripper, and each manipuland.  A
+the counter, sink, cameras, pedestal, arm, gripper, and each manipuland. A
 single SDFormat for this would be unwieldy and difficult to maintain and
 collaborate on, but SDFormat's file inclusion mechanisms have not yet proven
 adequate to this task.
@@ -14,7 +14,6 @@ We expect that this mechanism will be temporary and will be removed
 Users should be aware that this library will be deprecated if/when sdformat
 reaches feature parity with it.
 
-
 ## Syntax
 
 The easiest syntax reference is the unit test files in
@@ -22,9 +21,8 @@ The easiest syntax reference is the unit test files in
 
 A model directives file is a YAML file with a top level `directives:` group.
 Within this group are a series of directives, which are described in detail in
-`model_directives.h`.  These directives can add model instances and add frames
+`model_directives.h`. These directives can add model instances and add frames
 to them and welds between them.
-
 
 ## Use
 
@@ -55,7 +53,6 @@ Or, if you are connecting a scene graph:
 This loads the model directives from that filename, constructs a plant, and
 uses the model directives to populate the plant.
 
-
 ## Scoping
 
 Elements (frames, bodies, etc.) in `MultibodyPlant` belong to model instances.
@@ -82,7 +79,7 @@ Thus:
   `top_level::my_model`, the frame is `my_frame`.
 
 Every use of `add_directives` with a `model_namespace` will append that
-namespace to the model instance name while parsing the referenced `file`.  All
+namespace to the model instance name while parsing the referenced `file`. All
 element names will be automatically prefixed with that model namespace, with
 the exception of `add_frame` names without a model instance.
 
@@ -91,7 +88,6 @@ use that as the prefix all element names like any other directive would; if
 no model instance is present, however, `add_frame` will check the associated
 `X_PF.base_frame` for a model instance prefix and, if it is present, use it
 as the prefix for the `name` element.
-
 
 ## Units
 
@@ -103,16 +99,16 @@ We expect and hope to deprecate this mechanism when either:
 
 SDFormat properly specifies, and Drake supports, the following:
 
- * What `<include/>` statements should *really* do (e.g. namespacing models,
-   joints, etc.) without kludging Drake's parsing
-   * See <http://sdformat.org/tutorials?tut=composition_proposal&cat=pose_semantics_docs&> for the progress of the proposed formal semantics.
- * How to weld models together with joints external to the models
-
+* What `<include/>` statements should *really* do (e.g. namespacing models,
+  joints, etc.) without kludging Drake's parsing
+    * See <http://sdformat.org/tutorials?tut=composition_proposal&cat=pose_semantics_docs&> for the progress of the
+      proposed formal semantics.
+* How to weld models together with joints external to the models
 
 OR if we find a mechanism whereby xacro could accomplish the same thing:
 
- * Drake's `package://` / `model://` mechanism were mature and correct, and
-   `sdformat` didn't use singletons for search paths.
- * It was easier for one xacro to locate other xacros (possibly via a
-   workaround using a wrapper script to inject the appropriate drake source
-   or resource path)
+* Drake's `package://` / `model://` mechanism were mature and correct, and
+  `sdformat` didn't use singletons for search paths.
+* It was easier for one xacro to locate other xacros (possibly via a
+  workaround using a wrapper script to inject the appropriate drake source
+  or resource path)

@@ -32,9 +32,8 @@ namespace internal {
  * num_faces.
  *
  */
-std::tuple<std::shared_ptr<std::vector<Eigen::Vector3d>>,
-           std::shared_ptr<std::vector<int>>, int>
-ReadObjFile(const std::string& filename, double scale, bool triangulate);
+std::tuple<std::shared_ptr<std::vector<Eigen::Vector3d>>, std::shared_ptr<std::vector<int>>, int> ReadObjFile(
+        const std::string& filename, double scale, bool triangulate);
 
 }  // namespace internal
 }  // namespace geometry

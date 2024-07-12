@@ -51,25 +51,24 @@ template <typename T>
 VolumeMesh<T> MakeEllipsoidVolumeMesh(const Ellipsoid& ellipsoid,
                                       double resolution_hint,
                                       TessellationStrategy strategy) {
-  DRAKE_DEMAND(resolution_hint > 0.0);
-  const double a = ellipsoid.a();
-  const double b = ellipsoid.b();
-  const double c = ellipsoid.c();
-  const double r = std::max({a, b, c});
+    DRAKE_DEMAND(resolution_hint > 0.0);
+    const double a = ellipsoid.a();
+    const double b = ellipsoid.b();
+    const double c = ellipsoid.c();
+    const double r = std::max({a, b, c});
 
-  const double unit_sphere_resolution = resolution_hint / r;
-  auto unit_sphere_mesh =
-      MakeSphereVolumeMesh<T>(Sphere(1.0), unit_sphere_resolution, strategy);
+    const double unit_sphere_resolution = resolution_hint / r;
+    auto unit_sphere_mesh = MakeSphereVolumeMesh<T>(Sphere(1.0), unit_sphere_resolution, strategy);
 
-  const Vector3<T> scale{a, b, c};
-  std::vector<Vector3<T>> vertices;
-  vertices.reserve(unit_sphere_mesh.num_vertices());
-  for (const auto& sphere_vertex : unit_sphere_mesh.vertices()) {
-    vertices.emplace_back(scale.cwiseProduct(sphere_vertex));
-  }
-  std::vector<VolumeElement> tetrahedra = unit_sphere_mesh.tetrahedra();
+    const Vector3<T> scale{a, b, c};
+    std::vector<Vector3<T>> vertices;
+    vertices.reserve(unit_sphere_mesh.num_vertices());
+    for (const auto& sphere_vertex : unit_sphere_mesh.vertices()) {
+        vertices.emplace_back(scale.cwiseProduct(sphere_vertex));
+    }
+    std::vector<VolumeElement> tetrahedra = unit_sphere_mesh.tetrahedra();
 
-  return VolumeMesh<T>(std::move(tetrahedra), std::move(vertices));
+    return VolumeMesh<T>(std::move(tetrahedra), std::move(vertices));
 }
 
 /* Creates a surface mesh for the given `ellipsoid`; the level of
@@ -87,11 +86,10 @@ VolumeMesh<T> MakeEllipsoidVolumeMesh(const Ellipsoid& ellipsoid,
            positions.
 */
 template <typename T>
-TriangleSurfaceMesh<T> MakeEllipsoidSurfaceMesh(const Ellipsoid& ellipsoid,
-                                                double resolution_hint) {
-  DRAKE_DEMAND(resolution_hint > 0.0);
-  return ConvertVolumeToSurfaceMesh<T>(MakeEllipsoidVolumeMesh<T>(
-      ellipsoid, resolution_hint, TessellationStrategy::kSingleInteriorVertex));
+TriangleSurfaceMesh<T> MakeEllipsoidSurfaceMesh(const Ellipsoid& ellipsoid, double resolution_hint) {
+    DRAKE_DEMAND(resolution_hint > 0.0);
+    return ConvertVolumeToSurfaceMesh<T>(
+            MakeEllipsoidVolumeMesh<T>(ellipsoid, resolution_hint, TessellationStrategy::kSingleInteriorVertex));
 }
 
 }  // namespace internal

@@ -29,8 +29,7 @@ MatrixX<T> SelectRowsCols(const MatrixX<T>& M, const std::vector<int>& indices);
 // @pre indices.size() <= M.rows() (or M.cols() since M is a square matrix).
 // @pre indices argument is valid according to DemandIndicesValid().
 template <typename T>
-MatrixX<T> ExcludeRowsCols(const MatrixX<T>& M,
-                           const std::vector<int>& indices);
+MatrixX<T> ExcludeRowsCols(const MatrixX<T>& M, const std::vector<int>& indices);
 
 // Make a new, possibly smaller matrix from matrix M, by selecting the columns
 // indexed by @p indices.
@@ -54,9 +53,8 @@ MatrixX<T> ExcludeCols(const MatrixX<T>& M, const std::vector<int>& indices);
 // @pre indices.size() <= M.cols().
 // @pre indices argument is valid according to DemandIndicesValid().
 template <typename T>
-contact_solvers::internal::MatrixBlock<T> ExcludeCols(
-    const contact_solvers::internal::MatrixBlock<T>& M,
-    const std::vector<int>& indices);
+contact_solvers::internal::MatrixBlock<T> ExcludeCols(const contact_solvers::internal::MatrixBlock<T>& M,
+                                                      const std::vector<int>& indices);
 
 // Make a new, possibly smaller vector from vector @p v, by selecting the rows
 // indexed by @p indices.
@@ -79,8 +77,7 @@ VectorX<T> ExcludeRows(const VectorX<T>& v, const std::vector<int>& indices);
 // @pre indices must have the same size as v.
 // @pre indices argument is valid according to DemandIndicesValid().
 template <typename T>
-VectorX<T> ExpandRows(const VectorX<T>& v, int rows_out,
-                      const std::vector<int>& indices);
+VectorX<T> ExpandRows(const VectorX<T>& v, int rows_out, const std::vector<int>& indices);
 }  // namespace internal
 }  // namespace multibody
 }  // namespace drake

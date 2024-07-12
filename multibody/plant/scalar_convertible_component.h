@@ -13,22 +13,22 @@ namespace internal {
  @tparam_default_scalar */
 template <typename T>
 class ScalarConvertibleComponent {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ScalarConvertibleComponent);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ScalarConvertibleComponent);
 
-  ScalarConvertibleComponent() = default;
+    ScalarConvertibleComponent() = default;
 
-  virtual ~ScalarConvertibleComponent();
+    virtual ~ScalarConvertibleComponent();
 
-  /* Returns true if `this` component can be scalar converted to double. */
-  virtual bool is_cloneable_to_double() const = 0;
+    /* Returns true if `this` component can be scalar converted to double. */
+    virtual bool is_cloneable_to_double() const = 0;
 
-  /* Returns true if `this` component can be scalar converted to AutoDiffXd. */
-  virtual bool is_cloneable_to_autodiff() const = 0;
+    /* Returns true if `this` component can be scalar converted to AutoDiffXd. */
+    virtual bool is_cloneable_to_autodiff() const = 0;
 
-  /* Returns true if `this` component can be scalar converted to
-   symbolic::Expression. */
-  virtual bool is_cloneable_to_symbolic() const = 0;
+    /* Returns true if `this` component can be scalar converted to
+     symbolic::Expression. */
+    virtual bool is_cloneable_to_symbolic() const = 0;
 };
 
 }  // namespace internal
@@ -36,4 +36,4 @@ class ScalarConvertibleComponent {
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::multibody::internal::ScalarConvertibleComponent);
+        class ::drake::multibody::internal::ScalarConvertibleComponent);

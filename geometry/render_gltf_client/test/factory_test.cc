@@ -16,21 +16,17 @@ using render_gltf_client::internal::RenderEngineGltfClient;
 /* Check whether the provided RenderEngineGltfClientParams is propagated
  correctly during the RenderEngineGltfClient construction. */
 GTEST_TEST(FactoryTest, MakeRenderEngineGltfClient) {
-  const RenderEngineGltfClientParams params{.base_url = "http://127.0.0.1:1234",
-                                            .render_endpoint = "testing",
-                                            .verbose = true,
-                                            .cleanup = false};
+    const RenderEngineGltfClientParams params{
+            .base_url = "http://127.0.0.1:1234", .render_endpoint = "testing", .verbose = true, .cleanup = false};
 
-  const std::unique_ptr<RenderEngine> render_engine =
-      MakeRenderEngineGltfClient(params);
-  const RenderEngineGltfClient* render_engine_gltf_client =
-      dynamic_cast<RenderEngineGltfClient*>(render_engine.get());
+    const std::unique_ptr<RenderEngine> render_engine = MakeRenderEngineGltfClient(params);
+    const RenderEngineGltfClient* render_engine_gltf_client =
+            dynamic_cast<RenderEngineGltfClient*>(render_engine.get());
 
-  EXPECT_NE(render_engine_gltf_client, nullptr);
-  EXPECT_EQ(render_engine_gltf_client->get_params().GetUrl(),
-            params.base_url + "/" + params.render_endpoint);
-  EXPECT_EQ(render_engine_gltf_client->get_params().verbose, params.verbose);
-  EXPECT_EQ(render_engine_gltf_client->get_params().cleanup, params.cleanup);
+    EXPECT_NE(render_engine_gltf_client, nullptr);
+    EXPECT_EQ(render_engine_gltf_client->get_params().GetUrl(), params.base_url + "/" + params.render_endpoint);
+    EXPECT_EQ(render_engine_gltf_client->get_params().verbose, params.verbose);
+    EXPECT_EQ(render_engine_gltf_client->get_params().cleanup, params.cleanup);
 }
 
 }  // namespace

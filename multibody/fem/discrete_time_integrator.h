@@ -43,70 +43,65 @@ namespace internal {
  @tparam_nonsymbolic_scalar */
 template <typename T>
 class DiscreteTimeIntegrator {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiscreteTimeIntegrator);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(DiscreteTimeIntegrator);
 
-  virtual ~DiscreteTimeIntegrator() = default;
+    virtual ~DiscreteTimeIntegrator() = default;
 
-  /* Returns (αₚ, αᵥ, αₐ), the derivative of (q, v, a) with respect to the
-   unknown variable z (See class documentation). These weights can be used to
-   combine stiffness, damping, and mass matrices to form the tangent
-   matrix (see FemModel::CalcTangentMatrix). */
-  Vector3<T> GetWeights() const;
+    /* Returns (αₚ, αᵥ, αₐ), the derivative of (q, v, a) with respect to the
+     unknown variable z (See class documentation). These weights can be used to
+     combine stiffness, damping, and mass matrices to form the tangent
+     matrix (see FemModel::CalcTangentMatrix). */
+    Vector3<T> GetWeights() const;
 
-  /* Extracts the unknown variable `z` from the given FEM `state`. */
-  const VectorX<T>& GetUnknowns(const FemState<T>& state) const;
+    /* Extracts the unknown variable `z` from the given FEM `state`. */
+    const VectorX<T>& GetUnknowns(const FemState<T>& state) const;
 
-  /* Updates the FemState `state` given the change in the unknown variables.
-   More specifically, it sets the given `state` to the following values.
+    /* Updates the FemState `state` given the change in the unknown variables.
+     More specifically, it sets the given `state` to the following values.
 
-        q = αₚ (z + dz) + bₚ
-        v = αᵥ (z + dz) + bᵥ
-        a = αₐ (z + dz) + bₐ
+          q = αₚ (z + dz) + bₚ
+          v = αᵥ (z + dz) + bᵥ
+          a = αₐ (z + dz) + bₐ
 
-   @pre state != nullptr.
-   @pre dz.size() == state->num_dofs(). */
-  void UpdateStateFromChangeInUnknowns(const VectorX<T>& dz,
-                                       FemState<T>* state) const;
+     @pre state != nullptr.
+     @pre dz.size() == state->num_dofs(). */
+    void UpdateStateFromChangeInUnknowns(const VectorX<T>& dz, FemState<T>* state) const;
 
-  /* Advances `prev_state` by one time step to the `next_state` with the given
-   value of the unknown variable z.
-   @param[in]  prev_state  The state at the previous time step.
-   @param[in]  z           The value of the unknown variable z.
-   @param[out] next_state  The state at the next time step.
-   @pre next_state != nullptr.
-   @pre The sizes of `prev_state`, `z`, and `next_state` are compatible. */
-  void AdvanceOneTimeStep(const FemState<T>& prev_state, const VectorX<T>& z,
-                          FemState<T>* next_state) const;
+    /* Advances `prev_state` by one time step to the `next_state` with the given
+     value of the unknown variable z.
+     @param[in]  prev_state  The state at the previous time step.
+     @param[in]  z           The value of the unknown variable z.
+     @param[out] next_state  The state at the next time step.
+     @pre next_state != nullptr.
+     @pre The sizes of `prev_state`, `z`, and `next_state` are compatible. */
+    void AdvanceOneTimeStep(const FemState<T>& prev_state, const VectorX<T>& z, FemState<T>* next_state) const;
 
-  /* Returns the discrete time step of the integration scheme. */
-  double dt() const { return dt_; }
+    /* Returns the discrete time step of the integration scheme. */
+    double dt() const { return dt_; }
 
- protected:
-  explicit DiscreteTimeIntegrator(double dt) : dt_(dt) {
-    DRAKE_THROW_UNLESS(dt > 0);
-  }
+protected:
+    explicit DiscreteTimeIntegrator(double dt) : dt_(dt) { DRAKE_THROW_UNLESS(dt > 0); }
 
-  /* Derived classes must override this method to implement the NVI
-   GetWeights(). */
-  virtual Vector3<T> DoGetWeights() const = 0;
+    /* Derived classes must override this method to implement the NVI
+     GetWeights(). */
+    virtual Vector3<T> DoGetWeights() const = 0;
 
-  /* Derived classes must override this method to implement the NVI
-   GetUnknowns(). */
-  virtual const VectorX<T>& DoGetUnknowns(const FemState<T>& state) const = 0;
+    /* Derived classes must override this method to implement the NVI
+     GetUnknowns(). */
+    virtual const VectorX<T>& DoGetUnknowns(const FemState<T>& state) const = 0;
 
-  /* Derived classes must override this method to implement the NVI
-   UpdateStateFromChangeInUnknowns(). */
-  virtual void DoUpdateStateFromChangeInUnknowns(const VectorX<T>& dz,
-                                                 FemState<T>* state) const = 0;
+    /* Derived classes must override this method to implement the NVI
+     UpdateStateFromChangeInUnknowns(). */
+    virtual void DoUpdateStateFromChangeInUnknowns(const VectorX<T>& dz, FemState<T>* state) const = 0;
 
-  /* Derived classes must override this method to implement the NVI
-   AdvanceOneTimeStep(). */
-  virtual void DoAdvanceOneTimeStep(const FemState<T>& prev_state,
-                                    const VectorX<T>& z,
-                                    FemState<T>* next_state) const = 0;
+    /* Derived classes must override this method to implement the NVI
+     AdvanceOneTimeStep(). */
+    virtual void DoAdvanceOneTimeStep(const FemState<T>& prev_state,
+                                      const VectorX<T>& z,
+                                      FemState<T>* next_state) const = 0;
 
-  double dt_{0.0};
+    double dt_{0.0};
 };
 
 }  // namespace internal
@@ -115,4 +110,4 @@ class DiscreteTimeIntegrator {
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class ::drake::multibody::fem::internal::DiscreteTimeIntegrator);
+        class ::drake::multibody::fem::internal::DiscreteTimeIntegrator);

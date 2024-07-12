@@ -22,29 +22,25 @@ namespace multibody {
  @ingroup solver_evaluators
  */
 class UnitQuaternionConstraint : public solvers::Constraint {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnitQuaternionConstraint);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(UnitQuaternionConstraint);
 
-  UnitQuaternionConstraint();
+    UnitQuaternionConstraint();
 
-  ~UnitQuaternionConstraint() override {}
+    ~UnitQuaternionConstraint() override {}
 
- private:
-  template <typename T, typename S>
-  void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>& x,
-                     VectorX<S>* y) const {
-    y->resize(1);
-    (*y)(0) = x(0) * x(0) + x(1) * x(1) + x(2) * x(2) + x(3) * x(3);
-  }
+private:
+    template <typename T, typename S>
+    void DoEvalGeneric(const Eigen::Ref<const VectorX<T>>& x, VectorX<S>* y) const {
+        y->resize(1);
+        (*y)(0) = x(0) * x(0) + x(1) * x(1) + x(2) * x(2) + x(3) * x(3);
+    }
 
-  void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x,
-              Eigen::VectorXd* y) const override;
+    void DoEval(const Eigen::Ref<const Eigen::VectorXd>& x, Eigen::VectorXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x,
-              AutoDiffVecXd* y) const override;
+    void DoEval(const Eigen::Ref<const AutoDiffVecXd>& x, AutoDiffVecXd* y) const override;
 
-  void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>&,
-              VectorX<symbolic::Expression>*) const override;
+    void DoEval(const Eigen::Ref<const VectorX<symbolic::Variable>>&, VectorX<symbolic::Expression>*) const override;
 };
 
 /**
@@ -63,10 +59,9 @@ class UnitQuaternionConstraint : public solvers::Constraint {
  @tparam_default_scalar
  */
 template <typename T>
-void AddUnitQuaternionConstraintOnPlant(
-    const MultibodyPlant<T>& plant,
-    const Eigen::Ref<const VectorX<symbolic::Variable>>& q_vars,
-    solvers::MathematicalProgram* prog);
+void AddUnitQuaternionConstraintOnPlant(const MultibodyPlant<T>& plant,
+                                        const Eigen::Ref<const VectorX<symbolic::Variable>>& q_vars,
+                                        solvers::MathematicalProgram* prog);
 
 }  // namespace multibody
 }  // namespace drake

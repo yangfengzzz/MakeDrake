@@ -22,8 +22,7 @@ namespace internal {
           duplicate vertices.
        2. Any given face is shared by one or two tetrahedra only.
  */
-std::vector<std::array<int, 3>> IdentifyBoundaryFaces(
-    const std::vector<VolumeElement>& tetrahedra);
+std::vector<std::array<int, 3>> IdentifyBoundaryFaces(const std::vector<VolumeElement>& tetrahedra);
 
 /*
  Collects unique vertices from faces of a volume mesh. Each vertex shared by
@@ -33,8 +32,7 @@ std::vector<std::array<int, 3>> IdentifyBoundaryFaces(
  @return    vertices used by the faces. The vertex indices are sorted in
             increasing order.
  */
-std::vector<int> CollectUniqueVertices(
-    const std::vector<std::array<int, 3>>& faces);
+std::vector<int> CollectUniqueVertices(const std::vector<std::array<int, 3>>& faces);
 
 /*
  Implements the public API ConvertVolumeToSurfaceMesh() with optional return
@@ -44,8 +42,7 @@ std::vector<int> CollectUniqueVertices(
  */
 template <class T>
 TriangleSurfaceMesh<T> ConvertVolumeToSurfaceMeshWithBoundaryVertices(
-    const VolumeMesh<T>& volume,
-    std::vector<int>* boundary_vertices_out = nullptr);
+        const VolumeMesh<T>& volume, std::vector<int>* boundary_vertices_out = nullptr);
 
 }  // namespace internal
 
@@ -63,8 +60,7 @@ TriangleSurfaceMesh<T> ConvertVolumeToSurfaceMeshWithBoundaryVertices(
  @tparam_nonsymbolic_scalar */
 template <class T>
 TriangleSurfaceMesh<T> ConvertVolumeToSurfaceMesh(const VolumeMesh<T>& volume) {
-  return internal::ConvertVolumeToSurfaceMeshWithBoundaryVertices(volume,
-                                                                  nullptr);
+    return internal::ConvertVolumeToSurfaceMeshWithBoundaryVertices(volume, nullptr);
 }
 
 }  // namespace geometry

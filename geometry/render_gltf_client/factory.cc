@@ -6,16 +6,14 @@
 namespace drake {
 namespace geometry {
 
-std::unique_ptr<render::RenderEngine> MakeRenderEngineGltfClient(
-    const RenderEngineGltfClientParams& params) {
-  if (!drake::internal::IsNetworkingAllowed("render_gltf_client")) {
-    throw std::runtime_error(
-        "RenderEngineGltfClient has been disabled via the DRAKE_ALLOW_NETWORK "
-        "environment variable");
-  }
+std::unique_ptr<render::RenderEngine> MakeRenderEngineGltfClient(const RenderEngineGltfClientParams& params) {
+    if (!drake::internal::IsNetworkingAllowed("render_gltf_client")) {
+        throw std::runtime_error(
+                "RenderEngineGltfClient has been disabled via the DRAKE_ALLOW_NETWORK "
+                "environment variable");
+    }
 
-  return std::make_unique<render_gltf_client::internal::RenderEngineGltfClient>(
-      params);
+    return std::make_unique<render_gltf_client::internal::RenderEngineGltfClient>(params);
 }
 
 }  // namespace geometry

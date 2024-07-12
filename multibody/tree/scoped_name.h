@@ -37,67 +37,66 @@ namespace name is "robot1::left::arm" and the element is name "end_frame".
 This class does not treat a single colon (":") specially. Those can appear
 in either namespace names or element names. */
 class ScopedName final {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ScopedName);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ScopedName);
 
-  /** Creates an empty name. */
-  ScopedName() = default;
+    /** Creates an empty name. */
+    ScopedName() = default;
 
-  /** Creates a %ScopedName for the given `namespace_name` and `element_name`.
-  @throws std::exception if `namespace_name` starts or ends with "::".
-  @throws std::exception if `element_name` contains "::" or is empty.
-  @see ScopedName::Make() to use a null return value instead of exceptions.
-  @see ScopedName::Join() for automatic cleanup of "::" tokens. */
-  ScopedName(std::string_view namespace_name, std::string_view element_name);
+    /** Creates a %ScopedName for the given `namespace_name` and `element_name`.
+    @throws std::exception if `namespace_name` starts or ends with "::".
+    @throws std::exception if `element_name` contains "::" or is empty.
+    @see ScopedName::Make() to use a null return value instead of exceptions.
+    @see ScopedName::Join() for automatic cleanup of "::" tokens. */
+    ScopedName(std::string_view namespace_name, std::string_view element_name);
 
-  /** Creates a %ScopedName for the given `namespace_name` and `element_name`.
-  Returns nullopt if `namespace_name` starts or ends with "::", or if
-  `element_name` contains "::" or is empty.
-  @see ScopedName::Join() for automatic coalescing of "::" tokens. */
-  static std::optional<ScopedName> Make(
-      std::string_view namespace_name, std::string_view element_name);
+    /** Creates a %ScopedName for the given `namespace_name` and `element_name`.
+    Returns nullopt if `namespace_name` starts or ends with "::", or if
+    `element_name` contains "::" or is empty.
+    @see ScopedName::Join() for automatic coalescing of "::" tokens. */
+    static std::optional<ScopedName> Make(std::string_view namespace_name, std::string_view element_name);
 
-  /** Creates a %ScopedName for the given `name1::name2`. Unlike the constructor
-  or ScopedName::Make(), this function allows "::" in either name. Any leading
-  or trailing "::" on the names are removed before joining. After joining, the
-  final word after all "::"s is the element name, and everything prior is the
-  namespace name. */
-  static ScopedName Join(std::string_view name1, std::string_view name2);
+    /** Creates a %ScopedName for the given `name1::name2`. Unlike the constructor
+    or ScopedName::Make(), this function allows "::" in either name. Any leading
+    or trailing "::" on the names are removed before joining. After joining, the
+    final word after all "::"s is the element name, and everything prior is the
+    namespace name. */
+    static ScopedName Join(std::string_view name1, std::string_view name2);
 
-  /** Parses the given `scoped_name` string. Any leading or trailing "::"s on
-  the name are removed (even multiple copies like "::::" are removed). */
-  static ScopedName Parse(std::string scoped_name);
+    /** Parses the given `scoped_name` string. Any leading or trailing "::"s on
+    the name are removed (even multiple copies like "::::" are removed). */
+    static ScopedName Parse(std::string scoped_name);
 
-  /** Returns the namespace portion of this scoped name, e.g., "robot1". This is
-  typically the model instance name. This is typically the model instance name
-  but can be empty (see class overview for details). */
-  std::string_view get_namespace() const;
+    /** Returns the namespace portion of this scoped name, e.g., "robot1". This is
+    typically the model instance name. This is typically the model instance name
+    but can be empty (see class overview for details). */
+    std::string_view get_namespace() const;
 
-  /** Returns the element portion of this scoped name, e.g., "torso". This is
-  the local name of the joint, body, etc. within the model instance. It is never
-  empty unless this %ScopedName was default-constructed or moved-from. */
-  std::string_view get_element() const;
+    /** Returns the element portion of this scoped name, e.g., "torso". This is
+    the local name of the joint, body, etc. within the model instance. It is never
+    empty unless this %ScopedName was default-constructed or moved-from. */
+    std::string_view get_element() const;
 
-  /** Returns the full %ScopedName as a string, e.g., "robot1::torso". It is
-  never empty unless this %ScopedName was default-constructed or moved-from. */
-  std::string_view get_full() const;
+    /** Returns the full %ScopedName as a string, e.g., "robot1::torso". It is
+    never empty unless this %ScopedName was default-constructed or moved-from. */
+    std::string_view get_full() const;
 
-  /** Returns get_full() as a string value instead of a string_view. */
-  std::string to_string() const;
+    /** Returns get_full() as a string value instead of a string_view. */
+    std::string to_string() const;
 
-  /** Replaces the namespace name of this object, leaving the element name
-  unchanged. The namespace name is allowed to be empty.
-  @throws std::exception if `namespace_name` starts or ends with "::". */
-  void set_namespace(std::string_view namespace_name);
+    /** Replaces the namespace name of this object, leaving the element name
+    unchanged. The namespace name is allowed to be empty.
+    @throws std::exception if `namespace_name` starts or ends with "::". */
+    void set_namespace(std::string_view namespace_name);
 
-  /** Replaces the element name of this object, leaving the namespace name
-  unchanged.
-  @throws std::exception if `element_name` contains "::" or is empty. */
-  void set_element(std::string_view element_name);
+    /** Replaces the element name of this object, leaving the namespace name
+    unchanged.
+    @throws std::exception if `element_name` contains "::" or is empty. */
+    void set_element(std::string_view element_name);
 
- private:
-  std::string name_;
-  reset_after_move<size_t> element_begin_{0};
+private:
+    std::string name_;
+    reset_after_move<size_t> element_begin_{0};
 };
 
 }  // namespace multibody

@@ -25,56 +25,51 @@ namespace analysis_test {
 // so this test checks to make sure the error estimate is exact (not necessarily
 // zero).
 GTEST_TEST(ImplicitEulerIntegratorTest, QuadraticSystemErrorEstimatorAccuracy) {
-  QuadraticScalarSystem quadratic(7);
-  auto quadratic_context = quadratic.CreateDefaultContext();
-  const double C = quadratic.Evaluate(0);
-  quadratic_context->SetTime(0.0);
-  quadratic_context->get_mutable_continuous_state_vector()[0] = C;
+    QuadraticScalarSystem quadratic(7);
+    auto quadratic_context = quadratic.CreateDefaultContext();
+    const double C = quadratic.Evaluate(0);
+    quadratic_context->SetTime(0.0);
+    quadratic_context->get_mutable_continuous_state_vector()[0] = C;
 
-  ImplicitEulerIntegrator<double> ie(quadratic, quadratic_context.get());
+    ImplicitEulerIntegrator<double> ie(quadratic, quadratic_context.get());
 
-  // Ensure that the implicit Euler integrator supports error estimation.
-  ASSERT_TRUE(ie.supports_error_estimation());
+    // Ensure that the implicit Euler integrator supports error estimation.
+    ASSERT_TRUE(ie.supports_error_estimation());
 
-  // Per the description in IntegratorBase::get_error_estimate_order(), this
-  // should return "2", in accordance with the order of the polynomial in the
-  // Big-O term.
-  ASSERT_EQ(ie.get_error_estimate_order(), 2);
+    // Per the description in IntegratorBase::get_error_estimate_order(), this
+    // should return "2", in accordance with the order of the polynomial in the
+    // Big-O term.
+    ASSERT_EQ(ie.get_error_estimate_order(), 2);
 
-  const double t_final = 1.5;
-  ie.set_maximum_step_size(t_final);
-  ie.set_fixed_step_mode(true);
-  ie.Initialize();
-  ASSERT_TRUE(ie.IntegrateWithSingleFixedStepToTime(t_final));
+    const double t_final = 1.5;
+    ie.set_maximum_step_size(t_final);
+    ie.set_fixed_step_mode(true);
+    ie.Initialize();
+    ASSERT_TRUE(ie.IntegrateWithSingleFixedStepToTime(t_final));
 
-  const double err_est_h = ie.get_error_estimate()->get_vector().GetAtIndex(0);
-  const double expected_answer = quadratic.Evaluate(t_final);
-  const double actual_answer =
-      quadratic_context->get_continuous_state_vector()[0];
+    const double err_est_h = ie.get_error_estimate()->get_vector().GetAtIndex(0);
+    const double expected_answer = quadratic.Evaluate(t_final);
+    const double actual_answer = quadratic_context->get_continuous_state_vector()[0];
 
-  // Verify that the error estimate gets the exact error value. Note the tight
-  // tolerance used.
-  EXPECT_NEAR(err_est_h, actual_answer - expected_answer,
-              10 * std::numeric_limits<double>::epsilon());
-  // Now obtain the error estimate using two half-sized steps of h/2, to verify
-  // the error estimate order.
-  quadratic_context->SetTime(0.0);
-  quadratic_context->get_mutable_continuous_state_vector()[0] = C;
-  ie.Initialize();
-  ASSERT_TRUE(ie.IntegrateWithSingleFixedStepToTime(t_final / 2));
-  ASSERT_TRUE(ie.IntegrateWithSingleFixedStepToTime(t_final));
+    // Verify that the error estimate gets the exact error value. Note the tight
+    // tolerance used.
+    EXPECT_NEAR(err_est_h, actual_answer - expected_answer, 10 * std::numeric_limits<double>::epsilon());
+    // Now obtain the error estimate using two half-sized steps of h/2, to verify
+    // the error estimate order.
+    quadratic_context->SetTime(0.0);
+    quadratic_context->get_mutable_continuous_state_vector()[0] = C;
+    ie.Initialize();
+    ASSERT_TRUE(ie.IntegrateWithSingleFixedStepToTime(t_final / 2));
+    ASSERT_TRUE(ie.IntegrateWithSingleFixedStepToTime(t_final));
 
-  const double err_est_2h_2 =
-      ie.get_error_estimate()->get_vector().GetAtIndex(0);
+    const double err_est_2h_2 = ie.get_error_estimate()->get_vector().GetAtIndex(0);
 
-  // Since the error estimate is second order, the estimate from a half-step
-  // should be a quarter the size for a quadratic system.
-  EXPECT_NEAR(err_est_2h_2, 1.0 / 4 * err_est_h,
-              10 * std::numeric_limits<double>::epsilon());
+    // Since the error estimate is second order, the estimate from a half-step
+    // should be a quarter the size for a quadratic system.
+    EXPECT_NEAR(err_est_2h_2, 1.0 / 4 * err_est_h, 10 * std::numeric_limits<double>::epsilon());
 
-  // Verify the validity of general statistics.
-  ImplicitIntegratorTest<
-      ImplicitEulerIntegrator<double>>::CheckGeneralStatsValidity(&ie);
+    // Verify the validity of general statistics.
+    ImplicitIntegratorTest<ImplicitEulerIntegrator<double>>::CheckGeneralStatsValidity(&ie);
 }
 
 // Test the implicit Euler integrator.

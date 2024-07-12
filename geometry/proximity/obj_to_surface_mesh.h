@@ -16,11 +16,11 @@ namespace internal {
 
 /* Configures the obj->mesh parsing operation. */
 struct ObjParseConfig {
-  /* The policy for handling warnings and errors. */
-  drake::internal::DiagnosticPolicy diagnostic;
-  /* Defines the maximum number of unique shapes in the file for a strictly
-   positive value. For any non-positive value, there is no limit. */
-  int allowed_shape_count{-1};
+    /* The policy for handling warnings and errors. */
+    drake::internal::DiagnosticPolicy diagnostic;
+    /* Defines the maximum number of unique shapes in the file for a strictly
+     positive value. For any non-positive value, there is no limit. */
+    int allowed_shape_count{-1};
 };
 
 /* Creates a triangle mesh from the obj data contained in the `input_stream`.
@@ -28,10 +28,10 @@ struct ObjParseConfig {
  diagnostic policy (as defined in `config`) doesn't throw for errors,
  std::nullopt is returned.
  @pre `config` has both warning and error handlers defined. */
-std::optional<TriangleSurfaceMesh<double>> DoReadObjToSurfaceMesh(
-    std::istream* input_stream, double scale,
-    const std::optional<std::string>& mtl_basedir,
-    const ObjParseConfig& config);
+std::optional<TriangleSurfaceMesh<double>> DoReadObjToSurfaceMesh(std::istream* input_stream,
+                                                                  double scale,
+                                                                  const std::optional<std::string>& mtl_basedir,
+                                                                  const ObjParseConfig& config);
 
 }  // namespace internal
 
@@ -52,17 +52,17 @@ std::optional<TriangleSurfaceMesh<double>> DoReadObjToSurfaceMesh(
      file has no faces.
  @return surface mesh
  */
-TriangleSurfaceMesh<double> ReadObjToTriangleSurfaceMesh(
-    const std::string& filename, double scale = 1.0,
-    std::function<void(std::string_view)> on_warning = {});
+TriangleSurfaceMesh<double> ReadObjToTriangleSurfaceMesh(const std::string& filename,
+                                                         double scale = 1.0,
+                                                         std::function<void(std::string_view)> on_warning = {});
 
 /**
  Overload of @ref ReadObjToTriangleSurfaceMesh(const std::string&, double) with
  the Wavefront .obj file given in std::istream.
  */
-TriangleSurfaceMesh<double> ReadObjToTriangleSurfaceMesh(
-    std::istream* input_stream, double scale = 1.0,
-    std::function<void(std::string_view)> on_warning = {});
+TriangleSurfaceMesh<double> ReadObjToTriangleSurfaceMesh(std::istream* input_stream,
+                                                         double scale = 1.0,
+                                                         std::function<void(std::string_view)> on_warning = {});
 
 }  // namespace geometry
 }  // namespace drake

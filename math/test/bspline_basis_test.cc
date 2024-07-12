@@ -31,8 +31,8 @@ TYPED_TEST(BsplineBasisTests, ConstructorTest) {
     const std::vector<T> uniform_0_to_1{-0.375, -0.25, -0.125, 0, 0.125, 0.25, 0.375, 0.5,
                                         0.625,  0.75,  0.875,  1, 1.125, 1.25, 1.375};
     const std::vector<T> clamped_uniform_1_to_9{1, 1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9};
-    auto check_basis = [](const BsplineBasis<T> &basis, int expected_order, int expected_num_basis_functions,
-                          const std::vector<T> &expected_knots) {
+    auto check_basis = [](const BsplineBasis<T>& basis, int expected_order, int expected_num_basis_functions,
+                          const std::vector<T>& expected_knots) {
         EXPECT_EQ(basis.order(), expected_order);
         EXPECT_EQ(basis.num_basis_functions(), expected_num_basis_functions);
 
@@ -44,7 +44,9 @@ TYPED_TEST(BsplineBasisTests, ConstructorTest) {
         // error. We use std::equal and explicitly pass a binary predicate which
         // uses std::equal_to<T> instead.
         EXPECT_TRUE(std::equal(basis.knots().begin(), basis.knots().end(), expected_knots.begin(), expected_knots.end(),
-                               [](const auto &knot1, const auto &knot2) { return std::equal_to<T>{}(knot1, knot2); }));
+                               [](const auto& knot1, const auto& knot2) {
+                                   return std::equal_to<T>{}(knot1, knot2);
+                               }));
     };
 
     // Check the order and num_basis_functions constructor with kClampedUniform.
@@ -83,11 +85,11 @@ TYPED_TEST(BsplineBasisTests, ConstructFromDoubleTest) {
 TYPED_TEST(BsplineBasisTests, ConstructorErrors) {
     using T = TypeParam;
     const int order = 4;
-    const char *expected_message_0 =
+    const char* expected_message_0 =
             "The number of basis functions (.*) should be greater than or equal to "
             "the order (.*).";
     DRAKE_EXPECT_THROWS_MESSAGE(BsplineBasis<double>(order, 3), expected_message_0);
-    const char *expected_message_1 =
+    const char* expected_message_1 =
             "The number of knots (.*) should be greater than or equal to twice the "
             "order (.*).";
     DRAKE_EXPECT_THROWS_MESSAGE(BsplineBasis<T>(order, {0, 1, 2, 3, 4, 5, 6}), expected_message_1);
@@ -107,7 +109,9 @@ TYPED_TEST(BsplineBasisTests, ComputeActiveBasisFunctionIndicesTest) {
     const int expected_num_basis_functions = 14;
     BsplineBasis<T> bspline_basis_0{expected_order, expected_num_basis_functions};
 
-    auto expected_indices = [](std::initializer_list<int> values) { return std::vector<int>(values); };
+    auto expected_indices = [](std::initializer_list<int> values) {
+        return std::vector<int>(values);
+    };
 
     // Test that the active basis functions for the full final interval are the
     // last five (and only the last five).
@@ -285,7 +289,7 @@ TYPED_TEST(BsplineBasisTests, OperatorEqualsTest) {
     EXPECT_NE(BsplineBasis<T>(order, knots), BsplineBasis<T>(order + 1, other_knots));
 }
 
-const char *const good = R"""(
+const char* const good = R"""(
 order: 3
 knots: [0., 1., 1.5, 1.6, 2., 2.5, 3.]
 )""";
@@ -297,7 +301,7 @@ GTEST_TEST(BsplineBasisSerializeTests, GoodTest) {
     EXPECT_EQ(dut, BsplineBasis<double>(kOrder, knots));
 }
 
-const char *const not_enough_knots = R"""(
+const char* const not_enough_knots = R"""(
 order: 3
 knots: [0., 1., 1.5, 1.6, 2.]
 )""";
@@ -306,7 +310,7 @@ GTEST_TEST(BsplineBasisSerializeTests, NotEnoughKnotsTest) {
     DRAKE_EXPECT_THROWS_MESSAGE(LoadYamlString<BsplineBasis<double>>(not_enough_knots), ".*CheckInvariants.*");
 }
 
-const char *const unsorted_knots = R"""(
+const char* const unsorted_knots = R"""(
 order: 3
 knots: [0., 2.5, 1., 1.5, 1.6, 2., 3.]
 )""";

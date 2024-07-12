@@ -54,18 +54,18 @@ Matrix3d A22() {
  where A02 = A20.transpose(). We choose values so that A is diagonally dominant
  and thus SPD. */
 Block3x3SparseSymmetricMatrix MakeBlockSparseMatrix() {
-  std::vector<std::vector<int>> sparsity_pattern;
-  sparsity_pattern.emplace_back(std::vector<int>{0, 1, 2});
-  sparsity_pattern.emplace_back(std::vector<int>{1});
-  sparsity_pattern.emplace_back(std::vector<int>{2});
-  BlockSparsityPattern block_pattern({{3, 3, 3}}, std::move(sparsity_pattern));
-  Block3x3SparseSymmetricMatrix A(std::move(block_pattern));
-  A.SetBlock(0, 0, A00());
-  A.SetBlock(1, 0, A10());
-  A.SetBlock(2, 0, A20());
-  A.SetBlock(1, 1, A11());
-  A.SetBlock(2, 2, A22());
-  return A;
+    std::vector<std::vector<int>> sparsity_pattern;
+    sparsity_pattern.emplace_back(std::vector<int>{0, 1, 2});
+    sparsity_pattern.emplace_back(std::vector<int>{1});
+    sparsity_pattern.emplace_back(std::vector<int>{2});
+    BlockSparsityPattern block_pattern({{3, 3, 3}}, std::move(sparsity_pattern));
+    Block3x3SparseSymmetricMatrix A(std::move(block_pattern));
+    A.SetBlock(0, 0, A00());
+    A.SetBlock(1, 0, A10());
+    A.SetBlock(2, 0, A20());
+    A.SetBlock(1, 1, A11());
+    A.SetBlock(2, 2, A22());
+    return A;
 }
 
 /* Constructs an arbitrary block sparse matrix (see MakeBlockSparseMatrix())
@@ -78,53 +78,53 @@ Block3x3SparseSymmetricMatrix MakeBlockSparseMatrix() {
 
 and returns the Schur complement of the A11 block. */
 SchurComplement MakeSchurComplement() {
-  Block3x3SparseSymmetricMatrix block_sparse_matrix = MakeBlockSparseMatrix();
-  const std::unordered_set<int> eliminated_blocks = {1};
-  return SchurComplement(block_sparse_matrix, eliminated_blocks);
+    Block3x3SparseSymmetricMatrix block_sparse_matrix = MakeBlockSparseMatrix();
+    const std::unordered_set<int> eliminated_blocks = {1};
+    return SchurComplement(block_sparse_matrix, eliminated_blocks);
 }
 
 GTEST_TEST(SchurComplementTest, GetDComplement) {
-  const SchurComplement schur_complement = MakeSchurComplement();
-  const MatrixXd S = schur_complement.get_D_complement();
+    const SchurComplement schur_complement = MakeSchurComplement();
+    const MatrixXd S = schur_complement.get_D_complement();
 
-  MatrixXd C = MatrixXd(6, 6);
-  C.topLeftCorner<3, 3>() = A00();
-  C.bottomLeftCorner<3, 3>() = A20();
-  C.topRightCorner<3, 3>() = A20().transpose();
-  C.bottomRightCorner<3, 3>() = A22();
-  MatrixXd D = A11();
-  MatrixXd B = MatrixXd::Zero(3, 6);
-  B.topLeftCorner<3, 3>() = A10();
+    MatrixXd C = MatrixXd(6, 6);
+    C.topLeftCorner<3, 3>() = A00();
+    C.bottomLeftCorner<3, 3>() = A20();
+    C.topRightCorner<3, 3>() = A20().transpose();
+    C.bottomRightCorner<3, 3>() = A22();
+    MatrixXd D = A11();
+    MatrixXd B = MatrixXd::Zero(3, 6);
+    B.topLeftCorner<3, 3>() = A10();
 
-  const MatrixXd expected = C - B.transpose() * D.llt().solve(B);
-  EXPECT_TRUE(CompareMatrices(S, expected, kTolerance));
+    const MatrixXd expected = C - B.transpose() * D.llt().solve(B);
+    EXPECT_TRUE(CompareMatrices(S, expected, kTolerance));
 }
 
 GTEST_TEST(SchurComplementTest, SolveForX) {
-  const SchurComplement schur_complement = MakeSchurComplement();
-  const VectorXd y = VectorXd::LinSpaced(6, 0.0, 12.0);
-  const VectorXd x = schur_complement.SolveForX(y);
+    const SchurComplement schur_complement = MakeSchurComplement();
+    const VectorXd y = VectorXd::LinSpaced(6, 0.0, 12.0);
+    const VectorXd x = schur_complement.SolveForX(y);
 
-  MatrixXd D = A11();
-  MatrixXd B = MatrixXd::Zero(3, 6);
-  B.topLeftCorner<3, 3>() = A10();
-  /* The system of equation reads
-       Dx  + By = 0 (1)
-       Bᵀx + Ay = a (2)
-     Using equation (1), we get
-       x = -D⁻¹By */
-  const VectorXd expected_x = D.llt().solve(-B * y);
-  EXPECT_TRUE(CompareMatrices(x, expected_x, kTolerance));
+    MatrixXd D = A11();
+    MatrixXd B = MatrixXd::Zero(3, 6);
+    B.topLeftCorner<3, 3>() = A10();
+    /* The system of equation reads
+         Dx  + By = 0 (1)
+         Bᵀx + Ay = a (2)
+       Using equation (1), we get
+         x = -D⁻¹By */
+    const VectorXd expected_x = D.llt().solve(-B * y);
+    EXPECT_TRUE(CompareMatrices(x, expected_x, kTolerance));
 }
 
 GTEST_TEST(SchurComplementTest, Solve) {
-  const SchurComplement schur_complement = MakeSchurComplement();
-  const VectorXd b = VectorXd::LinSpaced(9, 0.0, 12.0);
-  const VectorXd z = schur_complement.Solve(b);
+    const SchurComplement schur_complement = MakeSchurComplement();
+    const VectorXd b = VectorXd::LinSpaced(9, 0.0, 12.0);
+    const VectorXd z = schur_complement.Solve(b);
 
-  const MatrixXd A = MakeBlockSparseMatrix().MakeDenseMatrix();
-  const VectorXd expected_z = A.llt().solve(b);
-  EXPECT_TRUE(CompareMatrices(z, expected_z, kTolerance));
+    const MatrixXd A = MakeBlockSparseMatrix().MakeDenseMatrix();
+    const VectorXd expected_z = A.llt().solve(b);
+    EXPECT_TRUE(CompareMatrices(z, expected_z, kTolerance));
 }
 
 }  // namespace

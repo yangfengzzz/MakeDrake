@@ -41,11 +41,11 @@ namespace internal {
  the possible number of contact patches between bodies and streamline
  accordingly. */
 struct FullBodyName {
-  std::string model;
-  std::string body;
-  std::string geometry;
-  bool body_name_is_unique;
-  int geometry_count;
+    std::string model;
+    std::string body;
+    std::string geometry;
+    bool body_name_is_unique;
+    int geometry_count;
 };
 
 /* Facilitate unit testing. See ContactResultsToLcmSystem::Equals(). */
@@ -105,88 +105,82 @@ bool operator==(const FullBodyName& n1, const FullBodyName& n2);
  @ingroup visualization */
 template <typename T>
 class ContactResultsToLcmSystem final : public systems::LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ContactResultsToLcmSystem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ContactResultsToLcmSystem);
 
-  /** Constructs an instance with *default* geometry names (e.g., "Id(7)").
+    /** Constructs an instance with *default* geometry names (e.g., "Id(7)").
 
-   @param plant   The MultibodyPlant that the ContactResults are generated from.
-   @pre The `plant` parameter (or a fully equivalent plant) connects to `this`
-        system's input port.
-   @pre The `plant` parameter is finalized. */
-  explicit ContactResultsToLcmSystem(const MultibodyPlant<T>& plant);
+     @param plant   The MultibodyPlant that the ContactResults are generated from.
+     @pre The `plant` parameter (or a fully equivalent plant) connects to `this`
+          system's input port.
+     @pre The `plant` parameter is finalized. */
+    explicit ContactResultsToLcmSystem(const MultibodyPlant<T>& plant);
 
-  /** Scalar-converting copy constructor. */
-  template <typename U>
-  explicit ContactResultsToLcmSystem(const ContactResultsToLcmSystem<U>& other)
-      : ContactResultsToLcmSystem<T>(true) {
-    geometry_id_to_body_name_map_ = other.geometry_id_to_body_name_map_;
-    body_names_ = other.body_names_;
-  }
+    /** Scalar-converting copy constructor. */
+    template <typename U>
+    explicit ContactResultsToLcmSystem(const ContactResultsToLcmSystem<U>& other) : ContactResultsToLcmSystem<T>(true) {
+        geometry_id_to_body_name_map_ = other.geometry_id_to_body_name_map_;
+        body_names_ = other.body_names_;
+    }
 
-  ~ContactResultsToLcmSystem() final;
+    ~ContactResultsToLcmSystem() final;
 
-  const systems::InputPort<T>& get_contact_result_input_port() const;
-  const systems::OutputPort<T>& get_lcm_message_output_port() const;
+    const systems::InputPort<T>& get_contact_result_input_port() const;
+    const systems::OutputPort<T>& get_lcm_message_output_port() const;
 
- private:
-  friend class ContactResultsToLcmTester;
-  // The connection function gets friend access so it can call the "name lookup
-  // functor" constructor.
-  friend systems::lcm::LcmPublisherSystem* ConnectWithNameLookup(
-      systems::DiagramBuilder<double>*, const MultibodyPlant<double>&,
-      const systems::OutputPort<double>&, const geometry::SceneGraph<double>&,
-      lcm::DrakeLcmInterface*, std::optional<double>);
+private:
+    friend class ContactResultsToLcmTester;
+    // The connection function gets friend access so it can call the "name lookup
+    // functor" constructor.
+    friend systems::lcm::LcmPublisherSystem* ConnectWithNameLookup(systems::DiagramBuilder<double>*,
+                                                                   const MultibodyPlant<double>&,
+                                                                   const systems::OutputPort<double>&,
+                                                                   const geometry::SceneGraph<double>&,
+                                                                   lcm::DrakeLcmInterface*,
+                                                                   std::optional<double>);
 
-  // Allow different specializations to access each other's private data for
-  // scalar conversion.
-  template <typename U>
-  friend class ContactResultsToLcmSystem;
+    // Allow different specializations to access each other's private data for
+    // scalar conversion.
+    template <typename U>
+    friend class ContactResultsToLcmSystem;
 
-  // Special constructor that handles configuring ports. Used by both public
-  // constructor and scalar-converting copy constructor.
-  explicit ContactResultsToLcmSystem(bool);
+    // Special constructor that handles configuring ports. Used by both public
+    // constructor and scalar-converting copy constructor.
+    explicit ContactResultsToLcmSystem(bool);
 
-  // Constructs the system using a "name lookup functor" (mapping geometry ids
-  // to geometry names).
-  ContactResultsToLcmSystem(
-      const MultibodyPlant<T>& plant,
-      const std::function<std::string(geometry::GeometryId)>&
-          geometry_name_lookup);
+    // Constructs the system using a "name lookup functor" (mapping geometry ids
+    // to geometry names).
+    ContactResultsToLcmSystem(const MultibodyPlant<T>& plant,
+                              const std::function<std::string(geometry::GeometryId)>& geometry_name_lookup);
 
-  void CalcLcmContactOutput(const systems::Context<T>& context,
-                            lcmt_contact_results_for_viz* output) const;
+    void CalcLcmContactOutput(const systems::Context<T>& context, lcmt_contact_results_for_viz* output) const;
 
-  // Reports if the other system is equivalent to this one. This can be used to
-  // make sure the scalar copy converter has been updated. Every instance member
-  // should be included in this function.
-  template <typename U = T>
-  bool Equals(const ContactResultsToLcmSystem<U>& other) const {
-    return this->get_name() == other.get_name() &&
-           contact_result_input_port_index_ ==
-               other.contact_result_input_port_index_ &&
-           message_output_port_index_ == other.message_output_port_index_ &&
-           geometry_id_to_body_name_map_ ==
-               other.geometry_id_to_body_name_map_ &&
-           body_names_ == other.body_names_;
-  }
+    // Reports if the other system is equivalent to this one. This can be used to
+    // make sure the scalar copy converter has been updated. Every instance member
+    // should be included in this function.
+    template <typename U = T>
+    bool Equals(const ContactResultsToLcmSystem<U>& other) const {
+        return this->get_name() == other.get_name() &&
+               contact_result_input_port_index_ == other.contact_result_input_port_index_ &&
+               message_output_port_index_ == other.message_output_port_index_ &&
+               geometry_id_to_body_name_map_ == other.geometry_id_to_body_name_map_ && body_names_ == other.body_names_;
+    }
 
-  // Named indices for the i/o ports.
-  systems::InputPortIndex contact_result_input_port_index_;
-  systems::OutputPortIndex message_output_port_index_;
+    // Named indices for the i/o ports.
+    systems::InputPortIndex contact_result_input_port_index_;
+    systems::OutputPortIndex message_output_port_index_;
 
-  // TODO(SeanCurtis-TRI): There is some incoherence in how body names are
-  //  stored based on contact type (point vs hydro).
-  //  geometry_id_to_body_name_map_ is exclusively used by hydro, and
-  //  body_names_ is exclusively used for point contact. They should be
-  //  reconciled.
+    // TODO(SeanCurtis-TRI): There is some incoherence in how body names are
+    //  stored based on contact type (point vs hydro).
+    //  geometry_id_to_body_name_map_ is exclusively used by hydro, and
+    //  body_names_ is exclusively used for point contact. They should be
+    //  reconciled.
 
-  // A mapping from geometry IDs to per-body name data.
-  std::unordered_map<geometry::GeometryId, internal::FullBodyName>
-      geometry_id_to_body_name_map_;
+    // A mapping from geometry IDs to per-body name data.
+    std::unordered_map<geometry::GeometryId, internal::FullBodyName> geometry_id_to_body_name_map_;
 
-  // A mapping from body index values to body names.
-  std::vector<std::string> body_names_;
+    // A mapping from body index values to body names.
+    std::vector<std::string> body_names_;
 };
 
 /** @name Visualizing contact results
@@ -245,26 +239,25 @@ class ContactResultsToLcmSystem final : public systems::LeafSystem<T> {
 /** MultibodyPlant-connecting overload.
  @ingroup visualization */
 systems::lcm::LcmPublisherSystem* ConnectContactResultsToDrakeVisualizer(
-    systems::DiagramBuilder<double>* builder,
-    const MultibodyPlant<double>& plant,
-    const geometry::SceneGraph<double>& scene_graph,
-    lcm::DrakeLcmInterface* lcm = nullptr,
-    std::optional<double> publish_period = std::nullopt);
+        systems::DiagramBuilder<double>* builder,
+        const MultibodyPlant<double>& plant,
+        const geometry::SceneGraph<double>& scene_graph,
+        lcm::DrakeLcmInterface* lcm = nullptr,
+        std::optional<double> publish_period = std::nullopt);
 
 /** OutputPort-connecting overload.
  @ingroup visualization */
 systems::lcm::LcmPublisherSystem* ConnectContactResultsToDrakeVisualizer(
-    systems::DiagramBuilder<double>* builder,
-    const MultibodyPlant<double>& plant,
-    const geometry::SceneGraph<double>& scene_graph,
-    const systems::OutputPort<double>& contact_results_port,
-    lcm::DrakeLcmInterface* lcm = nullptr,
-    std::optional<double> publish_period = std::nullopt);
+        systems::DiagramBuilder<double>* builder,
+        const MultibodyPlant<double>& plant,
+        const geometry::SceneGraph<double>& scene_graph,
+        const systems::OutputPort<double>& contact_results_port,
+        lcm::DrakeLcmInterface* lcm = nullptr,
+        std::optional<double> publish_period = std::nullopt);
 
 //@}
 
 }  // namespace multibody
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class drake::multibody::ContactResultsToLcmSystem);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class drake::multibody::ContactResultsToLcmSystem);

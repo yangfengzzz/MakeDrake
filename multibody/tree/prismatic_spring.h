@@ -27,80 +27,75 @@ namespace multibody {
 /// @tparam_default_scalar
 template <typename T>
 class PrismaticSpring final : public ForceElement<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(PrismaticSpring);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(PrismaticSpring);
 
-  /// Constructor for a linear spring attached to the given prismatic joint.
-  /// @param[in] nominal_position
-  /// The nominal position of the spring x₀, in meters, at which the spring
-  /// applies no force. This is measured the same way as the generalized
-  /// position of the prismatic joint.
-  /// @param[in] stiffness
-  /// The stiffness k of the spring in N/m.
-  /// @throws std::exception if `stiffness` is (strictly) negative.
-  PrismaticSpring(
-      const PrismaticJoint<T>& joint,
-      double nominal_position,
-      double stiffness);
+    /// Constructor for a linear spring attached to the given prismatic joint.
+    /// @param[in] nominal_position
+    /// The nominal position of the spring x₀, in meters, at which the spring
+    /// applies no force. This is measured the same way as the generalized
+    /// position of the prismatic joint.
+    /// @param[in] stiffness
+    /// The stiffness k of the spring in N/m.
+    /// @throws std::exception if `stiffness` is (strictly) negative.
+    PrismaticSpring(const PrismaticJoint<T>& joint, double nominal_position, double stiffness);
 
-  ~PrismaticSpring() override;
+    ~PrismaticSpring() override;
 
-  const PrismaticJoint<T>& joint() const;
+    const PrismaticJoint<T>& joint() const;
 
-  double nominal_position() const { return nominal_position_; }
+    double nominal_position() const { return nominal_position_; }
 
-  double stiffness() const { return stiffness_; }
+    double stiffness() const { return stiffness_; }
 
-  T CalcPotentialEnergy(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>& pc) const override;
+    T CalcPotentialEnergy(const systems::Context<T>& context,
+                          const internal::PositionKinematicsCache<T>& pc) const override;
 
-  T CalcConservativePower(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>& pc,
-      const internal::VelocityKinematicsCache<T>& vc) const override;
+    T CalcConservativePower(const systems::Context<T>& context,
+                            const internal::PositionKinematicsCache<T>& pc,
+                            const internal::VelocityKinematicsCache<T>& vc) const override;
 
-  T CalcNonConservativePower(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>& pc,
-      const internal::VelocityKinematicsCache<T>& vc) const override;
+    T CalcNonConservativePower(const systems::Context<T>& context,
+                               const internal::PositionKinematicsCache<T>& pc,
+                               const internal::VelocityKinematicsCache<T>& vc) const override;
 
- private:
-  void DoCalcAndAddForceContribution(
-      const systems::Context<T>& context,
-      const internal::PositionKinematicsCache<T>& pc,
-      const internal::VelocityKinematicsCache<T>& vc,
-      MultibodyForces<T>* forces) const override;
+private:
+    void DoCalcAndAddForceContribution(const systems::Context<T>& context,
+                                       const internal::PositionKinematicsCache<T>& pc,
+                                       const internal::VelocityKinematicsCache<T>& vc,
+                                       MultibodyForces<T>* forces) const override;
 
-  std::unique_ptr<ForceElement<double>> DoCloneToScalar(
-      const internal::MultibodyTree<double>& tree_clone) const override;
+    std::unique_ptr<ForceElement<double>> DoCloneToScalar(
+            const internal::MultibodyTree<double>& tree_clone) const override;
 
-  std::unique_ptr<ForceElement<AutoDiffXd>> DoCloneToScalar(
-      const internal::MultibodyTree<AutoDiffXd>& tree_clone) const override;
+    std::unique_ptr<ForceElement<AutoDiffXd>> DoCloneToScalar(
+            const internal::MultibodyTree<AutoDiffXd>& tree_clone) const override;
 
-  std::unique_ptr<ForceElement<symbolic::Expression>> DoCloneToScalar(
-      const internal::MultibodyTree<symbolic::Expression>&) const override;
+    std::unique_ptr<ForceElement<symbolic::Expression>> DoCloneToScalar(
+            const internal::MultibodyTree<symbolic::Expression>&) const override;
 
-  // Allow different specializations to access each other's private data for
-  // scalar conversion.
-  template <typename U> friend class PrismaticSpring;
+    // Allow different specializations to access each other's private data for
+    // scalar conversion.
+    template <typename U>
+    friend class PrismaticSpring;
 
-  // Private constructor for internal use in TemplatedDoCloneToScalar()
-  PrismaticSpring(ModelInstanceIndex model_instance, JointIndex joint_index,
-                 double nominal_position, double stiffness);
+    // Private constructor for internal use in TemplatedDoCloneToScalar()
+    PrismaticSpring(ModelInstanceIndex model_instance,
+                    JointIndex joint_index,
+                    double nominal_position,
+                    double stiffness);
 
-  // Helper method to make a clone templated on ToScalar().
-  template <typename ToScalar>
-  std::unique_ptr<ForceElement<ToScalar>> TemplatedDoCloneToScalar(
-      const internal::MultibodyTree<ToScalar>& tree_clone) const;
+    // Helper method to make a clone templated on ToScalar().
+    template <typename ToScalar>
+    std::unique_ptr<ForceElement<ToScalar>> TemplatedDoCloneToScalar(
+            const internal::MultibodyTree<ToScalar>& tree_clone) const;
 
-  const JointIndex joint_index_;
-  double nominal_position_{0};
-  double stiffness_{0};
+    const JointIndex joint_index_;
+    double nominal_position_{0};
+    double stiffness_{0};
 };
 
 }  // namespace multibody
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::multibody::PrismaticSpring);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::multibody::PrismaticSpring);

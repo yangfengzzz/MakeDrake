@@ -15,19 +15,19 @@ namespace solvers {
  * details.
  */
 struct ClpSolverDetails {
-  /** The CLP_VERSION from the Clp build. */
-  std::string clp_version;
+    /** The CLP_VERSION from the Clp build. */
+    std::string clp_version;
 
-  /** Refer to ClpModel::status() function for the meaning of the status code.
-   * - -1: unknown error.
-   * - 0: optimal.
-   * - 1: primal infeasible
-   * - 2: dual infeasible
-   * - 3: stopped on iterations or time.
-   * - 4: stopped due to errors
-   * - 5: stopped by event handler
-   */
-  int status{-1};
+    /** Refer to ClpModel::status() function for the meaning of the status code.
+     * - -1: unknown error.
+     * - 0: optimal.
+     * - 1: primal infeasible
+     * - 2: dual infeasible
+     * - 3: stopped on iterations or time.
+     * - 4: stopped due to errors
+     * - 5: stopped by event handler
+     */
+    int status{-1};
 };
 
 /**
@@ -42,30 +42,32 @@ struct ClpSolverDetails {
  * will do "no scaling". The default is 1.
  */
 class ClpSolver final : public SolverBase {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ClpSolver);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ClpSolver);
 
-  using Details = ClpSolverDetails;
+    using Details = ClpSolverDetails;
 
-  ClpSolver();
+    ClpSolver();
 
-  ~ClpSolver() final;
+    ~ClpSolver() final;
 
-  /// @name Static versions of the instance methods with similar names.
-  //@{
-  static SolverId id();
-  static bool is_available();
-  static bool is_enabled();
-  static bool ProgramAttributesSatisfied(const MathematicalProgram&);
-  static std::string UnsatisfiedProgramAttributes(const MathematicalProgram&);
-  //@}
+    /// @name Static versions of the instance methods with similar names.
+    //@{
+    static SolverId id();
+    static bool is_available();
+    static bool is_enabled();
+    static bool ProgramAttributesSatisfied(const MathematicalProgram&);
+    static std::string UnsatisfiedProgramAttributes(const MathematicalProgram&);
+    //@}
 
-  // A using-declaration adds these methods into our class's Doxygen.
-  using SolverBase::Solve;
+    // A using-declaration adds these methods into our class's Doxygen.
+    using SolverBase::Solve;
 
- private:
-  void DoSolve(const MathematicalProgram&, const Eigen::VectorXd&,
-               const SolverOptions&, MathematicalProgramResult*) const final;
+private:
+    void DoSolve(const MathematicalProgram&,
+                 const Eigen::VectorXd&,
+                 const SolverOptions&,
+                 MathematicalProgramResult*) const final;
 };
 }  // namespace solvers
 }  // namespace drake

@@ -8,9 +8,8 @@ namespace geometry {
 namespace {
 
 GTEST_TEST(FactoryDeniedTest, ExceptionMessage) {
-  const RenderEngineGltfClientParams params;
-  DRAKE_EXPECT_THROWS_MESSAGE(MakeRenderEngineGltfClient(params),
-                              ".*DRAKE_ALLOW_NETWORK.*");
+    const RenderEngineGltfClientParams params;
+    DRAKE_EXPECT_THROWS_MESSAGE(MakeRenderEngineGltfClient(params), ".*DRAKE_ALLOW_NETWORK.*");
 }
 
 }  // namespace

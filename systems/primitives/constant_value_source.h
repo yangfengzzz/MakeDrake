@@ -21,26 +21,25 @@ namespace systems {
 /// @ingroup primitive_systems
 template <typename T>
 class ConstantValueSource final : public LeafSystem<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ConstantValueSource);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(ConstantValueSource);
 
-  /// @param value The constant value to emit, which is copied by this system.
-  explicit ConstantValueSource(const AbstractValue& value);
+    /// @param value The constant value to emit, which is copied by this system.
+    explicit ConstantValueSource(const AbstractValue& value);
 
-  /// Scalar-converting copy constructor. See @ref system_scalar_conversion.
-  template <typename U>
-  explicit ConstantValueSource(const ConstantValueSource<U>&);
+    /// Scalar-converting copy constructor. See @ref system_scalar_conversion.
+    template <typename U>
+    explicit ConstantValueSource(const ConstantValueSource<U>&);
 
- private:
-  template <typename>
-  friend class ConstantValueSource;
+private:
+    template <typename>
+    friend class ConstantValueSource;
 
-  // TODO(david-german-tri): move source_value_ to the system's parameters.
-  const std::unique_ptr<AbstractValue> source_value_;
+    // TODO(david-german-tri): move source_value_ to the system's parameters.
+    const std::unique_ptr<AbstractValue> source_value_;
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class ::drake::systems::ConstantValueSource);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class ::drake::systems::ConstantValueSource);

@@ -45,15 +45,15 @@ num_time_steps * time_step`.
 only if an input port is provided.
 */
 template <typename T>
-MatrixX<T> BatchEvalUniquePeriodicDiscreteUpdate(
-    const System<T>& system,
-    const Context<T>& context,
-    const Eigen::Ref<const RowVectorX<T>>& times,
-    const Eigen::Ref<const MatrixX<T>>& states,
-    const Eigen::Ref<const MatrixX<T>>& inputs, int num_time_steps = 1,
-    std::variant<InputPortSelection, InputPortIndex> input_port_index =
-        InputPortSelection::kUseFirstInputIfItExists,
-    Parallelism parallelize = Parallelism::Max());
+MatrixX<T> BatchEvalUniquePeriodicDiscreteUpdate(const System<T>& system,
+                                                 const Context<T>& context,
+                                                 const Eigen::Ref<const RowVectorX<T>>& times,
+                                                 const Eigen::Ref<const MatrixX<T>>& states,
+                                                 const Eigen::Ref<const MatrixX<T>>& inputs,
+                                                 int num_time_steps = 1,
+                                                 std::variant<InputPortSelection, InputPortIndex> input_port_index =
+                                                         InputPortSelection::kUseFirstInputIfItExists,
+                                                 Parallelism parallelize = Parallelism::Max());
 
 /** Evaluates the time derivatives of a `system` at many times, states, and
 inputs.
@@ -86,15 +86,14 @@ vector-valued and have the same size as the number of rows in `inputs`.
 only if an input port is provided.
 */
 template <typename T>
-MatrixX<T> BatchEvalTimeDerivatives(
-    const System<T>& system,
-    const Context<T>& context,
-    const Eigen::Ref<const RowVectorX<T>>& times,
-    const Eigen::Ref<const MatrixX<T>>& states,
-    const Eigen::Ref<const MatrixX<T>>& inputs,
-    std::variant<InputPortSelection, InputPortIndex> input_port_index =
-        InputPortSelection::kUseFirstInputIfItExists,
-    Parallelism parallelize = Parallelism::Max());
+MatrixX<T> BatchEvalTimeDerivatives(const System<T>& system,
+                                    const Context<T>& context,
+                                    const Eigen::Ref<const RowVectorX<T>>& times,
+                                    const Eigen::Ref<const MatrixX<T>>& states,
+                                    const Eigen::Ref<const MatrixX<T>>& inputs,
+                                    std::variant<InputPortSelection, InputPortIndex> input_port_index =
+                                            InputPortSelection::kUseFirstInputIfItExists,
+                                    Parallelism parallelize = Parallelism::Max());
 
 }  // namespace systems
 }  // namespace drake

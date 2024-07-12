@@ -10,8 +10,7 @@ namespace drake {
 namespace lcm {
 
 namespace internal {
-[[noreturn]] void ThrowLcmEncodeDecodeError(const char* operation,
-                                            const std::type_info& message_type);
+[[noreturn]] void ThrowLcmEncodeDecodeError(const char* operation, const std::type_info& message_type);
 }  // namespace internal
 
 /**
@@ -19,16 +18,16 @@ namespace internal {
  */
 template <typename Message>
 std::vector<uint8_t> EncodeLcmMessage(const Message& message) {
-  const int64_t num_bytes = message.getEncodedSize();
-  DRAKE_THROW_UNLESS(num_bytes >= 0);
-  std::vector<uint8_t> bytes(num_bytes);
-  const int64_t used_bytes = message.encode(bytes.data(), 0, num_bytes);
-  if (used_bytes != num_bytes) {
-    // Any error here would be quite atypical: it would most likly indicate a
-    // bug in the generated code for the message, rather than a user error.
-    internal::ThrowLcmEncodeDecodeError("encoding", typeid(Message));
-  }
-  return bytes;
+    const int64_t num_bytes = message.getEncodedSize();
+    DRAKE_THROW_UNLESS(num_bytes >= 0);
+    std::vector<uint8_t> bytes(num_bytes);
+    const int64_t used_bytes = message.encode(bytes.data(), 0, num_bytes);
+    if (used_bytes != num_bytes) {
+        // Any error here would be quite atypical: it would most likly indicate a
+        // bug in the generated code for the message, rather than a user error.
+        internal::ThrowLcmEncodeDecodeError("encoding", typeid(Message));
+    }
+    return bytes;
 }
 
 /**
@@ -37,12 +36,12 @@ std::vector<uint8_t> EncodeLcmMessage(const Message& message) {
  */
 template <typename Message>
 Message DecodeLcmMessage(const std::vector<uint8_t>& bytes) {
-  Message message{};
-  const size_t size_decoded = message.decode(bytes.data(), 0, bytes.size());
-  if (size_decoded != bytes.size()) {
-    internal::ThrowLcmEncodeDecodeError("decoding", typeid(Message));
-  }
-  return message;
+    Message message{};
+    const size_t size_decoded = message.decode(bytes.data(), 0, bytes.size());
+    if (size_decoded != bytes.size()) {
+        internal::ThrowLcmEncodeDecodeError("decoding", typeid(Message));
+    }
+    return message;
 }
 
 /**
@@ -50,7 +49,7 @@ Message DecodeLcmMessage(const std::vector<uint8_t>& bytes) {
  */
 template <typename Message>
 bool AreLcmMessagesEqual(const Message& a, const Message& b) {
-  return EncodeLcmMessage(a) == EncodeLcmMessage(b);
+    return EncodeLcmMessage(a) == EncodeLcmMessage(b);
 }
 
 }  // namespace lcm

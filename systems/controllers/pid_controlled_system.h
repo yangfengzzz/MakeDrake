@@ -68,175 +68,184 @@ namespace controllers {
 /// @ingroup control_systems
 template <typename T>
 class PidControlledSystem : public Diagram<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(PidControlledSystem);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(PidControlledSystem);
 
-  /// @p plant full state is used for feedback control, and all the dimensions
-  /// have homogeneous gains specified by @p Kp, @p Kd and @p Ki.
-  ///
-  /// @param[in] plant The system to be controlled. This must not be `nullptr`.
-  /// @param[in] Kp the proportional constant.
-  /// @param[in] Ki the integral constant.
-  /// @param[in] Kd the derivative constant.
-  /// @param[in] state_output_port_index identifies the output port on the
-  /// plant that contains the (full) state information.
-  /// @param[in] plant_input_port_index identifies the input port on the plant
-  /// that takes in the input (computed as the output of the PID controller).
-  ///
-  /// @pydrake_mkdoc_identifier{6args_double_gains}
-  PidControlledSystem(std::unique_ptr<System<T>> plant, double Kp, double Ki,
-                      double Kd, int state_output_port_index = 0,
-                      int plant_input_port_index = 0);
+    /// @p plant full state is used for feedback control, and all the dimensions
+    /// have homogeneous gains specified by @p Kp, @p Kd and @p Ki.
+    ///
+    /// @param[in] plant The system to be controlled. This must not be `nullptr`.
+    /// @param[in] Kp the proportional constant.
+    /// @param[in] Ki the integral constant.
+    /// @param[in] Kd the derivative constant.
+    /// @param[in] state_output_port_index identifies the output port on the
+    /// plant that contains the (full) state information.
+    /// @param[in] plant_input_port_index identifies the input port on the plant
+    /// that takes in the input (computed as the output of the PID controller).
+    ///
+    /// @pydrake_mkdoc_identifier{6args_double_gains}
+    PidControlledSystem(std::unique_ptr<System<T>> plant,
+                        double Kp,
+                        double Ki,
+                        double Kd,
+                        int state_output_port_index = 0,
+                        int plant_input_port_index = 0);
 
-  /// @p plant full state is used for feedback control, and the vectorized gains
-  /// are specified by @p Kp, @p Kd and @p Ki.
-  ///
-  /// @param[in] plant The system to be controlled. This must not be `nullptr`.
-  /// @param[in] Kp the proportional vector constant.
-  /// @param[in] Ki the integral vector constant.
-  /// @param[in] Kd the derivative vector constant.
-  /// @param[in] state_output_port_index identifies the output port on the
-  /// plant that contains the (full) state information.
-  /// @param[in] plant_input_port_index identifies the input port on the plant
-  /// that takes in the input (computed as the output of the PID controller).
-  ///
-  /// @pydrake_mkdoc_identifier{6args_vector_gains}
-  PidControlledSystem(std::unique_ptr<System<T>> plant,
-                      const Eigen::VectorXd& Kp, const Eigen::VectorXd& Ki,
-                      const Eigen::VectorXd& Kd,
-                      int state_output_port_index = 0,
-                      int plant_output_port_index = 0);
+    /// @p plant full state is used for feedback control, and the vectorized gains
+    /// are specified by @p Kp, @p Kd and @p Ki.
+    ///
+    /// @param[in] plant The system to be controlled. This must not be `nullptr`.
+    /// @param[in] Kp the proportional vector constant.
+    /// @param[in] Ki the integral vector constant.
+    /// @param[in] Kd the derivative vector constant.
+    /// @param[in] state_output_port_index identifies the output port on the
+    /// plant that contains the (full) state information.
+    /// @param[in] plant_input_port_index identifies the input port on the plant
+    /// that takes in the input (computed as the output of the PID controller).
+    ///
+    /// @pydrake_mkdoc_identifier{6args_vector_gains}
+    PidControlledSystem(std::unique_ptr<System<T>> plant,
+                        const Eigen::VectorXd& Kp,
+                        const Eigen::VectorXd& Ki,
+                        const Eigen::VectorXd& Kd,
+                        int state_output_port_index = 0,
+                        int plant_output_port_index = 0);
 
-  /// A constructor where the gains are scalar values and some of the plant's
-  /// output is part of the feedback signal as specified by
-  /// @p feedback_selector.
-  ///
-  /// @param[in] plant The system to be controlled. This must not be `nullptr`.
-  /// @param[in] feedback_selector The matrix that selects which part of the
-  /// plant's full state is fed back to the PID controller. For semantic details
-  /// of this parameter, see this class's description.
-  /// @param[in] Kp the proportional constant.
-  /// @param[in] Ki the integral constant.
-  /// @param[in] Kd the derivative constant.
-  /// @param[in] state_output_port_index identifies the output port on the
-  /// plant that contains the (full) state information.
-  /// @param[in] plant_input_port_index identifies the input port on the plant
-  /// that takes in the input (computed as the output of the PID controller).
-  ///
-  /// @pydrake_mkdoc_identifier{7args_double_gains}
-  PidControlledSystem(std::unique_ptr<System<T>> plant,
-                      const MatrixX<double>& feedback_selector, double Kp,
-                      double Ki, double Kd, int state_output_port_index = 0,
-                      int plant_input_port_index = 0);
+    /// A constructor where the gains are scalar values and some of the plant's
+    /// output is part of the feedback signal as specified by
+    /// @p feedback_selector.
+    ///
+    /// @param[in] plant The system to be controlled. This must not be `nullptr`.
+    /// @param[in] feedback_selector The matrix that selects which part of the
+    /// plant's full state is fed back to the PID controller. For semantic details
+    /// of this parameter, see this class's description.
+    /// @param[in] Kp the proportional constant.
+    /// @param[in] Ki the integral constant.
+    /// @param[in] Kd the derivative constant.
+    /// @param[in] state_output_port_index identifies the output port on the
+    /// plant that contains the (full) state information.
+    /// @param[in] plant_input_port_index identifies the input port on the plant
+    /// that takes in the input (computed as the output of the PID controller).
+    ///
+    /// @pydrake_mkdoc_identifier{7args_double_gains}
+    PidControlledSystem(std::unique_ptr<System<T>> plant,
+                        const MatrixX<double>& feedback_selector,
+                        double Kp,
+                        double Ki,
+                        double Kd,
+                        int state_output_port_index = 0,
+                        int plant_input_port_index = 0);
 
-  /// A constructor where the gains are vector values and some of the plant's
-  /// output is part of the feedback signal as specified by
-  /// @p feedback_selector.
-  ///
-  /// @param[in] plant The system to be controlled. This must not be `nullptr`.
-  /// @param[in] feedback_selector The matrix that selects which part of the
-  /// plant's full state is fed back to the PID controller. For semantic details
-  /// of this parameter, see this class's description.
-  /// @param[in] Kp the proportional vector constant.
-  /// @param[in] Ki the integral vector constant.
-  /// @param[in] Kd the derivative vector constant.
-  /// @param[in] state_output_port_index identifies the output port on the
-  /// plant that contains the (full) state information.
-  /// @param[in] plant_input_port_index identifies the input port on the plant
-  /// that takes in the input (computed as the output of the PID controller).
-  ///
-  /// @pydrake_mkdoc_identifier{7args_vector_gains}
-  PidControlledSystem(std::unique_ptr<System<T>> plant,
-                      const MatrixX<double>& feedback_selector,
-                      const Eigen::VectorXd& Kp, const Eigen::VectorXd& Ki,
-                      const Eigen::VectorXd& Kd,
-                      int state_output_port_index = 0,
-                      int plant_input_port_index = 0);
+    /// A constructor where the gains are vector values and some of the plant's
+    /// output is part of the feedback signal as specified by
+    /// @p feedback_selector.
+    ///
+    /// @param[in] plant The system to be controlled. This must not be `nullptr`.
+    /// @param[in] feedback_selector The matrix that selects which part of the
+    /// plant's full state is fed back to the PID controller. For semantic details
+    /// of this parameter, see this class's description.
+    /// @param[in] Kp the proportional vector constant.
+    /// @param[in] Ki the integral vector constant.
+    /// @param[in] Kd the derivative vector constant.
+    /// @param[in] state_output_port_index identifies the output port on the
+    /// plant that contains the (full) state information.
+    /// @param[in] plant_input_port_index identifies the input port on the plant
+    /// that takes in the input (computed as the output of the PID controller).
+    ///
+    /// @pydrake_mkdoc_identifier{7args_vector_gains}
+    PidControlledSystem(std::unique_ptr<System<T>> plant,
+                        const MatrixX<double>& feedback_selector,
+                        const Eigen::VectorXd& Kp,
+                        const Eigen::VectorXd& Ki,
+                        const Eigen::VectorXd& Kd,
+                        int state_output_port_index = 0,
+                        int plant_input_port_index = 0);
 
-  ~PidControlledSystem() override;
+    ~PidControlledSystem() override;
 
-  System<T>* plant() { return plant_; }
+    System<T>* plant() { return plant_; }
 
-  /// @return the input port for the feed forward control input.
-  const InputPort<T>& get_control_input_port() const {
-    return this->get_input_port(0);
-  }
+    /// @return the input port for the feed forward control input.
+    const InputPort<T>& get_control_input_port() const { return this->get_input_port(0); }
 
-  /// @return the input port for the desired position/velocity state.
-  const InputPort<T>& get_state_input_port() const {
-    return this->get_input_port(1);
-  }
+    /// @return the input port for the desired position/velocity state.
+    const InputPort<T>& get_state_input_port() const { return this->get_input_port(1); }
 
-  const OutputPort<T>& get_state_output_port() const {
-    return this->get_output_port(state_output_port_index_);
-  }
+    const OutputPort<T>& get_state_output_port() const { return this->get_output_port(state_output_port_index_); }
 
-  /// The return type of ConnectController.
-  struct ConnectResult {
-    /// The feed forward control input.
-    const InputPort<T>& control_input_port;
-    /// The feedback state input.
-    const InputPort<T>& state_input_port;
-  };
+    /// The return type of ConnectController.
+    struct ConnectResult {
+        /// The feed forward control input.
+        const InputPort<T>& control_input_port;
+        /// The feedback state input.
+        const InputPort<T>& state_input_port;
+    };
 
-  /// Creates a PidController and uses @p builder to connect @p plant_input and
-  /// @p plant_output from an existing plant. The controlled states are selected
-  /// by @p feedback_selector.
-  static ConnectResult ConnectController(
-      const InputPort<T>& plant_input,
-      const OutputPort<T>& plant_output,
-      const MatrixX<double>& feedback_selector,
-      const Eigen::VectorXd& Kp, const Eigen::VectorXd& Ki,
-      const Eigen::VectorXd& Kd, DiagramBuilder<T>* builder);
+    /// Creates a PidController and uses @p builder to connect @p plant_input and
+    /// @p plant_output from an existing plant. The controlled states are selected
+    /// by @p feedback_selector.
+    static ConnectResult ConnectController(const InputPort<T>& plant_input,
+                                           const OutputPort<T>& plant_output,
+                                           const MatrixX<double>& feedback_selector,
+                                           const Eigen::VectorXd& Kp,
+                                           const Eigen::VectorXd& Ki,
+                                           const Eigen::VectorXd& Kd,
+                                           DiagramBuilder<T>* builder);
 
-  /// Creates a PidController and uses @p builder to connect @p plant_input and
-  /// @p plant_output from an existing plant. The plant's full state is used for
-  /// feedback.
-  static ConnectResult ConnectController(
-      const InputPort<T>& plant_input,
-      const OutputPort<T>& plant_output,
-      const Eigen::VectorXd& Kp, const Eigen::VectorXd& Ki,
-      const Eigen::VectorXd& Kd, DiagramBuilder<T>* builder);
+    /// Creates a PidController and uses @p builder to connect @p plant_input and
+    /// @p plant_output from an existing plant. The plant's full state is used for
+    /// feedback.
+    static ConnectResult ConnectController(const InputPort<T>& plant_input,
+                                           const OutputPort<T>& plant_output,
+                                           const Eigen::VectorXd& Kp,
+                                           const Eigen::VectorXd& Ki,
+                                           const Eigen::VectorXd& Kd,
+                                           DiagramBuilder<T>* builder);
 
-  /// Creates a PidController with input saturation and uses @p builder to
-  /// connect @p plant_input and @p plant_output from an existing plant. The
-  /// controlled states are selected by @p feedback_selector. The output of
-  /// the PidController is clipped to be within the specified bounds. Note
-  /// that using input limits along with integral gain constant may cause the
-  /// integrator to windup.
-  static ConnectResult ConnectControllerWithInputSaturation(
-      const InputPort<T>& plant_input,
-      const OutputPort<T>& plant_output,
-      const MatrixX<double>& feedback_selector,
-      const Eigen::VectorXd& Kp, const Eigen::VectorXd& Ki,
-      const Eigen::VectorXd& Kd, const VectorX<T>& min_plant_input,
-      const VectorX<T>& max_plant_input, DiagramBuilder<T>* builder);
+    /// Creates a PidController with input saturation and uses @p builder to
+    /// connect @p plant_input and @p plant_output from an existing plant. The
+    /// controlled states are selected by @p feedback_selector. The output of
+    /// the PidController is clipped to be within the specified bounds. Note
+    /// that using input limits along with integral gain constant may cause the
+    /// integrator to windup.
+    static ConnectResult ConnectControllerWithInputSaturation(const InputPort<T>& plant_input,
+                                                              const OutputPort<T>& plant_output,
+                                                              const MatrixX<double>& feedback_selector,
+                                                              const Eigen::VectorXd& Kp,
+                                                              const Eigen::VectorXd& Ki,
+                                                              const Eigen::VectorXd& Kd,
+                                                              const VectorX<T>& min_plant_input,
+                                                              const VectorX<T>& max_plant_input,
+                                                              DiagramBuilder<T>* builder);
 
-  /// Creates a PidController with input saturation and uses @p builder to
-  /// connect @p plant_input and @p plant_output from an existing plant. The
-  /// plant's full state is used for feedback. The output of the PidController
-  /// is clipped to be within the specified bounds. Note that using input
-  /// limits along with integral gain constant may cause the integrator to
-  /// windup.
-  static ConnectResult ConnectControllerWithInputSaturation(
-      const InputPort<T>& plant_input,
-      const OutputPort<T>& plant_output,
-      const Eigen::VectorXd& Kp, const Eigen::VectorXd& Ki,
-      const Eigen::VectorXd& Kd, const VectorX<T>& min_plant_input,
-      const VectorX<T>& max_plant_input, DiagramBuilder<T>* builder);
+    /// Creates a PidController with input saturation and uses @p builder to
+    /// connect @p plant_input and @p plant_output from an existing plant. The
+    /// plant's full state is used for feedback. The output of the PidController
+    /// is clipped to be within the specified bounds. Note that using input
+    /// limits along with integral gain constant may cause the integrator to
+    /// windup.
+    static ConnectResult ConnectControllerWithInputSaturation(const InputPort<T>& plant_input,
+                                                              const OutputPort<T>& plant_output,
+                                                              const Eigen::VectorXd& Kp,
+                                                              const Eigen::VectorXd& Ki,
+                                                              const Eigen::VectorXd& Kd,
+                                                              const VectorX<T>& min_plant_input,
+                                                              const VectorX<T>& max_plant_input,
+                                                              DiagramBuilder<T>* builder);
 
- private:
-  // A helper function for the constructors. This is necessary to avoid seg
-  // faults caused by simultaneously moving the plant and calling methods on
-  // the plant when one constructor delegates to another constructor.
-  void Initialize(std::unique_ptr<System<T>> plant,
-                  const MatrixX<double>& feedback_selector,
-                  const Eigen::VectorXd& Kp, const Eigen::VectorXd& Ki,
-                  const Eigen::VectorXd& Kd);
+private:
+    // A helper function for the constructors. This is necessary to avoid seg
+    // faults caused by simultaneously moving the plant and calling methods on
+    // the plant when one constructor delegates to another constructor.
+    void Initialize(std::unique_ptr<System<T>> plant,
+                    const MatrixX<double>& feedback_selector,
+                    const Eigen::VectorXd& Kp,
+                    const Eigen::VectorXd& Ki,
+                    const Eigen::VectorXd& Kd);
 
-  System<T>* plant_{nullptr};
-  const int state_output_port_index_;
-  const int plant_input_port_index_;
+    System<T>* plant_{nullptr};
+    const int state_output_port_index_;
+    const int plant_input_port_index_;
 };
 
 }  // namespace controllers

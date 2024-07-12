@@ -34,38 +34,37 @@ namespace internal {
  */
 template <typename T>
 class PosedHalfSpace {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(PosedHalfSpace);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(PosedHalfSpace);
 
-  /* Constructs a half space in frame F in terms of its boundary plane. The
-   parameters define the boundary plane (see Plane for details). The boundary
-   plane's normal points _outside_ the half space.  */
-  PosedHalfSpace(const Vector3<T>& nhat_F, const Vector3<T>& p_FP,
-                 bool already_normalized = false)
-      : plane_(nhat_F, p_FP, already_normalized) {}
+    /* Constructs a half space in frame F in terms of its boundary plane. The
+     parameters define the boundary plane (see Plane for details). The boundary
+     plane's normal points _outside_ the half space.  */
+    PosedHalfSpace(const Vector3<T>& nhat_F, const Vector3<T>& p_FP, bool already_normalized = false)
+        : plane_(nhat_F, p_FP, already_normalized) {}
 
-  /* Computes the signed distance to the point Q (measured and expressed in
-   Frame F). If Q's signed distance is positive, it lies outside the half space.
-   If it is negative, it lies inside. If it is zero, it lies on the boundary
-   plane of the half space.
+    /* Computes the signed distance to the point Q (measured and expressed in
+     Frame F). If Q's signed distance is positive, it lies outside the half space.
+     If it is negative, it lies inside. If it is zero, it lies on the boundary
+     plane of the half space.
 
-   The return type depends on both the half space's scalar type `T` and the
-   given query point's scalar type `U`. See
-   @ref drake::geometry::promoted_numerical "promoted_numerical_t" for details.
-   */
-  template <typename U = T>
-  promoted_numerical_t<U, T> CalcSignedDistance(const Vector3<U>& p_FQ) const {
-    return plane_.CalcHeight(p_FQ);
-  }
+     The return type depends on both the half space's scalar type `T` and the
+     given query point's scalar type `U`. See
+     @ref drake::geometry::promoted_numerical "promoted_numerical_t" for details.
+     */
+    template <typename U = T>
+    promoted_numerical_t<U, T> CalcSignedDistance(const Vector3<U>& p_FQ) const {
+        return plane_.CalcHeight(p_FQ);
+    }
 
-  /* Gets the normal expressed in Frame F. */
-  const Vector3<T>& normal() const { return plane_.normal(); }
+    /* Gets the normal expressed in Frame F. */
+    const Vector3<T>& normal() const { return plane_.normal(); }
 
-  /* Gets the boundary plane of `this` posed half space.  */
-  const Plane<T>& boundary_plane() const { return plane_; }
+    /* Gets the boundary plane of `this` posed half space.  */
+    const Plane<T>& boundary_plane() const { return plane_; }
 
- private:
-  Plane<T> plane_;
+private:
+    Plane<T> plane_;
 };
 }  // namespace internal
 }  // namespace geometry

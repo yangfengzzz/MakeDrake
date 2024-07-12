@@ -68,106 +68,95 @@ namespace render {
  image more compact but means there are only, approximately, 32,000 unique
  %RenderLabel values.  */
 class RenderLabel {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(RenderLabel);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(RenderLabel);
 
-  // TODO(SeanCurtis-TRI): Change this to an unsigned int by defining the
-  // kLabel16U pixel type (and accompanying ImageTraits). Change the @note in
-  // the class documentation to match.
-  using ValueType = systems::sensors::ImageTraits<
-      systems::sensors::PixelType::kLabel16I>::ChannelType;
+    // TODO(SeanCurtis-TRI): Change this to an unsigned int by defining the
+    // kLabel16U pixel type (and accompanying ImageTraits). Change the @note in
+    // the class documentation to match.
+    using ValueType = systems::sensors::ImageTraits<systems::sensors::PixelType::kLabel16I>::ChannelType;
 
-  /** Constructs a label with the reserved `unspecified` value.  */
-  RenderLabel() = default;
+    /** Constructs a label with the reserved `unspecified` value.  */
+    RenderLabel() = default;
 
-  /** Constructs a label with the given `value`.
-   @throws std::exception if a) is negative, or b) the `value` is one of the
-                             reserved values.  */
-  explicit RenderLabel(int value) : RenderLabel(value, true) {}
+    /** Constructs a label with the given `value`.
+     @throws std::exception if a) is negative, or b) the `value` is one of the
+                               reserved values.  */
+    explicit RenderLabel(int value) : RenderLabel(value, true) {}
 
-  /** Compares this label with the `other` label. Reports true if they have the
-   same value.  */
-  bool operator==(const RenderLabel& other) const {
-    return value_ == other.value_;
-  }
+    /** Compares this label with the `other` label. Reports true if they have the
+     same value.  */
+    bool operator==(const RenderLabel& other) const { return value_ == other.value_; }
 
-  /** Compares this label with the `other` label. Reports true if they have
-   different values.  */
-  bool operator!=(const RenderLabel& other) const {
-    return value_ != other.value_;
-  }
+    /** Compares this label with the `other` label. Reports true if they have
+     different values.  */
+    bool operator!=(const RenderLabel& other) const { return value_ != other.value_; }
 
-  /** Allows the labels to be compared to imply a total ordering -- facilitates
-   use in data structures which require ordering (e.g., std::set). The ordering
-   has no particular meaning for applications.  */
-  bool operator<(const RenderLabel& other) const {
-    return value_ < other.value_;
-  }
+    /** Allows the labels to be compared to imply a total ordering -- facilitates
+     use in data structures which require ordering (e.g., std::set). The ordering
+     has no particular meaning for applications.  */
+    bool operator<(const RenderLabel& other) const { return value_ < other.value_; }
 
-  /** Implements the @ref hash_append concept. */
-  template <class HashAlgorithm>
-  friend void hash_append(HashAlgorithm& hasher,
-                          const RenderLabel& item) noexcept {
-    using drake::hash_append;
-    hash_append(hasher, item.value_);
-  }
-
-  /** @name  The reserved render labels
-
-   See class documentation on
-   @ref reserved_render_label "reserved labels" for details.  */
-  //@{
-
-  /** See @ref reserved_render_label "Reserved labels"  */
-  static const RenderLabel kEmpty;
-
-  /** See @ref reserved_render_label "Reserved labels"  */
-  static const RenderLabel kDoNotRender;
-
-  /** See @ref reserved_render_label "Reserved labels"  */
-  static const RenderLabel kDontCare;
-
-  /** See @ref reserved_render_label "Reserved labels"  */
-  static const RenderLabel kUnspecified;
-
-  /** The largest value that a %RenderLabel can be instantiated on. */
-  static const ValueType kMaxUnreserved;
-
-  //@}
-
-  /** Reports if the label is a reserved label.  */
-  bool is_reserved() const { return value_ > kMaxUnreserved; }
-
-  /** Implicit conversion to its underlying integer representation.  */
-  operator ValueType() const { return value_; }
-
-  /** Enables use of labels with the streaming operator.  */
-  friend std::ostream& operator<<(std::ostream& out, const RenderLabel& label);
-
-  /** Converts the RenderLabel value to a string representation.  */
-  friend std::string to_string(const RenderLabel& label);
-
- private:
-  // RenderEngine needs access to encode labels as raster colors and to convert
-  // rasterized colors back into labels.
-  friend class RenderEngine;
-
-  // Private constructor precludes general construction except by the approved
-  // factories (see above).
-  RenderLabel(int value, bool needs_testing)
-      : value_(static_cast<ValueType>(value)) {
-    if (value < 0 || (needs_testing && value > kMaxUnreserved)) {
-      throw std::logic_error(
-          "Invalid construction of RenderLabel with invalid value: " +
-          std::to_string(value));
+    /** Implements the @ref hash_append concept. */
+    template <class HashAlgorithm>
+    friend void hash_append(HashAlgorithm& hasher, const RenderLabel& item) noexcept {
+        using drake::hash_append;
+        hash_append(hasher, item.value_);
     }
-  }
 
-  static constexpr ValueType kMaxValue = std::numeric_limits<ValueType>::max();
+    /** @name  The reserved render labels
 
-  // The underlying value; this implicitly defines the unspecified value to be
-  // the maximum value.
-  ValueType value_{kMaxValue};
+     See class documentation on
+     @ref reserved_render_label "reserved labels" for details.  */
+    //@{
+
+    /** See @ref reserved_render_label "Reserved labels"  */
+    static const RenderLabel kEmpty;
+
+    /** See @ref reserved_render_label "Reserved labels"  */
+    static const RenderLabel kDoNotRender;
+
+    /** See @ref reserved_render_label "Reserved labels"  */
+    static const RenderLabel kDontCare;
+
+    /** See @ref reserved_render_label "Reserved labels"  */
+    static const RenderLabel kUnspecified;
+
+    /** The largest value that a %RenderLabel can be instantiated on. */
+    static const ValueType kMaxUnreserved;
+
+    //@}
+
+    /** Reports if the label is a reserved label.  */
+    bool is_reserved() const { return value_ > kMaxUnreserved; }
+
+    /** Implicit conversion to its underlying integer representation.  */
+    operator ValueType() const { return value_; }
+
+    /** Enables use of labels with the streaming operator.  */
+    friend std::ostream& operator<<(std::ostream& out, const RenderLabel& label);
+
+    /** Converts the RenderLabel value to a string representation.  */
+    friend std::string to_string(const RenderLabel& label);
+
+private:
+    // RenderEngine needs access to encode labels as raster colors and to convert
+    // rasterized colors back into labels.
+    friend class RenderEngine;
+
+    // Private constructor precludes general construction except by the approved
+    // factories (see above).
+    RenderLabel(int value, bool needs_testing) : value_(static_cast<ValueType>(value)) {
+        if (value < 0 || (needs_testing && value > kMaxUnreserved)) {
+            throw std::logic_error("Invalid construction of RenderLabel with invalid value: " + std::to_string(value));
+        }
+    }
+
+    static constexpr ValueType kMaxValue = std::numeric_limits<ValueType>::max();
+
+    // The underlying value; this implicitly defines the unspecified value to be
+    // the maximum value.
+    ValueType value_{kMaxValue};
 };
 
 }  // namespace render
@@ -179,14 +168,12 @@ namespace std {
 /** Enables use of the label to serve as a key in STL containers.
  @relates RenderLabel  */
 template <>
-struct hash<drake::geometry::render::RenderLabel> : public drake::DefaultHash {
-};
+struct hash<drake::geometry::render::RenderLabel> : public drake::DefaultHash {};
 
 }  // namespace std
 
 // TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
 namespace fmt {
 template <>
-struct formatter<drake::geometry::render::RenderLabel>
-    : drake::ostream_formatter {};
+struct formatter<drake::geometry::render::RenderLabel> : drake::ostream_formatter {};
 }  // namespace fmt

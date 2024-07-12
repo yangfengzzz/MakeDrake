@@ -23,9 +23,9 @@ namespace solvers {
  * the constraints, it is guaranteed that b1_and_b2 = b1 ∧ b2.
  * @pre b1, b2, b1_and_b2 are all linear expressions.
  */
-[[nodiscard]] Binding<LinearConstraint> CreateLogicalAndConstraint(
-    const symbolic::Expression& b1, const symbolic::Expression& b2,
-    const symbolic::Expression& b1_and_b2);
+[[nodiscard]] Binding<LinearConstraint> CreateLogicalAndConstraint(const symbolic::Expression& b1,
+                                                                   const symbolic::Expression& b2,
+                                                                   const symbolic::Expression& b1_and_b2);
 
 /**
  * Adds linear constraints, such that when b1, b2, b1_or_b2 satisfy the
@@ -45,9 +45,9 @@ namespace solvers {
  * the constraints, it is guaranteed that b1_or_b2 = b1 ∨ b2.
  * @pre b1, b2, b1_or_b2 are all linear expressions.
  */
-[[nodiscard]] Binding<LinearConstraint> CreateLogicalOrConstraint(
-    const symbolic::Expression& b1, const symbolic::Expression& b2,
-    const symbolic::Expression& b1_or_b2);
+[[nodiscard]] Binding<LinearConstraint> CreateLogicalOrConstraint(const symbolic::Expression& b1,
+                                                                  const symbolic::Expression& b2,
+                                                                  const symbolic::Expression& b1_or_b2);
 
 /**
  * Add linear constraints, such that when b1, b2, b1_xor_b2 satisfy the
@@ -68,9 +68,9 @@ namespace solvers {
  * the constraints, it is guaranteed that b1_xor_b2 = b1 ⊕ b2.
  * @pre b1, b2, b1_xor_b2 are all linear expressions.
  */
-[[nodiscard]] Binding<LinearConstraint> CreateLogicalXorConstraint(
-    const symbolic::Expression& b1, const symbolic::Expression& b2,
-    const symbolic::Expression& b1_xor_b2);
+[[nodiscard]] Binding<LinearConstraint> CreateLogicalXorConstraint(const symbolic::Expression& b1,
+                                                                   const symbolic::Expression& b2,
+                                                                   const symbolic::Expression& b1_xor_b2);
 
 /** Create linear constraints such that, when these constraints are satisfied,
  * match = 1 if and only if code == expected, otherwise match = 0
@@ -86,8 +86,8 @@ namespace solvers {
  * create the constraint.
  */
 [[nodiscard]] Binding<LinearConstraint> CreateBinaryCodeMatchConstraint(
-    const VectorX<symbolic::Expression>& code,
-    const Eigen::Ref<const Eigen::VectorXi>& expected,
-    const symbolic::Expression& match);
+        const VectorX<symbolic::Expression>& code,
+        const Eigen::Ref<const Eigen::VectorXi>& expected,
+        const symbolic::Expression& match);
 }  // namespace solvers
 }  // namespace drake

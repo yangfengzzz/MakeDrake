@@ -171,7 +171,7 @@ protected:
         }
     }
 
-    void addAngleAxisTestCase(double angle, const Vector3d &axis) {
+    void addAngleAxisTestCase(double angle, const Vector3d& axis) {
         angle_axis_test_cases_.push_back(AngleAxisd(angle, axis));
     }
 
@@ -300,15 +300,15 @@ protected:
     }
 
     void SetupRotationMatrixTestCases() {
-        for (const RollPitchYaw<double> &rpyi : rpy_test_cases_) {
+        for (const RollPitchYaw<double>& rpyi : rpy_test_cases_) {
             const RotationMatrix<double> Ri(rpyi);
             rotation_matrix_test_cases_.push_back(Ri);
         }
-        for (const Eigen::AngleAxisd &ai : angle_axis_test_cases_) {
+        for (const Eigen::AngleAxisd& ai : angle_axis_test_cases_) {
             const RotationMatrix<double> Ri(ai);
             rotation_matrix_test_cases_.push_back(Ri);
         }
-        for (const Quaterniond &qi : quaternion_test_cases_) {
+        for (const Quaterniond& qi : quaternion_test_cases_) {
             const RotationMatrix<double> Ri(qi);
             rotation_matrix_test_cases_.push_back(Ri);
         }
@@ -321,7 +321,7 @@ protected:
 };
 
 TEST_F(RotationConversionTest, quaternionToRotationMatrixTest) {
-    for (const Quaterniond &qi : quaternion_test_cases_) {
+    for (const Quaterniond& qi : quaternion_test_cases_) {
         // Compute the rotation matrix using Eigen geometry module, compare the
         // result with RotationMatrix(quaternion).
         const Matrix3d rotmat_expected = qi.toRotationMatrix();
@@ -334,7 +334,7 @@ TEST_F(RotationConversionTest, quaternionToRotationMatrixTest) {
 }
 
 TEST_F(RotationConversionTest, QuatRPY) {
-    for (const Quaterniond &qi : quaternion_test_cases_) {
+    for (const Quaterniond& qi : quaternion_test_cases_) {
         const RollPitchYaw<double> rpy(qi);
         const Eigen::Quaterniond q_expected = rpy.ToQuaternion();
         // Test RollPitchYaw::ToQuaternion() is inverse of RollPitchYaw(quaternion).
@@ -350,7 +350,7 @@ TEST_F(RotationConversionTest, QuatRPY) {
 TEST_F(RotationConversionTest, RotmatQuat) {
     // Compare Eigen's rotation matrix to quaternion result with the result from
     // RotationMatrix::ToQuaternion().
-    for (const RotationMatrix<double> &Ri : rotation_matrix_test_cases_) {
+    for (const RotationMatrix<double>& Ri : rotation_matrix_test_cases_) {
         const Eigen::Quaterniond quat_drake = Ri.ToQuaternion();
         const Eigen::Quaterniond quat_eigen = Quaterniond(Ri.matrix());
         EXPECT_TRUE(AreQuaternionsEqualForOrientation(quat_drake, quat_eigen, kTolerance));
@@ -365,7 +365,7 @@ TEST_F(RotationConversionTest, RotmatQuat) {
 }
 
 TEST_F(RotationConversionTest, rotmat2rpyTest) {
-    for (const RotationMatrix<double> &Ri : rotation_matrix_test_cases_) {
+    for (const RotationMatrix<double>& Ri : rotation_matrix_test_cases_) {
         const RollPitchYaw<double> rpy(Ri);
         const RotationMatrix<double> rotmat_expected(rpy);
         // RollPitchYaw(RotationMatrix) is inverse of RotationMatrix(RollPitchYaw).
@@ -379,7 +379,7 @@ TEST_F(RotationConversionTest, rotmat2rpyTest) {
 }
 
 TEST_F(RotationConversionTest, rpy2rotmatTest) {
-    for (const RollPitchYaw<double> &rpyi : rpy_test_cases_) {
+    for (const RollPitchYaw<double>& rpyi : rpy_test_cases_) {
         const double roll = rpyi.roll_angle();
         const double pitch = rpyi.pitch_angle();
         const double yaw = rpyi.yaw_angle();
@@ -399,7 +399,7 @@ TEST_F(RotationConversionTest, rpy2rotmatTest) {
 }
 
 TEST_F(RotationConversionTest, rpy2QuatTest) {
-    for (const RollPitchYaw<double> &rpyi : rpy_test_cases_) {
+    for (const RollPitchYaw<double>& rpyi : rpy_test_cases_) {
         const Eigen::Quaterniond q = rpyi.ToQuaternion();
         // Verify rpyi.ToQuaternion() is inverse of RollPitchYaw(Quaternion).
         const RollPitchYaw<double> rpy_expected(q);

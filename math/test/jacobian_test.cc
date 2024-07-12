@@ -16,7 +16,7 @@ namespace {
 
 template <typename Derived>
 // TODO(#2274) Fix NOLINTNEXTLINE(runtime/references).
-void FillWithNumbersIncreasingFromZero(Eigen::MatrixBase<Derived> &matrix) {
+void FillWithNumbersIncreasingFromZero(Eigen::MatrixBase<Derived>& matrix) {
     for (Eigen::Index i = 0; i < matrix.size(); i++) {
         matrix(i) = i;
     }
@@ -35,7 +35,7 @@ TEST_F(AutodiffJacobianTest, QuadraticForm) {
     // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67273.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
-    auto quadratic_form = [&](const auto &x) {
+    auto quadratic_form = [&](const auto& x) {
 #pragma GCC diagnostic pop
         using Scalar = typename std::remove_reference_t<decltype(x)>::Scalar;
         return (x.transpose() * A.cast<Scalar>().eval() * x).eval();
@@ -101,7 +101,7 @@ TEST_F(AutoDiffHessianTest, QuadraticFunction) {
     // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67273.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
-    auto quadratic_function = [&](const auto &x) {
+    auto quadratic_function = [&](const auto& x) {
 #pragma GCC diagnostic pop
         using Scalar = typename std::remove_reference_t<decltype(x)>::Scalar;
         return ((A.cast<Scalar>() * x + b.cast<Scalar>()).transpose() * C.cast<Scalar>() *

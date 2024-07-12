@@ -149,127 +149,113 @@ const double kMaxRotationFactor = 3.;
 const double kSphereDimension = 3.;
 const Vector3d kEllipsoidDimension{3.01, 3.5, 4.};
 const double kResolutionHint[4] = {4., 3., 2., 1.};
-const Vector3d kContactOverlapTranslation[5] = {
-    Vector3d{7, 7, 7},        // 0: No overlap at all.
-    Vector3d{4, 4, 4},        // 1: Overlapping bounding volumes.
-    Vector3d{3.5, 3.5, 3.5},  // 2: Minimal contact surface.
-    Vector3d{1.2, 1.2, 1.2},  // 3: Intermediate sized contact surface.
-    Vector3d{0, 0, 0}};       // 4: Maximal contact surface.
+const Vector3d kContactOverlapTranslation[5] = {Vector3d{7, 7, 7},        // 0: No overlap at all.
+                                                Vector3d{4, 4, 4},        // 1: Overlapping bounding volumes.
+                                                Vector3d{3.5, 3.5, 3.5},  // 2: Minimal contact surface.
+                                                Vector3d{1.2, 1.2, 1.2},  // 3: Intermediate sized contact surface.
+                                                Vector3d{0, 0, 0}};       // 4: Maximal contact surface.
 
 class MeshIntersectionBenchmark : public benchmark::Fixture {
- public:
-  MeshIntersectionBenchmark()
-      : ellipsoid_{kEllipsoidDimension[0], kEllipsoidDimension[1],
-                   kEllipsoidDimension[2]},
-        sphere_{kSphereDimension},
-        mesh_S_(MakeEllipsoidVolumeMesh<double>(
-            ellipsoid_, 1, TessellationStrategy::kDenseInteriorVertices)),
-        field_S_(MakeEllipsoidPressureField<double>(ellipsoid_, &mesh_S_,
-                                                    kElasticModulus)),
-        mesh_R_(MakeEllipsoidSurfaceMesh<double>(ellipsoid_, 1)) {}
+public:
+    MeshIntersectionBenchmark()
+        : ellipsoid_{kEllipsoidDimension[0], kEllipsoidDimension[1], kEllipsoidDimension[2]},
+          sphere_{kSphereDimension},
+          mesh_S_(MakeEllipsoidVolumeMesh<double>(ellipsoid_, 1, TessellationStrategy::kDenseInteriorVertices)),
+          field_S_(MakeEllipsoidPressureField<double>(ellipsoid_, &mesh_S_, kElasticModulus)),
+          mesh_R_(MakeEllipsoidSurfaceMesh<double>(ellipsoid_, 1)) {}
 
-  /* Parse arguments from the benchmark state.
-  @return A tuple representing the resolution, the contact overlap, and the
-          rotation factor.  */
-  static std::tuple<int, int, int> ReadState(const benchmark::State& state) {
-    return std::make_tuple(state.range(0), state.range(1), state.range(2));
-  }
-
-  /* Set up the two ellipsoid meshes and their relative transform.  */
-  void SetupMeshes(const benchmark::State& state) {
-    const auto [resolution, contact_overlap, rotation_factor] =
-        ReadState(state);
-    const double resolution_hint = kResolutionHint[resolution];
-    mesh_S_ = MakeEllipsoidVolumeMesh<double>(
-        ellipsoid_, resolution_hint,
-        TessellationStrategy::kDenseInteriorVertices);
-    field_S_ = MakeEllipsoidPressureField<double>(ellipsoid_, &mesh_S_,
-                                                  kElasticModulus);
-    mesh_R_ = MakeSphereSurfaceMesh<double>(sphere_, resolution_hint);
-    X_SR_ = RigidTransformd{
-        AngleAxis(rotation_factor / kMaxRotationFactor * M_PI / 4,
-                  Vector3d{1, 1, 1}.normalized()),
-        kContactOverlapTranslation[contact_overlap]};
-  }
-
-  /* Record metrics on the resulting contact surface for reporting later.  */
-  void RecordContactSurfaceResult(const TriangleSurfaceMesh<double>* surface_SR,
-                                  const std::string& test_name,
-                                  const benchmark::State& state) {
-    const int num_elements =
-        surface_SR == nullptr ? 0 : surface_SR->num_elements();
-    const double area = surface_SR == nullptr ? 0 : surface_SR->total_area();
-    const auto [resolution, contact_overlap, rotation_factor] =
-        ReadState(state);
-    const std::string result_key = fmt::format(
-        "{}/{}/{}/{}", test_name, resolution, contact_overlap, rotation_factor);
-    if (contact_surface_result_keys.find(result_key) ==
-        contact_surface_result_keys.end()) {
-      contact_surface_result_output.push_back(fmt::format(
-          "{}: {:.2f} m^2, {} triangles", result_key, area, num_elements));
-      contact_surface_result_keys.insert(result_key);
+    /* Parse arguments from the benchmark state.
+    @return A tuple representing the resolution, the contact overlap, and the
+            rotation factor.  */
+    static std::tuple<int, int, int> ReadState(const benchmark::State& state) {
+        return std::make_tuple(state.range(0), state.range(1), state.range(2));
     }
-  }
 
-  // Keep track of the number of elements in the resulting contact surface. We
-  // use a static set because Google Benchmark runs these benchmarks multiple
-  // times with unique instances of the fixture, and we want to avoid duplicate
-  // output when we display this at the end. We use a vector to store the
-  // actual output so that the order matches that of the benchmark results.
-  static std::set<std::string> contact_surface_result_keys;
-  static std::vector<std::string> contact_surface_result_output;
+    /* Set up the two ellipsoid meshes and their relative transform.  */
+    void SetupMeshes(const benchmark::State& state) {
+        const auto [resolution, contact_overlap, rotation_factor] = ReadState(state);
+        const double resolution_hint = kResolutionHint[resolution];
+        mesh_S_ = MakeEllipsoidVolumeMesh<double>(ellipsoid_, resolution_hint,
+                                                  TessellationStrategy::kDenseInteriorVertices);
+        field_S_ = MakeEllipsoidPressureField<double>(ellipsoid_, &mesh_S_, kElasticModulus);
+        mesh_R_ = MakeSphereSurfaceMesh<double>(sphere_, resolution_hint);
+        X_SR_ = RigidTransformd{
+                AngleAxis(rotation_factor / kMaxRotationFactor * M_PI / 4, Vector3d{1, 1, 1}.normalized()),
+                kContactOverlapTranslation[contact_overlap]};
+    }
 
-  Ellipsoid ellipsoid_;
-  Sphere sphere_;
-  VolumeMesh<double> mesh_S_;
-  VolumeMeshFieldLinear<double, double> field_S_;
-  TriangleSurfaceMesh<double> mesh_R_;
-  RigidTransformd X_SR_;
+    /* Record metrics on the resulting contact surface for reporting later.  */
+    void RecordContactSurfaceResult(const TriangleSurfaceMesh<double>* surface_SR,
+                                    const std::string& test_name,
+                                    const benchmark::State& state) {
+        const int num_elements = surface_SR == nullptr ? 0 : surface_SR->num_elements();
+        const double area = surface_SR == nullptr ? 0 : surface_SR->total_area();
+        const auto [resolution, contact_overlap, rotation_factor] = ReadState(state);
+        const std::string result_key =
+                fmt::format("{}/{}/{}/{}", test_name, resolution, contact_overlap, rotation_factor);
+        if (contact_surface_result_keys.find(result_key) == contact_surface_result_keys.end()) {
+            contact_surface_result_output.push_back(
+                    fmt::format("{}: {:.2f} m^2, {} triangles", result_key, area, num_elements));
+            contact_surface_result_keys.insert(result_key);
+        }
+    }
+
+    // Keep track of the number of elements in the resulting contact surface. We
+    // use a static set because Google Benchmark runs these benchmarks multiple
+    // times with unique instances of the fixture, and we want to avoid duplicate
+    // output when we display this at the end. We use a vector to store the
+    // actual output so that the order matches that of the benchmark results.
+    static std::set<std::string> contact_surface_result_keys;
+    static std::vector<std::string> contact_surface_result_output;
+
+    Ellipsoid ellipsoid_;
+    Sphere sphere_;
+    VolumeMesh<double> mesh_S_;
+    VolumeMeshFieldLinear<double, double> field_S_;
+    TriangleSurfaceMesh<double> mesh_R_;
+    RigidTransformd X_SR_;
 };
 std::set<std::string> MeshIntersectionBenchmark::contact_surface_result_keys;
-std::vector<std::string>
-    MeshIntersectionBenchmark::contact_surface_result_output;
+std::vector<std::string> MeshIntersectionBenchmark::contact_surface_result_output;
 
 BENCHMARK_DEFINE_F(MeshIntersectionBenchmark, RigidSoftMesh)
 // NOLINTNEXTLINE(runtime/references)
 (benchmark::State& state) {
-  SetupMeshes(state);
-  const auto bvh_S = Bvh<Obb, VolumeMesh<double>>(mesh_S_);
-  const auto bvh_R = Bvh<Obb, TriangleSurfaceMesh<double>>(mesh_R_);
-  std::unique_ptr<TriangleSurfaceMesh<double>> surface_SR;
-  std::unique_ptr<TriangleSurfaceMeshFieldLinear<double, double>> e_SR;
-  for (auto _ : state) {
-    SurfaceVolumeIntersector<TriMeshBuilder<double>, Obb> intersector;
-    intersector.SampleVolumeFieldOnSurface(field_S_, bvh_S, mesh_R_, bvh_R,
-                                           X_SR_);
-    surface_SR = intersector.release_mesh();
-    e_SR = intersector.release_field();
-  }
-  RecordContactSurfaceResult(surface_SR.get(), "RigidSoftMesh", state);
+    SetupMeshes(state);
+    const auto bvh_S = Bvh<Obb, VolumeMesh<double>>(mesh_S_);
+    const auto bvh_R = Bvh<Obb, TriangleSurfaceMesh<double>>(mesh_R_);
+    std::unique_ptr<TriangleSurfaceMesh<double>> surface_SR;
+    std::unique_ptr<TriangleSurfaceMeshFieldLinear<double, double>> e_SR;
+    for (auto _ : state) {
+        SurfaceVolumeIntersector<TriMeshBuilder<double>, Obb> intersector;
+        intersector.SampleVolumeFieldOnSurface(field_S_, bvh_S, mesh_R_, bvh_R, X_SR_);
+        surface_SR = intersector.release_mesh();
+        e_SR = intersector.release_field();
+    }
+    RecordContactSurfaceResult(surface_SR.get(), "RigidSoftMesh", state);
 }
 BENCHMARK_REGISTER_F(MeshIntersectionBenchmark, RigidSoftMesh)
-    ->Unit(benchmark::kMillisecond)
-    ->MinTime(2)
-    ->Args({0, 4, 0})   // 0 resolution, 4 contact overlap, 0 rotation factor.
-    ->Args({1, 4, 0})   // 1 resolution, 4 contact overlap, 0 rotation factor.
-    ->Args({2, 4, 0})   // 2 resolution, 4 contact overlap, 0 rotation factor.
-    ->Args({3, 4, 0})   // 3 resolution, 4 contact overlap, 0 rotation factor.
-    ->Args({2, 0, 0})   // 2 resolution, 0 contact overlap, 0 rotation factor.
-    ->Args({2, 1, 0})   // 2 resolution, 1 contact overlap, 0 rotation factor.
-    ->Args({2, 2, 0})   // 2 resolution, 2 contact overlap, 0 rotation factor.
-    ->Args({2, 3, 0})   // 2 resolution, 3 contact overlap, 0 rotation factor.
-    ->Args({2, 4, 1})   // 2 resolution, 4 contact overlap, 1 rotation factor.
-    ->Args({2, 4, 2})   // 2 resolution, 4 contact overlap, 2 rotation factor.
-    ->Args({2, 4, 3})   // 2 resolution, 4 contact overlap, 3 rotation factor.
-    ->Args({2, 3, 1})   // 2 resolution, 3 contact overlap, 1 rotation factor.
-    ->Args({2, 2, 2});  // 2 resolution, 2 contact overlap, 2 rotation factor.
+        ->Unit(benchmark::kMillisecond)
+        ->MinTime(2)
+        ->Args({0, 4, 0})   // 0 resolution, 4 contact overlap, 0 rotation factor.
+        ->Args({1, 4, 0})   // 1 resolution, 4 contact overlap, 0 rotation factor.
+        ->Args({2, 4, 0})   // 2 resolution, 4 contact overlap, 0 rotation factor.
+        ->Args({3, 4, 0})   // 3 resolution, 4 contact overlap, 0 rotation factor.
+        ->Args({2, 0, 0})   // 2 resolution, 0 contact overlap, 0 rotation factor.
+        ->Args({2, 1, 0})   // 2 resolution, 1 contact overlap, 0 rotation factor.
+        ->Args({2, 2, 0})   // 2 resolution, 2 contact overlap, 0 rotation factor.
+        ->Args({2, 3, 0})   // 2 resolution, 3 contact overlap, 0 rotation factor.
+        ->Args({2, 4, 1})   // 2 resolution, 4 contact overlap, 1 rotation factor.
+        ->Args({2, 4, 2})   // 2 resolution, 4 contact overlap, 2 rotation factor.
+        ->Args({2, 4, 3})   // 2 resolution, 4 contact overlap, 3 rotation factor.
+        ->Args({2, 3, 1})   // 2 resolution, 3 contact overlap, 1 rotation factor.
+        ->Args({2, 2, 2});  // 2 resolution, 2 contact overlap, 2 rotation factor.
 
 void ReportContactSurfaces() {
-  std::cout << "Resulting contact surface sizes:" << std::endl;
-  for (const auto& output :
-       MeshIntersectionBenchmark::contact_surface_result_output) {
-    std::cout << fmt::format(" - {}", output) << std::endl;
-  }
+    std::cout << "Resulting contact surface sizes:" << std::endl;
+    for (const auto& output : MeshIntersectionBenchmark::contact_surface_result_output) {
+        std::cout << fmt::format(" - {}", output) << std::endl;
+    }
 }
 
 }  // namespace internal
@@ -280,7 +266,7 @@ void ReportContactSurfaces() {
 // or writing one by hand.  Add the ReportContactSurfaces to the benchmark
 // output data using the googlebenchmark API instead of bespoke code.
 int main(int argc, char** argv) {
-  benchmark::Initialize(&argc, argv);
-  benchmark::RunSpecifiedBenchmarks();
-  drake::geometry::internal::ReportContactSurfaces();
+    benchmark::Initialize(&argc, argv);
+    benchmark::RunSpecifiedBenchmarks();
+    drake::geometry::internal::ReportContactSurfaces();
 }

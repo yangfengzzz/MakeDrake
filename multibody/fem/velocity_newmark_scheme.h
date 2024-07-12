@@ -27,45 +27,39 @@ namespace internal {
  @tparam_nonsymbolic_scalar */
 template <typename T>
 class VelocityNewmarkScheme final : public DiscreteTimeIntegrator<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(VelocityNewmarkScheme);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(VelocityNewmarkScheme);
 
-  /* Constructs a Newmark scheme with velocity as the unknown variable.
-   @pre dt_in > 0.
-   @pre 0.5 <= gamma <= 1.
-   @pre 0 <= beta <= 0.5. */
-  VelocityNewmarkScheme(double dt_in, double gamma, double beta)
-      : DiscreteTimeIntegrator<T>(dt_in),
-        gamma_(gamma),
-        beta_over_gamma_(beta / gamma),
-        one_over_dt_gamma_(1.0 / (dt_in * gamma)) {
-    DRAKE_DEMAND(0.5 <= gamma && gamma <= 1);
-    DRAKE_DEMAND(0 <= beta && beta <= 0.5);
-  }
+    /* Constructs a Newmark scheme with velocity as the unknown variable.
+     @pre dt_in > 0.
+     @pre 0.5 <= gamma <= 1.
+     @pre 0 <= beta <= 0.5. */
+    VelocityNewmarkScheme(double dt_in, double gamma, double beta)
+        : DiscreteTimeIntegrator<T>(dt_in),
+          gamma_(gamma),
+          beta_over_gamma_(beta / gamma),
+          one_over_dt_gamma_(1.0 / (dt_in * gamma)) {
+        DRAKE_DEMAND(0.5 <= gamma && gamma <= 1);
+        DRAKE_DEMAND(0 <= beta && beta <= 0.5);
+    }
 
-  ~VelocityNewmarkScheme() = default;
+    ~VelocityNewmarkScheme() = default;
 
-  using DiscreteTimeIntegrator<T>::dt;
+    using DiscreteTimeIntegrator<T>::dt;
 
- private:
-  /* The weights much match the partials in DoAdvanceOneTimeStep(). */
-  Vector3<T> DoGetWeights() const final {
-    return {beta_over_gamma_ * dt(), 1.0, one_over_dt_gamma_};
-  }
+private:
+    /* The weights much match the partials in DoAdvanceOneTimeStep(). */
+    Vector3<T> DoGetWeights() const final { return {beta_over_gamma_ * dt(), 1.0, one_over_dt_gamma_}; }
 
-  const VectorX<T>& DoGetUnknowns(const FemState<T>& state) const final {
-    return state.GetVelocities();
-  }
+    const VectorX<T>& DoGetUnknowns(const FemState<T>& state) const final { return state.GetVelocities(); }
 
-  void DoUpdateStateFromChangeInUnknowns(const VectorX<T>& dz,
-                                         FemState<T>* state) const final;
+    void DoUpdateStateFromChangeInUnknowns(const VectorX<T>& dz, FemState<T>* state) const final;
 
-  void DoAdvanceOneTimeStep(const FemState<T>& prev_state, const VectorX<T>& z,
-                            FemState<T>* state) const final;
+    void DoAdvanceOneTimeStep(const FemState<T>& prev_state, const VectorX<T>& z, FemState<T>* state) const final;
 
-  const double gamma_{};
-  const double beta_over_gamma_{};
-  const double one_over_dt_gamma_{};
+    const double gamma_{};
+    const double beta_over_gamma_{};
+    const double one_over_dt_gamma_{};
 };
 
 }  // namespace internal
@@ -74,4 +68,4 @@ class VelocityNewmarkScheme final : public DiscreteTimeIntegrator<T> {
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class ::drake::multibody::fem::internal::VelocityNewmarkScheme);
+        class ::drake::multibody::fem::internal::VelocityNewmarkScheme);

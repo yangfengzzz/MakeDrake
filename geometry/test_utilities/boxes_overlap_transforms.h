@@ -24,7 +24,8 @@ math::RigidTransformd CalcCornerTransform(const Eigen::Vector3d& a_half,
 // p_AfBq_A + p_BqBo_A.
 math::RigidTransformd CalcEdgeTransform(const Eigen::Vector3d& a_half,
                                         const Eigen::Vector3d& b_half,
-                                        const int a_axis, const int b_axis,
+                                        const int a_axis,
+                                        const int b_axis,
                                         const bool expect_overlap);
 
 }  // namespace internal

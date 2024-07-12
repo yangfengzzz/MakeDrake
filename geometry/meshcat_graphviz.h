@@ -26,36 +26,35 @@ Parent::GraphvizFragment MySystem::DoGetGraphvizFragment(
 
 Grep for existing uses of this class to find other examples. */
 class MeshcatGraphviz {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MeshcatGraphviz);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(MeshcatGraphviz);
 
-  /* Specifies how to customize the Graphviz for a Meshcat-using System.
-  @param path When the system publishes messages to Meshcat, provide the
-   (non-null) meshcat path in this parameter. This draws a Graphviz arrow from
-   the system to meshcat. See "Meshcat paths and the scene tree" in Drake's
-   meshcat class overview docs for the semantics of `path`. When this system is
-   subscribe-only, pass nullopt instead.
-  @param subscribe True iff the system receives messages from meshcat (e.g.,
-   uses buttons or sliders from control panel). This draws a Graphviz arrow
-   from meshcat to the system. */
-  MeshcatGraphviz(std::optional<std::string_view> path, bool subscribe);
+    /* Specifies how to customize the Graphviz for a Meshcat-using System.
+    @param path When the system publishes messages to Meshcat, provide the
+     (non-null) meshcat path in this parameter. This draws a Graphviz arrow from
+     the system to meshcat. See "Meshcat paths and the scene tree" in Drake's
+     meshcat class overview docs for the semantics of `path`. When this system is
+     subscribe-only, pass nullopt instead.
+    @param subscribe True iff the system receives messages from meshcat (e.g.,
+     uses buttons or sliders from control panel). This draws a Graphviz arrow
+     from meshcat to the system. */
+    MeshcatGraphviz(std::optional<std::string_view> path, bool subscribe);
 
-  /* Rewrites the `params` to customize for Meshcat, by returning a possibly-
-  edited copy. Intended for use alongside DecorateResult(). */
-  systems::SystemBase::GraphvizFragmentParams DecorateParams(
-      const systems::SystemBase::GraphvizFragmentParams& params);
+    /* Rewrites the `params` to customize for Meshcat, by returning a possibly-
+    edited copy. Intended for use alongside DecorateResult(). */
+    systems::SystemBase::GraphvizFragmentParams DecorateParams(
+            const systems::SystemBase::GraphvizFragmentParams& params);
 
-  /* Rewrites the `result` to customize for Meshcat.
-  @pre DecorateParams has already been called. */
-  systems::SystemBase::GraphvizFragment DecorateResult(
-      systems::SystemBase::GraphvizFragment&& result);
+    /* Rewrites the `result` to customize for Meshcat.
+    @pre DecorateParams has already been called. */
+    systems::SystemBase::GraphvizFragment DecorateResult(systems::SystemBase::GraphvizFragment&& result);
 
- private:
-  const std::string path_;
-  const bool publish_;
-  const bool subscribe_;
+private:
+    const std::string path_;
+    const bool publish_;
+    const bool subscribe_;
 
-  std::string node_id_;
+    std::string node_id_;
 };
 
 }  // namespace internal

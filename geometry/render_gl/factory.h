@@ -43,8 +43,7 @@ extern const bool kHasRenderEngineGl;
  used per thread to create rendered images in parallel.
 
  @throws std::exception if kHasRenderEngineGl is false. */
-std::unique_ptr<render::RenderEngine> MakeRenderEngineGl(
-    RenderEngineGlParams params = {});
+std::unique_ptr<render::RenderEngine> MakeRenderEngineGl(RenderEngineGlParams params = {});
 
 }  // namespace geometry
 }  // namespace drake

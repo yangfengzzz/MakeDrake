@@ -28,10 +28,8 @@ namespace render_gl {
 namespace internal {
 
 class TextureLibraryTester {
- public:
-  static int NumTextures(const TextureLibrary& library) {
-    return ssize(library.textures_);
-  }
+public:
+    static int NumTextures(const TextureLibrary& library) { return ssize(library.textures_); }
 };
 
 }  // namespace internal
@@ -58,46 +56,45 @@ using systems::sensors::SaveToPng;
 
 /* We should be able to safely call GetTextureId in multiple threads. */
 GTEST_TEST(ThreadSafetyTest, TextureLibrary) {
-  constexpr int kNumThreads = 3;
-  /* TextureLibrary requires an OpenGlContext to be bound in each thread we
-   call GetTextureId(). So, we'll create one per thread. Each is a copy of a
-   single source context so they share GPU memory. */
-  OpenGlContext source;
-  std::vector<OpenGlContext> contexts(kNumThreads, source);
+    constexpr int kNumThreads = 3;
+    /* TextureLibrary requires an OpenGlContext to be bound in each thread we
+     call GetTextureId(). So, we'll create one per thread. Each is a copy of a
+     single source context so they share GPU memory. */
+    OpenGlContext source;
+    std::vector<OpenGlContext> contexts(kNumThreads, source);
 
-  TextureLibrary library;
-  ASSERT_EQ(TextureLibraryTester::NumTextures(library), 0);
+    TextureLibrary library;
+    ASSERT_EQ(TextureLibraryTester::NumTextures(library), 0);
 
-  const std::string image_name =
-      FindResourceOrThrow("drake/geometry/render/test/meshes/box.png");
+    const std::string image_name = FindResourceOrThrow("drake/geometry/render/test/meshes/box.png");
 
-  std::atomic<int> num_errors{0};
-  auto work = [&library, &image_name, &num_errors, &contexts](int i) {
-    try {
-      contexts[i].MakeCurrent();
-      std::optional<GLuint> id = library.GetTextureId(image_name);
-      if (!id.has_value()) {
-        throw std::runtime_error("no valid texture id returned.");
-      }
-    } catch (std::exception& e) {
-      log()->error("Worker {} unexpected error: {}", i, e.what());
-      ++num_errors;
+    std::atomic<int> num_errors{0};
+    auto work = [&library, &image_name, &num_errors, &contexts](int i) {
+        try {
+            contexts[i].MakeCurrent();
+            std::optional<GLuint> id = library.GetTextureId(image_name);
+            if (!id.has_value()) {
+                throw std::runtime_error("no valid texture id returned.");
+            }
+        } catch (std::exception& e) {
+            log()->error("Worker {} unexpected error: {}", i, e.what());
+            ++num_errors;
+        }
+    };
+
+    std::vector<std::future<void>> futures;
+    for (int i = 0; i < kNumThreads; ++i) {
+        futures.push_back(std::async(std::launch::async, work, i));
     }
-  };
 
-  std::vector<std::future<void>> futures;
-  for (int i = 0; i < kNumThreads; ++i) {
-    futures.push_back(std::async(std::launch::async, work, i));
-  }
+    for (auto& future : futures) {
+        future.get();
+    }
 
-  for (auto& future : futures) {
-    future.get();
-  }
-
-  /* All invocations successfully returned an id. */
-  ASSERT_EQ(num_errors, 0);
-  /* There is still only a single texture in the library. */
-  EXPECT_EQ(TextureLibraryTester::NumTextures(library), 1);
+    /* All invocations successfully returned an id. */
+    ASSERT_EQ(num_errors, 0);
+    /* There is still only a single texture in the library. */
+    EXPECT_EQ(TextureLibraryTester::NumTextures(library), 1);
 }
 
 /* Tests two properties regarding OpenGlContexts and threads:
@@ -106,73 +103,72 @@ GTEST_TEST(ThreadSafetyTest, TextureLibrary) {
  - Cloned contexts created in one thread can be bound in other threads, even
    even if the original context is bound in a different thread. */
 GTEST_TEST(ThreadSafetyTest, OpenGlContext) {
-  std::vector<OpenGlContext> contexts;
-  /* The first is the "source" and we'll add two that are clones of it. */
-  contexts.emplace_back(false /* debug */);
-  contexts.emplace_back(contexts.front());
-  contexts.emplace_back(contexts.front());
-  const OpenGlContext& source = contexts.front();
+    std::vector<OpenGlContext> contexts;
+    /* The first is the "source" and we'll add two that are clones of it. */
+    contexts.emplace_back(false /* debug */);
+    contexts.emplace_back(contexts.front());
+    contexts.emplace_back(contexts.front());
+    const OpenGlContext& source = contexts.front();
 
-  /* We can bind the source in the main thread, no problem. */
-  ASSERT_NO_THROW(source.MakeCurrent());
-  ASSERT_TRUE(source.IsCurrent());
+    /* We can bind the source in the main thread, no problem. */
+    ASSERT_NO_THROW(source.MakeCurrent());
+    ASSERT_TRUE(source.IsCurrent());
 
-  std::atomic<int> num_errors{0};
-  auto work = [&num_errors, &contexts](int i) {
-    try {
-      const OpenGlContext& context = contexts.at(i);
-      context.MakeCurrent();
-      if (i == 0) {
-        /* Successfully binding contexts[0] (aka source) *should've* been an
-         error. However, we are subject to an external library implementation
-         and we have observed that not all implementations are equally
-         compliant. For now we'll document the aberrant behavior, but not
-         trigger test failure -- as one of the aberrant sites is in CI. */
-        log()->warn(
-            "Worker 0 should not be able to bind the source context in a "
-            "worker thread. This indicates a deficiency in the underlying "
-            "libGL implementation from your operating system.");
-      }
-      /* We assume that if we get here context.IsCurrent() reports true. */
-    } catch (std::exception& e) {
-      /* We expect a single exception as evidence of correctness: 0 can't make
-       context current. In every other thread, record an error. */
-      if (i != 0) {
-        log()->error("Worker {} exception: {}", i, e.what());
-        ++num_errors;
-      }
+    std::atomic<int> num_errors{0};
+    auto work = [&num_errors, &contexts](int i) {
+        try {
+            const OpenGlContext& context = contexts.at(i);
+            context.MakeCurrent();
+            if (i == 0) {
+                /* Successfully binding contexts[0] (aka source) *should've* been an
+                 error. However, we are subject to an external library implementation
+                 and we have observed that not all implementations are equally
+                 compliant. For now we'll document the aberrant behavior, but not
+                 trigger test failure -- as one of the aberrant sites is in CI. */
+                log()->warn(
+                        "Worker 0 should not be able to bind the source context in a "
+                        "worker thread. This indicates a deficiency in the underlying "
+                        "libGL implementation from your operating system.");
+            }
+            /* We assume that if we get here context.IsCurrent() reports true. */
+        } catch (std::exception& e) {
+            /* We expect a single exception as evidence of correctness: 0 can't make
+             context current. In every other thread, record an error. */
+            if (i != 0) {
+                log()->error("Worker {} exception: {}", i, e.what());
+                ++num_errors;
+            }
+        }
+    };
+
+    std::vector<std::future<void>> futures;
+    /* Worker 0 will attempt to erroneously rebind `source`. */
+    futures.push_back(std::async(std::launch::async, work, 0));
+    futures.push_back(std::async(std::launch::async, work, 1));
+    futures.push_back(std::async(std::launch::async, work, 2));
+
+    for (auto& future : futures) {
+        future.get();
     }
-  };
 
-  std::vector<std::future<void>> futures;
-  /* Worker 0 will attempt to erroneously rebind `source`. */
-  futures.push_back(std::async(std::launch::async, work, 0));
-  futures.push_back(std::async(std::launch::async, work, 1));
-  futures.push_back(std::async(std::launch::async, work, 2));
-
-  for (auto& future : futures) {
-    future.get();
-  }
-
-  ASSERT_EQ(num_errors, 0);
+    ASSERT_EQ(num_errors, 0);
 }
 
 /* Adds the given `shape` as an *anchored* geometry to the given `engine` at the
  given position `p_WS` with the given `diffuse` definition. */
-void AddShape(const Shape& shape, const Vector3d& p_WS,
-              std::variant<Rgba, std::string> diffuse, RenderEngine* engine) {
-  PerceptionProperties material;
-  material.AddProperty("label", "id", render::RenderLabel::kDontCare);
-  std::visit<void>(  // BR
-      overloaded{[&material](const Rgba& rgba) {
-                   material.AddProperty("phong", "diffuse", rgba);
-                 },
-                 [&material](const std::string& diffuse_map) {
-                   material.AddProperty("phong", "diffuse_map", diffuse_map);
-                 }},
-      diffuse);
-  engine->RegisterVisual(GeometryId::get_new_id(), shape, material,
-                         math::RigidTransformd(p_WS), false /* needs update */);
+void AddShape(const Shape& shape, const Vector3d& p_WS, std::variant<Rgba, std::string> diffuse, RenderEngine* engine) {
+    PerceptionProperties material;
+    material.AddProperty("label", "id", render::RenderLabel::kDontCare);
+    std::visit<void>(  // BR
+            overloaded{[&material](const Rgba& rgba) {
+                           material.AddProperty("phong", "diffuse", rgba);
+                       },
+                       [&material](const std::string& diffuse_map) {
+                           material.AddProperty("phong", "diffuse_map", diffuse_map);
+                       }},
+            diffuse);
+    engine->RegisterVisual(GeometryId::get_new_id(), shape, material, math::RigidTransformd(p_WS),
+                           false /* needs update */);
 }
 
 /* We use Vector4<int> to compare the pixel values in an image with an expected
@@ -180,13 +176,13 @@ void AddShape(const Shape& shape, const Vector3d& p_WS,
  Note: we use int instead of ImageRgba8U::T because CompareMatrices below is
  happier with signed ints than unsigned ints (specifically with focal+clang). */
 Vector4<int> RgbaVector(const Rgba& rgba) {
-  return rgba.rgba().unaryExpr([](double c) {
-    return static_cast<int>(c * 255 + 0.5);
-  });
+    return rgba.rgba().unaryExpr([](double c) {
+        return static_cast<int>(c * 255 + 0.5);
+    });
 }
 
 Vector4<int> RgbaVector(const ImageRgba8U::T* data) {
-  return Vector4<int>(data[0], data[1], data[2], data[3]);
+    return Vector4<int>(data[0], data[1], data[2], data[3]);
 }
 
 // TODO(SeanCurtis-TRI): This test subsumes the test in thread_test.cc (almost).
@@ -238,59 +234,55 @@ Vector4<int> RgbaVector(const ImageRgba8U::T* data) {
      the dynamic geometries doesn't depend on the OpenGlContext, so other tests
      on correct posing of dynamic geometries are sufficient. */
 GTEST_TEST(ThreadSafetyTest, RenderEngineGl) {
-  std::unique_ptr<RenderEngine> source = MakeRenderEngineGl();
+    std::unique_ptr<RenderEngine> source = MakeRenderEngineGl();
 
-  const Rgba red(1, 0, 0);
-  const Rgba blue(0, 0, 1);
-  const Rgba orange(1, 0.5, 0);
-  // The green of the texture box.png.
-  const Rgba green(4 / 255.0, 241 / 255.0, 33 / 255.0);
-  const Rgba yellow(1, 1, 0);
+    const Rgba red(1, 0, 0);
+    const Rgba blue(0, 0, 1);
+    const Rgba orange(1, 0.5, 0);
+    // The green of the texture box.png.
+    const Rgba green(4 / 255.0, 241 / 255.0, 33 / 255.0);
+    const Rgba yellow(1, 1, 0);
 
-  /* Background. */
-  AddShape(HalfSpace(), Vector3d(0, 0, -0.25), red, source.get());
-  /* 12 o'clock. */
-  AddShape(Cylinder(0.25, 0.25), Vector3d(0, 0.5, 0), blue, source.get());
-  /* 3 o'clock. */
-  AddShape(Box(0.5, 0.5, 0.5), Vector3d(0.5, 0, 0),
-           FindResourceOrThrow("drake/geometry/render/test/meshes/box.png"),
-           source.get());
-  /* 6 o'clock. */
-  AddShape(Capsule(0.25, 0.25), Vector3d(0, -0.5, 0), yellow, source.get());
-  /* 9 o'clock. */
-  AddShape(Sphere(0.25), Vector3d(-0.5, 0, 0), orange, source.get());
+    /* Background. */
+    AddShape(HalfSpace(), Vector3d(0, 0, -0.25), red, source.get());
+    /* 12 o'clock. */
+    AddShape(Cylinder(0.25, 0.25), Vector3d(0, 0.5, 0), blue, source.get());
+    /* 3 o'clock. */
+    AddShape(Box(0.5, 0.5, 0.5), Vector3d(0.5, 0, 0), FindResourceOrThrow("drake/geometry/render/test/meshes/box.png"),
+             source.get());
+    /* 6 o'clock. */
+    AddShape(Capsule(0.25, 0.25), Vector3d(0, -0.5, 0), yellow, source.get());
+    /* 9 o'clock. */
+    AddShape(Sphere(0.25), Vector3d(-0.5, 0, 0), orange, source.get());
 
-  /* Pose of camera body in the world: Looking straight down from 3m above the
-   ground. Wy and Wx point to the top and right of the image, respectively. */
-  const RigidTransformd X_WC(
-      RotationMatrixd{AngleAxisd(M_PI, Vector3d::UnitY()) *
-                      AngleAxisd(M_PI, Vector3d::UnitZ())},
-      {0, 0, 3});
-  source->UpdateViewpoint(X_WC);
+    /* Pose of camera body in the world: Looking straight down from 3m above the
+     ground. Wy and Wx point to the top and right of the image, respectively. */
+    const RigidTransformd X_WC(
+            RotationMatrixd{AngleAxisd(M_PI, Vector3d::UnitY()) * AngleAxisd(M_PI, Vector3d::UnitZ())}, {0, 0, 3});
+    source->UpdateViewpoint(X_WC);
 
-  /* Create the clones. */
-  constexpr int kCloneCount = 3;
-  std::vector<std::unique_ptr<RenderEngine>> renderers;
-  for (int i = 0; i < kCloneCount; ++i) {
-    renderers.push_back(source->Clone());
-    renderers.back()->UpdateViewpoint(X_WC);
-  }
+    /* Create the clones. */
+    constexpr int kCloneCount = 3;
+    std::vector<std::unique_ptr<RenderEngine>> renderers;
+    for (int i = 0; i < kCloneCount; ++i) {
+        renderers.push_back(source->Clone());
+        renderers.back()->UpdateViewpoint(X_WC);
+    }
 
-  /* Create some renderings. */
-  const ColorRenderCamera camera(RenderCameraCore(
-      "color", CameraInfo(640, 480, M_PI_4), ClippingRange(0.01, 100.0), {}));
+    /* Create some renderings. */
+    const ColorRenderCamera camera(
+            RenderCameraCore("color", CameraInfo(640, 480, M_PI_4), ClippingRange(0.01, 100.0), {}));
 
-  /* Sample the image at known locations to see if we have the expected colors.
-   */
-  auto check_image = [w = camera.core().intrinsics().width(),
-                      h = camera.core().intrinsics().height(), red, blue,
-                      orange, green, yellow](const ImageRgba8U& image) {
-    /* For the cylinder and box, the camera-facing face is big and flat and we
-     can sample the image in a large area and get the expected material color.
-     For the sphere and the capsule (orange and yellow, respectively), we
-     need to be more precise. */
+    /* Sample the image at known locations to see if we have the expected colors.
+     */
+    auto check_image = [w = camera.core().intrinsics().width(), h = camera.core().intrinsics().height(), red, blue,
+                        orange, green, yellow](const ImageRgba8U& image) {
+        /* For the cylinder and box, the camera-facing face is big and flat and we
+         can sample the image in a large area and get the expected material color.
+         For the sphere and the capsule (orange and yellow, respectively), we
+         need to be more precise. */
 
-    // clang-format off
+        // clang-format off
     EXPECT_TRUE(CompareMatrices(RgbaVector(image.at(w / 2, h / 2)),
                                 RgbaVector(red), 1)) << "Half space";
     EXPECT_TRUE(CompareMatrices(RgbaVector(image.at(w / 2, h / 4)),
@@ -301,57 +293,54 @@ GTEST_TEST(ThreadSafetyTest, RenderEngineGl) {
                                 RgbaVector(yellow), 1)) << "Capsule";
     EXPECT_TRUE(CompareMatrices(RgbaVector(image.at(w * 0.334, h / 2)),
                                 RgbaVector(orange), 1)) << "Sphere";
-    // clang-format on
-  };
+        // clang-format on
+    };
 
-  /* Render from the main thread with the source engine; this should bind its
-   OpenGl context to the main thread. If any of the clones shared contexts
-   with it, they should be unable to bind their contexts in *other* threads. */
-  ImageRgba8U source_image(camera.core().intrinsics().width(),
-                           camera.core().intrinsics().height());
-  ASSERT_NO_THROW(source->RenderColorImage(camera, &source_image));
-  check_image(source_image);
-  if (const char* dir = std::getenv("TEST_UNDECLARED_OUTPUTS_DIR")) {
-    SaveToPng(source_image, fs::path(dir) / "source.png");
-  }
-
-  /* The multi-threaded work function; render and check the image. */
-  std::atomic<int> num_errors{0};
-  auto work = [&num_errors, &renderers, &check_image, &camera](int i) {
-    try {
-      RenderEngine& renderer = *renderers.at(i);
-      ImageRgba8U image(camera.core().intrinsics().width(),
-                        camera.core().intrinsics().height());
-      try {
-        renderer.RenderColorImage(camera, &image);
-      } catch (std::exception& e) {
-        log()->error("Worker {} render error: {}", i, e.what());
-        ++num_errors;
-        return;
-      }
-      /* The image actually rendered, test the contents. */
-      SCOPED_TRACE(fmt::format("Worker {}", i));
-      check_image(image);
-      if (const char* dir = std::getenv("TEST_UNDECLARED_OUTPUTS_DIR")) {
-        SaveToPng(image, fs::path(dir) / fmt::format("worker{}.png", i));
-      }
-    } catch (std::exception& e) {
-      ++num_errors;
-      log()->error("Unexpected non-rendering error for worker {}: {}", i,
-                   e.what());
+    /* Render from the main thread with the source engine; this should bind its
+     OpenGl context to the main thread. If any of the clones shared contexts
+     with it, they should be unable to bind their contexts in *other* threads. */
+    ImageRgba8U source_image(camera.core().intrinsics().width(), camera.core().intrinsics().height());
+    ASSERT_NO_THROW(source->RenderColorImage(camera, &source_image));
+    check_image(source_image);
+    if (const char* dir = std::getenv("TEST_UNDECLARED_OUTPUTS_DIR")) {
+        SaveToPng(source_image, fs::path(dir) / "source.png");
     }
-  };
 
-  std::vector<std::future<void>> futures;
-  for (int i = 0; i < kCloneCount; ++i) {
-    futures.push_back(std::async(std::launch::async, work, i));
-  }
+    /* The multi-threaded work function; render and check the image. */
+    std::atomic<int> num_errors{0};
+    auto work = [&num_errors, &renderers, &check_image, &camera](int i) {
+        try {
+            RenderEngine& renderer = *renderers.at(i);
+            ImageRgba8U image(camera.core().intrinsics().width(), camera.core().intrinsics().height());
+            try {
+                renderer.RenderColorImage(camera, &image);
+            } catch (std::exception& e) {
+                log()->error("Worker {} render error: {}", i, e.what());
+                ++num_errors;
+                return;
+            }
+            /* The image actually rendered, test the contents. */
+            SCOPED_TRACE(fmt::format("Worker {}", i));
+            check_image(image);
+            if (const char* dir = std::getenv("TEST_UNDECLARED_OUTPUTS_DIR")) {
+                SaveToPng(image, fs::path(dir) / fmt::format("worker{}.png", i));
+            }
+        } catch (std::exception& e) {
+            ++num_errors;
+            log()->error("Unexpected non-rendering error for worker {}: {}", i, e.what());
+        }
+    };
 
-  for (auto& future : futures) {
-    future.get();
-  }
+    std::vector<std::future<void>> futures;
+    for (int i = 0; i < kCloneCount; ++i) {
+        futures.push_back(std::async(std::launch::async, work, i));
+    }
 
-  ASSERT_EQ(num_errors, 0);
+    for (auto& future : futures) {
+        future.get();
+    }
+
+    ASSERT_EQ(num_errors, 0);
 }
 
 }  // namespace

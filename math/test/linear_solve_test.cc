@@ -17,7 +17,7 @@ template <template <typename, int...> typename LinearSolverType, typename Derive
 typename std::enable_if<internal::is_autodiff_v<typename DerivedA::Scalar> ||
                         std::is_same_v<typename DerivedA::Scalar, double>>
 
-        ::type TestSolveLinearSystem(const Eigen::MatrixBase<DerivedA> &A, const Eigen::MatrixBase<DerivedB> &b) {
+        ::type TestSolveLinearSystem(const Eigen::MatrixBase<DerivedA>& A, const Eigen::MatrixBase<DerivedB>& b) {
     Eigen::Matrix<double, DerivedA::RowsAtCompileTime, DerivedB::ColsAtCompileTime> x_eigen_d;
     // To side-step clang optimizer problem, we separate this solve result
     // x_eigen_d from its eventual use.
@@ -197,7 +197,7 @@ TEST_F(LinearSolveTest, TestDoubleAandb) {
 }
 
 template <template <typename, int...> typename LinearSolverType, typename DerivedA, typename DerivedB>
-void TestSolveLinearSystemSymbolic(const Eigen::MatrixBase<DerivedA> &A, const Eigen::MatrixBase<DerivedB> &b) {
+void TestSolveLinearSystemSymbolic(const Eigen::MatrixBase<DerivedA>& A, const Eigen::MatrixBase<DerivedB>& b) {
     // TODO(jwnimmer-tri) Remove this extra unnecessary level of indentation.
     {
         const auto x = SolveLinearSystem<LinearSolverType>(A, b);
@@ -214,7 +214,9 @@ void TestSolveLinearSystemSymbolic(const Eigen::MatrixBase<DerivedA> &A, const E
     }
 }
 
-TEST_F(LinearSolveTest, TestSymbolicAandb) { TestSolveLinearSystemSymbolic<Eigen::LLT>(A_sym_, b_sym_); }
+TEST_F(LinearSolveTest, TestSymbolicAandb) {
+    TestSolveLinearSystemSymbolic<Eigen::LLT>(A_sym_, b_sym_);
+}
 
 TEST_F(LinearSolveTest, TestAutoDiffAandDoubleB) {
     // A contains AutoDiffXd and b contains double.
@@ -452,7 +454,7 @@ TEST_F(LinearSolveTest, TestWrongGradientSize) {
 }
 
 template <template <typename, int...> typename LinearSolverType, typename DerivedA>
-void CheckGetLinearSolver(const Eigen::MatrixBase<DerivedA> &A) {
+void CheckGetLinearSolver(const Eigen::MatrixBase<DerivedA>& A) {
     const auto linear_solver = GetLinearSolver<LinearSolverType>(A);
     if constexpr (std::is_same_v<typename DerivedA::Scalar, double> ||
                   std::is_same_v<typename DerivedA::Scalar, symbolic::Expression>) {

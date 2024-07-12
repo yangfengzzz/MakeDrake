@@ -135,7 +135,7 @@ class TestIntegration(unittest.TestCase):
         """
         gltf_path_pairs = []
         for index, image_type in enumerate(["color", "depth", "label"]):
-            gltf_path = f"{gltf_file_dir}/{index+1:019d}-{image_type}.gltf"
+            gltf_path = f"{gltf_file_dir}/{index + 1:019d}-{image_type}.gltf"
             ground_truth_gltf = self.runfiles.Rlocation(
                 "drake/geometry/render_gltf_client/test/"
                 f"test_{image_type}_scene.gltf"
@@ -253,7 +253,7 @@ class TestIntegration(unittest.TestCase):
                 self._save_to_outputs(image_path, 'client_')
 
         for vtk_image_paths, client_image_paths in zip(
-            vtk_image_sets, client_image_sets
+                vtk_image_sets, client_image_sets
         ):
             # Load the images and convert them to numpy arrays.
             vtk_color, vtk_depth, vtk_label = (
@@ -268,10 +268,10 @@ class TestIntegration(unittest.TestCase):
             # Convert uint8 images to float data type to avoid overflow during
             # calculation.
             color_diff = (
-                np.absolute(
-                    vtk_color.astype(float) - client_color.astype(float)
-                )
-                > COLOR_PIXEL_THRESHOLD
+                    np.absolute(
+                        vtk_color.astype(float) - client_color.astype(float)
+                    )
+                    > COLOR_PIXEL_THRESHOLD
             )
             self.assert_error_fraction_less(color_diff, INVALID_PIXEL_FRACTION)
 
@@ -279,7 +279,7 @@ class TestIntegration(unittest.TestCase):
             vtk_depth[~np.isfinite(vtk_depth)] = 0.0
             client_depth[~np.isfinite(client_depth)] = 0.0
             depth_diff = (
-                np.absolute(vtk_depth - client_depth) > DEPTH_PIXEL_THRESHOLD
+                    np.absolute(vtk_depth - client_depth) > DEPTH_PIXEL_THRESHOLD
             )
             self.assert_error_fraction_less(depth_diff, INVALID_PIXEL_FRACTION)
 
@@ -291,7 +291,7 @@ class TestIntegration(unittest.TestCase):
             # Make them match to facilitate comparison.
             vtk_label[vtk_label == 32766] = 32764
             label_diff = (
-                np.absolute(vtk_label - client_label) > LABEL_PIXEL_THRESHOLD
+                    np.absolute(vtk_label - client_label) > LABEL_PIXEL_THRESHOLD
             )
             self.assert_error_fraction_less(label_diff, INVALID_PIXEL_FRACTION)
 
@@ -317,7 +317,7 @@ class TestIntegration(unittest.TestCase):
 
         # Iterate through each gltf file to compare against the ground truth.
         for gltf_path, ground_truth_gltf_path in self.get_gltf_path_pairs(
-            gltf_file_dir
+                gltf_file_dir
         ):
             self._save_to_outputs(gltf_path)
             self._save_to_outputs(ground_truth_gltf_path)

@@ -29,86 +29,75 @@ using Triplet = Eigen::Triplet<double>;
 // validate what they promise to validate (sizes etc.).
 template <typename T>
 class TestLinearOperator final : public LinearOperator<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(TestLinearOperator);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(TestLinearOperator);
 
-  explicit TestLinearOperator(const std::string& name)
-      : LinearOperator<T>(name) {}
+    explicit TestLinearOperator(const std::string& name) : LinearOperator<T>(name) {}
 
-  ~TestLinearOperator() = default;
+    ~TestLinearOperator() = default;
 
-  int rows() const final { return 3; }
-  int cols() const final { return 2; }
+    int rows() const final { return 3; }
+    int cols() const final { return 2; }
 
-  VectorX<T> ExpectedMultiplyResult() const {
-    return Vector3<T>(1.0, 2.0, 3.0);
-  }
+    VectorX<T> ExpectedMultiplyResult() const { return Vector3<T>(1.0, 2.0, 3.0); }
 
- protected:
-  void DoMultiply(const Eigen::Ref<const VectorX<T>>& x,
-                  VectorX<T>* y) const final {
-    *y = ExpectedMultiplyResult();
-  };
+protected:
+    void DoMultiply(const Eigen::Ref<const VectorX<T>>& x, VectorX<T>* y) const final {
+        *y = ExpectedMultiplyResult();
+    };
 
-  void DoMultiply(const Eigen::Ref<const Eigen::SparseVector<T>>& x,
-                  Eigen::SparseVector<T>* y) const final {
-    *y = ExpectedMultiplyResult().sparseView();
-  }
+    void DoMultiply(const Eigen::Ref<const Eigen::SparseVector<T>>& x, Eigen::SparseVector<T>* y) const final {
+        *y = ExpectedMultiplyResult().sparseView();
+    }
 };
 
 GTEST_TEST(LinearOperator, Basics) {
-  const TestLinearOperator<double> Aop("A");
-  EXPECT_EQ(Aop.name(), "A");
-  EXPECT_EQ(Aop.rows(), 3);
-  EXPECT_EQ(Aop.cols(), 2);
+    const TestLinearOperator<double> Aop("A");
+    EXPECT_EQ(Aop.name(), "A");
+    EXPECT_EQ(Aop.rows(), 3);
+    EXPECT_EQ(Aop.cols(), 2);
 }
 
 GTEST_TEST(LinearOperator, MultiplyDense) {
-  const TestLinearOperator<double> Aop("A");
-  VectorXd y(3);
-  Aop.Multiply(VectorXd(2), &y);
-  // y's values should equal those in y_expected bit by bit.
-  EXPECT_EQ(y, Aop.ExpectedMultiplyResult());
+    const TestLinearOperator<double> Aop("A");
+    VectorXd y(3);
+    Aop.Multiply(VectorXd(2), &y);
+    // y's values should equal those in y_expected bit by bit.
+    EXPECT_EQ(y, Aop.ExpectedMultiplyResult());
 }
 
 GTEST_TEST(LinearOperator, MultiplySparse) {
-  const TestLinearOperator<double> Aop("A");
-  SparseVectord y(3);
-  Aop.Multiply(SparseVectord(2), &y);
-  // y's values should equal those in y_expected bit by bit.
-  EXPECT_EQ(VectorXd(y), Aop.ExpectedMultiplyResult());
+    const TestLinearOperator<double> Aop("A");
+    SparseVectord y(3);
+    Aop.Multiply(SparseVectord(2), &y);
+    // y's values should equal those in y_expected bit by bit.
+    EXPECT_EQ(VectorXd(y), Aop.ExpectedMultiplyResult());
 }
 
 GTEST_TEST(LinearOperator, MultiplyByTransposeDense) {
-  const TestLinearOperator<double> Aop("A");
-  VectorXd y(2);
-  DRAKE_EXPECT_THROWS_MESSAGE(
-      Aop.MultiplyByTranspose(VectorXd(3), &y),
-      "DoMultiplyByTranspose().*must provide an implementation.");
+    const TestLinearOperator<double> Aop("A");
+    VectorXd y(2);
+    DRAKE_EXPECT_THROWS_MESSAGE(Aop.MultiplyByTranspose(VectorXd(3), &y),
+                                "DoMultiplyByTranspose().*must provide an implementation.");
 }
 
 GTEST_TEST(LinearOperator, MultiplyByTransposeSparse) {
-  const TestLinearOperator<double> Aop("A");
-  SparseVectord y(2);
-  DRAKE_EXPECT_THROWS_MESSAGE(
-      Aop.MultiplyByTranspose(SparseVectord(3), &y),
-      "DoMultiplyByTranspose().*must provide an implementation.");
+    const TestLinearOperator<double> Aop("A");
+    SparseVectord y(2);
+    DRAKE_EXPECT_THROWS_MESSAGE(Aop.MultiplyByTranspose(SparseVectord(3), &y),
+                                "DoMultiplyByTranspose().*must provide an implementation.");
 }
 
 GTEST_TEST(LinearOperator, AssembleMatrixSparse) {
-  const TestLinearOperator<double> Aop("A");
-  SparseMatrixd Asparse(3, 2);
-  DRAKE_EXPECT_THROWS_MESSAGE(
-      Aop.AssembleMatrix(&Asparse),
-      "DoAssembleMatrix().*must provide an implementation.");
+    const TestLinearOperator<double> Aop("A");
+    SparseMatrixd Asparse(3, 2);
+    DRAKE_EXPECT_THROWS_MESSAGE(Aop.AssembleMatrix(&Asparse), "DoAssembleMatrix().*must provide an implementation.");
 }
 
 GTEST_TEST(LinearOperator, AssembleMatrixBlockSparse) {
-  const TestLinearOperator<double> Aop("A");
-  BlockSparseMatrix<double> Ablock;
-  DRAKE_EXPECT_THROWS_MESSAGE(
-      Aop.AssembleMatrix(&Ablock),
-      "DoAssembleMatrix().*must provide an implementation.");
+    const TestLinearOperator<double> Aop("A");
+    BlockSparseMatrix<double> Ablock;
+    DRAKE_EXPECT_THROWS_MESSAGE(Aop.AssembleMatrix(&Ablock), "DoAssembleMatrix().*must provide an implementation.");
 }
 
 }  // namespace

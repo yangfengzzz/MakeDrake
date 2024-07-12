@@ -44,8 +44,7 @@ namespace internal {
  @throw  std::exception if the file does not exist or unsupported.
          std::exceptoin for non-positive scale factors.
  */
-VolumeMesh<double> ReadVtkToVolumeMesh(const std::string& filename,
-                                       double scale = 1.0);
+VolumeMesh<double> ReadVtkToVolumeMesh(const std::string& filename, double scale = 1.0);
 
 //@}
 

@@ -12,33 +12,30 @@ namespace internal {
 /* Simple class for recording the dimensions of a render target. Serves as a
  key to access unique RenderTarget instances based on render size.  */
 class BufferDim {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(BufferDim);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(BufferDim);
 
-  BufferDim(int width, int height) : width_(width), height_(height) {
-    DRAKE_DEMAND(width > 0);
-    DRAKE_DEMAND(height > 0);
-  }
+    BufferDim(int width, int height) : width_(width), height_(height) {
+        DRAKE_DEMAND(width > 0);
+        DRAKE_DEMAND(height > 0);
+    }
 
-  int width() const { return width_; }
-  int height() const { return height_; }
+    int width() const { return width_; }
+    int height() const { return height_; }
 
-  /* Implements the @ref hash_append concept.  */
-  template <class HashAlgorithm>
-  friend void hash_append(HashAlgorithm& hasher,
-                          const BufferDim& dim) noexcept {
-    using drake::hash_append;
-    hash_append(hasher, dim.width_);
-    hash_append(hasher, dim.height_);
-  }
+    /* Implements the @ref hash_append concept.  */
+    template <class HashAlgorithm>
+    friend void hash_append(HashAlgorithm& hasher, const BufferDim& dim) noexcept {
+        using drake::hash_append;
+        hash_append(hasher, dim.width_);
+        hash_append(hasher, dim.height_);
+    }
 
-  bool operator==(const BufferDim& dim) const {
-    return width_ == dim.width_ && height_ == dim.height_;
-  }
+    bool operator==(const BufferDim& dim) const { return width_ == dim.width_ && height_ == dim.height_; }
 
- private:
-  int width_{};
-  int height_{};
+private:
+    int width_{};
+    int height_{};
 };
 
 /* The collection of OpenGL objects which define a render target.
@@ -51,9 +48,9 @@ class BufferDim {
      this buffer are strictly for internal OpenGL consumption.
 */
 struct RenderTarget {
-  GLuint frame_buffer;
-  GLuint value_texture;
-  GLuint z_buffer;
+    GLuint frame_buffer;
+    GLuint value_texture;
+    GLuint z_buffer;
 };
 
 }  // namespace internal
@@ -65,6 +62,5 @@ namespace std {
 
 /* Provides std::hash<BufferDim>.  */
 template <>
-struct hash<drake::geometry::render_gl::internal::BufferDim>
-    : public drake::DefaultHash {};
+struct hash<drake::geometry::render_gl::internal::BufferDim> : public drake::DefaultHash {};
 }  // namespace std

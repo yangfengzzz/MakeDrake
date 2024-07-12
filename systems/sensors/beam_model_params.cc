@@ -12,15 +12,14 @@ const int BeamModelParamsIndices::kProbabilityMiss;
 const int BeamModelParamsIndices::kProbabilityUniform;
 
 const std::vector<std::string>& BeamModelParamsIndices::GetCoordinateNames() {
-  static const drake::never_destroyed<std::vector<std::string>> coordinates(
-      std::vector<std::string>{
-          "lambda_short",
-          "sigma_hit",
-          "probability_short",
-          "probability_miss",
-          "probability_uniform",
-      });
-  return coordinates.access();
+    static const drake::never_destroyed<std::vector<std::string>> coordinates(std::vector<std::string>{
+            "lambda_short",
+            "sigma_hit",
+            "probability_short",
+            "probability_miss",
+            "probability_uniform",
+    });
+    return coordinates.access();
 }
 
 }  // namespace sensors

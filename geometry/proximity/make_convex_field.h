@@ -29,17 +29,16 @@ namespace internal {
                          positions and the pressure value.
  */
 template <typename T>
-VolumeMeshFieldLinear<T, T> MakeConvexPressureField(
-    const VolumeMesh<T>* mesh_C, const T& hydroelastic_modulus) {
-  DRAKE_DEMAND(hydroelastic_modulus > T(0));
-  DRAKE_DEMAND(mesh_C != nullptr);
+VolumeMeshFieldLinear<T, T> MakeConvexPressureField(const VolumeMesh<T>* mesh_C, const T& hydroelastic_modulus) {
+    DRAKE_DEMAND(hydroelastic_modulus > T(0));
+    DRAKE_DEMAND(mesh_C != nullptr);
 
-  std::vector<T> pressure_values(mesh_C->num_vertices(), 0.0);
+    std::vector<T> pressure_values(mesh_C->num_vertices(), 0.0);
 
-  // Only the inner vertex (last vertex) has non-zero pressure value.
-  pressure_values.back() = hydroelastic_modulus;
+    // Only the inner vertex (last vertex) has non-zero pressure value.
+    pressure_values.back() = hydroelastic_modulus;
 
-  return VolumeMeshFieldLinear<T, T>(std::move(pressure_values), mesh_C);
+    return VolumeMeshFieldLinear<T, T>(std::move(pressure_values), mesh_C);
 }
 
 }  // namespace internal

@@ -329,7 +329,7 @@ GTEST_TEST(RotationMatrix, GetRowsOrColumnsFromRotationmatrix) {
 
 // Test setting a RotationMatrix to an identity matrix.
 GTEST_TEST(RotationMatrix, MakeIdentityMatrix) {
-    const RotationMatrix<double> &R = RotationMatrix<double>::Identity();
+    const RotationMatrix<double>& R = RotationMatrix<double>::Identity();
     Matrix3d zero_matrix = Matrix3<double>::Identity() - R.matrix();
     EXPECT_TRUE((zero_matrix.
 
@@ -463,7 +463,7 @@ cos_theta;
     RotationMatrix<double> R(m);
     RotationMatrix<double> RRinverse = R * R.inverse();
     RotationMatrix<double> RRtranspose = R * R.transpose();
-    const RotationMatrix<double> &I = RotationMatrix<double>::Identity();
+    const RotationMatrix<double>& I = RotationMatrix<double>::Identity();
     EXPECT_TRUE(RRinverse.IsNearlyEqualTo(I, 8 * kEpsilon));
     EXPECT_TRUE(RRtranspose.IsNearlyEqualTo(I, 8 * kEpsilon));
 }
@@ -888,12 +888,12 @@ GTEST_TEST(RotationMatrix, CastFromDoubleToAutoDiffXd) {
     // the Matrix3 that underlies the RotationMatrix class -- i.e., avoid just
     // comparing m_autodiff.cast<double>() with m_double.
     // Instead, check element-by-element equality as follows.
-    const Matrix3<double> &m_double = R_double.matrix();
-    const Matrix3<AutoDiffXd> &m_autodiff = R_autodiff.matrix();
+    const Matrix3<double>& m_double = R_double.matrix();
+    const Matrix3<AutoDiffXd>& m_autodiff = R_autodiff.matrix();
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             const double mij_double = m_double(i, j);
-            const AutoDiffXd &mij_autodiff = m_autodiff(i, j);
+            const AutoDiffXd& mij_autodiff = m_autodiff(i, j);
             EXPECT_EQ(mij_autodiff, mij_double);
             EXPECT_EQ(mij_autodiff
                               .
@@ -987,8 +987,8 @@ m << 1, 2,  3,
 // Take many samples of the rotation angle θ, make sure the rotation matrix
 // R[θ] = AngleAxis(θ, axis) has larger error than the projected matrix R, so
 // (R(i,j) - M(i,j))² <= (R[θ](i,j) - M(i,j))² ∀ θ: angle_lb <= θ <= angle_ub.
-void CheckProjectionWithAxis(const Eigen::Matrix3d &M,
-                             const Eigen::Vector3d &axis,
+void CheckProjectionWithAxis(const Eigen::Matrix3d& M,
+                             const Eigen::Vector3d& axis,
                              const double angle_lb,
                              const double angle_ub) {
     const double angle = ProjectMatToRotMatWithAxis(M, axis, angle_lb, angle_ub);
@@ -1241,7 +1241,7 @@ protected:
 
 TEST_F(RotationMatrixConversionTests, RotationMatrixToQuaternion) {
     constexpr double tol = 40 * kEpsilon;
-    for (const Eigen::Quaterniond &qi : quaternion_test_cases_) {
+    for (const Eigen::Quaterniond& qi : quaternion_test_cases_) {
         // Step 1: Convert the quaternion qi to a 3x3 matrix mi.
         // Step 2: Construct a RotationMatrix Ri from the 3x3 matrix.
         // Step 3: Convert rotation matrix Ri to a quaternion q_expected.
@@ -1257,12 +1257,13 @@ TEST_F(RotationMatrixConversionTests, RotationMatrixToQuaternion) {
 TEST_F(RotationMatrixConversionTests, RotationMatrixToQuaternionSymbolic) {
     using symbolic::Expression;
     constexpr double tol = 40 * kEpsilon;
-    for (const Eigen::Quaterniond &qi : quaternion_test_cases_) {
+    for (const Eigen::Quaterniond& qi : quaternion_test_cases_) {
         const Matrix3<Expression> mi = qi.toRotationMatrix();
         const RotationMatrix<Expression> Ri(mi);
         const Eigen::Quaternion<Expression> q_actual_expr = Ri.ToQuaternion();
-        const Eigen::Quaterniond q_actual_double(
-                q_actual_expr.coeffs().unaryExpr([](const Expression &x) { return ExtractDoubleOrThrow(x); }));
+        const Eigen::Quaterniond q_actual_double(q_actual_expr.coeffs().unaryExpr([](const Expression& x) {
+            return ExtractDoubleOrThrow(x);
+        }));
         ASSERT_TRUE(AreQuaternionsEqualForOrientation(qi, q_actual_double, tol));
     }
 }
@@ -1280,7 +1281,7 @@ TEST_F(RotationMatrixConversionTests, RotationMatrixToQuaternionVariable) {
     const Eigen::Quaternion<Expression> q_expr = R_expr.ToQuaternion();
 
     // Evaluate the Quaterionion<Expression> for each Ri.
-    for (const Eigen::Quaterniond &qi : quaternion_test_cases_) {
+    for (const Eigen::Quaterniond& qi : quaternion_test_cases_) {
         // Prepare the variable substitutions.
         const Matrix3d mi = qi.toRotationMatrix();
         Environment env;
@@ -1290,14 +1291,15 @@ TEST_F(RotationMatrixConversionTests, RotationMatrixToQuaternionVariable) {
             }
         }
         // Evaluate and compare.
-        const Eigen::Quaterniond q_actual_double(
-                q_expr.coeffs().unaryExpr([&env](const Expression &x) { return x.Evaluate(env); }));
+        const Eigen::Quaterniond q_actual_double(q_expr.coeffs().unaryExpr([&env](const Expression& x) {
+            return x.Evaluate(env);
+        }));
         ASSERT_TRUE(AreQuaternionsEqualForOrientation(qi, q_actual_double, tol));
     }
 }
 
 TEST_F(RotationMatrixConversionTests, QuaternionToRotationMatrix) {
-    for (const Eigen::Quaterniond &qi : quaternion_test_cases_) {
+    for (const Eigen::Quaterniond& qi : quaternion_test_cases_) {
         // Compute the rotation matrix using Eigen's geometry module.
         // Compare that result with the corresponding RotationMatrix constructor.
         const Matrix3d m_expected = qi.toRotationMatrix();
@@ -1330,7 +1332,7 @@ TEST_F(RotationMatrixConversionTests, QuaternionToRotationMatrix) {
 }
 
 TEST_F(RotationMatrixConversionTests, AngleAxisToRotationMatrix) {
-    for (const Eigen::Quaterniond &qi : quaternion_test_cases_) {
+    for (const Eigen::Quaterniond& qi : quaternion_test_cases_) {
         // Compute the rotation matrix R using the quaternion argument.
         const RotationMatrix<double> R(qi);
         // Compare R with the RotationMatrix constructor that uses Eigen::AngleAxis.
@@ -1385,14 +1387,14 @@ TEST_F(RotationMatrixConversionTests, AngleAxisToRotationMatrix) {
 // 4. Verify w(i) is the most positive component of the unit vector w
 //    where w is the column of R_AB that follows v (in a cyclical sense).
 // 5. Verify that if u_min = 0, w(i) ≈ 1 and the other two elements of w are 0.
-void VerifyMakeFromOneUnitVector(const RotationMatrix<double> &R_AB, const Vector3<double> &u_A, int axis_index) {
+void VerifyMakeFromOneUnitVector(const RotationMatrix<double>& R_AB, const Vector3<double>& u_A, int axis_index) {
     ASSERT_TRUE(R_AB.IsValid());
 
     // Designate u, v, w, as the three columns of R_AB that have cyclical order
     // starting with u being the column in the axis_index column of R_AB.
-    const Vector3<double> &u = R_AB.col(axis_index);
-    const Vector3<double> &v = R_AB.col((axis_index + 1) % 3);
-    const Vector3<double> &w = R_AB.col((axis_index + 2) % 3);
+    const Vector3<double>& u = R_AB.col(axis_index);
+    const Vector3<double>& v = R_AB.col((axis_index + 1) % 3);
+    const Vector3<double>& w = R_AB.col((axis_index + 2) % 3);
 
     // Verify the unit vector u is located in the correct column of R_AB.
     EXPECT_TRUE(CompareMatrices(u_A, u));
@@ -1438,7 +1440,7 @@ GTEST_TEST(RotationMatrixTest, MakeFromOneUnitVector) {
     };
 
     for (int axis_index = 0; axis_index < 2; axis_index++) {
-        for (const Vector3<double> &b_A : test_vectors) {
+        for (const Vector3<double>& b_A : test_vectors) {
             const Vector3<double> u_A = b_A.normalized();
             // Verify MakeFromOneUnitVector() produces a right-handed orthonormal
             // matrix R_AB with appropriate properties.

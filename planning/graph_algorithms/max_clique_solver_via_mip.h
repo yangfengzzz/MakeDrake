@@ -29,38 +29,29 @@ namespace graph_algorithms {
  * provided adjacency matrix.
  */
 class MaxCliqueSolverViaMip final : public MaxCliqueSolverBase {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MaxCliqueSolverViaMip);
-  MaxCliqueSolverViaMip() = default;
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(MaxCliqueSolverViaMip);
+    MaxCliqueSolverViaMip() = default;
 
-  MaxCliqueSolverViaMip(const std::optional<Eigen::VectorXd>& initial_guess,
-                        const solvers::SolverOptions& solver_options);
+    MaxCliqueSolverViaMip(const std::optional<Eigen::VectorXd>& initial_guess,
+                          const solvers::SolverOptions& solver_options);
 
-  void SetSolverOptions(const solvers::SolverOptions& solver_options) {
-    solver_options_ = solver_options;
-  }
+    void SetSolverOptions(const solvers::SolverOptions& solver_options) { solver_options_ = solver_options; }
 
-  [[nodiscard]] solvers::SolverOptions GetSolverOptions() const {
-    return solver_options_;
-  }
+    [[nodiscard]] solvers::SolverOptions GetSolverOptions() const { return solver_options_; }
 
-  void SetInitialGuess(const std::optional<Eigen::VectorXd>& initial_guess) {
-    initial_guess_ = initial_guess;
-  }
+    void SetInitialGuess(const std::optional<Eigen::VectorXd>& initial_guess) { initial_guess_ = initial_guess; }
 
-  [[nodiscard]] std::optional<Eigen::VectorXd> GetInitialGuess() const {
-    return initial_guess_;
-  }
+    [[nodiscard]] std::optional<Eigen::VectorXd> GetInitialGuess() const { return initial_guess_; }
 
- private:
-  VectorX<bool> DoSolveMaxClique(
-      const Eigen::SparseMatrix<bool>& adjacency_matrix) const final;
+private:
+    VectorX<bool> DoSolveMaxClique(const Eigen::SparseMatrix<bool>& adjacency_matrix) const final;
 
-  /* Initial guess to the MIP for solving max clique. */
-  std::optional<Eigen::VectorXd> initial_guess_{std::nullopt};
+    /* Initial guess to the MIP for solving max clique. */
+    std::optional<Eigen::VectorXd> initial_guess_{std::nullopt};
 
-  /* Options solved to the MIP solver used to solve max clique. */
-  solvers::SolverOptions solver_options_;
+    /* Options solved to the MIP solver used to solve max clique. */
+    solvers::SolverOptions solver_options_;
 };
 
 }  // namespace graph_algorithms

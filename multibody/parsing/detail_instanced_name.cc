@@ -15,22 +15,20 @@ namespace internal {
 //
 // TODO(rpoyner-tri): replace explicit implementation with compiler
 // default once macOS Ventura support ends.
-std::strong_ordering InstancedName::operator<=>(
-    const InstancedName& that) const {
-  if (index.has_value() && that.index.has_value()) {
-    if (auto cmp = (*index <=> *that.index); cmp != 0) {
-      return cmp;
+std::strong_ordering InstancedName::operator<=>(const InstancedName& that) const {
+    if (index.has_value() && that.index.has_value()) {
+        if (auto cmp = (*index <=> *that.index); cmp != 0) {
+            return cmp;
+        }
     }
-  }
-  if (auto cmp = (index.has_value() <=> that.index.has_value()); cmp != 0) {
-    return cmp;
-  }
-  return std::strcmp(name.c_str(), that.name.c_str()) <=> 0;
+    if (auto cmp = (index.has_value() <=> that.index.has_value()); cmp != 0) {
+        return cmp;
+    }
+    return std::strcmp(name.c_str(), that.name.c_str()) <=> 0;
 }
 
 std::string InstancedName::to_string() const {
-  return fmt::format(
-      "[{}, {}]", index.has_value() ? fmt::to_string(*index) : "nullopt", name);
+    return fmt::format("[{}, {}]", index.has_value() ? fmt::to_string(*index) : "nullopt", name);
 }
 
 }  // namespace internal

@@ -63,75 +63,66 @@ namespace planning {
 
  @ingroup planning_collision_checker */
 class RobotClearance {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(RobotClearance);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(RobotClearance);
 
-  /** Creates an empty clearance with size() == 0 and num_positions as given. */
-  explicit RobotClearance(int num_positions) : nq_(num_positions) {
-    DRAKE_THROW_UNLESS(num_positions >= 0);
-  }
+    /** Creates an empty clearance with size() == 0 and num_positions as given. */
+    explicit RobotClearance(int num_positions) : nq_(num_positions) { DRAKE_THROW_UNLESS(num_positions >= 0); }
 
-  ~RobotClearance();
+    ~RobotClearance();
 
-  /** @returns the number of distance measurements (rows in the table). */
-  int size() const { return robot_indices_.size(); }
+    /** @returns the number of distance measurements (rows in the table). */
+    int size() const { return robot_indices_.size(); }
 
-  /** @returns the number of positions (i.e., columns) in jacobians(). */
-  int num_positions() const { return nq_; }
+    /** @returns the number of positions (i.e., columns) in jacobians(). */
+    int num_positions() const { return nq_; }
 
-  // TODO(sean.curtis) Provide a guaranteed order on the rows, based on body
-  // index.
-  /** @returns the vector of *robot* body indices. */
-  const std::vector<multibody::BodyIndex>& robot_indices() const {
-    return robot_indices_;
-  }
+    // TODO(sean.curtis) Provide a guaranteed order on the rows, based on body
+    // index.
+    /** @returns the vector of *robot* body indices. */
+    const std::vector<multibody::BodyIndex>& robot_indices() const { return robot_indices_; }
 
-  /** @returns the vector of *other* body indices. */
-  const std::vector<multibody::BodyIndex>& other_indices() const {
-    return other_indices_;
-  }
+    /** @returns the vector of *other* body indices. */
+    const std::vector<multibody::BodyIndex>& other_indices() const { return other_indices_; }
 
-  /** @returns the vector of body collision types. */
-  const std::vector<RobotCollisionType>& collision_types() const {
-    return collision_types_;
-  }
+    /** @returns the vector of body collision types. */
+    const std::vector<RobotCollisionType>& collision_types() const { return collision_types_; }
 
-  /** @returns the vector of distances (`ϕᴼ(R)`). */
-  Eigen::Map<const Eigen::VectorXd> distances() const {
-    return Eigen::Map<const Eigen::VectorXd>(distances_.data(), size());
-  }
+    /** @returns the vector of distances (`ϕᴼ(R)`). */
+    Eigen::Map<const Eigen::VectorXd> distances() const {
+        return Eigen::Map<const Eigen::VectorXd>(distances_.data(), size());
+    }
 
-  /** @returns the vector of distance Jacobians (`Jqᵣ_ϕᴼ(R)`); the return type
-  is a readonly Eigen::Map with size() rows and num_positions() columns. */
-  auto jacobians() const {
-    using RowMatrixXd =
-        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-    return Eigen::Map<const RowMatrixXd>(jacobians_.data(), size(), nq_);
-  }
+    /** @returns the vector of distance Jacobians (`Jqᵣ_ϕᴼ(R)`); the return type
+    is a readonly Eigen::Map with size() rows and num_positions() columns. */
+    auto jacobians() const {
+        using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+        return Eigen::Map<const RowMatrixXd>(jacobians_.data(), size(), nq_);
+    }
 
-  /** (Advanced) The mutable flavor of jacobians(). */
-  auto mutable_jacobians() {
-    using RowMatrixXd =
-        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-    return Eigen::Map<RowMatrixXd>(jacobians_.data(), size(), nq_);
-  }
+    /** (Advanced) The mutable flavor of jacobians(). */
+    auto mutable_jacobians() {
+        using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+        return Eigen::Map<RowMatrixXd>(jacobians_.data(), size(), nq_);
+    }
 
-  /** Ensures this object has storage for at least `size` rows. */
-  void Reserve(int size);
+    /** Ensures this object has storage for at least `size` rows. */
+    void Reserve(int size);
 
-  /** Appends one measurement to this table. */
-  void Append(multibody::BodyIndex robot_index,
-              multibody::BodyIndex other_index,
-              RobotCollisionType collision_type, double distance,
-              const Eigen::Ref<const Eigen::RowVectorXd>& jacobian);
+    /** Appends one measurement to this table. */
+    void Append(multibody::BodyIndex robot_index,
+                multibody::BodyIndex other_index,
+                RobotCollisionType collision_type,
+                double distance,
+                const Eigen::Ref<const Eigen::RowVectorXd>& jacobian);
 
- private:
-  std::vector<multibody::BodyIndex> robot_indices_;
-  std::vector<multibody::BodyIndex> other_indices_;
-  std::vector<RobotCollisionType> collision_types_;
-  std::vector<double> distances_;
-  std::vector<double> jacobians_;  // Stored in row-major order.
-  int nq_{};
+private:
+    std::vector<multibody::BodyIndex> robot_indices_;
+    std::vector<multibody::BodyIndex> other_indices_;
+    std::vector<RobotCollisionType> collision_types_;
+    std::vector<double> distances_;
+    std::vector<double> jacobians_;  // Stored in row-major order.
+    int nq_{};
 };
 
 }  // namespace planning

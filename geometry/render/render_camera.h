@@ -63,20 +63,20 @@ namespace render {
  So, it is best to define the smallest clipping range that will include the
  objects of the scene that you care about most. */
 class ClippingRange {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ClippingRange);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ClippingRange);
 
-  /** Constructs the %ClippingRange.
-   @throws std::exception if either value isn't finite and positive, or if
-                          `near >= far`.  */
-  ClippingRange(double near, double far);
+    /** Constructs the %ClippingRange.
+     @throws std::exception if either value isn't finite and positive, or if
+                            `near >= far`.  */
+    ClippingRange(double near, double far);
 
-  double near() const { return near_; }
-  double far() const { return far_; }
+    double near() const { return near_; }
+    double far() const { return far_; }
 
- private:
-  double near_{};
-  double far_{};
+private:
+    double near_{};
+    double far_{};
 };
 
 /** Collection of core parameters for modeling a pinhole-model camera in a
@@ -89,77 +89,76 @@ class ClippingRange {
  range property only applies to frustum-based RenderEngine implementations.
  I.e., it wouldn't apply to a ray-tracing based implementation.  */
 class RenderCameraCore {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(RenderCameraCore);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(RenderCameraCore);
 
-  /** Fully-specified constructor. See the documentation on the member getter
-   methods for documentation of parameters.  */
-  RenderCameraCore(std::string renderer_name,
-                   systems::sensors::CameraInfo intrinsics,
-                   ClippingRange clipping, math::RigidTransformd X_BS)
-      : renderer_name_(std::move(renderer_name)),
-        intrinsics_(std::move(intrinsics)),
-        clipping_(std::move(clipping)),
-        X_BS_(std::move(X_BS)) {}
+    /** Fully-specified constructor. See the documentation on the member getter
+     methods for documentation of parameters.  */
+    RenderCameraCore(std::string renderer_name,
+                     systems::sensors::CameraInfo intrinsics,
+                     ClippingRange clipping,
+                     math::RigidTransformd X_BS)
+        : renderer_name_(std::move(renderer_name)),
+          intrinsics_(std::move(intrinsics)),
+          clipping_(std::move(clipping)),
+          X_BS_(std::move(X_BS)) {}
 
-  /** The name of the render engine this camera should be used with.  */
-  const std::string& renderer_name() const { return renderer_name_; }
+    /** The name of the render engine this camera should be used with.  */
+    const std::string& renderer_name() const { return renderer_name_; }
 
-  /** The camera's intrinsic properties (e.g., focal length, sensor size, etc.)
-   See systems::sensors::CameraInfo for details.  */
-  const systems::sensors::CameraInfo& intrinsics() const { return intrinsics_; }
+    /** The camera's intrinsic properties (e.g., focal length, sensor size, etc.)
+     See systems::sensors::CameraInfo for details.  */
+    const systems::sensors::CameraInfo& intrinsics() const { return intrinsics_; }
 
-  /** The near and far clipping planes for this camera. This property is ignored
-   by RenderEngine implementations that don't use a clipping frustum.  */
-  const ClippingRange& clipping() const { return clipping_; }
+    /** The near and far clipping planes for this camera. This property is ignored
+     by RenderEngine implementations that don't use a clipping frustum.  */
+    const ClippingRange& clipping() const { return clipping_; }
 
-  /** The pose of the sensor frame (S) in the camera's body frame (B). This is
-   the "imager" referred to in systems::sensors::CameraInfo's documentation.  */
-  const math::RigidTransformd& sensor_pose_in_camera_body() const {
-    return X_BS_;
-  }
+    /** The pose of the sensor frame (S) in the camera's body frame (B). This is
+     the "imager" referred to in systems::sensors::CameraInfo's documentation.  */
+    const math::RigidTransformd& sensor_pose_in_camera_body() const { return X_BS_; }
 
-  /** Expresses `this` camera's pinhole camera properties as the projective
-   transform T_DC which transforms points in a camera's frame C to a 2D,
-   normalized device frame D. The transform is represented by a 4x4 matrix
-   (i.e., a
-   <a href="https://strawlab.org/2011/11/05/augmented-reality-with-OpenGL/">
-   classic OpenGl projection matrix</a>).  */
-  Eigen::Matrix4d CalcProjectionMatrix() const;
+    /** Expresses `this` camera's pinhole camera properties as the projective
+     transform T_DC which transforms points in a camera's frame C to a 2D,
+     normalized device frame D. The transform is represented by a 4x4 matrix
+     (i.e., a
+     <a href="https://strawlab.org/2011/11/05/augmented-reality-with-OpenGL/">
+     classic OpenGl projection matrix</a>).  */
+    Eigen::Matrix4d CalcProjectionMatrix() const;
 
- private:
-  // See getter methods for documentation on these members.
-  std::string renderer_name_;
-  systems::sensors::CameraInfo intrinsics_;
-  ClippingRange clipping_;
-  math::RigidTransformd X_BS_;
+private:
+    // See getter methods for documentation on these members.
+    std::string renderer_name_;
+    systems::sensors::CameraInfo intrinsics_;
+    ClippingRange clipping_;
+    math::RigidTransformd X_BS_;
 
-  // TODO(SeanCurtis-TRI): in the future, add a sub-class of GeometryProperties
-  //  so that arbitrary properties can be added to support arbitrary
-  //  RenderEngine implementations.
+    // TODO(SeanCurtis-TRI): in the future, add a sub-class of GeometryProperties
+    //  so that arbitrary properties can be added to support arbitrary
+    //  RenderEngine implementations.
 };
 
 /** Collection of camera properties for cameras to be used with color/label
  images.  */
 class ColorRenderCamera {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ColorRenderCamera);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ColorRenderCamera);
 
-  /** Fully-specified constructor. See the documentation on the member getter
-   methods for documentation of parameters.  */
-  explicit ColorRenderCamera(RenderCameraCore core, bool show_window = false)
-      : core_(std::move(core)), show_window_(show_window) {}
+    /** Fully-specified constructor. See the documentation on the member getter
+     methods for documentation of parameters.  */
+    explicit ColorRenderCamera(RenderCameraCore core, bool show_window = false)
+        : core_(std::move(core)), show_window_(show_window) {}
 
-  /** This camera's core render properties.  */
-  const RenderCameraCore& core() const { return core_; }
+    /** This camera's core render properties.  */
+    const RenderCameraCore& core() const { return core_; }
 
-  /** If true, requests that the RenderEngine display the rendered image.  */
-  bool show_window() const { return show_window_; }
+    /** If true, requests that the RenderEngine display the rendered image.  */
+    bool show_window() const { return show_window_; }
 
- private:
-  // See getter methods for documentation on these members.
-  RenderCameraCore core_;
-  bool show_window_{false};
+private:
+    // See getter methods for documentation on these members.
+    RenderCameraCore core_;
+    bool show_window_{false};
 };
 
 /** Defines a depth sensor's functional range. Only points that lie within the
@@ -178,45 +177,45 @@ class ColorRenderCamera {
  plane should be slightly closer than that. When in doubt, some very small
  value (e.g., 1 mm) is typically safe.  */
 class DepthRange {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DepthRange);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DepthRange);
 
-  /** Constructs the %DepthRange.
-   @throws std::exception if either value isn't finite and positive, or if
-                          `min_in >= max_in`.  */
-  DepthRange(double min_in, double max_in);
+    /** Constructs the %DepthRange.
+     @throws std::exception if either value isn't finite and positive, or if
+                            `min_in >= max_in`.  */
+    DepthRange(double min_in, double max_in);
 
-  double min_depth() const { return min_depth_; }
-  double max_depth() const { return max_depth_; }
+    double min_depth() const { return min_depth_; }
+    double max_depth() const { return max_depth_; }
 
- private:
-  double min_depth_{};
-  double max_depth_{};
+private:
+    double min_depth_{};
+    double max_depth_{};
 };
 
 /** Collection of camera properties for cameras to be used with depth images.
  */
 class DepthRenderCamera {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DepthRenderCamera);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(DepthRenderCamera);
 
-  /** Fully-specified constructor. See the documentation on the member getter
-   methods for documentation of parameters.
+    /** Fully-specified constructor. See the documentation on the member getter
+     methods for documentation of parameters.
 
-   @throws std::exception if the depth_range is not fully contained within
-                          the clipping range.  */
-  DepthRenderCamera(RenderCameraCore core, DepthRange depth_range);
+     @throws std::exception if the depth_range is not fully contained within
+                            the clipping range.  */
+    DepthRenderCamera(RenderCameraCore core, DepthRange depth_range);
 
-  /** This camera's core render properties.  */
-  const RenderCameraCore& core() const { return core_; }
+    /** This camera's core render properties.  */
+    const RenderCameraCore& core() const { return core_; }
 
-  /** The range of valid values for the depth camera.  */
-  const DepthRange& depth_range() const { return depth_range_; }
+    /** The range of valid values for the depth camera.  */
+    const DepthRange& depth_range() const { return depth_range_; }
 
- private:
-  // See getter methods for documentation on these members.
-  RenderCameraCore core_;
-  DepthRange depth_range_;
+private:
+    // See getter methods for documentation on these members.
+    RenderCameraCore core_;
+    DepthRange depth_range_;
 };
 
 }  // namespace render

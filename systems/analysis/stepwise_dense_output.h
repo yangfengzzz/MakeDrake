@@ -24,39 +24,38 @@ namespace systems {
 /// @tparam_default_scalar
 template <typename T>
 class StepwiseDenseOutput : public DenseOutput<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(StepwiseDenseOutput);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(StepwiseDenseOutput);
 
-  ~StepwiseDenseOutput() override = default;
+    ~StepwiseDenseOutput() override = default;
 
-  /// Rolls back (drops) the last update.
-  /// @remarks This process is irreversible.
-  /// @pre Updates have taken place since instantiation or last
-  ///      consolidation (via Consolidate()).
-  /// @throws std::exception if any of the preconditions is not met.
-  virtual void Rollback() = 0;
+    /// Rolls back (drops) the last update.
+    /// @remarks This process is irreversible.
+    /// @pre Updates have taken place since instantiation or last
+    ///      consolidation (via Consolidate()).
+    /// @throws std::exception if any of the preconditions is not met.
+    virtual void Rollback() = 0;
 
-  /// Consolidates latest updates.
-  ///
-  /// All updates since last call or construction are put into a form
-  /// that is suitable for evaluation.
-  ///
-  /// @remarks This process is irreversible.
-  /// @pre Updates have taken place since instantiation or last
-  ///      consolidation.
-  /// @post The extents covered by updates since instantiation or
-  ///       last consolidation can be evaluated (via Evaluate()).
-  /// @post Time extents covered by updates can be evaluated
-  ///       (via start_time()/end_time()).
-  /// @throws std::exception if any of the preconditions is not met.
-  virtual void Consolidate() = 0;
+    /// Consolidates latest updates.
+    ///
+    /// All updates since last call or construction are put into a form
+    /// that is suitable for evaluation.
+    ///
+    /// @remarks This process is irreversible.
+    /// @pre Updates have taken place since instantiation or last
+    ///      consolidation.
+    /// @post The extents covered by updates since instantiation or
+    ///       last consolidation can be evaluated (via Evaluate()).
+    /// @post Time extents covered by updates can be evaluated
+    ///       (via start_time()/end_time()).
+    /// @throws std::exception if any of the preconditions is not met.
+    virtual void Consolidate() = 0;
 
- protected:
-  StepwiseDenseOutput() = default;
+protected:
+    StepwiseDenseOutput() = default;
 };
 
 }  // namespace systems
 }  // namespace drake
 
-DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    class drake::systems::StepwiseDenseOutput);
+DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(class drake::systems::StepwiseDenseOutput);

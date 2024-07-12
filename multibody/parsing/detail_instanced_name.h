@@ -15,20 +15,19 @@ namespace internal {
 // where it was found. It purposely does not record the model by name, since
 // model renaming via the plant could invalidate such names.
 struct InstancedName {
-  std::optional<ModelInstanceIndex> index;  // Empty means global name.
-  std::string name;
+    std::optional<ModelInstanceIndex> index;  // Empty means global name.
+    std::string name;
 
-  bool operator==(const InstancedName&) const = default;
-  // TODO(rpoyner-tri): replace explicit implementation with compiler
-  // default once macOS Ventura support ends.
-  std::strong_ordering operator<=>(const InstancedName& that) const;
+    bool operator==(const InstancedName&) const = default;
+    // TODO(rpoyner-tri): replace explicit implementation with compiler
+    // default once macOS Ventura support ends.
+    std::strong_ordering operator<=>(const InstancedName& that) const;
 
-  std::string to_string() const;
+    std::string to_string() const;
 };
 
 }  // namespace internal
 }  // namespace multibody
 }  // namespace drake
 
-DRAKE_FORMATTER_AS(, drake::multibody::internal, InstancedName, x,
-                   x.to_string())
+DRAKE_FORMATTER_AS(, drake::multibody::internal, InstancedName, x, x.to_string())

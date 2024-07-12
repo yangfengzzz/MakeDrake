@@ -9,9 +9,9 @@ namespace geometry {
 const bool kHasRenderEngineGl = false;
 
 std::unique_ptr<render::RenderEngine> MakeRenderEngineGl(RenderEngineGlParams) {
-  throw std::runtime_error(
-      "RenderEngineGl was not compiled. You'll need to use a different render "
-      "engine.");
+    throw std::runtime_error(
+            "RenderEngineGl was not compiled. You'll need to use a different render "
+            "engine.");
 }
 
 }  // namespace geometry

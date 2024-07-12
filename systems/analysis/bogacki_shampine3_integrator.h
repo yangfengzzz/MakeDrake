@@ -35,46 +35,46 @@ namespace systems {
  */
 template <class T>
 class BogackiShampine3Integrator final : public IntegratorBase<T> {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(BogackiShampine3Integrator);
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(BogackiShampine3Integrator);
 
-  ~BogackiShampine3Integrator() override = default;
+    ~BogackiShampine3Integrator() override = default;
 
-  explicit BogackiShampine3Integrator(const System<T>& system,
-      Context<T>* context = nullptr) : IntegratorBase<T>(system, context) {
-    derivs1_ = system.AllocateTimeDerivatives();
-    derivs2_ = system.AllocateTimeDerivatives();
-    derivs3_ = system.AllocateTimeDerivatives();
-    err_est_vec_ = std::make_unique<BasicVector<T>>(derivs1_->size());
-    save_xc0_.resize(derivs1_->size());
-  }
+    explicit BogackiShampine3Integrator(const System<T>& system, Context<T>* context = nullptr)
+        : IntegratorBase<T>(system, context) {
+        derivs1_ = system.AllocateTimeDerivatives();
+        derivs2_ = system.AllocateTimeDerivatives();
+        derivs3_ = system.AllocateTimeDerivatives();
+        err_est_vec_ = std::make_unique<BasicVector<T>>(derivs1_->size());
+        save_xc0_.resize(derivs1_->size());
+    }
 
-  /**
-   * The integrator supports error estimation.
-   */
-  bool supports_error_estimation() const override { return true; }
+    /**
+     * The integrator supports error estimation.
+     */
+    bool supports_error_estimation() const override { return true; }
 
-  /// The order of the asymptotic term in the error estimate.
-  int get_error_estimate_order() const override { return 3; }
+    /// The order of the asymptotic term in the error estimate.
+    int get_error_estimate_order() const override { return 3; }
 
- private:
-  void DoInitialize() override;
-  bool DoStep(const T& h) override;
+private:
+    void DoInitialize() override;
+    bool DoStep(const T& h) override;
 
-  // Vector used in error estimate calculations.
-  std::unique_ptr<BasicVector<T>> err_est_vec_;
+    // Vector used in error estimate calculations.
+    std::unique_ptr<BasicVector<T>> err_est_vec_;
 
-  // Vector used to save initial value of xc.
-  VectorX<T> save_xc0_;
+    // Vector used to save initial value of xc.
+    VectorX<T> save_xc0_;
 
-  // These are pre-allocated temporaries for use by integration. They store
-  // the derivatives computed at various points within the integration
-  // interval.
-  std::unique_ptr<ContinuousState<T>> derivs1_, derivs2_, derivs3_;
+    // These are pre-allocated temporaries for use by integration. They store
+    // the derivatives computed at various points within the integration
+    // interval.
+    std::unique_ptr<ContinuousState<T>> derivs1_, derivs2_, derivs3_;
 };
 
 }  // namespace systems
 }  // namespace drake
 
 DRAKE_DECLARE_CLASS_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_NONSYMBOLIC_SCALARS(
-    class ::drake::systems::BogackiShampine3Integrator);
+        class ::drake::systems::BogackiShampine3Integrator);

@@ -52,6 +52,6 @@ typename GrayCodesMatrix<NumDigits>::type CalculateReflectedGrayCodes(int num_di
  * @param gray_code The N-digit Gray code, where N is gray_code.rows()
  * @return The integer represented by the Gray code `gray_code`.
  */
-int GrayCodeToInteger(const Eigen::Ref<const Eigen::VectorXi> &gray_code);
+int GrayCodeToInteger(const Eigen::Ref<const Eigen::VectorXi>& gray_code);
 }  // namespace math
 }  // namespace drake

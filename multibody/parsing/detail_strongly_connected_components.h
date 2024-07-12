@@ -60,60 +60,60 @@ acyclic -- all cycles have been "hidden" inside an SCC.
 @tparam T  The type used for labeling graph nodes.
 */
 template <typename T>
-StronglyConnectedComponents<T> FindStronglyConnectedComponents(
-    const DirectedGraph<T>& graph) {
-  int index_counter{0};
-  std::vector<T> stack;
-  std::unordered_map<T, int> lowlinks;
-  std::unordered_map<T, int> index;
-  StronglyConnectedComponents<T> result;
+StronglyConnectedComponents<T> FindStronglyConnectedComponents(const DirectedGraph<T>& graph) {
+    int index_counter{0};
+    std::vector<T> stack;
+    std::unordered_map<T, int> lowlinks;
+    std::unordered_map<T, int> index;
+    StronglyConnectedComponents<T> result;
 
-  std::function<void(T)> strongconnect;
-  strongconnect = [&](T node) {
-    // set the depth index for this node to the smallest unused index.
-    index[node] = index_counter;
-    lowlinks[node] = index_counter;
-    ++index_counter;
-    stack.push_back(node);
+    std::function<void(T)> strongconnect;
+    strongconnect = [&](T node) {
+        // set the depth index for this node to the smallest unused index.
+        index[node] = index_counter;
+        lowlinks[node] = index_counter;
+        ++index_counter;
+        stack.push_back(node);
 
-    if (graph.contains(node)) {
-      const auto& successors = graph.at(node);
-      for (const auto& successor : successors) {
-        if (!lowlinks.contains(successor)) {
-          // Successor has not yet been visited; recurse on it.
-          strongconnect(successor);
-          lowlinks[node] = std::min(lowlinks[node], lowlinks[successor]);
-        } else if (std::find(stack.begin(), stack.end(), successor)
-                   != stack.end()) {
-          // the successor is in the stack and hence in the current strongly
-          // connected component (SCC).
-          lowlinks[node] = std::min(lowlinks[node], index[successor]);
+        if (graph.contains(node)) {
+            const auto& successors = graph.at(node);
+            for (const auto& successor : successors) {
+                if (!lowlinks.contains(successor)) {
+                    // Successor has not yet been visited; recurse on it.
+                    strongconnect(successor);
+                    lowlinks[node] = std::min(lowlinks[node], lowlinks[successor]);
+                } else if (std::find(stack.begin(), stack.end(), successor) != stack.end()) {
+                    // the successor is in the stack and hence in the current strongly
+                    // connected component (SCC).
+                    lowlinks[node] = std::min(lowlinks[node], index[successor]);
+                }
+            }
         }
-      }
+
+        // If `node` is a root node, pop the stack and generate an SCC.
+        if (lowlinks[node] == index[node]) {
+            std::unordered_set<T> connected_component;
+
+            while (true) {
+                T successor = stack.back();
+                stack.pop_back();
+                connected_component.insert(successor);
+                if (successor == node) {
+                    break;
+                }
+            }
+            result.emplace_back(std::move(connected_component));
+        }
+    };
+
+    for (const auto& item : graph) {
+        const auto& node = item.first;
+        if (!lowlinks.contains(node)) {
+            strongconnect(node);
+        }
     }
 
-    // If `node` is a root node, pop the stack and generate an SCC.
-    if (lowlinks[node] == index[node]) {
-      std::unordered_set<T> connected_component;
-
-      while (true) {
-        T successor = stack.back();
-        stack.pop_back();
-        connected_component.insert(successor);
-        if (successor == node) { break; }
-      }
-      result.emplace_back(std::move(connected_component));
-    }
-  };
-
-  for (const auto& item : graph) {
-    const auto& node = item.first;
-    if (!lowlinks.contains(node)) {
-      strongconnect(node);
-    }
-  }
-
-  return result;
+    return result;
 }
 
 }  // namespace internal

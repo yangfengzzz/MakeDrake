@@ -63,131 +63,119 @@ namespace solvers {
  * Clarabel's boolean options should be passed as integers (0 or 1).
  */
 class SolverOptions {
- public:
-  SolverOptions() = default;
+public:
+    SolverOptions() = default;
 
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SolverOptions);
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SolverOptions);
 
-  /** The values stored in SolverOptions can be double, int, or string.
-   * In the future, we might re-order or add more allowed types without any
-   * deprecation period, so be sure to use std::visit or std::get<T> to
-   * retrieve the variant's value in a future-proof way. */
-  using OptionValue = std::variant<double, int, std::string>;
+    /** The values stored in SolverOptions can be double, int, or string.
+     * In the future, we might re-order or add more allowed types without any
+     * deprecation period, so be sure to use std::visit or std::get<T> to
+     * retrieve the variant's value in a future-proof way. */
+    using OptionValue = std::variant<double, int, std::string>;
 
-  /** Sets a double-valued solver option for a specific solver.
-   * @pydrake_mkdoc_identifier{double_option}
-   */
-  void SetOption(const SolverId& solver_id, const std::string& solver_option,
-                 double option_value);
+    /** Sets a double-valued solver option for a specific solver.
+     * @pydrake_mkdoc_identifier{double_option}
+     */
+    void SetOption(const SolverId& solver_id, const std::string& solver_option, double option_value);
 
-  /** Sets an integer-valued solver option for a specific solver.
-   * @pydrake_mkdoc_identifier{int_option}
-   */
-  void SetOption(const SolverId& solver_id, const std::string& solver_option,
-                 int option_value);
+    /** Sets an integer-valued solver option for a specific solver.
+     * @pydrake_mkdoc_identifier{int_option}
+     */
+    void SetOption(const SolverId& solver_id, const std::string& solver_option, int option_value);
 
-  /** Sets a string-valued solver option for a specific solver.
-   * @pydrake_mkdoc_identifier{str_option}
-   */
-  void SetOption(const SolverId& solver_id, const std::string& solver_option,
-                 const std::string& option_value);
+    /** Sets a string-valued solver option for a specific solver.
+     * @pydrake_mkdoc_identifier{str_option}
+     */
+    void SetOption(const SolverId& solver_id, const std::string& solver_option, const std::string& option_value);
 
-  /** Sets a common option for all solvers supporting that option (for example,
-   * printing the progress in each iteration). If the solver doesn't support
-   * the option, the option is ignored.
-   * @pydrake_mkdoc_identifier{common_option} */
-  void SetOption(CommonSolverOption key, OptionValue value);
+    /** Sets a common option for all solvers supporting that option (for example,
+     * printing the progress in each iteration). If the solver doesn't support
+     * the option, the option is ignored.
+     * @pydrake_mkdoc_identifier{common_option} */
+    void SetOption(CommonSolverOption key, OptionValue value);
 
-  const std::unordered_map<std::string, double>& GetOptionsDouble(
-      const SolverId& solver_id) const;
+    const std::unordered_map<std::string, double>& GetOptionsDouble(const SolverId& solver_id) const;
 
-  const std::unordered_map<std::string, int>& GetOptionsInt(
-      const SolverId& solver_id) const;
+    const std::unordered_map<std::string, int>& GetOptionsInt(const SolverId& solver_id) const;
 
-  const std::unordered_map<std::string, std::string>& GetOptionsStr(
-      const SolverId& solver_id) const;
+    const std::unordered_map<std::string, std::string>& GetOptionsStr(const SolverId& solver_id) const;
 
-  /**
-   * Gets the common options for all solvers. Refer to CommonSolverOption for
-   * more details.
-   */
-  const std::unordered_map<CommonSolverOption, OptionValue>&
-  common_solver_options() const {
-    return common_solver_options_;
-  }
-
-  /** Returns the kPrintFileName set via CommonSolverOption, or else an empty
-   * string if the option has not been set. */
-  std::string get_print_file_name() const;
-
-  /** Returns the kPrintToConsole set via CommonSolverOption, or else false if
-   * the option has not been set. */
-  bool get_print_to_console() const;
-
-  /** Returns the kStandaloneReproductionFileName set via CommonSolverOption, or
-   * else an empty string if the option has not been set. */
-  std::string get_standalone_reproduction_file_name() const;
-
-  template <typename T>
-  const std::unordered_map<std::string, T>& GetOptions(
-      const SolverId& solver_id) const {
-    if constexpr (std::is_same_v<T, double>) {
-      return GetOptionsDouble(solver_id);
-    } else if constexpr (std::is_same_v<T, int>) {
-      return GetOptionsInt(solver_id);
-    } else if constexpr (std::is_same_v<T, std::string>) {
-      return GetOptionsStr(solver_id);
+    /**
+     * Gets the common options for all solvers. Refer to CommonSolverOption for
+     * more details.
+     */
+    const std::unordered_map<CommonSolverOption, OptionValue>& common_solver_options() const {
+        return common_solver_options_;
     }
-    DRAKE_UNREACHABLE();
-  }
 
-  /** Returns the IDs that have any option set. */
-  std::unordered_set<SolverId> GetSolverIds() const;
+    /** Returns the kPrintFileName set via CommonSolverOption, or else an empty
+     * string if the option has not been set. */
+    std::string get_print_file_name() const;
 
-  /**
-   * Merges the other solver options into this. If `other` and `this` option
-   * both define the same option for the same solver, we ignore then one from
-   * `other` and keep the one from `this`.
-   */
-  void Merge(const SolverOptions& other);
+    /** Returns the kPrintToConsole set via CommonSolverOption, or else false if
+     * the option has not been set. */
+    bool get_print_to_console() const;
 
-  /**
-   * Returns true if `this` and `other` have exactly the same solvers, with
-   * exactly the same keys and values for the options for each solver.
-   */
-  bool operator==(const SolverOptions& other) const;
+    /** Returns the kStandaloneReproductionFileName set via CommonSolverOption, or
+     * else an empty string if the option has not been set. */
+    std::string get_standalone_reproduction_file_name() const;
 
-  /**
-   * Negate operator==.
-   */
-  bool operator!=(const SolverOptions& other) const;
+    template <typename T>
+    const std::unordered_map<std::string, T>& GetOptions(const SolverId& solver_id) const {
+        if constexpr (std::is_same_v<T, double>) {
+            return GetOptionsDouble(solver_id);
+        } else if constexpr (std::is_same_v<T, int>) {
+            return GetOptionsInt(solver_id);
+        } else if constexpr (std::is_same_v<T, std::string>) {
+            return GetOptionsStr(solver_id);
+        }
+        DRAKE_UNREACHABLE();
+    }
 
-  /**
-   * Check if for a given solver_id, the option keys are included in
-   * double_keys, int_keys and str_keys.
-   * @param solver_id If this SolverOptions has set options for this solver_id,
-   * then we check if the option keys are a subset of `double_keys`, `int_keys`
-   * and `str_keys`.
-   * @param double_keys The set of allowable keys for double options.
-   * @param int_keys The set of allowable keys for int options.
-   * @param str_keys The set of allowable keys for string options.
-   * @throws std::exception if the solver contains un-allowed options.
-   */
-  void CheckOptionKeysForSolver(
-      const SolverId& solver_id,
-      const std::unordered_set<std::string>& allowable_double_keys,
-      const std::unordered_set<std::string>& allowable_int_keys,
-      const std::unordered_set<std::string>& allowable_str_keys) const;
+    /** Returns the IDs that have any option set. */
+    std::unordered_set<SolverId> GetSolverIds() const;
 
- private:
-  std::unordered_map<SolverId, std::unordered_map<std::string, double>>
-      solver_options_double_{};
-  std::unordered_map<SolverId, std::unordered_map<std::string, int>>
-      solver_options_int_{};
-  std::unordered_map<SolverId, std::unordered_map<std::string, std::string>>
-      solver_options_str_{};
+    /**
+     * Merges the other solver options into this. If `other` and `this` option
+     * both define the same option for the same solver, we ignore then one from
+     * `other` and keep the one from `this`.
+     */
+    void Merge(const SolverOptions& other);
 
-  std::unordered_map<CommonSolverOption, OptionValue> common_solver_options_{};
+    /**
+     * Returns true if `this` and `other` have exactly the same solvers, with
+     * exactly the same keys and values for the options for each solver.
+     */
+    bool operator==(const SolverOptions& other) const;
+
+    /**
+     * Negate operator==.
+     */
+    bool operator!=(const SolverOptions& other) const;
+
+    /**
+     * Check if for a given solver_id, the option keys are included in
+     * double_keys, int_keys and str_keys.
+     * @param solver_id If this SolverOptions has set options for this solver_id,
+     * then we check if the option keys are a subset of `double_keys`, `int_keys`
+     * and `str_keys`.
+     * @param double_keys The set of allowable keys for double options.
+     * @param int_keys The set of allowable keys for int options.
+     * @param str_keys The set of allowable keys for string options.
+     * @throws std::exception if the solver contains un-allowed options.
+     */
+    void CheckOptionKeysForSolver(const SolverId& solver_id,
+                                  const std::unordered_set<std::string>& allowable_double_keys,
+                                  const std::unordered_set<std::string>& allowable_int_keys,
+                                  const std::unordered_set<std::string>& allowable_str_keys) const;
+
+private:
+    std::unordered_map<SolverId, std::unordered_map<std::string, double>> solver_options_double_{};
+    std::unordered_map<SolverId, std::unordered_map<std::string, int>> solver_options_int_{};
+    std::unordered_map<SolverId, std::unordered_map<std::string, std::string>> solver_options_str_{};
+
+    std::unordered_map<CommonSolverOption, OptionValue> common_solver_options_{};
 };
 
 std::string to_string(const SolverOptions&);

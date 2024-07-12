@@ -27,23 +27,23 @@ namespace internal {
  guaranteed (as well as the `indices` data). In the future, `uvs` may become
  optional. */
 struct RenderMesh {
-  Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> positions;
-  Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> normals;
-  Eigen::Matrix<double, Eigen::Dynamic, 2, Eigen::RowMajor> uvs;
-  Eigen::Matrix<unsigned int, Eigen::Dynamic, 3, Eigen::RowMajor> indices;
+    Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> positions;
+    Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> normals;
+    Eigen::Matrix<double, Eigen::Dynamic, 2, Eigen::RowMajor> uvs;
+    Eigen::Matrix<unsigned int, Eigen::Dynamic, 3, Eigen::RowMajor> indices;
 
-  /* Indicates the degree that UV coordinates have been assigned to the mesh.
-   Only UvState::kFull supports texture images. No matter what, the `uvs` matrix
-   will be appropriately sized. But only for kFull will the values be
-   meaningful. */
-  UvState uv_state{UvState::kNone};
+    /* Indicates the degree that UV coordinates have been assigned to the mesh.
+     Only UvState::kFull supports texture images. No matter what, the `uvs` matrix
+     will be appropriately sized. But only for kFull will the values be
+     meaningful. */
+    UvState uv_state{UvState::kNone};
 
-  /* The specification of the material associated with this mesh data.
-   `material` may be undefined (`std::nullopt`). Why it is undefined depends on
-   the origin of the `RenderMesh`. The consumer of the mesh is free to define
-   the material as they see fit by defining an arbitrary bespoke material or
-   using a utility like MakeDiffuseMaterial(). */
-  std::optional<RenderMaterial> material;
+    /* The specification of the material associated with this mesh data.
+     `material` may be undefined (`std::nullopt`). Why it is undefined depends on
+     the origin of the `RenderMesh`. The consumer of the mesh is free to define
+     the material as they see fit by defining an arbitrary bespoke material or
+     using a utility like MakeDiffuseMaterial(). */
+    std::optional<RenderMaterial> material;
 };
 
 // TODO(SeanCurtis-TRI): All of this explanation, and general guidance for what
@@ -103,10 +103,10 @@ struct RenderMesh {
                            or normals, c) faces fail to reference normals, or d)
                            faces fail to reference the texture coordinates if
                            they are present. */
-std::vector<RenderMesh> LoadRenderMeshesFromObj(
-    const std::filesystem::path& obj_path, const GeometryProperties& properties,
-    const std::optional<Rgba>& default_diffuse,
-    const drake::internal::DiagnosticPolicy& policy = {});
+std::vector<RenderMesh> LoadRenderMeshesFromObj(const std::filesystem::path& obj_path,
+                                                const GeometryProperties& properties,
+                                                const std::optional<Rgba>& default_diffuse,
+                                                const drake::internal::DiagnosticPolicy& policy = {});
 
 /* Constructs a render mesh (without material) from a triangle surface mesh.
 
@@ -122,23 +122,20 @@ std::vector<RenderMesh> LoadRenderMeshesFromObj(
 
  The returned RenderMesh has the same number of positions, vertex normals, and
  uv coordinates as `mesh.num_vertices()`. */
-RenderMesh MakeRenderMeshFromTriangleSurfaceMesh(
-    const TriangleSurfaceMesh<double>& mesh,
-    const GeometryProperties& properties,
-    const drake::internal::DiagnosticPolicy& policy = {});
+RenderMesh MakeRenderMeshFromTriangleSurfaceMesh(const TriangleSurfaceMesh<double>& mesh,
+                                                 const GeometryProperties& properties,
+                                                 const drake::internal::DiagnosticPolicy& policy = {});
 
 /* A variant of MakeRenderMeshFromTriangleSurfaceMesh(). In this case, the
  RenderMesh is guaranteed to effectively have per-face normals so it renders
  as a faceted mesh. */
-RenderMesh MakeFacetedRenderMeshFromTriangleSurfaceMesh(
-    const TriangleSurfaceMesh<double>& mesh,
-    const GeometryProperties& properties,
-    const drake::internal::DiagnosticPolicy& policy = {});
+RenderMesh MakeFacetedRenderMeshFromTriangleSurfaceMesh(const TriangleSurfaceMesh<double>& mesh,
+                                                        const GeometryProperties& properties,
+                                                        const drake::internal::DiagnosticPolicy& policy = {});
 
 /* Converts from RenderMesh to TriangleSurfaceMesh. Only connectivity and
  vertex positions information are retained. */
-TriangleSurfaceMesh<double> MakeTriangleSurfaceMesh(
-    const RenderMesh& render_mesh);
+TriangleSurfaceMesh<double> MakeTriangleSurfaceMesh(const RenderMesh& render_mesh);
 
 }  // namespace internal
 }  // namespace geometry

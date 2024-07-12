@@ -37,56 +37,49 @@ namespace lcm {
  *
  * @ingroup message_passing
  */
-class LcmInterfaceSystem final : public LeafSystem<double>,
-                                 public drake::lcm::DrakeLcmInterface {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LcmInterfaceSystem);
+class LcmInterfaceSystem final : public LeafSystem<double>, public drake::lcm::DrakeLcmInterface {
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(LcmInterfaceSystem);
 
-  /**
-   * Constructs using the given URL.  With no URL, uses the LCM_DEFAULT_URL
-   * environment variable iff it is set or else the default hard-coded URL.
-   */
-  explicit LcmInterfaceSystem(std::string lcm_url = {});
+    /**
+     * Constructs using the given URL.  With no URL, uses the LCM_DEFAULT_URL
+     * environment variable iff it is set or else the default hard-coded URL.
+     */
+    explicit LcmInterfaceSystem(std::string lcm_url = {});
 
-  /** Constructs using the given params. */
-  explicit LcmInterfaceSystem(const drake::lcm::DrakeLcmParams& params);
+    /** Constructs using the given params. */
+    explicit LcmInterfaceSystem(const drake::lcm::DrakeLcmParams& params);
 
-  /**
-   * Constructs using the given LCM service.  The pointer is aliased by this
-   * class and must remain valid for the lifetime of this object.  Users MUST
-   * NOT start the receive thread on this object.
-   */
-  explicit LcmInterfaceSystem(drake::lcm::DrakeLcmInterface* lcm);
+    /**
+     * Constructs using the given LCM service.  The pointer is aliased by this
+     * class and must remain valid for the lifetime of this object.  Users MUST
+     * NOT start the receive thread on this object.
+     */
+    explicit LcmInterfaceSystem(drake::lcm::DrakeLcmInterface* lcm);
 
-  ~LcmInterfaceSystem() final;
+    ~LcmInterfaceSystem() final;
 
-  // DrakeLcmInterface overrides.
-  std::string get_lcm_url() const override;
-  void Publish(const std::string&, const void*, int,
-               std::optional<double>) final;
-  std::shared_ptr<drake::lcm::DrakeSubscriptionInterface> Subscribe(
-      const std::string&, HandlerFunction) final;
-  std::shared_ptr<drake::lcm::DrakeSubscriptionInterface> SubscribeMultichannel(
-      std::string_view, MultichannelHandlerFunction) final;
-  std::shared_ptr<drake::lcm::DrakeSubscriptionInterface> SubscribeAllChannels(
-      MultichannelHandlerFunction) final;
-  int HandleSubscriptions(int) final;
+    // DrakeLcmInterface overrides.
+    std::string get_lcm_url() const override;
+    void Publish(const std::string&, const void*, int, std::optional<double>) final;
+    std::shared_ptr<drake::lcm::DrakeSubscriptionInterface> Subscribe(const std::string&, HandlerFunction) final;
+    std::shared_ptr<drake::lcm::DrakeSubscriptionInterface> SubscribeMultichannel(std::string_view,
+                                                                                  MultichannelHandlerFunction) final;
+    std::shared_ptr<drake::lcm::DrakeSubscriptionInterface> SubscribeAllChannels(MultichannelHandlerFunction) final;
+    int HandleSubscriptions(int) final;
 
- private:
-  explicit LcmInterfaceSystem(std::unique_ptr<drake::lcm::DrakeLcmInterface>);
+private:
+    explicit LcmInterfaceSystem(std::unique_ptr<drake::lcm::DrakeLcmInterface>);
 
-  void OnHandleSubscriptionsError(const std::string&) final;
+    void OnHandleSubscriptionsError(const std::string&) final;
 
-  void DoCalcNextUpdateTime(const Context<double>&,
-                            systems::CompositeEventCollection<double>*,
-                            double*) const final;
+    void DoCalcNextUpdateTime(const Context<double>&, systems::CompositeEventCollection<double>*, double*) const final;
 
-  typename LeafSystem<double>::GraphvizFragment DoGetGraphvizFragment(
-      const typename LeafSystem<double>::GraphvizFragmentParams& params)
-      const final;
+    typename LeafSystem<double>::GraphvizFragment DoGetGraphvizFragment(
+            const typename LeafSystem<double>::GraphvizFragmentParams& params) const final;
 
-  std::unique_ptr<drake::lcm::DrakeLcmInterface> owned_lcm_;
-  drake::lcm::DrakeLcmInterface* const lcm_{};
+    std::unique_ptr<drake::lcm::DrakeLcmInterface> owned_lcm_;
+    drake::lcm::DrakeLcmInterface* const lcm_{};
 };
 
 }  // namespace lcm

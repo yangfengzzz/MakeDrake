@@ -82,9 +82,13 @@ Matrix3d GetBadRotationMatrix() {
 }
 
 // Helper functions to create generic position vectors.
-Vector3d GetPositionVectorA() { return Vector3d(2, 3, 4); }
+Vector3d GetPositionVectorA() {
+    return Vector3d(2, 3, 4);
+}
 
-Vector3d GetPositionVectorB() { return Vector3d(5, 6, 7); }
+Vector3d GetPositionVectorB() {
+    return Vector3d(5, 6, 7);
+}
 
 // Helper function to create a generic RigidTransform.
 RigidTransform<double> GetRigidTransformA() {
@@ -566,7 +570,7 @@ GTEST_TEST(RigidTransform, Isometry3) {
 
 // Tests method Identity (identity rotation matrix and zero vector).
 GTEST_TEST(RigidTransform, Identity) {
-    const RigidTransform<double> &X = RigidTransform<double>::Identity();
+    const RigidTransform<double>& X = RigidTransform<double>::Identity();
     EXPECT_TRUE(X.
 
                 IsExactlyIdentity()
@@ -772,12 +776,12 @@ GTEST_TEST(RigidTransform, CastFromDoubleToAutoDiffXd) {
     const RigidTransform<AutoDiffXd> T_autodiff = T_double.cast<AutoDiffXd>();
 
     // To avoid a (perhaps) tautological test, check element-by-element equality.
-    const Matrix4<double> &m_double = T_double.GetAsMatrix4();
-    const Matrix4<AutoDiffXd> &m_autodiff = T_autodiff.GetAsMatrix4();
+    const Matrix4<double>& m_double = T_double.GetAsMatrix4();
+    const Matrix4<AutoDiffXd>& m_autodiff = T_autodiff.GetAsMatrix4();
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             const double mij_double = m_double(i, j);
-            const AutoDiffXd &mij_autodiff = m_autodiff(i, j);
+            const AutoDiffXd& mij_autodiff = m_autodiff(i, j);
             EXPECT_EQ(mij_autodiff, mij_double);
             EXPECT_EQ(mij_autodiff
                               .
@@ -809,7 +813,7 @@ GTEST_TEST(RigidTransform, SymbolicRigidTransformSimpleTests) {
     EXPECT_TRUE(test_Bool);
 
     // Test IsExactlyEqualTo() nominally works for Expression.
-    const RigidTransform<Expression> &X_built_in_identity = RigidTransform<Expression>::Identity();
+    const RigidTransform<Expression>& X_built_in_identity = RigidTransform<Expression>::Identity();
     test_Bool = X.IsExactlyEqualTo(X_built_in_identity);
     EXPECT_TRUE(test_Bool);
 
@@ -870,7 +874,7 @@ x;  // Not necessarily an identity matrix.
 
     );
 
-    const RigidTransform<Expression> &X_identity = RigidTransform<Expression>::Identity();
+    const RigidTransform<Expression>& X_identity = RigidTransform<Expression>::Identity();
     test_Bool = X_symbolic.IsExactlyEqualTo(X_identity);
     EXPECT_THROW(test_Bool.
 
@@ -1031,7 +1035,7 @@ GTEST_TEST(RigidTransform, OperatorMultiplyByTranslation3AndViceVersa) {
     const RigidTransformd X_AC = X_AB * X_BC;
 
     // Verify the rotation portion of the previous multiply.
-    const RotationMatrixd &R_AC = X_AC.rotation();
+    const RotationMatrixd& R_AC = X_AC.rotation();
     EXPECT_TRUE(R_AC.IsExactlyEqualTo(X_AB.
 
                                       rotation()
@@ -1053,14 +1057,14 @@ GTEST_TEST(RigidTransform, OperatorMultiplyByTranslation3AndViceVersa) {
     const RigidTransformd X_CA = X_CB * X_BA;
 
     // Verify the rotation portion of the previous multiply.
-    const RotationMatrixd &R_CA = X_CA.rotation();
-    const RotationMatrixd &R_BA = X_BA.rotation();
+    const RotationMatrixd& R_CA = X_CA.rotation();
+    const RotationMatrixd& R_BA = X_BA.rotation();
     EXPECT_TRUE(R_CA.IsExactlyEqualTo(R_BA));
     const RotationMatrixd R_CB = RotationMatrixd::Identity();
 
     // Verify the translation portion of the previous multiply.
-    const Vector3d &p_CoBo_C = X_CB.translation();
-    const Vector3d &p_BoAo_B = X_BA.translation();
+    const Vector3d& p_CoBo_C = X_CB.translation();
+    const Vector3d& p_BoAo_B = X_BA.translation();
     const Vector3d p_BoAo_C = R_CB * p_BoAo_B;
     const Vector3d p_CoAo_C = p_CoBo_C + p_BoAo_C;
     EXPECT_TRUE(X_CA.
@@ -1216,9 +1220,9 @@ GTEST_TEST(RigidTransform, TestMemoryLayoutOfRigidTransformDouble) {
     // is packed into 12 consecutive doubles, first with a 3x3 rotation matrix
     // (9 doubles) followed by a 3x1  position vector (3 doubles).
     RigidTransform<double> X;
-    const double *X_address = reinterpret_cast<const double *>(&X);
-    const double *R_address = reinterpret_cast<const double *>(&X.rotation());
-    const double *p_address = reinterpret_cast<const double *>(&X.translation());
+    const double* X_address = reinterpret_cast<const double*>(&X);
+    const double* R_address = reinterpret_cast<const double*>(&X.rotation());
+    const double* p_address = reinterpret_cast<const double*>(&X.translation());
     EXPECT_EQ(X_address, R_address);
     EXPECT_EQ(X_address + 9, p_address);
 
@@ -1245,8 +1249,8 @@ GTEST_TEST(RigidTransform, Hash) {
 //    expected string.
 template <typename T>
 void VerifyStreamInsertionOperator(const RigidTransform<T> X_AB,
-                                   const Vector3<double> &rpy_expected,
-                                   const std::string &xyz_expected_string) {
+                                   const Vector3<double>& rpy_expected,
+                                   const std::string& xyz_expected_string) {
     // Due to the conversion from a RollPitchYaw to a RotationMatrix and then back
     // to a RollPitchYaw, the input rpy_double may slightly mismatch output, so
     // stream_string may be something like
@@ -1255,7 +1259,7 @@ void VerifyStreamInsertionOperator(const RigidTransform<T> X_AB,
     stream << X_AB;
     const std::string stream_string = stream.str();
     ASSERT_EQ(stream_string.find("rpy = "), 0);
-    const char *cstring = stream_string.c_str() + 6;  // Start of double value.
+    const char* cstring = stream_string.c_str() + 6;  // Start of double value.
     double roll, pitch, yaw;
     int match_count = sscanf(cstring, "%lf %lf %lf ", &roll, &pitch, &yaw);
     ASSERT_EQ(match_count, 3) << "When scanning " << stream_string;

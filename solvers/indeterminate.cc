@@ -4,11 +4,10 @@
 
 namespace drake {
 namespace solvers {
-VectorXIndeterminate ConcatenateIndeterminatesRefList(
-    const IndeterminatesRefList& var_list) {
-  // TODO(fischergundlach): Consolidate DecisionVariable and Indeterminate in
-  // variable.{h,cc}.
-  return ConcatenateVariableRefList(var_list);
+VectorXIndeterminate ConcatenateIndeterminatesRefList(const IndeterminatesRefList& var_list) {
+    // TODO(fischergundlach): Consolidate DecisionVariable and Indeterminate in
+    // variable.{h,cc}.
+    return ConcatenateVariableRefList(var_list);
 }
 }  // namespace solvers
 }  // namespace drake

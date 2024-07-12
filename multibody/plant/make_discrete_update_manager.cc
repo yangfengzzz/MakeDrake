@@ -7,13 +7,11 @@ namespace multibody {
 namespace internal {
 
 template <typename T>
-std::unique_ptr<DiscreteUpdateManager<T>> MakeDiscreteUpdateManager(
-    DiscreteContactSolver) {
-  return std::make_unique<CompliantContactManager<T>>();
+std::unique_ptr<DiscreteUpdateManager<T>> MakeDiscreteUpdateManager(DiscreteContactSolver) {
+    return std::make_unique<CompliantContactManager<T>>();
 }
 
-DRAKE_DEFINE_FUNCTION_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS(
-    (&MakeDiscreteUpdateManager<T>));
+DRAKE_DEFINE_FUNCTION_TEMPLATE_INSTANTIATIONS_ON_DEFAULT_SCALARS((&MakeDiscreteUpdateManager<T>));
 
 }  // namespace internal
 }  // namespace multibody

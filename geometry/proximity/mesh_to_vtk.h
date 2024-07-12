@@ -27,9 +27,7 @@ namespace internal {
                    the VTK file.
  @throws std::exception if unable to create the file.
  */
-void WriteVolumeMeshToVtk(const std::string& file_name,
-                          const VolumeMesh<double>& mesh,
-                          const std::string& title);
+void WriteVolumeMeshToVtk(const std::string& file_name, const VolumeMesh<double>& mesh, const std::string& title);
 
 /*
  Writes TriangleSurfaceMesh to VTK file.
@@ -54,10 +52,10 @@ void WriteSurfaceMeshToVtk(const std::string& file_name,
        underscore '_' on the "SCALARS field.name()" line.
  @throws std::exception if unable to create the file.
  */
-void WriteVolumeMeshFieldLinearToVtk(
-    const std::string& file_name, const std::string& field_name,
-    const VolumeMeshFieldLinear<double, double>& field,
-    const std::string& title);
+void WriteVolumeMeshFieldLinearToVtk(const std::string& file_name,
+                                     const std::string& field_name,
+                                     const VolumeMeshFieldLinear<double, double>& field,
+                                     const std::string& title);
 
 /*
  Writes TriangleSurfaceMeshFieldLinear to VTK file.
@@ -70,10 +68,10 @@ void WriteVolumeMeshFieldLinearToVtk(
        underscore '_' on the "SCALARS field.name()" line.
  @throws std::exception if unable to create the file.
  */
-void WriteTriangleSurfaceMeshFieldLinearToVtk(
-    const std::string& file_name, const std::string& field_name,
-    const TriangleSurfaceMeshFieldLinear<double, double>& field,
-    const std::string& title);
+void WriteTriangleSurfaceMeshFieldLinearToVtk(const std::string& file_name,
+                                              const std::string& field_name,
+                                              const TriangleSurfaceMeshFieldLinear<double, double>& field,
+                                              const std::string& title);
 
 //@}
 

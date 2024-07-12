@@ -13,7 +13,7 @@ namespace parsing {
 namespace {
 
 GTEST_TEST(ModelDirectivesTest, Success) {
-  const char* contents = R"""(
+    const char* contents = R"""(
 directives:
 - add_model:
     name: new_model
@@ -56,12 +56,11 @@ directives:
     members: [new_model::link, right::robot::link]
     ignored_collision_filter_groups: [group1, right::robot::group]
 )""";
-  // Here we copy-paste the code from LoadModelDirectivesFromString so that we
-  // can check IsValid with a test assertion, instead of a DRAKE_DEMAND.
-  const ModelDirectives defaults;
-  const auto directives = LoadYamlString<ModelDirectives>(
-      contents, std::nullopt /* child_name */, defaults);
-  EXPECT_TRUE(directives.IsValid());
+    // Here we copy-paste the code from LoadModelDirectivesFromString so that we
+    // can check IsValid with a test assertion, instead of a DRAKE_DEMAND.
+    const ModelDirectives defaults;
+    const auto directives = LoadYamlString<ModelDirectives>(contents, std::nullopt /* child_name */, defaults);
+    EXPECT_TRUE(directives.IsValid());
 }
 
 }  // namespace

@@ -25,20 +25,19 @@ namespace find_collision_candidates DRAKE_NO_EXPORT {
       contact.
  */
 struct CallbackData {
-  /* Constructs the fully-specified callback data. The values are as described
-   in the class documentation. The parameters are all aliased in the data and
-   must remain valid at least as long as the %CallbackData instance.
+    /* Constructs the fully-specified callback data. The values are as described
+     in the class documentation. The parameters are all aliased in the data and
+     must remain valid at least as long as the %CallbackData instance.
 
-   @param collision_filter_in     The collision filter system. Aliased.
-   @param pairs_in                The output results. Aliased.  */
-  CallbackData(const CollisionFilter* collision_filter_in,
-               std::vector<SortedPair<GeometryId>>* pairs_in);
+     @param collision_filter_in     The collision filter system. Aliased.
+     @param pairs_in                The output results. Aliased.  */
+    CallbackData(const CollisionFilter* collision_filter_in, std::vector<SortedPair<GeometryId>>* pairs_in);
 
-  /* The collision filter system.  */
-  const CollisionFilter& collision_filter;
+    /* The collision filter system.  */
+    const CollisionFilter& collision_filter;
 
-  /* The results of the collision candidates query.  */
-  std::vector<SortedPair<GeometryId>>& pairs;
+    /* The results of the collision candidates query.  */
+    std::vector<SortedPair<GeometryId>>& pairs;
 };
 
 /* The callback function that stores the geometry ids of two shapes identified

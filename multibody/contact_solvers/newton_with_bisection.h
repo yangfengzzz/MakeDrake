@@ -16,50 +16,45 @@ namespace internal {
 // is a root. For a continuous function f(x) we know there is a root within the
 // given interval if sign(f(x_lower)) != sign(f(x_upper)).
 class Bracket {
- public:
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Bracket);
+public:
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(Bracket);
 
-  // Constructs a valid bracket [x_lower, x_upper].
-  // Assuming the function is continuous, validity is verified by checking that
-  // sign(f_lower) != sign(f_upper).
-  Bracket(double x_lower, double f_lower, double x_upper, double f_upper)
-      : x_lower_(x_lower),
-        f_lower_(f_lower),
-        x_upper_(x_upper),
-        f_upper_(f_upper) {
-    DRAKE_DEMAND(x_lower < x_upper);
-    DRAKE_DEMAND(has_different_sign(f_lower, f_upper));
-  }
-
-  // Returns `true` if x is inside the bracket.
-  bool inside(double x) { return x_lower_ <= x && x <= x_upper_; }
-
-  // Updates `this` bracket to [x, x_upper()] if sign(f) == sign(f_lower) or to
-  // [x_lower(), x] if sign(f) == sign(f_upper)
-  void Update(double x, double f) {
-    if (has_different_sign(f, f_upper_)) {
-      x_lower_ = x;
-      f_lower_ = f;
-    } else {
-      x_upper_ = x;
-      f_upper_ = f;
+    // Constructs a valid bracket [x_lower, x_upper].
+    // Assuming the function is continuous, validity is verified by checking that
+    // sign(f_lower) != sign(f_upper).
+    Bracket(double x_lower, double f_lower, double x_upper, double f_upper)
+        : x_lower_(x_lower), f_lower_(f_lower), x_upper_(x_upper), f_upper_(f_upper) {
+        DRAKE_DEMAND(x_lower < x_upper);
+        DRAKE_DEMAND(has_different_sign(f_lower, f_upper));
     }
-  }
 
-  double x_lower() const { return x_lower_; }
-  double x_upper() const { return x_upper_; }
-  double f_lower() const { return f_lower_; }
-  double f_upper() const { return f_upper_; }
+    // Returns `true` if x is inside the bracket.
+    bool inside(double x) { return x_lower_ <= x && x <= x_upper_; }
 
- private:
-  // Helper that returns true if sign(a) == sign(b).
-  static bool has_different_sign(double a, double b) {
-    return std::signbit(a) ^ std::signbit(b);
-  }
-  double x_lower_{};
-  double f_lower_{};
-  double x_upper_{};
-  double f_upper_{};
+    // Updates `this` bracket to [x, x_upper()] if sign(f) == sign(f_lower) or to
+    // [x_lower(), x] if sign(f) == sign(f_upper)
+    void Update(double x, double f) {
+        if (has_different_sign(f, f_upper_)) {
+            x_lower_ = x;
+            f_lower_ = f;
+        } else {
+            x_upper_ = x;
+            f_upper_ = f;
+        }
+    }
+
+    double x_lower() const { return x_lower_; }
+    double x_upper() const { return x_upper_; }
+    double f_lower() const { return f_lower_; }
+    double f_upper() const { return f_upper_; }
+
+private:
+    // Helper that returns true if sign(a) == sign(b).
+    static bool has_different_sign(double a, double b) { return std::signbit(a) ^ std::signbit(b); }
+    double x_lower_{};
+    double f_lower_{};
+    double x_upper_{};
+    double f_upper_{};
 };
 
 /*
@@ -104,10 +99,12 @@ class Bracket {
   @pre f_tolerance > 0
   @pre max_iterations > 0
 */
-std::pair<double, int> DoNewtonWithBisectionFallback(
-    const std::function<std::pair<double, double>(double)>& function,
-    Bracket bracket, double x_guess, double x_tolerance, double f_tolerance,
-    int max_iterations);
+std::pair<double, int> DoNewtonWithBisectionFallback(const std::function<std::pair<double, double>(double)>& function,
+                                                     Bracket bracket,
+                                                     double x_guess,
+                                                     double x_tolerance,
+                                                     double f_tolerance,
+                                                     int max_iterations);
 
 }  // namespace internal
 }  // namespace contact_solvers

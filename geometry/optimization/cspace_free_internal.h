@@ -35,25 +35,21 @@ namespace internal {
  @param[in] plane_geometries A non-null pointer to an empty vector.
  @param[out] plane_geometries Contains the separation information.
  */
-void GenerateRationals(
-    const std::vector<std::unique_ptr<
-        CSpaceSeparatingPlane<symbolic::Variable>>>& separating_planes,
-    const Vector3<symbolic::Variable>& y_slack,
-    const Eigen::Ref<const Eigen::VectorXd>& q_star,
-    const multibody::RationalForwardKinematics& rational_forward_kin,
-    std::vector<PlaneSeparatesGeometries>* plane_geometries);
+void GenerateRationals(const std::vector<std::unique_ptr<CSpaceSeparatingPlane<symbolic::Variable>>>& separating_planes,
+                       const Vector3<symbolic::Variable>& y_slack,
+                       const Eigen::Ref<const Eigen::VectorXd>& q_star,
+                       const multibody::RationalForwardKinematics& rational_forward_kin,
+                       std::vector<PlaneSeparatesGeometries>* plane_geometries);
 
 /*
  Overloads GenerateRationals.
  Use separating_planes as the map of the plane_index to the separating plane.
  */
-void GenerateRationals(
-    const std::map<int, const CSpaceSeparatingPlane<symbolic::Variable>*>&
-        separating_planes,
-    const Vector3<symbolic::Variable>& y_slack,
-    const Eigen::Ref<const Eigen::VectorXd>& q_star,
-    const multibody::RationalForwardKinematics& rational_forward_kin,
-    std::vector<PlaneSeparatesGeometries>* plane_geometries);
+void GenerateRationals(const std::map<int, const CSpaceSeparatingPlane<symbolic::Variable>*>& separating_planes,
+                       const Vector3<symbolic::Variable>& y_slack,
+                       const Eigen::Ref<const Eigen::VectorXd>& q_star,
+                       const multibody::RationalForwardKinematics& rational_forward_kin,
+                       std::vector<PlaneSeparatesGeometries>* plane_geometries);
 
 /*
  Returns the number of y_slack variables in `rational`.
@@ -68,10 +64,8 @@ void GenerateRationals(
  @return A map ret, such that ret[body_index] returns all the
  CIrisCollisionGeometries attached to the body as body_index.
  */
-[[nodiscard]] std::map<multibody::BodyIndex,
-                       std::vector<std::unique_ptr<CIrisCollisionGeometry>>>
-GetCollisionGeometries(const multibody::MultibodyPlant<double>& plant,
-                       const geometry::SceneGraph<double>& scene_graph);
+[[nodiscard]] std::map<multibody::BodyIndex, std::vector<std::unique_ptr<CIrisCollisionGeometry>>>
+GetCollisionGeometries(const multibody::MultibodyPlant<double>& plant, const geometry::SceneGraph<double>& scene_graph);
 
 /*
  Given a plant and associated scene graph compute all the possible collision
@@ -84,15 +78,12 @@ GetCollisionGeometries(const multibody::MultibodyPlant<double>& plant,
  @return The total number of collision pairs in the scene graph.
  */
 [[nodiscard]] int GenerateCollisionPairs(
-    const multibody::MultibodyPlant<double>& plant,
-    const geometry::SceneGraph<double>& scene_graph,
-    const std::map<multibody::BodyIndex,
-                   std::vector<std::unique_ptr<CIrisCollisionGeometry>>>&
-        link_geometries,
-    std::map<SortedPair<multibody::BodyIndex>,
-             std::vector<std::pair<const CIrisCollisionGeometry*,
-                                   const CIrisCollisionGeometry*>>>*
-        collision_pairs);
+        const multibody::MultibodyPlant<double>& plant,
+        const geometry::SceneGraph<double>& scene_graph,
+        const std::map<multibody::BodyIndex, std::vector<std::unique_ptr<CIrisCollisionGeometry>>>& link_geometries,
+        std::map<SortedPair<multibody::BodyIndex>,
+                 std::vector<std::pair<const CIrisCollisionGeometry*, const CIrisCollisionGeometry*>>>*
+                collision_pairs);
 
 /*
  Solves a SeparationCertificateProgram with the given options
@@ -101,11 +92,10 @@ GetCollisionGeometries(const multibody::MultibodyPlant<double>& plant,
  certificate is found (i.e. result->result.is_success) then result will also
  contain the plane parameters of the separating plane.
  */
-void SolveSeparationCertificateProgramBase(
-    const SeparationCertificateProgramBase& certificate_program,
-    const FindSeparationCertificateOptions& options,
-    const CSpaceSeparatingPlane<symbolic::Variable>& separating_plane,
-    SeparationCertificateResultBase* result);
+void SolveSeparationCertificateProgramBase(const SeparationCertificateProgramBase& certificate_program,
+                                           const FindSeparationCertificateOptions& options,
+                                           const CSpaceSeparatingPlane<symbolic::Variable>& separating_plane,
+                                           SeparationCertificateResultBase* result);
 
 // Returns the total size of the lower triangular variables in the Gram
 // matrices. Each Gram matrix should match with the monomial basis in
@@ -115,9 +105,9 @@ void SolveSeparationCertificateProgramBase(
 // @param monomial_basis The candidate monomial_basis for all gram matricies.
 // @param with_cross_y See Options::with_cross_y
 // @param num_y The size of y indterminates.
-int GetGramVarSize(
-    const std::array<VectorX<symbolic::Monomial>, 4>& monomial_basis_array,
-    bool with_cross_y, int num_y);
+int GetGramVarSize(const std::array<VectorX<symbolic::Monomial>, 4>& monomial_basis_array,
+                   bool with_cross_y,
+                   int num_y);
 
 // Given the monomial_basis_array, compute the sos polynomial.
 // monomial_basis_array contains [m(s), y₀*m(s), y₁*m(s), y₂*m(s)].
@@ -140,21 +130,21 @@ int GetGramVarSize(
 // where Zᵢ is a Gram matrix, i = 0, ..., num_y-1.  `grams` is a vector of
 // length `num_y`, and grams[i] = Zᵢ
 struct GramAndMonomialBasis {
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(GramAndMonomialBasis);
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(GramAndMonomialBasis);
 
-  GramAndMonomialBasis(
-      const std::array<VectorX<symbolic::Monomial>, 4>& monomial_basis_array,
-      bool with_cross_y, int num_y);
+    GramAndMonomialBasis(const std::array<VectorX<symbolic::Monomial>, 4>& monomial_basis_array,
+                         bool with_cross_y,
+                         int num_y);
 
-  // Adds the constraint that the polynomial represented by this Gram and
-  // monomial basis is sos.
-  void AddSos(solvers::MathematicalProgram* prog,
-              const Eigen::Ref<const VectorX<symbolic::Variable>>& gram_lower,
-              symbolic::Polynomial* poly);
+    // Adds the constraint that the polynomial represented by this Gram and
+    // monomial basis is sos.
+    void AddSos(solvers::MathematicalProgram* prog,
+                const Eigen::Ref<const VectorX<symbolic::Variable>>& gram_lower,
+                symbolic::Polynomial* poly);
 
-  int gram_var_size;
-  std::vector<MatrixX<symbolic::Variable>> grams;
-  std::vector<VectorX<symbolic::Monomial>> monomial_basis;
+    int gram_var_size;
+    std::vector<MatrixX<symbolic::Variable>> grams;
+    std::vector<VectorX<symbolic::Monomial>> monomial_basis;
 };
 
 // Solves an optimization problem. If the optimization problem has a cost, then
@@ -163,10 +153,10 @@ struct GramAndMonomialBasis {
 // only find a strictly feasible solution in the strict interior of the
 // feasible set. This helps the next iteration of the bilinear alternation.
 // @note that `prog` will be mutated after this function call if it has a cost.
-solvers::MathematicalProgramResult SolveWithBackoff(
-    solvers::MathematicalProgram* prog, std::optional<double> backoff_scale,
-    const std::optional<solvers::SolverOptions>& solver_options,
-    const solvers::SolverId& solver_id);
+solvers::MathematicalProgramResult SolveWithBackoff(solvers::MathematicalProgram* prog,
+                                                    std::optional<double> backoff_scale,
+                                                    const std::optional<solvers::SolverOptions>& solver_options,
+                                                    const solvers::SolverId& solver_id);
 
 }  // namespace internal
 }  // namespace optimization

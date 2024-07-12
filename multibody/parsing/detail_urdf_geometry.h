@@ -30,8 +30,8 @@ namespace internal {
  reported and it is up to the downstream consumer of this data to devise a
  policy for reconciling the data. */
 struct UrdfMaterial {
-  std::optional<Eigen::Vector4d> rgba;
-  std::optional<std::string> diffuse_map;
+    std::optional<Eigen::Vector4d> rgba;
+    std::optional<std::string> diffuse_map;
 };
 
 /* A map from the name of a material to its definition.  */
@@ -55,12 +55,11 @@ typedef std::map<std::string, UrdfMaterial> MaterialMap;
 
  @returns The material with the given name stored in @p materials.
 */
-UrdfMaterial AddMaterialToMaterialMap(
-    const drake::internal::DiagnosticPolicy& policy,
-    const std::string& material_name,
-    UrdfMaterial material,
-    bool error_if_name_clash,
-    MaterialMap* materials);
+UrdfMaterial AddMaterialToMaterialMap(const drake::internal::DiagnosticPolicy& policy,
+                                      const std::string& material_name,
+                                      UrdfMaterial material,
+                                      bool error_if_name_clash,
+                                      MaterialMap* materials);
 
 /* Returns the material specified by a <material> @p node. If the material has
  a name associated with it, the material will be reconciled with the given
@@ -93,7 +92,8 @@ UrdfMaterial AddMaterialToMaterialMap(
        released by companies and organizations like Robotiq and ROS Industrial
        (for example, see this URDF by Robotiq: http://bit.ly/28P0pmo).  */
 UrdfMaterial ParseMaterial(const TinyXml2Diagnostic& diagnostic,
-                           const tinyxml2::XMLElement* node, bool name_required,
+                           const tinyxml2::XMLElement* node,
+                           bool name_required,
                            const PackageMap& package_map,
                            const std::string& root_dir,
                            MaterialMap* materials);
@@ -146,13 +146,14 @@ constexpr int kDefaultNumericSuffixLimit = 10000;
  @param[in] numeric_name_suffix_limit (optional) The upper bound for choosing
                                       numeric suffixes.
 */
-std::optional<geometry::GeometryInstance> ParseVisual(
-    const TinyXml2Diagnostic& diagnostic,
-    const std::string& parent_element_name,
-    const PackageMap& package_map,
-    const std::string& root_dir, const tinyxml2::XMLElement* node,
-    MaterialMap* materials, std::unordered_set<std::string>* geometry_names,
-    int numeric_name_suffix_limit = kDefaultNumericSuffixLimit);
+std::optional<geometry::GeometryInstance> ParseVisual(const TinyXml2Diagnostic& diagnostic,
+                                                      const std::string& parent_element_name,
+                                                      const PackageMap& package_map,
+                                                      const std::string& root_dir,
+                                                      const tinyxml2::XMLElement* node,
+                                                      MaterialMap* materials,
+                                                      std::unordered_set<std::string>* geometry_names,
+                                                      int numeric_name_suffix_limit = kDefaultNumericSuffixLimit);
 
 /* @anchor urdf_contact_material
  Parses a <collision> element in @p node.
@@ -178,16 +179,21 @@ std::optional<geometry::GeometryInstance> ParseVisual(
   @ref YET_TO_BE_WRITTEN_HYDROELASTIC_GEOMETRY_MODULE for details on the
  semantics of these properties.
 
- | Tag                              | Group        | Property                  | Notes                                                                                                                            |
- | :------------------------------: | :----------: | :-----------------------: | :------------------------------------------------------------------------------------------------------------------------------: |
- | drake:mesh_resolution_hint       | hydroelastic | resolution_hint           | Required for shapes that require tessellation to support hydroelastic contact.                                                   |
- | drake:hydroelastic_modulus       | hydroelastic | hydroelastic_modulus      | Finite positive value. Required for compliant hydroelastic representations.                                                      |
- | drake:hunt_crossley_dissipation  | material     | hunt_crossley_dissipation |                                                                                                                                  |
- | drake:relaxation_time            | material     | relaxation_time           | Required when using a linear model of dissipation, for instance with the SAP solver.                                             |
- | drake:mu_dynamic                 | material     | coulomb_friction          | See note below on friction.                                                                                                      |
- | drake:mu_static                  | material     | coulomb_friction          | See note below on friction.                                                                                                      |
- | drake:rigid_hydroelastic         | hydroelastic | compliance_type           | Requests a rigid hydroelastic representation. Cannot be combined *with* soft_hydroelastic.                                       |
- | drake:compliant_hydroelastic     | hydroelastic | compliance_type           | Requests a compliant hydroelastic representation. Cannot be combined *with* rigid_hydroelastic. Requires a value for hydroelastic_modulus. |
+ | Tag                              | Group        | Property                  | Notes | |
+ :------------------------------: | :----------: | :-----------------------: |
+ :------------------------------------------------------------------------------------------------------------------------------:
+ | | drake:mesh_resolution_hint       | hydroelastic | resolution_hint           | Required for shapes that require
+ tessellation to support hydroelastic contact.                                                   | |
+ drake:hydroelastic_modulus       | hydroelastic | hydroelastic_modulus      | Finite positive value. Required for
+ compliant hydroelastic representations.                                                      | |
+ drake:hunt_crossley_dissipation  | material     | hunt_crossley_dissipation | | | drake:relaxation_time            |
+ material     | relaxation_time           | Required when using a linear model of dissipation, for instance with the SAP
+ solver.                                             | | drake:mu_dynamic                 | material     |
+ coulomb_friction          | See note below on friction. | | drake:mu_static                  | material     |
+ coulomb_friction          | See note below on friction. | | drake:rigid_hydroelastic         | hydroelastic |
+ compliance_type           | Requests a rigid hydroelastic representation. Cannot be combined *with* soft_hydroelastic.
+ | | drake:compliant_hydroelastic     | hydroelastic | compliance_type           | Requests a compliant hydroelastic
+ representation. Cannot be combined *with* rigid_hydroelastic. Requires a value for hydroelastic_modulus. |
 
  <h3>Coefficients of friction</h3>
 
@@ -225,13 +231,13 @@ std::optional<geometry::GeometryInstance> ParseVisual(
  @param[in] numeric_name_suffix_limit (optional) The upper bound for choosing
                                       numeric suffixes.
 */
-std::optional<geometry::GeometryInstance> ParseCollision(
-    const TinyXml2Diagnostic& diagnostic,
-    const std::string& parent_element_name,
-    const PackageMap& package_map,
-    const std::string& root_dir, const tinyxml2::XMLElement* node,
-    std::unordered_set<std::string>* geometry_names,
-    int numeric_name_suffix_limit = kDefaultNumericSuffixLimit);
+std::optional<geometry::GeometryInstance> ParseCollision(const TinyXml2Diagnostic& diagnostic,
+                                                         const std::string& parent_element_name,
+                                                         const PackageMap& package_map,
+                                                         const std::string& root_dir,
+                                                         const tinyxml2::XMLElement* node,
+                                                         std::unordered_set<std::string>* geometry_names,
+                                                         int numeric_name_suffix_limit = kDefaultNumericSuffixLimit);
 
 }  // namespace internal
 }  // namespace multibody

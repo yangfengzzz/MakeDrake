@@ -252,7 +252,8 @@ namespace geometry {
 
  For best performance, we recommend that meshes destined for the Illustration
  role use the
- <a href="https://github.com/KhronosGroup/glTF/blob/main/extensions/2.0/Khronos/KHR_texture_basisu/README.md">KHR_texture_basisu</a>
+ <a
+href="https://github.com/KhronosGroup/glTF/blob/main/extensions/2.0/Khronos/KHR_texture_basisu/README.md">KHR_texture_basisu</a>
  extension, where textures are stored using the .ktx2 file format. Loading .ktx2
  textures in a web browser is substantially faster than .png textures. In the
  common case where the same mesh will also be used by the Perception role, be

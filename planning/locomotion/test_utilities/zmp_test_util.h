@@ -12,21 +12,21 @@ namespace planning {
  * pendulum model (LIPM) using the policy from a ZmpPlanner.
  */
 struct ZmpTestTraj {
-  explicit ZmpTestTraj(int N) {
-    time.resize(N);
-    nominal_com.resize(6, N);
-    desired_zmp.resize(2, N);
-    x.resize(4, N);
-    u.resize(2, N);
-    cop.resize(2, N);
-  }
-  Eigen::Matrix<double, 1, Eigen::Dynamic> time;
-  Eigen::Matrix<double, 6, Eigen::Dynamic> nominal_com;
-  Eigen::Matrix<double, 2, Eigen::Dynamic> desired_zmp;
+    explicit ZmpTestTraj(int N) {
+        time.resize(N);
+        nominal_com.resize(6, N);
+        desired_zmp.resize(2, N);
+        x.resize(4, N);
+        u.resize(2, N);
+        cop.resize(2, N);
+    }
+    Eigen::Matrix<double, 1, Eigen::Dynamic> time;
+    Eigen::Matrix<double, 6, Eigen::Dynamic> nominal_com;
+    Eigen::Matrix<double, 2, Eigen::Dynamic> desired_zmp;
 
-  Eigen::Matrix<double, 4, Eigen::Dynamic> x;
-  Eigen::Matrix<double, 2, Eigen::Dynamic> u;
-  Eigen::Matrix<double, 2, Eigen::Dynamic> cop;
+    Eigen::Matrix<double, 4, Eigen::Dynamic> x;
+    Eigen::Matrix<double, 2, Eigen::Dynamic> u;
+    Eigen::Matrix<double, 2, Eigen::Dynamic> cop;
 };
 
 /**
@@ -41,7 +41,8 @@ struct ZmpTestTraj {
  * @return ZmpTestTraj that contains all the information.
  */
 ZmpTestTraj SimulateZmpPolicy(const ZmpPlanner& zmp_planner,
-                              const Eigen::Vector4d& x0, double dt,
+                              const Eigen::Vector4d& x0,
+                              double dt,
                               double extra_time_at_the_end);
 
 /**
@@ -64,8 +65,7 @@ ZmpTestTraj SimulateZmpPolicy(const ZmpPlanner& zmp_planner,
  * @return Three trajectories: 0 is zero-order-hold, 1 is linear, 2 is cubic.
  */
 std::vector<trajectories::PiecewisePolynomial<double>> GenerateDesiredZmpTrajs(
-    const std::vector<Eigen::Vector2d>& footsteps,
-    double double_support_duration, double single_support_duration);
+        const std::vector<Eigen::Vector2d>& footsteps, double double_support_duration, double single_support_duration);
 
 }  // namespace planning
 }  // namespace drake

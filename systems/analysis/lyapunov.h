@@ -55,11 +55,11 @@ namespace analysis {
 ///
 /// @ingroup analysis
 Eigen::VectorXd SampleBasedLyapunovAnalysis(
-    const System<double>& system, const Context<double>& context,
-    const std::function<VectorX<AutoDiffXd>(const VectorX<AutoDiffXd>& state)>&
-        basis_functions,
-    const Eigen::Ref<const Eigen::MatrixXd>& state_samples,
-    const Eigen::Ref<const Eigen::VectorXd>& V_zero_state);
+        const System<double>& system,
+        const Context<double>& context,
+        const std::function<VectorX<AutoDiffXd>(const VectorX<AutoDiffXd>& state)>& basis_functions,
+        const Eigen::Ref<const Eigen::MatrixXd>& state_samples,
+        const Eigen::Ref<const Eigen::VectorXd>& V_zero_state);
 
 }  // namespace analysis
 }  // namespace systems

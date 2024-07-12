@@ -15,26 +15,24 @@ namespace internal {
 
 /* Forwards warnings and/or errors from VTK into a Drake DiagnosticPolicy. */
 class DRAKE_NO_EXPORT VtkDiagnosticEventObserver final : public vtkCommand {
- public:
-  VtkDiagnosticEventObserver();
-  ~VtkDiagnosticEventObserver() final;
+public:
+    VtkDiagnosticEventObserver();
+    ~VtkDiagnosticEventObserver() final;
 
-  static VtkDiagnosticEventObserver* New() {
-    return new VtkDiagnosticEventObserver;
-  }
+    static VtkDiagnosticEventObserver* New() { return new VtkDiagnosticEventObserver; }
 
-  /* Sets where ErrorEvent and WarningEvent should forward to. This must be
-  called immediately after construction. */
-  void set_diagnostic(const drake::internal::DiagnosticPolicy* diagnostic) {
-    DRAKE_DEMAND(diagnostic != nullptr);
-    diagnostic_ = diagnostic;
-  }
+    /* Sets where ErrorEvent and WarningEvent should forward to. This must be
+    called immediately after construction. */
+    void set_diagnostic(const drake::internal::DiagnosticPolicy* diagnostic) {
+        DRAKE_DEMAND(diagnostic != nullptr);
+        diagnostic_ = diagnostic;
+    }
 
-  // NOLINTNEXTLINE(runtime/int) To match the VTK signature.
-  void Execute(vtkObject*, unsigned long event, void* calldata) final;
+    // NOLINTNEXTLINE(runtime/int) To match the VTK signature.
+    void Execute(vtkObject*, unsigned long event, void* calldata) final;
 
- private:
-  const drake::internal::DiagnosticPolicy* diagnostic_{};
+private:
+    const drake::internal::DiagnosticPolicy* diagnostic_{};
 };
 
 }  // namespace internal

@@ -38,43 +38,43 @@ DEFINE_bool(test, false, "Enable unit test mode.");
 // Marcucci, Mark Petersen, David von Wrangel, Russ Tedrake.
 // https://arxiv.org/abs/2205.04422
 class IiwaWithShelvesAndBins : public benchmark::Fixture {
- public:
-  IiwaWithShelvesAndBins() { tools::performance::AddMinMaxStatistics(this); }
+public:
+    IiwaWithShelvesAndBins() { tools::performance::AddMinMaxStatistics(this); }
 
-  void SetUp(benchmark::State& state) override {
-    if (!(SnoptSolver::is_enabled() && SnoptSolver::is_available())) {
-      state.SkipWithError(
-          "SNOPT is either not enabled or not available. This benchmark should "
-          "be evaluated with SNOPT.");
-      return;
+    void SetUp(benchmark::State& state) override {
+        if (!(SnoptSolver::is_enabled() && SnoptSolver::is_available())) {
+            state.SkipWithError(
+                    "SNOPT is either not enabled or not available. This benchmark should "
+                    "be evaluated with SNOPT.");
+            return;
+        }
+
+        // Configure IRIS.
+        if (FLAGS_test) {
+            iris_options_.iteration_limit = 1;
+            iris_options_.num_collision_infeasible_samples = 1;
+        } else {
+            iris_options_.iteration_limit = 10;
+            iris_options_.num_collision_infeasible_samples = 3;
+        }
+        iris_options_.require_sample_point_is_contained = true;
+        iris_options_.relative_termination_threshold = 0.01;
+        iris_options_.termination_threshold = -1;
+
+        systems::DiagramBuilder<double> builder;
+        plant_ = &multibody::AddMultibodyPlantSceneGraph(&builder, 0.0).plant;
+        LoadRobot();
+        plant_->Finalize();
+        diagram_ = builder.Build();
+        diagram_context_ = diagram_->CreateDefaultContext();
+
+        GenerateSeeds();
     }
 
-    // Configure IRIS.
-    if (FLAGS_test) {
-      iris_options_.iteration_limit = 1;
-      iris_options_.num_collision_infeasible_samples = 1;
-    } else {
-      iris_options_.iteration_limit = 10;
-      iris_options_.num_collision_infeasible_samples = 3;
-    }
-    iris_options_.require_sample_point_is_contained = true;
-    iris_options_.relative_termination_threshold = 0.01;
-    iris_options_.termination_threshold = -1;
+    void LoadRobot() {
+        multibody::Parser parser(plant_);
 
-    systems::DiagramBuilder<double> builder;
-    plant_ = &multibody::AddMultibodyPlantSceneGraph(&builder, 0.0).plant;
-    LoadRobot();
-    plant_->Finalize();
-    diagram_ = builder.Build();
-    diagram_context_ = diagram_->CreateDefaultContext();
-
-    GenerateSeeds();
-  }
-
-  void LoadRobot() {
-    multibody::Parser parser(plant_);
-
-    std::string model_directives = R"""( 
+        std::string model_directives = R"""(
 directives:
 
 # Add iiwa
@@ -152,84 +152,74 @@ directives:
       translation: [0.4, 0.0, 0.0]
 )""";
 
-    parser.AddModelsFromString(model_directives, ".dmd.yaml");
-  }
-
-  VectorXd MyInverseKinematics(const RigidTransformd& X_WE) {
-    const auto& E = plant_->GetBodyByName("body").body_frame();
-    multibody::InverseKinematics ik(*plant_);
-    ik.AddPositionConstraint(E, Vector3d::Zero(), plant_->world_frame(),
-                             X_WE.translation(), X_WE.translation());
-    ik.AddOrientationConstraint(E, RotationMatrixd(), plant_->world_frame(),
-                                X_WE.rotation(), 0.001);
-
-    auto* prog = ik.get_mutable_prog();
-    const auto& q = ik.q();
-    VectorXd q0 = plant_->GetPositions(ik.context());
-    prog->AddQuadraticErrorCost(MatrixXd::Identity(q.size(), q.size()), q0, q);
-    prog->SetInitialGuess(q, q0);
-    auto result = solvers::Solve(*prog);
-    DRAKE_DEMAND(result.is_success());
-    return result.GetSolution(q);
-  }
-
-  void GenerateSeeds() {
-    auto context = plant_->CreateDefaultContext();
-    seeds_.clear();
-    seeds_.emplace_back("Home Position", plant_->GetPositions(*context));
-    seeds_.emplace_back("Left Bin", MyInverseKinematics(RigidTransformd(
-                                        RollPitchYawd(M_PI / 2, M_PI, 0),
-                                        Vector3d(0.0, 0.6, 0.22))));
-    if (FLAGS_test) {
-      // In test mode, only use the first two seeds.
-      return;
+        parser.AddModelsFromString(model_directives, ".dmd.yaml");
     }
-    seeds_.emplace_back("Right Bin", MyInverseKinematics(RigidTransformd(
-                                         RollPitchYawd(M_PI / 2, M_PI, M_PI),
-                                         Vector3d(0.0, -0.6, 0.22))));
-    seeds_.emplace_back("Above Shelve", MyInverseKinematics(RigidTransformd(
-                                            RollPitchYawd(0, -M_PI, -M_PI / 2),
-                                            Vector3d(0.75, 0, 0.9))));
-    seeds_.emplace_back("Top Rack", MyInverseKinematics(RigidTransformd(
-                                        RollPitchYawd(0, -M_PI, -M_PI / 2),
-                                        Vector3d(0.75, 0, 0.67))));
-    seeds_.emplace_back("Middle Rack", MyInverseKinematics(RigidTransformd(
-                                           RollPitchYawd(0, -M_PI, -M_PI / 2),
-                                           Vector3d(0.75, 0, 0.41))));
-  }
 
-  void GenerateAllRegions() {
-    // Because we use each computed region as an obstacle for the next, we need
-    // to run them all in a single benchmark.
-    iris_options_.configuration_obstacles.clear();
-    Context<double>& plant_context =
-        plant_->GetMyMutableContextFromRoot(diagram_context_.get());
-    for (const auto& [name, q0] : seeds_) {
-      log()->info("Computing region for seed: {}", name);
-      plant_->SetPositions(&plant_context, q0);
-      HPolyhedron hpoly =
-          IrisInConfigurationSpace(*plant_, plant_context, iris_options_);
-      iris_options_.configuration_obstacles.emplace_back(hpoly.Scale(0.95));
+    VectorXd MyInverseKinematics(const RigidTransformd& X_WE) {
+        const auto& E = plant_->GetBodyByName("body").body_frame();
+        multibody::InverseKinematics ik(*plant_);
+        ik.AddPositionConstraint(E, Vector3d::Zero(), plant_->world_frame(), X_WE.translation(), X_WE.translation());
+        ik.AddOrientationConstraint(E, RotationMatrixd(), plant_->world_frame(), X_WE.rotation(), 0.001);
+
+        auto* prog = ik.get_mutable_prog();
+        const auto& q = ik.q();
+        VectorXd q0 = plant_->GetPositions(ik.context());
+        prog->AddQuadraticErrorCost(MatrixXd::Identity(q.size(), q.size()), q0, q);
+        prog->SetInitialGuess(q, q0);
+        auto result = solvers::Solve(*prog);
+        DRAKE_DEMAND(result.is_success());
+        return result.GetSolution(q);
     }
-  }
 
- protected:
-  IrisOptions iris_options_{};
-  std::unique_ptr<systems::Diagram<double>> diagram_;
-  std::unique_ptr<Context<double>> diagram_context_;
-  MultibodyPlant<double>* plant_;
-  std::vector<std::pair<std::string, VectorXd>> seeds_;
+    void GenerateSeeds() {
+        auto context = plant_->CreateDefaultContext();
+        seeds_.clear();
+        seeds_.emplace_back("Home Position", plant_->GetPositions(*context));
+        seeds_.emplace_back("Left Bin", MyInverseKinematics(RigidTransformd(RollPitchYawd(M_PI / 2, M_PI, 0),
+                                                                            Vector3d(0.0, 0.6, 0.22))));
+        if (FLAGS_test) {
+            // In test mode, only use the first two seeds.
+            return;
+        }
+        seeds_.emplace_back("Right Bin", MyInverseKinematics(RigidTransformd(RollPitchYawd(M_PI / 2, M_PI, M_PI),
+                                                                             Vector3d(0.0, -0.6, 0.22))));
+        seeds_.emplace_back("Above Shelve", MyInverseKinematics(RigidTransformd(RollPitchYawd(0, -M_PI, -M_PI / 2),
+                                                                                Vector3d(0.75, 0, 0.9))));
+        seeds_.emplace_back("Top Rack", MyInverseKinematics(RigidTransformd(RollPitchYawd(0, -M_PI, -M_PI / 2),
+                                                                            Vector3d(0.75, 0, 0.67))));
+        seeds_.emplace_back("Middle Rack", MyInverseKinematics(RigidTransformd(RollPitchYawd(0, -M_PI, -M_PI / 2),
+                                                                               Vector3d(0.75, 0, 0.41))));
+    }
+
+    void GenerateAllRegions() {
+        // Because we use each computed region as an obstacle for the next, we need
+        // to run them all in a single benchmark.
+        iris_options_.configuration_obstacles.clear();
+        Context<double>& plant_context = plant_->GetMyMutableContextFromRoot(diagram_context_.get());
+        for (const auto& [name, q0] : seeds_) {
+            log()->info("Computing region for seed: {}", name);
+            plant_->SetPositions(&plant_context, q0);
+            HPolyhedron hpoly = IrisInConfigurationSpace(*plant_, plant_context, iris_options_);
+            iris_options_.configuration_obstacles.emplace_back(hpoly.Scale(0.95));
+        }
+    }
+
+protected:
+    IrisOptions iris_options_{};
+    std::unique_ptr<systems::Diagram<double>> diagram_;
+    std::unique_ptr<Context<double>> diagram_context_;
+    MultibodyPlant<double>* plant_;
+    std::vector<std::pair<std::string, VectorXd>> seeds_;
 };
 
 BENCHMARK_DEFINE_F(IiwaWithShelvesAndBins, GenerateAllRegions)
 // NOLINTNEXTLINE(runtime/references)
 (benchmark::State& state) {
-  for (auto _ : state) {
-    GenerateAllRegions();
-  }
+    for (auto _ : state) {
+        GenerateAllRegions();
+    }
 }
-BENCHMARK_REGISTER_F(IiwaWithShelvesAndBins, GenerateAllRegions)
-    ->Unit(benchmark::kSecond);
+BENCHMARK_REGISTER_F(IiwaWithShelvesAndBins, GenerateAllRegions)->Unit(benchmark::kSecond);
 
 }  // namespace
 }  // namespace optimization
@@ -239,8 +229,8 @@ BENCHMARK_REGISTER_F(IiwaWithShelvesAndBins, GenerateAllRegions)
 // TODO(russt): Get rid of this iff we can find a way to make the benchmark run
 // only once without it.
 int main(int argc, char** argv) {
-  benchmark::Initialize(&argc, argv);
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
-  benchmark::RunSpecifiedBenchmarks();
-  return 0;
+    benchmark::Initialize(&argc, argv);
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+    benchmark::RunSpecifiedBenchmarks();
+    return 0;
 }

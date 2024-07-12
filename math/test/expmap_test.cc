@@ -16,7 +16,7 @@ namespace {
 
 // Converts the given quaternion to an expmap and back. Asserts that the
 // two expressions are equivalent.
-void ConvertQuaternionToExpmapAndBack(const Vector4d &quat) {
+void ConvertQuaternionToExpmapAndBack(const Vector4d& quat) {
     auto quat_autodiff = InitializeAutoDiff(quat);
     auto expmap_autodiff = quat2expmap(quat_autodiff);
     auto expmap = ExtractValue(expmap_autodiff);

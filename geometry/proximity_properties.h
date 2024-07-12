@@ -82,17 +82,16 @@ extern const char* const kSlabThickness;   ///< Slab thickness property name
 /* Classification of the type of representation a shape has for the
  hydroelastic contact model: rigid or compliant.  */
 enum class HydroelasticType {
-  kUndefined,
-  kRigid,
-  kCompliant,
+    kUndefined,
+    kRigid,
+    kCompliant,
 
-  // Legacy alias. TODO(#17147) Remove this alias.
-  kSoft = kCompliant,
+    // Legacy alias. TODO(#17147) Remove this alias.
+    kSoft = kCompliant,
 };
 
 /* Conversion functions between hydroelastic type and string. */
-HydroelasticType GetHydroelasticTypeFromString(
-    std::string_view hydroelastic_type);
+HydroelasticType GetHydroelasticTypeFromString(std::string_view hydroelastic_type);
 std::string GetStringFromHydroelasticType(HydroelasticType hydroelastic_type);
 
 /* Streaming operator for writing hydroelastic type to output stream.  */
@@ -114,11 +113,10 @@ std::ostream& operator<<(std::ostream& out, const HydroelasticType& type);
  * defined in ``properties`.
  * @pre `properties` is not nullptr.
  */
-void AddContactMaterial(
-    std::optional<double> dissipation,
-    std::optional<double> point_stiffness,
-    const std::optional<multibody::CoulombFriction<double>>& friction,
-    ProximityProperties* properties);
+void AddContactMaterial(std::optional<double> dissipation,
+                        std::optional<double> point_stiffness,
+                        const std::optional<multibody::CoulombFriction<double>>& friction,
+                        ProximityProperties* properties);
 
 /** Adds properties to the given set of proximity properties sufficient to cause
  the associated geometry to generate a rigid hydroelastic representation.
@@ -134,8 +132,7 @@ void AddContactMaterial(
  @throws std::exception       If `properties` already has properties with the
                               names that this function would need to add.
  @pre 0 < `resolution_hint` < ∞ and `properties` is not nullptr.  */
-void AddRigidHydroelasticProperties(double resolution_hint,
-                                    ProximityProperties* properties);
+void AddRigidHydroelasticProperties(double resolution_hint, ProximityProperties* properties);
 
 /** Overload, intended for shapes that don't get tessellated in their
  hydroelastic representation (e.g., HalfSpace and Mesh).
@@ -179,9 +176,9 @@ void AddCompliantHydroelasticProperties(double resolution_hint,
                         that this function would need to add.
  @pre 0 < `slab_thickness` < ∞, 0 < `hydroelastic_modulus`, and `properties`
       is not nullptr. */
-void AddCompliantHydroelasticPropertiesForHalfSpace(
-    double slab_thickness, double hydroelastic_modulus,
-    ProximityProperties* properties);
+void AddCompliantHydroelasticPropertiesForHalfSpace(double slab_thickness,
+                                                    double hydroelastic_modulus,
+                                                    ProximityProperties* properties);
 
 //@}
 
@@ -192,7 +189,6 @@ void AddCompliantHydroelasticPropertiesForHalfSpace(
 // TODO(jwnimmer-tri) Add a real formatter and deprecate the operator<<.
 namespace fmt {
 template <>
-struct formatter<drake::geometry::internal::HydroelasticType>
-    : drake::ostream_formatter {};
+struct formatter<drake::geometry::internal::HydroelasticType> : drake::ostream_formatter {};
 }  // namespace fmt
 #endif

@@ -73,8 +73,8 @@ using SystemConstraintIndex = TypeSafeIndex<class SystemConstraintTag>;
 /** All system ports are either vectors of Eigen scalars, or black-box
 AbstractValues which may contain any type. */
 typedef enum {
-  kVectorValued = 0,
-  kAbstractValued = 1,
+    kVectorValued = 0,
+    kAbstractValued = 1,
 } PortDataType;
 
 /** (Advanced.)  Tag type that indicates a system or port should use a default
@@ -88,10 +88,8 @@ using this. */
 constexpr UseDefaultName kUseDefaultName = {};
 
 /** (Advanced.) Sugar that compares a variant against kUseDefaultName. */
-inline bool operator==(
-    const std::variant<std::string, UseDefaultName>& value,
-    const UseDefaultName&) {
-  return std::holds_alternative<UseDefaultName>(value);
+inline bool operator==(const std::variant<std::string, UseDefaultName>& value, const UseDefaultName&) {
+    return std::holds_alternative<UseDefaultName>(value);
 }
 
 /** Intended for use in e.g. variant<InputPortSelection, InputPortIndex> for
@@ -100,8 +98,7 @@ enum class InputPortSelection { kNoInput = -1, kUseFirstInputIfItExists = -2 };
 
 /** Intended for use in e.g. variant<OutputPortSelection, OutputPortIndex> for
 algorithms that support optional and/or default port indices. */
-enum class OutputPortSelection { kNoOutput = -1, kUseFirstOutputIfItExists =
-    -2 };
+enum class OutputPortSelection { kNoOutput = -1, kUseFirstOutputIfItExists = -2 };
 
 #ifndef DRAKE_DOXYGEN_CXX
 class CacheEntryValue;
@@ -117,15 +114,15 @@ using SystemId = drake::Identifier<class SystemIdTag>;
 
 // A utility to call the package-private constructor of some framework classes.
 class FrameworkFactory {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(FrameworkFactory);
-  FrameworkFactory() = delete;
-  ~FrameworkFactory() = delete;
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(FrameworkFactory);
+    FrameworkFactory() = delete;
+    ~FrameworkFactory() = delete;
 
-  template <typename T, typename... Args>
-  static std::unique_ptr<T> Make(Args... args) {
-    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-  }
+    template <typename T, typename... Args>
+    static std::unique_ptr<T> Make(Args... args) {
+        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+    }
 };
 
 // TODO(sherm1) These interface classes shouldn't be here -- split into their
@@ -140,51 +137,51 @@ class FrameworkFactory {
 // contained objects, which allows us to put the contained objects in their
 // own Bazel libraries.
 class SystemMessageInterface {
- public:
-  virtual ~SystemMessageInterface() = default;
+public:
+    virtual ~SystemMessageInterface() = default;
 
-  // Returns a human-readable simple name of this subsystem, suitable for use
-  // in constructing a system pathname. If there is no name this should return
-  // the string provided by no_name() below.
-  virtual const std::string& GetSystemName() const = 0;
+    // Returns a human-readable simple name of this subsystem, suitable for use
+    // in constructing a system pathname. If there is no name this should return
+    // the string provided by no_name() below.
+    virtual const std::string& GetSystemName() const = 0;
 
-  // Generates and returns the full path name of this subsystem, starting at
-  // the root of the containing Diagram, with path name separators between
-  // segments. The individual segment names should come from GetSystemName(),
-  // and path separators should come from path_separator() below.
-  virtual std::string GetSystemPathname() const = 0;
+    // Generates and returns the full path name of this subsystem, starting at
+    // the root of the containing Diagram, with path name separators between
+    // segments. The individual segment names should come from GetSystemName(),
+    // and path separators should come from path_separator() below.
+    virtual std::string GetSystemPathname() const = 0;
 
-  // Returns the concrete type of this subsystem. This should be the
-  // namespace-decorated human-readable name as returned by NiceTypeName.
-  virtual std::string GetSystemType() const = 0;
+    // Returns the concrete type of this subsystem. This should be the
+    // namespace-decorated human-readable name as returned by NiceTypeName.
+    virtual std::string GetSystemType() const = 0;
 
-  // Checks whether the given context was created for this system.
-  // See SystemBase::ValidateContext for full documentation.
-  virtual void ValidateContext(const ContextBase& context) const = 0;
+    // Checks whether the given context was created for this system.
+    // See SystemBase::ValidateContext for full documentation.
+    virtual void ValidateContext(const ContextBase& context) const = 0;
 
-  // Use this string as a stand-in name for an unnamed System. This is not
-  // a default name, just an indicator that there is no name. This is a policy
-  // and should be used by both System/ContextMessageInterface.
-  // TODO(sherm1) Revisit this "_" business. Maybe something like "(noname)",
-  // or a unique default like DiagramBuilder uses?
-  // Be sure to update implementation comments if you change this policy.
-  static const std::string& no_name() {
-    static never_destroyed<std::string> dummy("_");
-    return dummy.access();
-  }
+    // Use this string as a stand-in name for an unnamed System. This is not
+    // a default name, just an indicator that there is no name. This is a policy
+    // and should be used by both System/ContextMessageInterface.
+    // TODO(sherm1) Revisit this "_" business. Maybe something like "(noname)",
+    // or a unique default like DiagramBuilder uses?
+    // Be sure to update implementation comments if you change this policy.
+    static const std::string& no_name() {
+        static never_destroyed<std::string> dummy("_");
+        return dummy.access();
+    }
 
-  // Use this string as the separator in System path names. This is a policy
-  // and should be used by both System/ContextMessageInterface.
-  // TODO(sherm1) Change to more conventional "/" delimiter.
-  // Be sure to update implementation comments if you change this policy.
-  static const std::string& path_separator() {
-    static never_destroyed<std::string> separator("::");
-    return separator.access();
-  }
+    // Use this string as the separator in System path names. This is a policy
+    // and should be used by both System/ContextMessageInterface.
+    // TODO(sherm1) Change to more conventional "/" delimiter.
+    // Be sure to update implementation comments if you change this policy.
+    static const std::string& path_separator() {
+        static never_destroyed<std::string> separator("::");
+        return separator.access();
+    }
 
- protected:
-  SystemMessageInterface() = default;
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SystemMessageInterface);
+protected:
+    SystemMessageInterface() = default;
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SystemMessageInterface);
 };
 
 // ContextBase should implement this interface so that its contained objects
@@ -193,31 +190,31 @@ class SystemMessageInterface {
 // is available. (Diagram Systems and their Contexts have identical
 // substructure.) See SystemMessageInterface for motivation.
 class ContextMessageInterface {
- public:
-  virtual ~ContextMessageInterface() = default;
+public:
+    virtual ~ContextMessageInterface() = default;
 
-  // Returns a human-readable simple name of this subcontext's corresponding
-  // subsystem, suitable for use in constructing a system pathname. If there is
-  // no name this should still return some non-empty placeholder name, using
-  // the SystemMessageInterface::no_name() method.
-  virtual const std::string& GetSystemName() const = 0;
+    // Returns a human-readable simple name of this subcontext's corresponding
+    // subsystem, suitable for use in constructing a system pathname. If there is
+    // no name this should still return some non-empty placeholder name, using
+    // the SystemMessageInterface::no_name() method.
+    virtual const std::string& GetSystemName() const = 0;
 
-  // Generates and returns the full path name of this subsystem, starting at
-  // the root of the containing Diagram, with path name separators between
-  // segments. The individual segment names should come from GetSystemName()
-  // and the path separator from SystemMessageInterface::path_separator().
-  virtual std::string GetSystemPathname() const = 0;
+    // Generates and returns the full path name of this subsystem, starting at
+    // the root of the containing Diagram, with path name separators between
+    // segments. The individual segment names should come from GetSystemName()
+    // and the path separator from SystemMessageInterface::path_separator().
+    virtual std::string GetSystemPathname() const = 0;
 
-  // Returns true if the cache in this subcontext has been frozen.
-  virtual bool is_cache_frozen() const = 0;
+    // Returns true if the cache in this subcontext has been frozen.
+    virtual bool is_cache_frozen() const = 0;
 
-  // Returns a mutable reference to the Context's (mutable) Cache's dummy
-  // CacheEntryValue.
-  virtual CacheEntryValue& dummy_cache_entry_value() const = 0;
+    // Returns a mutable reference to the Context's (mutable) Cache's dummy
+    // CacheEntryValue.
+    virtual CacheEntryValue& dummy_cache_entry_value() const = 0;
 
- protected:
-  ContextMessageInterface() = default;
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ContextMessageInterface);
+protected:
+    ContextMessageInterface() = default;
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(ContextMessageInterface);
 };
 
 // A System that contains child subsystems should implement this to provide
@@ -225,37 +222,36 @@ class ContextMessageInterface {
 // only implemented by Diagram<T>. This allows us to expose just necessary
 // Diagram functionality to Leaf subsystems.
 class SystemParentServiceInterface {
- public:
-  virtual ~SystemParentServiceInterface() = default;
+public:
+    virtual ~SystemParentServiceInterface() = default;
 
-  // Generates and returns the full path name of the parent subsystem, starting
-  // at the root of the containing Diagram, with path name separators between
-  // segments. The returned string must be what would be returned by invoking
-  // GetSystemPathname() on the parent subsystem. (See SystemMessageInterface
-  // above.)
-  virtual std::string GetParentPathname() const = 0;
+    // Generates and returns the full path name of the parent subsystem, starting
+    // at the root of the containing Diagram, with path name separators between
+    // segments. The returned string must be what would be returned by invoking
+    // GetSystemPathname() on the parent subsystem. (See SystemMessageInterface
+    // above.)
+    virtual std::string GetParentPathname() const = 0;
 
-  // Returns the root Diagram at the top of this Diagram tree. Will return
-  // `this` if we are already at the root.
-  virtual const SystemBase& GetRootSystemBase() const = 0;
+    // Returns the root Diagram at the top of this Diagram tree. Will return
+    // `this` if we are already at the root.
+    virtual const SystemBase& GetRootSystemBase() const = 0;
 
- protected:
-  SystemParentServiceInterface() = default;
-  DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SystemParentServiceInterface);
+protected:
+    SystemParentServiceInterface() = default;
+    DRAKE_DEFAULT_COPY_AND_MOVE_AND_ASSIGN(SystemParentServiceInterface);
 
- private:
-  friend class ::drake::systems::SystemBase;
+private:
+    friend class ::drake::systems::SystemBase;
 
-  // This method is invoked when we need to evaluate a connected input port of
-  // a child subsystem of this System. This need arises only if this System
-  // contains subsystems, and the framework promises only to invoke this method
-  // under that circumstance. Hence Diagram must implement this to evaluate the
-  // connected-to output port (likely belonging to a different child subsystem)
-  // and returning its value as the value for the given input port.
-  // @pre The given `input_port` must use same scalar type `T` as `this`.
-  virtual const AbstractValue* EvalConnectedSubsystemInputPort(
-      const ContextBase& context,
-      const InputPortBase& input_port) const = 0;
+    // This method is invoked when we need to evaluate a connected input port of
+    // a child subsystem of this System. This need arises only if this System
+    // contains subsystems, and the framework promises only to invoke this method
+    // under that circumstance. Hence Diagram must implement this to evaluate the
+    // connected-to output port (likely belonging to a different child subsystem)
+    // and returning its value as the value for the given input port.
+    // @pre The given `input_port` must use same scalar type `T` as `this`.
+    virtual const AbstractValue* EvalConnectedSubsystemInputPort(const ContextBase& context,
+                                                                 const InputPortBase& input_port) const = 0;
 };
 
 // These dependency ticket numbers are common to all systems and contexts so
@@ -263,37 +259,37 @@ class SystemParentServiceInterface {
 // Ticket numbers for conditionally-allocated objects like ports and cache
 // entries are allocated beginning with kNextAvailableTicket defined below.
 enum BuiltInTicketNumbers {
-  // This set of tickets represents independent source values in a Context,
-  // and groupings of such source values.
-  kNothingTicket        =  0,  // Indicates "not dependent on anything".
-  kTimeTicket           =  1,  // Time.
-  kAccuracyTicket       =  2,  // Accuracy.
-  kQTicket              =  3,  // Continuous configuration variables.
-  kVTicket              =  4,  // Continuous velocity variables.
-  kZTicket              =  5,  // Miscellaneous continuous variables.
-  kXcTicket             =  6,  // All continuous variables xc = {q, v, z}.
-  kXdTicket             =  7,  // All discrete (numeric) state variables.
-  kXaTicket             =  8,  // All abstract state variables.
-  kXTicket              =  9,  // All state variables x = {xc, xd, xa}.
-  kPnTicket             = 10,  // All numeric parameters.
-  kPaTicket             = 11,  // All abstract parameters.
-  kAllParametersTicket  = 12,  // All parameters p = {pn, pa}.
-  kAllSourcesExceptInputPortsTicket = 13,  // Everything except input ports.
-  kAllInputPortsTicket  = 14,  // All input ports u.
-  kAllSourcesTicket     = 15,  // All of the above.
-  kConfigurationTicket  = 16,  // All values that may affect configuration.
-  kKinematicsTicket     = 17,  // Configuration plus velocity-affecting values.
-  kLastSourceTicket     = kKinematicsTicket,  // (Used in testing.)
+    // This set of tickets represents independent source values in a Context,
+    // and groupings of such source values.
+    kNothingTicket = 0,                      // Indicates "not dependent on anything".
+    kTimeTicket = 1,                         // Time.
+    kAccuracyTicket = 2,                     // Accuracy.
+    kQTicket = 3,                            // Continuous configuration variables.
+    kVTicket = 4,                            // Continuous velocity variables.
+    kZTicket = 5,                            // Miscellaneous continuous variables.
+    kXcTicket = 6,                           // All continuous variables xc = {q, v, z}.
+    kXdTicket = 7,                           // All discrete (numeric) state variables.
+    kXaTicket = 8,                           // All abstract state variables.
+    kXTicket = 9,                            // All state variables x = {xc, xd, xa}.
+    kPnTicket = 10,                          // All numeric parameters.
+    kPaTicket = 11,                          // All abstract parameters.
+    kAllParametersTicket = 12,               // All parameters p = {pn, pa}.
+    kAllSourcesExceptInputPortsTicket = 13,  // Everything except input ports.
+    kAllInputPortsTicket = 14,               // All input ports u.
+    kAllSourcesTicket = 15,                  // All of the above.
+    kConfigurationTicket = 16,               // All values that may affect configuration.
+    kKinematicsTicket = 17,                  // Configuration plus velocity-affecting values.
+    kLastSourceTicket = kKinematicsTicket,   // (Used in testing.)
 
-  // These are pre-defined computations with associated cache entries.
-  kXcdotTicket          = 18,  // d/dt xc = {qdot, vdot, zdot}.
-  kPeTicket             = 19,  // Potential energy.
-  kKeTicket             = 20,  // Kinetic energy.
-  kPcTicket             = 21,  // Conservative power.
-  kPncTicket            = 22,  // Non-conservative power.
-  kXdUniquePeriodicUpdateTicket = 23,  // Updated discrete (numeric) variables.
+    // These are pre-defined computations with associated cache entries.
+    kXcdotTicket = 18,                   // d/dt xc = {qdot, vdot, zdot}.
+    kPeTicket = 19,                      // Potential energy.
+    kKeTicket = 20,                      // Kinetic energy.
+    kPcTicket = 21,                      // Conservative power.
+    kPncTicket = 22,                     // Non-conservative power.
+    kXdUniquePeriodicUpdateTicket = 23,  // Updated discrete (numeric) variables.
 
-  kNextAvailableTicket  = kXdUniquePeriodicUpdateTicket+1
+    kNextAvailableTicket = kXdUniquePeriodicUpdateTicket + 1
 };
 
 // Specifies the prerequisite of an output port. It will always be either
@@ -302,20 +298,21 @@ enum BuiltInTicketNumbers {
 // of the child's parent Diagram. If the `child_subsystem` index is missing it
 // indicates that the prerequisite is internal.
 struct OutputPortPrerequisite {
-  std::optional<SubsystemIndex> child_subsystem;
-  DependencyTicket dependency;
+    std::optional<SubsystemIndex> child_subsystem;
+    DependencyTicket dependency;
 };
 
 // These are some utility methods that are reused within the framework.
 
 // Returns a vector of raw pointers that correspond placewise with the
 // unique_ptrs in the vector `in`.
-template<typename U>
+template <typename U>
 std::vector<U*> Unpack(const std::vector<std::unique_ptr<U>>& in) {
-  std::vector<U*> out(in.size());
-  std::transform(in.begin(), in.end(), out.begin(),
-                 [](const std::unique_ptr<U>& p) { return p.get(); });
-  return out;
+    std::vector<U*> out(in.size());
+    std::transform(in.begin(), in.end(), out.begin(), [](const std::unique_ptr<U>& p) {
+        return p.get();
+    });
+    return out;
 }
 
 // Checks a vector of pointer-like objects to make sure no entries are null,
@@ -330,9 +327,9 @@ std::vector<U*> Unpack(const std::vector<std::unique_ptr<U>>& in) {
 // meaningfully compared to `nullptr`.
 template <typename PtrType>
 bool IsNonNull(const std::vector<PtrType>& pointers) {
-  for (const PtrType& p : pointers)
-    if (p == nullptr) return false;
-  return true;
+    for (const PtrType& p : pointers)
+        if (p == nullptr) return false;
+    return true;
 }
 
 }  // namespace internal

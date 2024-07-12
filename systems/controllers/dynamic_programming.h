@@ -19,53 +19,54 @@ namespace controllers {
 /// Consolidates the many possible options to be passed to the dynamic
 /// programming algorithms.
 struct DynamicProgrammingOptions {
-  DynamicProgrammingOptions() = default;
+    DynamicProgrammingOptions() = default;
 
-  /// A value between (0,1] that discounts future rewards.
-  /// @see FittedValueIteration.
-  double discount_factor{1.};
+    /// A value between (0,1] that discounts future rewards.
+    /// @see FittedValueIteration.
+    double discount_factor{1.};
 
-  /// For algorithms that rely on approximations of the state-dynamics
-  /// (as in FittedValueIteration), this is a list of state dimensions for
-  /// which the state space maximum value should be "wrapped around" to
-  /// ensure that all values are in the range [low, high).  The classic example
-  /// is for angles that are wrapped around at 2π.
-  struct PeriodicBoundaryCondition {
-    PeriodicBoundaryCondition(int state_index, double low, double high);
-    int state_index{-1};
-    double low{0.};
-    double high{2.*M_PI};
-  };
-  std::list<struct PeriodicBoundaryCondition> periodic_boundary_conditions;
+    /// For algorithms that rely on approximations of the state-dynamics
+    /// (as in FittedValueIteration), this is a list of state dimensions for
+    /// which the state space maximum value should be "wrapped around" to
+    /// ensure that all values are in the range [low, high).  The classic example
+    /// is for angles that are wrapped around at 2π.
+    struct PeriodicBoundaryCondition {
+        PeriodicBoundaryCondition(int state_index, double low, double high);
+        int state_index{-1};
+        double low{0.};
+        double high{2. * M_PI};
+    };
+    std::list<struct PeriodicBoundaryCondition> periodic_boundary_conditions;
 
-  /// Value iteration methods converge when the value function stops
-  /// changing (typically evaluated with the l∞ norm).  This value sets that
-  /// threshold.
-  double convergence_tol = 1e-4;
+    /// Value iteration methods converge when the value function stops
+    /// changing (typically evaluated with the l∞ norm).  This value sets that
+    /// threshold.
+    double convergence_tol = 1e-4;
 
-  /// If callable, this method is invoked during each major iteration of the
-  /// dynamic programming algorithm, in order to facilitate e.g. graphical
-  /// inspection/debugging of the results.
-  ///
-  /// @note The first call happens at iteration 1 (after the value iteration
-  /// has run once), not zero.
-  std::function<void(
-      int iteration, const math::BarycentricMesh<double>& state_mesh,
-      const Eigen::RowVectorXd& cost_to_go, const Eigen::MatrixXd& policy)>
-      visualization_callback{nullptr};
+    /// If callable, this method is invoked during each major iteration of the
+    /// dynamic programming algorithm, in order to facilitate e.g. graphical
+    /// inspection/debugging of the results.
+    ///
+    /// @note The first call happens at iteration 1 (after the value iteration
+    /// has run once), not zero.
+    std::function<void(int iteration,
+                       const math::BarycentricMesh<double>& state_mesh,
+                       const Eigen::RowVectorXd& cost_to_go,
+                       const Eigen::MatrixXd& policy)>
+            visualization_callback{nullptr};
 
-  /// For systems with multiple input ports, we must specify which input port is
-  /// being used in the control design.  @see systems::InputPortSelection.
-  std::variant<systems::InputPortSelection, InputPortIndex> input_port_index{
-      systems::InputPortSelection::kUseFirstInputIfItExists};
+    /// For systems with multiple input ports, we must specify which input port is
+    /// being used in the control design.  @see systems::InputPortSelection.
+    std::variant<systems::InputPortSelection, InputPortIndex> input_port_index{
+            systems::InputPortSelection::kUseFirstInputIfItExists};
 
-  /// (Advanced) Boolean which, if true, allows this algorithm to optimize
-  /// without considering the dynamics of any non-continuous states. This is
-  /// helpful for optimizing systems that might have some additional
-  /// book-keeping variables in their state. Only use this if you are sure that
-  /// the dynamics of the additional state variables cannot impact the dynamics
-  /// of the continuous states.  @default false.
-  bool assume_non_continuous_states_are_fixed{false};
+    /// (Advanced) Boolean which, if true, allows this algorithm to optimize
+    /// without considering the dynamics of any non-continuous states. This is
+    /// helpful for optimizing systems that might have some additional
+    /// book-keeping variables in their state. Only use this if you are sure that
+    /// the dynamics of the additional state variables cannot impact the dynamics
+    /// of the continuous states.  @default false.
+    bool assume_non_continuous_states_are_fixed{false};
 };
 
 /// Implements Fitted Value Iteration on a (triangulated) Barycentric Mesh,
@@ -103,13 +104,13 @@ struct DynamicProgrammingOptions {
 /// of the system passed in through @p simulator).
 ///
 /// @ingroup control
-std::pair<std::unique_ptr<BarycentricMeshSystem<double>>, Eigen::RowVectorXd>
-FittedValueIteration(
-    Simulator<double>* simulator,
-    const std::function<double(const Context<double>& context)>& cost_function,
-    const math::BarycentricMesh<double>::MeshGrid& state_grid,
-    const math::BarycentricMesh<double>::MeshGrid& input_grid, double time_step,
-    const DynamicProgrammingOptions& options = DynamicProgrammingOptions());
+std::pair<std::unique_ptr<BarycentricMeshSystem<double>>, Eigen::RowVectorXd> FittedValueIteration(
+        Simulator<double>* simulator,
+        const std::function<double(const Context<double>& context)>& cost_function,
+        const math::BarycentricMesh<double>::MeshGrid& state_grid,
+        const math::BarycentricMesh<double>::MeshGrid& input_grid,
+        double time_step,
+        const DynamicProgrammingOptions& options = DynamicProgrammingOptions());
 
 // TODO(russt): Handle the specific case where system is control affine and the
 // cost function is quadratic positive-definite.  (Adds requirements on the
@@ -118,7 +119,6 @@ FittedValueIteration(
 
 // TODO(russt): Implement more general FittedValueIteration methods as the
 // function approximation tools become available.
-
 
 /// Implements the Linear Programming approach to approximate dynamic
 /// programming.  It optimizes the linear program
@@ -169,17 +169,16 @@ FittedValueIteration(
 ///
 /// @ingroup control_systems
 Eigen::VectorXd LinearProgrammingApproximateDynamicProgramming(
-    Simulator<double>* simulator,
-    const std::function<double(const Context<double>& context)>& cost_function,
-    const std::function<symbolic::Expression(
-        const Eigen::Ref<const Eigen::VectorXd>& state,
-        const VectorX<symbolic::Variable>& parameters)>&
-        linearly_parameterized_cost_to_go_function,
-    int num_parameters,
-    const Eigen::Ref<const Eigen::MatrixXd>& state_samples,
-    const Eigen::Ref<const Eigen::MatrixXd>& input_samples,
-    double time_step,
-    const DynamicProgrammingOptions& options = DynamicProgrammingOptions());
+        Simulator<double>* simulator,
+        const std::function<double(const Context<double>& context)>& cost_function,
+        const std::function<symbolic::Expression(const Eigen::Ref<const Eigen::VectorXd>& state,
+                                                 const VectorX<symbolic::Variable>& parameters)>&
+                linearly_parameterized_cost_to_go_function,
+        int num_parameters,
+        const Eigen::Ref<const Eigen::MatrixXd>& state_samples,
+        const Eigen::Ref<const Eigen::MatrixXd>& input_samples,
+        double time_step,
+        const DynamicProgrammingOptions& options = DynamicProgrammingOptions());
 
 // TODO(russt): could easily provide a version of LPADP that accepts the same
 // inputs as the barycentric fitted value iteration, by creating samples at

@@ -27,45 +27,41 @@ using std::vector;
 /* Implementation of DistanceCallback for penetration as point pair. */
 template <typename T>
 class PenetrationCallback : public DistanceCallback<T> {
- public:
-  bool Invoke(fcl::CollisionObjectd* obj_A, fcl::CollisionObjectd* obj_B,
-              const CollisionFilter* collision_filter,
-              const std::unordered_map<GeometryId, math::RigidTransform<T>>*
-                  X_WGs) override {
-    CallbackData<T> data(collision_filter, X_WGs, &results_);
-    return Callback<T>(obj_A, obj_B, &data);
-  }
+public:
+    bool Invoke(fcl::CollisionObjectd* obj_A,
+                fcl::CollisionObjectd* obj_B,
+                const CollisionFilter* collision_filter,
+                const std::unordered_map<GeometryId, math::RigidTransform<T>>* X_WGs) override {
+        CallbackData<T> data(collision_filter, X_WGs, &results_);
+        return Callback<T>(obj_A, obj_B, &data);
+    }
 
-  void ClearResults() override { results_.clear(); }
+    void ClearResults() override { results_.clear(); }
 
-  int GetNumResults() const override {
-    return static_cast<int>(results_.size());
-  }
+    int GetNumResults() const override { return static_cast<int>(results_.size()); }
 
-  T GetFirstSignedDistance() const override { return -results_[0].depth; }
+    T GetFirstSignedDistance() const override { return -results_[0].depth; }
 
- private:
-  vector<PenetrationAsPointPair<T>> results_;
+private:
+    vector<PenetrationAsPointPair<T>> results_;
 };
 
 template <typename T>
 class CharacterizePointPairResultTest : public CharacterizeResultTest<T> {
- public:
-  CharacterizePointPairResultTest()
-      : CharacterizeResultTest<T>(make_unique<PenetrationCallback<T>>()) {}
+public:
+    CharacterizePointPairResultTest() : CharacterizeResultTest<T>(make_unique<PenetrationCallback<T>>()) {}
 
-  std::vector<double> TestDistances() const final { return {-this->kDistance}; }
+    std::vector<double> TestDistances() const final { return {-this->kDistance}; }
 };
 
 /* *-Mesh has not been implemented because Mesh is represented by Convex.
  However, this single test will detect when that condition is no longer true
  and call for implementation of *-Mesh tests. */
 GTEST_TEST(CharacterizePointPairResultTest, MeshMesh) {
-  ASSERT_TRUE(MeshIsConvex());
+    ASSERT_TRUE(MeshIsConvex());
 }
 
-class DoubleTest : public CharacterizePointPairResultTest<double>,
-                   public testing::WithParamInterface<QueryInstance> {};
+class DoubleTest : public CharacterizePointPairResultTest<double>, public testing::WithParamInterface<QueryInstance> {};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -109,7 +105,7 @@ INSTANTIATE_TEST_SUITE_P(
 // clang-format on
 
 TEST_P(DoubleTest, Characterize) {
-  this->RunCharacterization(GetParam());
+    this->RunCharacterization(GetParam());
 }
 
 class AutoDiffTest : public CharacterizePointPairResultTest<AutoDiffXd>,
@@ -157,7 +153,7 @@ INSTANTIATE_TEST_SUITE_P(
 // clang-format on
 
 TEST_P(AutoDiffTest, Characterize) {
-  this->RunCharacterization(GetParam());
+    this->RunCharacterization(GetParam());
 }
 
 }  // namespace

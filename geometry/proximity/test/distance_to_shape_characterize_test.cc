@@ -23,62 +23,56 @@ using std::vector;
 /* Implementation of DistanceCallback for signed distance. */
 template <typename T>
 class SignedDistanceCallback : public DistanceCallback<T> {
- public:
-  bool Invoke(fcl::CollisionObjectd* obj_A, fcl::CollisionObjectd* obj_B,
-              const CollisionFilter* collision_filter,
-              const std::unordered_map<GeometryId, math::RigidTransform<T>>*
-                  X_WGs) override {
-    CallbackData<T> data(collision_filter, X_WGs,
-                         std::numeric_limits<double>::infinity(), &results_);
-    data.request.enable_signed_distance = true;
-    data.request.gjk_solver_type = fcl::GJKSolverType::GST_LIBCCD;
-    /* TODO(#14731) This reflects the fact that ProximityEngine hard
-     codes this value to 1e-6. However, the results of multiple characterization
-     tests depend on this value. Specifically:
+public:
+    bool Invoke(fcl::CollisionObjectd* obj_A,
+                fcl::CollisionObjectd* obj_B,
+                const CollisionFilter* collision_filter,
+                const std::unordered_map<GeometryId, math::RigidTransform<T>>* X_WGs) override {
+        CallbackData<T> data(collision_filter, X_WGs, std::numeric_limits<double>::infinity(), &results_);
+        data.request.enable_signed_distance = true;
+        data.request.gjk_solver_type = fcl::GJKSolverType::GST_LIBCCD;
+        /* TODO(#14731) This reflects the fact that ProximityEngine hard
+         codes this value to 1e-6. However, the results of multiple characterization
+         tests depend on this value. Specifically:
 
-       Box-Capsule, Box-Cylinder, Box-Ellipsoid, Capsule-Capsule,
-       Capsule-Convex, Capsule-Cylinder, Capsule-Ellipsoid, Convex-Cylinder,
-       Convex-Ellipsoid, Convex-Sphere, Cylinder-Ellipsoid, Ellipsoid-Ellipsoid,
-       and Ellipsoid-Sphere
+           Box-Capsule, Box-Cylinder, Box-Ellipsoid, Capsule-Capsule,
+           Capsule-Convex, Capsule-Cylinder, Capsule-Ellipsoid, Convex-Cylinder,
+           Convex-Ellipsoid, Convex-Sphere, Cylinder-Ellipsoid, Ellipsoid-Ellipsoid,
+           and Ellipsoid-Sphere
 
-      If/when that parameter is exposed in the public API, the table should be
-      updated to reflect the results that depend on that parameter and the test
-      here should be expressed relative to this quantity in support. */
-    data.request.distance_tolerance = 1e-6;
-    /* We're not testing the logic for limiting results based on a maximum
-     distance. So, we'll simply set it to infinity. */
-    double max_distance = std::numeric_limits<double>::infinity();
-    return Callback<T>(obj_A, obj_B, &data, max_distance);
-  }
+          If/when that parameter is exposed in the public API, the table should be
+          updated to reflect the results that depend on that parameter and the test
+          here should be expressed relative to this quantity in support. */
+        data.request.distance_tolerance = 1e-6;
+        /* We're not testing the logic for limiting results based on a maximum
+         distance. So, we'll simply set it to infinity. */
+        double max_distance = std::numeric_limits<double>::infinity();
+        return Callback<T>(obj_A, obj_B, &data, max_distance);
+    }
 
-  void ClearResults() override { results_.clear(); }
+    void ClearResults() override { results_.clear(); }
 
-  int GetNumResults() const override {
-    return static_cast<int>(results_.size());
-  }
+    int GetNumResults() const override { return static_cast<int>(results_.size()); }
 
-  T GetFirstSignedDistance() const override { return results_[0].distance; }
+    T GetFirstSignedDistance() const override { return results_[0].distance; }
 
- private:
-  vector<SignedDistancePair<T>> results_;
+private:
+    vector<SignedDistancePair<T>> results_;
 };
 
 template <typename T>
 class CharacterizeShapeDistanceResultTest : public CharacterizeResultTest<T> {
- public:
-  CharacterizeShapeDistanceResultTest()
-      : CharacterizeResultTest<T>(make_unique<SignedDistanceCallback<T>>()) {}
+public:
+    CharacterizeShapeDistanceResultTest() : CharacterizeResultTest<T>(make_unique<SignedDistanceCallback<T>>()) {}
 
-  std::vector<double> TestDistances() const final {
-    return {-this->kDistance, this->kDistance};
-  }
+    std::vector<double> TestDistances() const final { return {-this->kDistance, this->kDistance}; }
 };
 
 /* *-Mesh has not been implemented because Mesh is represented by Convex.
  However, this single test will detect when that condition is no longer true
  and call for implementation of *-Mesh tests. */
 GTEST_TEST(CharacterizeShapeDistanceResultTest, MeshMesh) {
-  ASSERT_TRUE(MeshIsConvex());
+    ASSERT_TRUE(MeshIsConvex());
 }
 
 class DoubleTest : public CharacterizeShapeDistanceResultTest<double>,
@@ -126,7 +120,7 @@ INSTANTIATE_TEST_SUITE_P(
 // clang-format on
 
 TEST_P(DoubleTest, Characterize) {
-  this->RunCharacterization(GetParam());
+    this->RunCharacterization(GetParam());
 }
 
 class AutoDiffTest : public CharacterizeShapeDistanceResultTest<AutoDiffXd>,
@@ -174,12 +168,11 @@ INSTANTIATE_TEST_SUITE_P(
 // clang-format on
 
 TEST_P(AutoDiffTest, Characterize) {
-  this->RunCharacterization(GetParam());
+    this->RunCharacterization(GetParam());
 }
 
-class ExpressionTest
-    : public CharacterizeShapeDistanceResultTest<symbolic::Expression>,
-      public testing::WithParamInterface<QueryInstance> {};
+class ExpressionTest : public CharacterizeShapeDistanceResultTest<symbolic::Expression>,
+                       public testing::WithParamInterface<QueryInstance> {};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -223,7 +216,7 @@ INSTANTIATE_TEST_SUITE_P(
 // clang-format on
 
 TEST_P(ExpressionTest, Characterize) {
-  this->RunCharacterization(GetParam());
+    this->RunCharacterization(GetParam());
 }
 
 }  // namespace

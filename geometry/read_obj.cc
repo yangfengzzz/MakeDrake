@@ -6,8 +6,8 @@
 #include "common/drake_assert.h"
 #include "common/text_logging.h"
 
-//static_assert(std::is_same_v<tinyobj::real_t, double>,
-//              "tinyobjloader must be compiled in double-precision mode");
+// static_assert(std::is_same_v<tinyobj::real_t, double>,
+//               "tinyobjloader must be compiled in double-precision mode");
 
 namespace drake {
 namespace geometry {
@@ -29,23 +29,22 @@ namespace {
 //
 // The size of `attrib.vertices` is three times the number of vertices.
 //
-std::vector<Eigen::Vector3d> TinyObjToFclVertices(
-    const tinyobj::attrib_t& attrib, const double scale) {
-  int num_coords = attrib.vertices.size();
-  DRAKE_DEMAND(num_coords % 3 == 0);
-  std::vector<Eigen::Vector3d> vertices;
-  vertices.reserve(num_coords / 3);
+std::vector<Eigen::Vector3d> TinyObjToFclVertices(const tinyobj::attrib_t& attrib, const double scale) {
+    int num_coords = attrib.vertices.size();
+    DRAKE_DEMAND(num_coords % 3 == 0);
+    std::vector<Eigen::Vector3d> vertices;
+    vertices.reserve(num_coords / 3);
 
-  auto iter = attrib.vertices.begin();
-  while (iter != attrib.vertices.end()) {
-    // We increment `iter` three times for x, y, and z coordinates.
-    double x = *(iter++) * scale;
-    double y = *(iter++) * scale;
-    double z = *(iter++) * scale;
-    vertices.emplace_back(x, y, z);
-  }
+    auto iter = attrib.vertices.begin();
+    while (iter != attrib.vertices.end()) {
+        // We increment `iter` three times for x, y, and z coordinates.
+        double x = *(iter++) * scale;
+        double y = *(iter++) * scale;
+        double z = *(iter++) * scale;
+        vertices.emplace_back(x, y, z);
+    }
 
-  return vertices;
+    return vertices;
 }
 
 //
@@ -79,75 +78,71 @@ std::vector<Eigen::Vector3d> TinyObjToFclVertices(
 // mesh.num_face_vertices.size() which *cannot* be easily inferred from the
 // *size* of the returned vector.
 std::vector<int> TinyObjToFclFaces(const tinyobj::mesh_t& mesh) {
-  std::vector<int> faces;
-  faces.reserve(mesh.indices.size() + mesh.num_face_vertices.size());
-  auto iter = mesh.indices.begin();
-  for (int num : mesh.num_face_vertices) {
-    faces.push_back(num);
-    std::for_each(iter, iter + num, [&faces](const tinyobj::index_t& index) {
-      faces.push_back(index.vertex_index);
-    });
-    iter += num;
-  }
+    std::vector<int> faces;
+    faces.reserve(mesh.indices.size() + mesh.num_face_vertices.size());
+    auto iter = mesh.indices.begin();
+    for (int num : mesh.num_face_vertices) {
+        faces.push_back(num);
+        std::for_each(iter, iter + num, [&faces](const tinyobj::index_t& index) {
+            faces.push_back(index.vertex_index);
+        });
+        iter += num;
+    }
 
-  return faces;
+    return faces;
 }
 }  // namespace
 
-std::tuple<std::shared_ptr<std::vector<Eigen::Vector3d>>,
-           std::shared_ptr<std::vector<int>>, int>
-ReadObjFile(const std::string& filename, double scale, bool triangulate) {
-  tinyobj::attrib_t attrib;
-  std::vector<tinyobj::shape_t> shapes;
-  std::vector<tinyobj::material_t> materials;
-  std::string warn;
-  std::string err;
+std::tuple<std::shared_ptr<std::vector<Eigen::Vector3d>>, std::shared_ptr<std::vector<int>>, int> ReadObjFile(
+        const std::string& filename, double scale, bool triangulate) {
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string warn;
+    std::string err;
 
-  // Tinyobj doesn't infer the search directory from the directory containing
-  // the obj file. We have to provide that directory; of course, this assumes
-  // that the material library reference is relative to the obj directory.
-  const size_t pos = filename.find_last_of('/');
-  const std::string obj_folder = filename.substr(0, pos + 1);
-  const char* mtl_basedir = obj_folder.c_str();
+    // Tinyobj doesn't infer the search directory from the directory containing
+    // the obj file. We have to provide that directory; of course, this assumes
+    // that the material library reference is relative to the obj directory.
+    const size_t pos = filename.find_last_of('/');
+    const std::string obj_folder = filename.substr(0, pos + 1);
+    const char* mtl_basedir = obj_folder.c_str();
 
-  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err,
-                              filename.c_str(), mtl_basedir, triangulate);
-  if (!ret || !err.empty()) {
-    throw std::runtime_error("Error parsing file '" + filename + "' : " + err);
-  }
-  if (!warn.empty()) {
-    drake::log()->warn("Warning parsing file '{}' : {}", filename, warn);
-  }
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filename.c_str(), mtl_basedir, triangulate);
+    if (!ret || !err.empty()) {
+        throw std::runtime_error("Error parsing file '" + filename + "' : " + err);
+    }
+    if (!warn.empty()) {
+        drake::log()->warn("Warning parsing file '{}' : {}", filename, warn);
+    }
 
-  if (shapes.size() == 0) {
-    throw std::runtime_error(
-        fmt::format("The file parsed contains no objects; only OBJs with "
-                    "a single object are supported. The file could be "
-                    "corrupt, empty, or not an OBJ file. File name: '{}'",
-                    filename));
-  } else if (shapes.size() > 1) {
-    throw std::runtime_error(
-        fmt::format("The OBJ file contains multiple objects; only OBJs with "
-                    "a single object are supported: File name: '{}'",
-                    filename));
-  }
+    if (shapes.size() == 0) {
+        throw std::runtime_error(
+                fmt::format("The file parsed contains no objects; only OBJs with "
+                            "a single object are supported. The file could be "
+                            "corrupt, empty, or not an OBJ file. File name: '{}'",
+                            filename));
+    } else if (shapes.size() > 1) {
+        throw std::runtime_error(
+                fmt::format("The OBJ file contains multiple objects; only OBJs with "
+                            "a single object are supported: File name: '{}'",
+                            filename));
+    }
 
-  auto vertices = std::make_shared<std::vector<Eigen::Vector3d>>(
-      TinyObjToFclVertices(attrib, scale));
+    auto vertices = std::make_shared<std::vector<Eigen::Vector3d>>(TinyObjToFclVertices(attrib, scale));
 
-  // We will have `faces.size()` larger than the number of faces. For each
-  // face_i, the vector `faces` contains both the number and indices of its
-  // vertices:
-  //     faces = { n0, v0_0,v0_1,...,v0_n0-1,
-  //               n1, v1_0,v1_1,...,v1_n1-1,
-  //               n2, v2_0,v2_1,...,v2_n2-1,
-  //               ...}
-  // where n_i is the number of vertices of face_i.
-  //
-  int num_faces = static_cast<int>(shapes[0].mesh.num_face_vertices.size());
-  auto faces =
-      std::make_shared<std::vector<int>>(TinyObjToFclFaces(shapes[0].mesh));
-  return {vertices, faces, num_faces};
+    // We will have `faces.size()` larger than the number of faces. For each
+    // face_i, the vector `faces` contains both the number and indices of its
+    // vertices:
+    //     faces = { n0, v0_0,v0_1,...,v0_n0-1,
+    //               n1, v1_0,v1_1,...,v1_n1-1,
+    //               n2, v2_0,v2_1,...,v2_n2-1,
+    //               ...}
+    // where n_i is the number of vertices of face_i.
+    //
+    int num_faces = static_cast<int>(shapes[0].mesh.num_face_vertices.size());
+    auto faces = std::make_shared<std::vector<int>>(TinyObjToFclFaces(shapes[0].mesh));
+    return {vertices, faces, num_faces};
 }
 }  // namespace internal
 }  // namespace geometry

@@ -22,27 +22,27 @@ namespace internal {
 // and moment between nominally rigid objects. Proc. IEEE/RSJ Intl. Conf. on
 // Intelligent Robots and Systems (IROS), 2019.
 template <typename T>
-class HydroelasticEngine  {
- public:
-  DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(HydroelasticEngine);
+class HydroelasticEngine {
+public:
+    DRAKE_NO_COPY_NO_MOVE_NO_ASSIGN(HydroelasticEngine);
 
-  HydroelasticEngine() = default;
+    HydroelasticEngine() = default;
 
-  ~HydroelasticEngine() = default;
+    ~HydroelasticEngine() = default;
 
-  // Computes the combined elastic modulus for geometries with ids `id_A` and
-  // `id_B`.
-  // Refer to @ref hydro_model_parameters for further details.
-  double CalcCombinedElasticModulus(
-      geometry::GeometryId id_A, geometry::GeometryId id_B,
-      const geometry::SceneGraphInspector<T>& inspector) const;
+    // Computes the combined elastic modulus for geometries with ids `id_A` and
+    // `id_B`.
+    // Refer to @ref hydro_model_parameters for further details.
+    double CalcCombinedElasticModulus(geometry::GeometryId id_A,
+                                      geometry::GeometryId id_B,
+                                      const geometry::SceneGraphInspector<T>& inspector) const;
 
-  // Computes the combined Hunt & Crossley dissipation for geometries with ids
-  // `id_A` and `id_B`. Refer to @ref hydro_model_parameters for further
-  // details.
-  double CalcCombinedDissipation(
-      geometry::GeometryId id_A, geometry::GeometryId id_B,
-      const geometry::SceneGraphInspector<T>& inspector) const;
+    // Computes the combined Hunt & Crossley dissipation for geometries with ids
+    // `id_A` and `id_B`. Refer to @ref hydro_model_parameters for further
+    // details.
+    double CalcCombinedDissipation(geometry::GeometryId id_A,
+                                   geometry::GeometryId id_B,
+                                   const geometry::SceneGraphInspector<T>& inspector) const;
 };
 
 }  // namespace internal

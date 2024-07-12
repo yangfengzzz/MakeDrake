@@ -12,44 +12,38 @@ namespace parsing {
 namespace {
 
 GTEST_TEST(ScopedNamesTest, GetScopedFrameByName) {
-  MultibodyPlant<double> plant(0.0);
-  Parser(&plant).AddModelsFromUrl(
-      "package://drake/multibody/parsing/test/scoped_names_model.sdf");
-  plant.Finalize();
+    MultibodyPlant<double> plant(0.0);
+    Parser(&plant).AddModelsFromUrl("package://drake/multibody/parsing/test/scoped_names_model.sdf");
+    plant.Finalize();
 
-  const char* full_name = "scoped_names_model::frame";
-  const Frame<double>* const outer_frame = &plant.GetFrameByName(
-      "frame", plant.GetModelInstanceByName("scoped_names_model"));
-  EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), outer_frame);
-  EXPECT_EQ(&GetScopedFrameByName(plant, full_name), outer_frame);
+    const char* full_name = "scoped_names_model::frame";
+    const Frame<double>* const outer_frame =
+            &plant.GetFrameByName("frame", plant.GetModelInstanceByName("scoped_names_model"));
+    EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), outer_frame);
+    EXPECT_EQ(&GetScopedFrameByName(plant, full_name), outer_frame);
 
-  full_name = "scoped_names_model::inner_model::inner_frame";
-  const Frame<double>* const inner_frame = &plant.GetFrameByName(
-      "inner_frame",
-      plant.GetModelInstanceByName("scoped_names_model::inner_model"));
-  EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), inner_frame);
-  EXPECT_EQ(&GetScopedFrameByName(plant, full_name), inner_frame);
+    full_name = "scoped_names_model::inner_model::inner_frame";
+    const Frame<double>* const inner_frame =
+            &plant.GetFrameByName("inner_frame", plant.GetModelInstanceByName("scoped_names_model::inner_model"));
+    EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), inner_frame);
+    EXPECT_EQ(&GetScopedFrameByName(plant, full_name), inner_frame);
 
-  full_name = "foo";
-  EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), nullptr);
-  DRAKE_EXPECT_THROWS_MESSAGE(GetScopedFrameByName(plant, full_name),
-                              ".*no.*foo.*valid names .*world.*");
+    full_name = "foo";
+    EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), nullptr);
+    DRAKE_EXPECT_THROWS_MESSAGE(GetScopedFrameByName(plant, full_name), ".*no.*foo.*valid names .*world.*");
 
-  full_name = "scoped_names_model::foo";
-  EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), nullptr);
-  DRAKE_EXPECT_THROWS_MESSAGE(GetScopedFrameByName(plant, full_name),
-                              ".*no.*foo.*valid names .*base.*");
+    full_name = "scoped_names_model::foo";
+    EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), nullptr);
+    DRAKE_EXPECT_THROWS_MESSAGE(GetScopedFrameByName(plant, full_name), ".*no.*foo.*valid names .*base.*");
 
-  full_name = "scoped_names_model::inner_model::foo";
-  EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), nullptr);
-  DRAKE_EXPECT_THROWS_MESSAGE(GetScopedFrameByName(plant, full_name),
-                              ".*no.*foo.*valid names .*inner_frame.*");
+    full_name = "scoped_names_model::inner_model::foo";
+    EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), nullptr);
+    DRAKE_EXPECT_THROWS_MESSAGE(GetScopedFrameByName(plant, full_name), ".*no.*foo.*valid names .*inner_frame.*");
 
-  full_name = "bar_model::foo";
-  EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), nullptr);
-  DRAKE_EXPECT_THROWS_MESSAGE(
-      GetScopedFrameByName(plant, full_name),
-      ".*no.*bar_model.*instances are.*scoped_names_model.*");
+    full_name = "bar_model::foo";
+    EXPECT_EQ(GetScopedFrameByNameMaybe(plant, full_name), nullptr);
+    DRAKE_EXPECT_THROWS_MESSAGE(GetScopedFrameByName(plant, full_name),
+                                ".*no.*bar_model.*instances are.*scoped_names_model.*");
 }
 
 }  // namespace

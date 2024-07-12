@@ -13,8 +13,8 @@ def main():
     plt.plot(f_p, f_t)
     plt.plot(f_p[1], f_t[1], 'ro')
     plt.plot(f_p[2], f_t[2], 'bo')
-    plt.text(f_p[1]+0.1, f_t[1], 'Stiction')
-    plt.text((f_p[-2] + f_p[-1])*0.5, f_t[-1] + 0.01,
+    plt.text(f_p[1] + 0.1, f_t[1], 'Stiction')
+    plt.text((f_p[-2] + f_p[-1]) * 0.5, f_t[-1] + 0.01,
              'Dynamic Friction',
              horizontalalignment='center')
     plt.title('Tangent Force vs. Sliding Velocity (m/s)')
