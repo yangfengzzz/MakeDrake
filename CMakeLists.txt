@@ -10,6 +10,7 @@ find_package(absl CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 set(GFLAGS_USE_TARGET_NAMESPACE ON)
 find_package(gflags CONFIG REQUIRED)
+find_package(hwy CONFIG REQUIRED)
 
 add_executable(MakeDrake main.cpp)
 
@@ -17,3 +18,4 @@ add_subdirectory(common)
 add_subdirectory(math)
 add_subdirectory(math/test)
 add_subdirectory(systems)
+add_subdirectory(solvers)

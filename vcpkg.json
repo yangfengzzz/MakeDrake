@@ -26,5 +26,8 @@
   }, {
     "name" : "picosha2",
     "version>=" : "2018-07-30#2"
+  }, {
+    "name" : "highway",
+    "version>=" : "1.2.0"
   } ]
 }
