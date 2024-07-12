@@ -1,0 +1,3 @@
+[submodule "third_party/common_robotics_utilities"]
+	path = third_party/common_robotics_utilities
+	url = https://github.com/calderpg/common_robotics_utilities.git

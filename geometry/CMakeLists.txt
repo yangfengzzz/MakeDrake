@@ -136,7 +136,7 @@ set(PROJECT_FILES
         ${PROXIMITY_FILES}
         ${QUERY_RESULT_FILES}
         ${RENDER_FILES}
-        ${RENDER_GL_FILES}
+#        ${RENDER_GL_FILES}
         ${RENDER_GLTF_CLIENT}
         ${RENDER_VTK}
         collision_filter_declaration.cc
@@ -185,5 +185,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Eigen3::Eigen
         fmt::fmt-header-only
-        hwy::hwy
+        ${VTK_LIBRARIES}
+        tinyobjloader::tinyobjloader
+        common_robotics_utilities
+        nlohmann_json::nlohmann_json
 )

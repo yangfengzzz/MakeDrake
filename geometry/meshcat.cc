@@ -17,7 +17,7 @@
 #include <tuple>
 #include <utility>
 
-#include <App.h>
+#include <uwebsockets/App.h>
 #include <common_robotics_utilities/base64_helpers.hpp>
 #include <fmt/format.h>
 #include <msgpack.hpp>

@@ -11,8 +11,17 @@ find_package(yaml-cpp CONFIG REQUIRED)
 set(GFLAGS_USE_TARGET_NAMESPACE ON)
 find_package(gflags CONFIG REQUIRED)
 find_package(hwy CONFIG REQUIRED)
+find_package(Qhull CONFIG REQUIRED)
+find_package(fcl CONFIG REQUIRED)
+find_package(VTK REQUIRED)
+find_package(tinyobjloader CONFIG REQUIRED)
+find_package(msgpack-cxx CONFIG REQUIRED)
+find_package(stduuid CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 add_executable(MakeDrake main.cpp)
+
+add_subdirectory(third_party)
 
 add_subdirectory(common)
 add_subdirectory(math)

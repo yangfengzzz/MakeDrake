@@ -29,5 +29,32 @@
   }, {
     "name" : "highway",
     "version>=" : "1.2.0"
+  }, {
+    "name" : "qhull",
+    "version>=" : "8.0.2#5"
+  }, {
+    "name" : "fcl",
+    "version>=" : "0.7.0#3"
+  }, {
+    "name" : "vtk",
+    "version>=" : "9.3.0-pv5.12.1#1"
+  }, {
+    "name" : "tinyobjloader",
+    "version>=" : "2.0.0rc13"
+  }, {
+    "name" : "msgpack",
+    "version>=" : "6.1.1"
+  }, {
+    "name" : "uwebsockets",
+    "version>=" : "20.62.0"
+  }, {
+    "name" : "stduuid",
+    "version>=" : "1.2.3"
+  }, {
+    "name" : "nlohmann-json",
+    "version>=" : "3.11.3#1"
+  }, {
+    "name" : "boost",
+    "version>=" : "1.85.0#1"
   } ]
 }

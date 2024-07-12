@@ -1,6 +1,6 @@
 #include "systems/primitives/transfer_function.h"
 
-#include <drake/common/never_destroyed.h>
+#include "common/never_destroyed.h"
 
 namespace drake {
 namespace systems {

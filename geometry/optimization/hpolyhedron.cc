@@ -10,7 +10,7 @@
 #include <tuple>
 
 #include <Eigen/Eigenvalues>
-#include <drake/solvers/binding.h>
+#include "solvers/binding.h"
 #include <fmt/format.h>
 #include <libqhullcpp/Coordinates.h>
 #include <libqhullcpp/Qhull.h>
