@@ -201,7 +201,7 @@ struct [[maybe_unused]] Warn {
         // TODO(jwnimmer-tri) Ideally we would compile-time check our Warn format
         // strings without using fmt_runtime here, but I haven't figured out how
         // to forward the arguments properly for all versions of fmt.
-        drake::log()->warn(fmt_runtime(a), b...);
+        drake::log()->warn(fmt_runtime(a).str.data(), b...);
     }
 };
 

@@ -92,7 +92,7 @@ set(PROJECT_FILES
         find_cache.cc
         find_loaded_library.cc
         find_resource.cc
-        find_runfiles.cc
+#        find_runfiles.cc
         find_runfiles_stub.cc
         fmt_eigen.cc
         hash.cc
@@ -118,10 +118,14 @@ set(PROJECT_FILES
 add_library(${PROJECT_NAME} STATIC ${PROJECT_FILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/../
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Eigen3::Eigen
         fmt::fmt-header-only
+        benchmark::benchmark
+        yaml-cpp::yaml-cpp
+        gflags::gflags
 )

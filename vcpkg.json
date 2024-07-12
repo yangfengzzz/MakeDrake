@@ -1,7 +1,7 @@
 {
   "name" : "makedrake",
   "version-string" : "1.0.0",
-  "builtin-baseline" : "b0d9d516272c599145009c4c28b779a678fc97f8",
+  "builtin-baseline" : "3f530d4827b064f5894e94a8946473d40999826e",
   "dependencies" : [ {
     "name" : "gtest",
     "version>=" : "1.14.0#1"
@@ -11,5 +11,20 @@
   }, {
     "name" : "fmt",
     "version>=" : "10.2.1#2"
+  }, {
+    "name" : "benchmark",
+    "version>=" : "1.8.3#3"
+  }, {
+    "name" : "abseil",
+    "version>=" : "20240116.2"
+  }, {
+    "name" : "yaml-cpp",
+    "version>=" : "0.8.0#1"
+  }, {
+    "name" : "gflags",
+    "version>=" : "2.2.2#9"
+  }, {
+    "name" : "picosha2",
+    "version>=" : "2018-07-30#2"
   } ]
 }
