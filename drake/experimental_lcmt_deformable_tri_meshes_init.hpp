@@ -10,7 +10,7 @@
 #include <lcm/lcm_coretypes.h>
 
 #include <vector>
-#include "drake/experimental_lcmt_deformable_tri_mesh_init.hpp"
+#include "experimental_lcmt_deformable_tri_mesh_init.hpp"
 
 namespace drake
 {

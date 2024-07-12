@@ -176,7 +176,7 @@ std::string GetRelativeBodyName(
     // nested_model_absolute_name. Otherwise the nested model is not a
     // descendent of the model relative to which we are computing the name.
     const std::string required_prefix =
-        relative_to_model_absolute_name + std::string(sdf::kScopeDelimiter);
+        relative_to_model_absolute_name + std::string(sdf::kSdfScopeDelimiter);
     DRAKE_DEMAND(nested_model_absolute_name.starts_with(required_prefix));
 
     const std::string nested_model_relative_name =

@@ -10,7 +10,7 @@
 #include <lcm/lcm_coretypes.h>
 
 #include <vector>
-#include "drake/lcmt_robot_state.hpp"
+#include "lcmt_robot_state.hpp"
 
 namespace drake
 {

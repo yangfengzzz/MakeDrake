@@ -10,7 +10,7 @@
 #include <lcm/lcm_coretypes.h>
 
 #include <vector>
-#include "drake/lcmt_header.hpp"
+#include "lcmt_header.hpp"
 
 namespace drake
 {

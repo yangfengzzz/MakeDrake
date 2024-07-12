@@ -11,7 +11,7 @@
 
 #include <string>
 #include <vector>
-#include "drake/lcmt_viewer_geometry_data.hpp"
+#include "lcmt_viewer_geometry_data.hpp"
 
 namespace drake
 {

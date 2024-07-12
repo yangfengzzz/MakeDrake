@@ -1,3 +1,6 @@
 [submodule "third_party/common_robotics_utilities"]
 	path = third_party/common_robotics_utilities
 	url = https://github.com/calderpg/common_robotics_utilities.git
+[submodule "third_party/conex"]
+	path = third_party/conex
+	url = https://github.com/ToyotaResearchInstitute/conex.git

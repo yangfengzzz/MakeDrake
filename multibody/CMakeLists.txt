@@ -161,9 +161,9 @@ set(PARRSING_FILES
         parsing/detail_tinyxml2_diagnostic.cc
         parsing/detail_urdf_geometry.cc
         parsing/detail_urdf_parser.cc
-        parsing/detail_usd_geometry.cc
-        parsing/detail_usd_parser.cc
-        parsing/detail_usd_parser_off.cc
+#        parsing/detail_usd_geometry.cc
+#        parsing/detail_usd_parser.cc
+#        parsing/detail_usd_parser_off.cc
         parsing/package_map.cc
         parsing/parser.cc
         parsing/process_model_directives.cc
@@ -304,4 +304,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Eigen3::Eigen
         fmt::fmt-header-only
         hwy::hwy
+        conex
+        tinyxml2::tinyxml2
+        sdformat13::core GzURDFDOM::GzURDFDOM sdformat13::requested sdformat13::sdformat13
+        lcm_types
+
 )

@@ -11,7 +11,7 @@
 
 #include <string>
 #include <vector>
-#include "drake/experimental_lcmt_deformable_tri.hpp"
+#include "experimental_lcmt_deformable_tri.hpp"
 
 namespace drake
 {

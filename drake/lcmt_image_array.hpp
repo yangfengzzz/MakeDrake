@@ -10,8 +10,8 @@
 #include <lcm/lcm_coretypes.h>
 
 #include <vector>
-#include "drake/lcmt_header.hpp"
-#include "drake/lcmt_image.hpp"
+#include "lcmt_header.hpp"
+#include "lcmt_image.hpp"
 
 namespace drake
 {

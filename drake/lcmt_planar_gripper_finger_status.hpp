@@ -9,7 +9,7 @@
 
 #include <lcm/lcm_coretypes.h>
 
-#include "drake/lcmt_force_torque.hpp"
+#include "lcmt_force_torque.hpp"
 
 namespace drake
 {

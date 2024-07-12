@@ -53,5 +53,14 @@
   }, {
     "name" : "nlohmann-json",
     "version>=" : "3.11.3#1"
+  }, {
+    "name" : "nanoflann",
+    "version>=" : "1.5.5"
+  }, {
+    "name" : "tinyxml2",
+    "version>=" : "10.0.0"
+  }, {
+    "name" : "sdformat13",
+    "version>=" : "13.6.0"
   } ]
 }

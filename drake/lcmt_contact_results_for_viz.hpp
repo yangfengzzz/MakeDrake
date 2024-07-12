@@ -10,8 +10,8 @@
 #include <lcm/lcm_coretypes.h>
 
 #include <vector>
-#include "drake/lcmt_point_pair_contact_info_for_viz.hpp"
-#include "drake/lcmt_hydroelastic_contact_surface_for_viz.hpp"
+#include "lcmt_point_pair_contact_info_for_viz.hpp"
+#include "lcmt_hydroelastic_contact_surface_for_viz.hpp"
 
 namespace drake
 {

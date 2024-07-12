@@ -10,7 +10,7 @@
 #include <lcm/lcm_coretypes.h>
 
 #include <vector>
-#include "drake/lcmt_viewer_link_data.hpp"
+#include "lcmt_viewer_link_data.hpp"
 
 namespace drake
 {

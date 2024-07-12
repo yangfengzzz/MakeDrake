@@ -219,4 +219,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Eigen3::Eigen
         fmt::fmt-header-only
+        ${VTK_LIBRARIES}
+        common_robotics_utilities
+        lcm_types
 )

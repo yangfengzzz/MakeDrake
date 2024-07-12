@@ -10,7 +10,7 @@
 #include <lcm/lcm_coretypes.h>
 
 #include <vector>
-#include "drake/lcmt_planar_gripper_finger_face_assignment.hpp"
+#include "lcmt_planar_gripper_finger_face_assignment.hpp"
 
 namespace drake
 {

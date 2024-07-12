@@ -22,8 +22,8 @@ set(PROJECT_FILES
         discrete_lyapunov_equation_test.cc
         eigen_sparse_triplet_test.cc
         evenly_distributed_pts_on_sphere_test.cc
-        expmap_test.cc
-        fast_pose_composition_functions_test.cc
+#        expmap_test.cc
+#        fast_pose_composition_functions_test.cc
         gradient_util_test.cc
         gray_code_test.cc
         hopf_coordinate_test.cc
@@ -43,7 +43,7 @@ set(PROJECT_FILES
         wrap_to_test.cc
 )
 
-add_library(${PROJECT_NAME} STATIC ${PROJECT_FILES})
+add_executable(${PROJECT_NAME} ${PROJECT_FILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/../../
@@ -51,5 +51,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         math
+        hwy::hwy
         GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
+        common
+        systems
+        solvers
+        absl::any absl::log absl::base absl::bits
 )

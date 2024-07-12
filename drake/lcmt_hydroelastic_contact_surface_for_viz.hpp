@@ -11,8 +11,8 @@
 
 #include <string>
 #include <vector>
-#include "drake/lcmt_hydroelastic_quadrature_per_point_data_for_viz.hpp"
-#include "drake/lcmt_point.hpp"
+#include "lcmt_hydroelastic_quadrature_per_point_data_for_viz.hpp"
+#include "lcmt_point.hpp"
 
 namespace drake
 {

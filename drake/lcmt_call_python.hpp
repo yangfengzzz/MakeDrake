@@ -11,7 +11,7 @@
 
 #include <string>
 #include <vector>
-#include "drake/lcmt_call_python_data.hpp"
+#include "lcmt_call_python_data.hpp"
 
 namespace drake
 {

@@ -11,7 +11,7 @@
 
 #include <string>
 #include <vector>
-#include "drake/lcmt_point_cloud_field.hpp"
+#include "lcmt_point_cloud_field.hpp"
 
 namespace drake
 {
