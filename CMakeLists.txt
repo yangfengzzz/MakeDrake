@@ -42,3 +42,5 @@ add_subdirectory(planning)
 add_subdirectory(systems)
 add_subdirectory(lcm)
 add_subdirectory(visualization)
+
+add_subdirectory(pydrake)
