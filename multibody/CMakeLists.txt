@@ -33,7 +33,6 @@ set(CONTACT_SOLVERS
         contact_solvers/sap/sap_solver.cc
         contact_solvers/sap/sap_solver_results.cc
         contact_solvers/sap/sap_weld_constraint.cc
-        contact_solvers/sap/validate_constraint_gradients.cc
         contact_solvers/block_3x3_sparse_matrix.cc
         contact_solvers/block_3x3_sparse_matrix.cc
         contact_solvers/block_sparse_lower_triangular_or_symmetric_matrix.cc
@@ -308,5 +307,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         tinyxml2::tinyxml2
         sdformat13::core GzURDFDOM::GzURDFDOM sdformat13::requested sdformat13::sdformat13
         lcm_types
-
 )

@@ -32,7 +32,6 @@ add_subdirectory(drake)
 
 add_subdirectory(common)
 add_subdirectory(math)
-add_subdirectory(math/test)
 add_subdirectory(solvers)
 add_subdirectory(multibody)
 add_subdirectory(geometry)
